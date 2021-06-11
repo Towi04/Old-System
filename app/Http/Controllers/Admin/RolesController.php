@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\Role;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
+use Symfony\Component\HttpFoundation\Response as HTTPMessages;
 
 class RolesController extends Controller
 {
@@ -16,6 +18,8 @@ class RolesController extends Controller
      */
     public function index()
     {
+        abort_unless(Auth::user()->can('gestionar_roles'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
+
         $roles = Role::get();
 
         return view('admin.roles.index', compact('roles'));
@@ -23,7 +27,10 @@ class RolesController extends Controller
 
     public function datatables()
     {
-        $query = Role::query()->select(['id', 'name', 'display_name']);
+        $sucursal = session('sucursal');
+
+        $query = Role::query()->select(['id', 'name', 'display_name'])
+            ->where('id_sucursal', optional($sucursal)->id);
 
         return DataTables::eloquent($query)
             ->addColumn('buttons', 'admin.roles.datatables._buttons')
@@ -50,18 +57,21 @@ class RolesController extends Controller
      */
     public function store(Request $request)
     {
-        $rules =[
+        $rules = [
             'display_name' => 'required|unique:roles,display_name',
         ];
 
-        $this->validate($request,$rules);
+        $this->validate($request, $rules);
 
-        $name = str_replace(' ','_',strtolower( $request->input('display_name')));
+        $name = str_replace(' ', '_', strtolower($request->input('display_name')));
+
+        $sucursal = session('sucursal');
 
         Role::create([
             'name'          => $name,
             'display_name'  => $request->input('display_name'),
             'description'   => $request->input('description'),
+            'id_sucursal'   => optional($sucursal)->id,
         ]);
 
         return redirect()->route('admin.roles.index')->with([
@@ -78,7 +88,7 @@ class RolesController extends Controller
      */
     public function edit(Role $role)
     {
-        return view('admin.roles.edit',compact('role'));
+        return view('admin.roles.edit', compact('role'));
     }
 
     /**
@@ -94,12 +104,16 @@ class RolesController extends Controller
             'display_name' => "required|unique:roles,display_name,{$role->id}",
         ];
 
-        $this->validate($request,$rules);
+        $this->validate($request, $rules);
 
-        $name = str_replace(' ','_',strtolower($request->input('display_name')));
+        $name = str_replace(' ', '_', strtolower($request->input('display_name')));
+
+        $sucursal = session('sucursal');
+
         $role->name = $name;
         $role->display_name = $request->input('display_name');
-        $role->description =$request->input('description');
+        $role->description = $request->input('description');
+        $role->id_sucursal = optional($sucursal)->id;
         $role->save();
 
         return redirect()->route('admin.roles.index')->with([
@@ -113,7 +127,7 @@ class RolesController extends Controller
      * @param  \App\Models\Role  $role
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Role $role,Request $request)
+    public function destroy(Role $role, Request $request)
     {
         $role->delete();
 
@@ -125,7 +139,7 @@ class RolesController extends Controller
         }
 
         return redirect()->route('admin.roles.index')->with([
-            'message' => "El rol {$role-> display_name} se eliminó con éxito"
+            'message' => "El rol {$role->display_name} se eliminó con éxito"
         ]);
     }
 }

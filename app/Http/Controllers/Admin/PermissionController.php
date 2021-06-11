@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Permission;
 use App\Models\Role;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response as HTTPMessages;
 
 class PermissionController extends Controller
 {
@@ -16,6 +18,8 @@ class PermissionController extends Controller
      */
     public function index()
     {
+        abort_unless(Auth::user()->can('gestionar_permisos'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
+
         $roles = Role::get();
         $permisos = Permission::get();
 

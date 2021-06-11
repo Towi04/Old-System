@@ -11,7 +11,7 @@
       <span >Menú principal</span>
     </li>
 
-    @canany(['gestionar_usuarios','gestionar_roles','gestionar_permisos'])
+    @canany(['gestionar_usuarios','gestionar_roles','gestionar_permisos','gestionar_sucursales'])
         <li class="selected has-sub-menu">
             <a href="#">
                 <div class="icon-w">
@@ -40,6 +40,12 @@
                         @can(['gestionar_permisos'])
                             <li>
                                 <a href="{{ route('admin.permisos.index') }}">Permisos</a>
+                            </li>
+                        @endcan
+
+                        @can(['gestionar_sucursales'])
+                            <li>
+                                <a href="{{ route('admin.sucursales.index') }}">Sucursal</a>
                             </li>
                         @endcan
                     </ul>

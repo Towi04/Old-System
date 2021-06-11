@@ -39,12 +39,12 @@
             </div>
             <div class="col-lg-6 login-left">
                 <div class="w-75">
-                    <h3 class="mb-4 text-center text-primary">¡Bienvenido!</h3>
+                    <h3 class="mb-4 text-center">¡Bienvenido!</h3>
                     <form class="text-center" method="POST" action="{{ route('login') }}">
                         {{ csrf_field() }}
                         <div class="form-group {{ $errors->has('email') ? ' has-error' : '' }}">
                             <label class="text-muted" for="email">Correo Electrónico</label>
-                            <input type="email" class="form-control form-control-line text-white" id="email"
+                            <input type="email" class="form-control form-control-line" id="email"
                                 name="email" value="{{ old('email') }}" required autofocus>
                             @if ($errors->has('email'))
                                 <span class="help-block">
@@ -54,7 +54,7 @@
                         </div>
                         <div class="form-group">
                             <label class="text-muted" for="password">Contraseña</label>
-                            <input type="password" class="form-control form-control-line text-white" id="password"
+                            <input type="password" class="form-control form-control-line" id="password"
                                 name="password" required>
                             @if ($errors->has('password'))
                                 <span class="help-block">

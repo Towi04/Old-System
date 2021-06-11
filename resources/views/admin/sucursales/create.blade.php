@@ -1,7 +1,7 @@
 @extends('layouts.template-'.config('settings.template').'.plantilla')
 
 @section('titulo')
-    Roles <small>Administra los roles del sistema</small>
+    Sucursales <small>Administra las sucursales del sistema</small>
 @endsection
 
 @section('breadcrumb')
@@ -10,27 +10,26 @@
             <a href="{{ url('/') }}">Inicio</a>
         </li>
         <li class="breadcrumb-item">
-            <a href="{{ route('admin.roles.index') }}">Roles</a>
+            <a href="{{ route('admin.sucursales.index') }}">Sucursales</a>
         </li>
         <li class="breadcrumb-item active">
-            <strong>Editar rol {{ $role->display_name }}</strong>
+            <strong>Nueva sucursal</strong>
         </li>
     </ol>
 @endsection
 
 @section('contenido')
-
     <div class="row">
         <div class="col-md-12">
             <div class="element-box">
-                {!! Form::model($role, ['route' => ['admin.roles.update', $role], 'method' => 'PUT', 'accept-charset' => 'UTF-8', 'enctype' => 'multipart/form-data','onsubmit' => 'wait.modal("show")']) !!}
+                {!! Form::open(['route' => 'admin.sucursales.store', 'method' => 'POST', 'accept-charset' => 'UTF-8', 'enctype' => 'multipart/form-data','onsubmit' => "wait.modal('show')"]) !!}
                 <h5 class="form-header">
                     Llena el formulario
                 </h5>
 
                 <fieldset class="form-group">
-                    <legend><span>Informacion de del rol</span></legend>
-                    @include('admin.roles.partials._fields')
+                    <legend><span>Informacion de la sucursal</span></legend>
+                    @include('admin.sucursales.partials.fields')
                 </fieldset>
 
                 <div class="form-buttons-w text-right">

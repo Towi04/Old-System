@@ -22,6 +22,7 @@ class Role extends SpatieRole
         'name',
         'display_name',
         'description',
+        'id_sucursal',
         'guard_name',
     ];
 
@@ -40,5 +41,12 @@ class Role extends SpatieRole
     public function update(array $attributes = [], array $options = [])
     {
         parent::update($attributes, $options);
+    }
+
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class,'id_sucursal','id')->withDefault([
+            'nombre' => 'Sin Sucursal'
+        ]);
     }
 }

@@ -7,7 +7,7 @@
 @endsection
 
 @section('form')
-    <h3 class="mb-5 text-center text-white">{{ __('Reset Password') }}</h3>
+    <h3 class="mb-5 text-center">{{ __('Reset Password') }}</h3>
 
     <form method="POST" action="{{ route('password.update') }}">
         @csrf

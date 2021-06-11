@@ -19,42 +19,28 @@
 @endsection
 
 @section('contenido')
-    <style>
-        .contact-box:hover{
-            transform: scale(1.05)
-        }
-    </style>
-
-    {!! Form::open(['route' => 'admin.usuarios.store', 'method' => 'POST', 'accept-charset'=>'UTF-8','enctype'=>'multipart/form-data']) !!}
     <div class="row">
         <div class="col-md-12">
-            <div class="widget-holder widget-full-height widget-flex ">
-                <div class="widget-body ">
+            <div class="element-box">
+                {!! Form::open(['route' => 'admin.usuarios.store', 'method' => 'POST', 'accept-charset' => 'UTF-8', 'enctype' => 'multipart/form-data','onsubmit' => "wait.modal('show')"]) !!}
+                <h5 class="form-header">
+                    Llena el formulario
+                </h5>
+
+                <fieldset class="form-group">
+                    <legend><span>Informacion del usuario</span></legend>
                     @include('admin.users.partials.fields')
+                </fieldset>
+
+                <div class="form-buttons-w text-right">
+                    <button class="btn btn-success" type="submit"><i class="fa fa-plus"></i> Guardar</button>
                 </div>
+                {!! Form::close() !!}
             </div>
         </div>
-        <div class="col-md-1">
-            <button class="btn btn-primary dim" type="submit"><i class="fa fa-plus"></i> Guardar</button>
-        </div>
     </div>
-    {!! Form::close() !!}
 @endsection
 
 
 @section('scripts')
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-            // Translated
-            $('.dropify').dropify({
-                messages: {
-                    default: 'Arrastre o pulse para seleccionar imagen',
-                    replace: 'Arrastre o pulse para reemplazar imagen',
-                    remove: 'Quitar',
-                    error: 'Ups, ha ocurrido un error inesperado'
-                }
-            });
-        });
-    </script>
 @endsection

@@ -7,12 +7,12 @@ use App\Http\Controllers\SoporteController;
 use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\PermissionController;
-
+use App\Http\Controllers\Admin\SucursalesController;
 
 #NOTE: CONFIGURACION DE RUTAS
 Auth::routes(['register'=> false]);
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth','sucursal'])->group(function () {
     # NOTE: RUTAS GENERALES
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -53,5 +53,15 @@ Route::middleware('auth')->group(function () {
 
         Route::post('permisos/guardar_permiso',[PermissionController::class,'guardar_permiso'] )->name('permisos.guardar-permiso');
         Route::post('permisos/traer_permisos',[PermissionController::class,'traer_permisos'] )->name('permisos.traer-permisos');
+
+        # NOTE: SUCURSALES
+        Route::get('sucursales/asignar-sucursal', [ SucursalesController::class,'asignar_sucursal'])->name('sucursales.asignar-sucursal');
+        Route::post('sucursales/asociar-sucursal', [ SucursalesController::class,'asociar_sucursal'])->name('sucursales.asociar-sucursal');
+
+        Route::post('sucursales/datatables', [ SucursalesController::class,'datatables'])->name('sucursales.datatables');
+        Route::resource('sucursales', SucursalesController::class)->parameters([
+            'sucursales' => 'sucursal'
+        ]);
+
     });
 });

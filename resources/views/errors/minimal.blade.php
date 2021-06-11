@@ -19,7 +19,7 @@
                 <div class="big-error-w">
                     <div class="text-center pb-2">
                         <center>
-                            <img src="{{ asset('img/logo.png') }}">
+                            <img src="{{ asset('img/logo.png') }}" style="width:250px;">
                         </center>
                     </div>
                 <h1>

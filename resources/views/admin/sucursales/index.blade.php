@@ -1,12 +1,15 @@
 @extends('layouts.template-'.config('settings.template').'.plantilla')
 
 @section('titulo')
-    Roles <small>Administra los roles del sistema</small>
+    Sucursales <small>Administra las sucursales del sistema</small>
 @endsection
 
 @section('buttons')
-    <a href={{ route('admin.roles.create') }}><button class="btn btn-success btn-sm" type="button"><i
-                class="fa fa-plus"></i> Agregar rol</button></a>
+    <a href={{ route('admin.sucursales.create') }}>
+        <button class="btn btn-success btn-sm" type="button">
+            <i class="fa fa-plus"></i> Agregar sucursal
+        </button>
+    </a>
 @endsection
 
 @section('breadcrumb')
@@ -15,43 +18,43 @@
             <a href="{{ url('/') }}">Inicio</a>
         </li>
         <li class="breadcrumb-item active">
-            <strong>Roles</strong>
+            <strong>Sucursales</strong>
         </li>
     </ol>
 @endsection
 
 @section('contenido')
-<div class="row justify-content-start px-4">
-    <div>
-        <a class="mb-3" href={{ route('admin.roles.create') }}>
-            <button class="btn btn-success btn-sm" type="button">
-                <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar Rol
-            </button>
-        </a>
+    <div class="row justify-content-start px-4">
+        <div>
+            <a class="mb-3" href={{ route('admin.sucursales.create') }}>
+                <button class="btn btn-success btn-sm" type="button">
+                    <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar sucursal
+                </button>
+            </a>
+        </div>
     </div>
-</div>
 
-<div class="row widget-list">
-    <div class="widget-holder widget-full-height widget-flex col-lg-12">
-        <div class="widget-body">
-            <div class="table-responsive mt-3">
-                <table id="tb-roles" class="table table-padded  table-striped table-hover" style="border-collapse:separate !important">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Descripcion</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+    <div class="row widget-list">
+        <div class="widget-holder widget-full-height widget-flex col-lg-12">
+            <div class="widget-body">
+                <div class="table-responsive mt-3">
+                    <table id="tb-sucursales" class="table table-padded  table-striped table-hover" style="border-collapse:separate !important">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Dirección</th>
+                                <th>Municipio</th>
+                                <th>Estado</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-
 @endsection
 
 @section('scripts')
@@ -64,15 +67,14 @@
         });
 
         const dom = {
-            table: $('#tb-roles'),
+            table: $('#tb-sucursales'),
         };
 
         var dt = dom.table.DataTable({
             processing: true,
             serverSide: true,
-            // dom:'f<"table-filter-container">rtip',
             ajax: {
-                url: "{{ route('admin.roles.datatables') }}",
+                url: "{{ route('admin.sucursales.datatables') }}",
                 method:'POST',
                 data: function (d) {
                 }
@@ -84,8 +86,10 @@
                 title: 'Orden Compra'
             }],
             columns: [
-                { data: 'name', name: 'name',class: 'text-nowrap'},
-                { data: 'display_name', name: 'display_name', class: 'text-nowrap' },
+                { data: 'nombre', name: 'nombre',class: 'text-nowrap'},
+                { data: 'direccion', name: 'direccion', class: 'text-nowrap' },
+                { data: 'municipio', name: 'municipio', class: 'text-nowrap' },
+                { data: 'estado', name: 'estado', class: 'text-nowrap' },
                 { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
             ],
             language: {
@@ -143,32 +147,33 @@
                 confirmButtonText: "Borrar",
                 cancelButtonText: "Cancelar",
                 showLoaderOnConfirm: false,
-            }).then(async function(result) {
+            }).then(function(result) {
                 if (!result.value) {
                     return;
                 }
 
                 wait.modal('show');
 
-                try{
-                    const response = await $.ajax({
-                        url: event.target.href,
-                        type: 'DELETE',
-                        cache: false,
-                        data: {
-                            _token: $("meta[name='csrf-token']").attr("content"),
-                        },
-                    });
+                $.ajax({
+                    url: event.target.href,
+                    type: 'DELETE',
+                    cache: false,
+                    data: {
+                        _token: $("meta[name='csrf-token']").attr("content"),
+                    },
+                    success: function (response){
+                        setTimeout(function(){
+                            wait.modal('hide');
+                        },250);
 
-                    setTimeout(function(){
-                        wait.modal('hide');
-                    },250);
+                        toastr.success('Éxito', 'Se borró con éxito el registro');
 
-                    toastr.success('Éxito', 'Se borró con éxito el registro');
-                    dt.ajax.reload( null, false )
-                }catch(err){
-                    toastr.error('Error', 'Ocurrio un error inesperado');
-                }
+                        dt.ajax.reload( null, false )
+                    },
+                    fail:function(error){
+                        toastr.error('Error', 'Ocurrio un error inesperado');
+                    }
+                });
             })
         })
     })

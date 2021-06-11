@@ -16,6 +16,18 @@
 @endsection
 
 @section('contenido')
+    @empty(session('sucursal'))
+        <div class="element-wrapper">
+            <div class="element-box">
+                <h5 class="form-header">
+                    No tienes asignada una sucursal
+                </h5>
+                <div class="form-desc">
+                    Para poder continuar, solicita que te asignen una sucursal
+                </div>
+            </div>
+        </div>
+    @endempty
 @endsection
 
 @section('scripts')

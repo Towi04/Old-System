@@ -76,4 +76,9 @@ class User extends Authenticatable
 
         return $roles->pluck('display_name')->implode(',');
     }
+
+    public function sucursales()
+    {
+        return $this->belongsToMany(Sucursal::class, 'sucursales_usuarios', 'id_usuario', 'id_sucursal');
+    }
 }

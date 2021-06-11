@@ -4,14 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Sucursal;
 use Illuminate\Http\Request;
 use App\Notifications\DatosAcceso;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Admin\User\EditUserRequest;
 use App\Http\Requests\Admin\User\CreateUserRequest;
+use Symfony\Component\HttpFoundation\Response as HTTPMessages;
 
 class UsersController extends Controller
 {
@@ -22,6 +25,8 @@ class UsersController extends Controller
      */
     public function index()
     {
+        abort_unless(Auth::user()->can('gestionar_usuarios'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
+
         $users = User::with('roles')->get();
 
         return view('admin.users.index', compact('users'));
@@ -36,7 +41,15 @@ class UsersController extends Controller
     {
         $roles = Role::query()->get();
 
-        return view('admin.users.create', compact('roles'));
+        $sucursales = [];
+
+        if (Auth::user()->can('asignar_varias_sucursales')) {
+            $sucursales = Sucursal::query()->get();
+        }
+
+        $user = new User;
+
+        return view('admin.users.create', compact('user', 'roles', 'sucursales'));
     }
 
     /**
@@ -47,17 +60,31 @@ class UsersController extends Controller
     public function store(CreateUserRequest $request)
     {
         $user = new User();
-        $user->nombres = $request['nombres'];
-        $user->apellido_paterno = $request['apellido_paterno'];
-        $user->apellido_materno = $request['apellido_materno'];
-        $user->email = $request['email'];
-        $user->celular = $request['celular'];
-        $user->password = $request['password'];
-        $user->email_verified_at = date('Y-m-d');
+
+        $user->fill([
+            'nombres'           => $request['nombres'],
+            'apellido_paterno'  => $request['apellido_paterno'],
+            'apellido_materno'  => $request['apellido_materno'],
+            'email'             => $request['email'],
+            'celular'           => $request['celular'],
+            'password'          => $request['password'],
+            'email_verified_at' => date('Y-m-d')
+        ]);
+
         $user->save();
 
         if (isset($request->role)) {
             $user->assignRole($request['role']);
+        }
+
+        if(Auth::user()->can('asignar_varias_sucursales')){
+            if ($request->has('sucursales')) {
+                $user->sucursales()->sync($request->input('sucursales',[]));
+            }
+        }else{
+            // NOTE: AGREGAR SUCURSAL ACTUAL
+            $sucursal_actual = session('sucursal');
+            $user->sucursales()->sync([optional($sucursal_actual)->id]);
         }
 
         $file = $request->file('foto');
@@ -84,10 +111,10 @@ class UsersController extends Controller
         }
 
         if (isset($request->enviar_datos)) {
-            try{
+            try {
                 $user->notify(new DatosAcceso($user, $request->password));
-            }catch(\Throwable $th){
-                Log::error('No se pudo enviar datos de acceso.  Error: '.$th->getMessage());
+            } catch (\Throwable $th) {
+                Log::error('No se pudo enviar datos de acceso.  Error: ' . $th->getMessage());
             }
         }
 
@@ -120,9 +147,16 @@ class UsersController extends Controller
 
     public function edit(User $usuario)
     {
+        $sucursales = [];
+
+        if (Auth::user()->can('asignar_varias_sucursales')) {
+            $sucursales = Sucursal::query()->get();
+        }
+
         return view('admin.users.edit', [
-            'roles' => Role::query()->get(),
-            'user'  => $usuario->load(['roles']),
+            'roles'         => Role::query()->get(),
+            'user'          => $usuario->load(['roles']),
+            'sucursales'    => $sucursales
         ]);
     }
 
@@ -134,21 +168,40 @@ class UsersController extends Controller
      */
     public function update(User $usuario, EditUserRequest $request)
     {
-        $usuario->nombres = $request['nombres'];
-        $usuario->apellido_paterno = $request['apellido_paterno'];
-        $usuario->apellido_materno = $request['apellido_materno'];
-        $usuario->email = $request['email'];
-        $usuario->celular = $request['celular'];
-        $usuario->password = $request['password'];
+        $usuario->fill([
+            'nombres'           => $request['nombres'],
+            'apellido_paterno'  => $request['apellido_paterno'],
+            'apellido_materno'  => $request['apellido_materno'],
+            'email'             => $request['email'],
+            'celular'           => $request['celular'],
+            'password'          => $request['password']
+        ]);
+
         $usuario->save();
 
         $usuario->syncRoles($request->role);
 
+        if (Auth::user()->can('asignar_varias_sucursales')) {
+            if ($request->has('sucursales')) {
+                $usuario->sucursales()->sync($request->input('sucursales',[]));
+            }
+        }else{
+            $sucursal_actual = session('sucursal');
+            $usuario->sucursales()->sync([optional($sucursal_actual)->id]);
+        }
+
+        # SI ES EL USUARIO ACTUAL QUE ESTA ACTUALIZANDO SU PROPIA INFORMACION
+        if (Auth::user()->id == $usuario->id) {
+            $usuario_sucursales = $usuario->sucursales;
+            Session::put('sucursales',$usuario_sucursales);
+            Session::put('sucursal',$usuario_sucursales->first());
+        }
+
         if (isset($request->enviar_datos)) {
             try {
                 $usuario->notify(new DatosAcceso($usuario, $request->password));
-            } catch(\Throwable $th){
-                Log::error('No se pudo enviar datos de acceso.  Error: '.$th->getMessage());
+            } catch (\Throwable $th) {
+                Log::error('No se pudo enviar datos de acceso.  Error: ' . $th->getMessage());
             }
         }
 

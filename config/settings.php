@@ -39,6 +39,16 @@ return [
             'display_name'  => 'Gestión de permisos',
             'description'   => 'Permite la gestion de permisos'
         ],
+        [
+            'name'          => 'gestionar_sucursales',
+            'display_name'  => 'Gestión de sucursales',
+            'description'   => 'Permite la gestion de sucursales'
+        ],
+        [
+            'name'          => 'asignar_varias_sucursales',
+            'display_name'  => 'Asignar varias sucursales',
+            'description'   => 'Permite la asignacion de multiples sucursales'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)
@@ -65,4 +75,12 @@ return [
         ]
     ],
 
+    'sucursales' => [
+        [
+            'nombre'            => 'cncm',
+            'direccion'         => 'Andador Gongora 101 Zona Centro',
+            'municipio'         => 'Celaya',
+            'estado'            => 'Guanajuato',
+        ]
+    ],
 ];

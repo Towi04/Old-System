@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
@@ -41,5 +43,21 @@ class LoginController extends Controller
     public function showLoginForm()
     {
         return view('auth.template-'.config('settings.template').'.login');
+    }
+
+     /**
+     * The user has been authenticated.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  mixed  $user
+     * @return mixed
+     */
+    protected function authenticated(Request $request, $user)
+    {
+        $sucursales_usuario = $user->sucursales;
+
+        # NOTE: ASIGNO LAS SUCURSALES DEL USUARIO AUTENTICADO
+        Session::put('sucursales',$sucursales_usuario);
+        Session::put('sucursal',$sucursales_usuario->first());
     }
 }
