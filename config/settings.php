@@ -16,7 +16,7 @@ return [
         'soporte_email' => env('APP_SOPORTE_EMAIL', 'a.aranza@aranzaycervantes.mx'),
     ],
     'site' => [
-        'web'   => 'www.cncm.com.mx'
+        'web'   => 'www.cncm.edu.mx'
     ],
 
     /**
@@ -77,10 +77,29 @@ return [
 
     'sucursales' => [
         [
-            'nombre'            => 'cncm',
+            'nombre'            => 'Plantel Celaya',
             'direccion'         => 'Andador Gongora 101 Zona Centro',
             'municipio'         => 'Celaya',
             'estado'            => 'Guanajuato',
-        ]
+        ],
+        [
+            'nombre'            => 'Plantel Irapuato',
+            'direccion'         => 'Av. Guerrero #378, Col. Centro.',
+            'municipio'         => 'Irapuato',
+            'estado'            => 'Guanajuato',
+        ],
+        [
+            'nombre'            => 'Plantel Salamanca',
+            'direccion'         => 'Portal de los Bravo #121, Col. Centro.',
+            'municipio'         => 'Salamnca',
+            'estado'            => 'Guanajuato',
+        ],
+        [
+            'nombre'            => 'Plantel San Luis Potosí',
+            'direccion'         => 'Zaragoza #875, Col. Centro.',
+            'municipio'         => 'San Luis Potosí',
+            'estado'            => 'Guanajuato',
+        ],
+        
     ],
 ];

@@ -39,7 +39,7 @@
         SECUNDARIO: (Menus secundarios del logo)
             PRINCIPAL: #b7182e -> rgba(183,24,46,0.5)
             DARK: #800006
-            LIGHT: #f05357
+            LIGHT: #b7182E
             TEXT: #000000
     --}}
     <style type="text/css">
@@ -81,7 +81,7 @@
         }
 
         .breadcrumb-item.active {
-            color: #f05357 !important;
+            color: #b7182E !important;
         }
 
         .contact-box:hover{
@@ -112,24 +112,24 @@
         }
 
         .menu-w.sub-menu-style-over .sub-menu-w {
-            background: #f05357!important;
+            background: #b7182E!important;
         }
 
         .menu-w.sub-menu-style-over ul.main-menu > li.active {
-            border-right-color: #f05357!important;
-            border-bottom-color: #f05357!important;
+            border-right-color: #b7182E!important;
+            border-bottom-color: #b7182E!important;
         }
 
         .menu-w.sub-menu-style-over.sub-menu-color-bright ul.main-menu > li.active > a {
-            background-color: #f05357!important;
+            background-color: #b7182E!important;
         }
 
         .menu-w .logged-user-menu.color-style-bright {
-            background-color: #f05357!important;
+            background-color: #b7182E!important;
         }
 
         /* .menu-w.color-scheme-dark.color-style-bright ul.main-menu .icon-w {
-            color: #f05357!important;
+            color: #b7182E!important;
         } */
 
         @media(min-width:768px) {

@@ -29,8 +29,10 @@ class RolesController extends Controller
     {
         $sucursal = session('sucursal');
 
-        $query = Role::query()->select(['id', 'name', 'display_name'])
-            ->where('id_sucursal', optional($sucursal)->id);
+        // $query = Role::query()->select(['id', 'name', 'display_name'])
+        //     ->where('id_sucursal', optional($sucursal)->id);
+
+        $query = Role::query()->select(['id', 'name', 'display_name']);
 
         return DataTables::eloquent($query)
             ->addColumn('buttons', 'admin.roles.datatables._buttons')

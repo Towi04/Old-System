@@ -37,14 +37,14 @@
                     <img src="{{ asset('img/logo-negativo.png') }}">
                 </div>
             </div>
-            <div class="col-lg-6 login-left">
+            <div class="col-lg-6 login-left" style="background-color:#182948">
                 <div class="w-75">
-                    <h3 class="mb-4 text-center">¡Bienvenido!</h3>
+                    <h3 class="mb-4 text-center text-white">¡Bienvenido!</h3>
                     <form class="text-center" method="POST" action="{{ route('login') }}">
                         {{ csrf_field() }}
                         <div class="form-group {{ $errors->has('email') ? ' has-error' : '' }}">
                             <label class="text-muted" for="email">Correo Electrónico</label>
-                            <input type="email" class="form-control form-control-line" id="email"
+                            <input type="email" class="form-control form-control-line text-white" id="email"
                                 name="email" value="{{ old('email') }}" required autofocus>
                             @if ($errors->has('email'))
                                 <span class="help-block">
@@ -54,7 +54,7 @@
                         </div>
                         <div class="form-group">
                             <label class="text-muted" for="password">Contraseña</label>
-                            <input type="password" class="form-control form-control-line" id="password"
+                            <input type="password" class="form-control form-control-line text-white" id="password"
                                 name="password" required>
                             @if ($errors->has('password'))
                                 <span class="help-block">
@@ -70,7 +70,7 @@
                             @endif
                         </div>
                         <div class="form-group mr-b-20">
-                            <button class="btn btn-block btn-rounded btn-md btn-primary text-uppercase fw-600 ripple"
+                            <button class="btn btn-block btn-rounded btn-md btn-secondary text-uppercase fw-600 ripple"
                                 type="submit">Iniciar sesión</button>
                         </div>
                     </form>

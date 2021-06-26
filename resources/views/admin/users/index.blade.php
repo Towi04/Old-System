@@ -63,8 +63,10 @@
                             <strong> {{ $user->fullname }}</strong><br>
                             {{ $user->email }}
                         </div>
-                        <div class="activity-role" style="max-height: 50px; min-height: 50px; overflow-y:scroll">
-                            {{ $user->nameRoleUser }}
+                        <div class="activity-role" style="max-height: 100px; min-height: 50px; overflow-y:scroll">
+                            Roles: {{ $user->nameRoleUser }}<br>
+                        
+                            Sucursales: {{ $user->sucursalesUser }}
                         </div>
                         <strong class="activity-title">
                             <a href="{{ route('admin.usuarios.show', $user->id) }}" class="btn btn-primary btn-sm mb-1"

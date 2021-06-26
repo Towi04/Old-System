@@ -19,6 +19,7 @@ class PermissionController extends Controller
     public function index()
     {
         abort_unless(Auth::user()->can('gestionar_permisos'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
+        
 
         $roles = Role::get();
         $permisos = Permission::get();
