@@ -54,6 +54,15 @@
         </li>
     @endcanany
 
+    @can('listar_alumnos')
+    <li class="">
+        <a href="{{ route('alumnos.index') }}">
+            <div class="icon-w">
+            <div class="fa fa-users"></div>
+            </div>
+            <span>Alumnos</span></a>
+    </li>
+    @endcan
 
     <li class="sub-header d-none d-sm-none d-md-none d-lg-block d-xl-block">
         <span>Opciones</span>

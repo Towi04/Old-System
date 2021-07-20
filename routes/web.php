@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\SucursalesController;
+use App\Http\Controllers\AlumnosController;
 
 #NOTE: CONFIGURACION DE RUTAS
 Auth::routes(['register'=> false]);
@@ -64,4 +65,8 @@ Route::middleware(['auth','sucursal'])->group(function () {
         ]);
 
     });
+
+    # NOTE: RUTAS ALUMNOS
+    Route::post('alumnos/datatables', [ AlumnosController::class,'datatables'])->name('alumnos.datatables');
+    Route::resource('alumnos', AlumnosController::class);
 });

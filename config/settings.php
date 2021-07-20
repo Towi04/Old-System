@@ -49,6 +49,31 @@ return [
             'display_name'  => 'Asignar varias sucursales',
             'description'   => 'Permite la asignacion de multiples sucursales'
         ],
+        [
+            'name'          => 'listar_alumnos',
+            'display_name'  => 'Listar de alumnos',
+            'description'   => 'Permite mostrar la lista de alumnos'
+        ],
+        [
+            'name'          => 'crear_alumno',
+            'display_name'  => 'Crear alumno',
+            'description'   => 'Permite crear a un alumno'
+        ],
+        [
+            'name'          => 'consultar_alumno',
+            'display_name'  => 'Consultar Alumno',
+            'description'   => 'Permite consultar a un alumno'
+        ],
+        [
+            'name'          => 'editar_alumno',
+            'display_name'  => 'Editar alumno',
+            'description'   => 'Permite editar un alumno'
+        ],
+        [
+            'name'          => 'eliminar_alumno',
+            'display_name'  => 'Eliminar alumno',
+            'description'   => 'Permite eliminar un alumno'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)
@@ -100,6 +125,6 @@ return [
             'municipio'         => 'San Luis Potosí',
             'estado'            => 'Guanajuato',
         ],
-        
+
     ],
 ];
