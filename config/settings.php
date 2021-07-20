@@ -94,6 +94,31 @@ return [
             'display_name'  => 'Eliminar materia',
             'description'   => 'Permite eliminar una materia'
         ],
+        [
+            'name'          => 'listar_grupos',
+            'display_name'  => 'Listar Grupos',
+            'description'   => 'Permite mostrar la lista de grupos'
+        ],
+        [
+            'name'          => 'crear_grupo',
+            'display_name'  => 'Crear grupo',
+            'description'   => 'Permite crear a un grupo'
+        ],
+        [
+            'name'          => 'consultar_grupo',
+            'display_name'  => 'Consultar grupo',
+            'description'   => 'Permite consultar a un grupo'
+        ],
+        [
+            'name'          => 'editar_grupo',
+            'display_name'  => 'Editar grupo',
+            'description'   => 'Permite editar un grupo'
+        ],
+        [
+            'name'          => 'eliminar_grupo',
+            'display_name'  => 'Eliminar alumno',
+            'description'   => 'Permite eliminar un grupo'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

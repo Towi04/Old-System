@@ -14,6 +14,7 @@ class PermissionsTableSeeder extends Seeder
      */
     public function run()
     {
+         # > php artisan db:seed --class=PermissionsTableSeeder
         $permissions = config('settings.permissions');
 
         foreach ($permissions as $permission) {

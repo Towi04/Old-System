@@ -16,6 +16,8 @@ class PermissionRoleSeeder extends Seeder
      */
     public function run()
     {
+        # > php artisan db:seed --class=PermissionRoleSeeder
+
         # NOTE: NECESARIO PARA LIMPIAR LA CACHE DEL PAQUETE SPATIE
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 

@@ -58,7 +58,7 @@
     <li class="">
         <a href="{{ route('alumnos.index') }}">
             <div class="icon-w">
-            <div class="fa fa-users"></div>
+            <div class="fa fa-user"></div>
             </div>
             <span>Alumnos</span></a>
     </li>
@@ -71,6 +71,16 @@
                 <div class="fa fa-book"></div>
                 </div>
                 <span>Materias</span></a>
+        </li>
+    @endcan
+
+    @can('listar_grupos')
+        <li class="">
+            <a href="{{ route('grupos.index') }}">
+                <div class="icon-w">
+                <div class="fa fa-users"></div>
+                </div>
+                <span>Grupos</span></a>
         </li>
     @endcan
 
