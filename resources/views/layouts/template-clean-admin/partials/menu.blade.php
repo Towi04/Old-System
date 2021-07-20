@@ -64,6 +64,16 @@
     </li>
     @endcan
 
+    @can('listar_materias')
+        <li class="">
+            <a href="{{ route('materias.index') }}">
+                <div class="icon-w">
+                <div class="fa fa-book"></div>
+                </div>
+                <span>Materias</span></a>
+        </li>
+    @endcan
+
     <li class="sub-header d-none d-sm-none d-md-none d-lg-block d-xl-block">
         <span>Opciones</span>
     </li>

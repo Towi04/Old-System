@@ -74,6 +74,26 @@ return [
             'display_name'  => 'Eliminar alumno',
             'description'   => 'Permite eliminar un alumno'
         ],
+        [
+            'name'          => 'listar_materias',
+            'display_name'  => 'Listar Materias',
+            'description'   => 'Permite Mostrar las materias'
+        ],
+        [
+            'name'          => 'crear_materia',
+            'display_name'  => 'Crear Materia',
+            'description'   => 'Permite Crear una materia'
+        ],
+        [
+            'name'          => 'editar_materia',
+            'display_name'  => 'Editar Materia',
+            'description'   => 'Permite editar una materia'
+        ],
+        [
+            'name'          => 'eliminar_materia',
+            'display_name'  => 'Eliminar materia',
+            'description'   => 'Permite eliminar una materia'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

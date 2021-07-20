@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\SucursalesController;
 use App\Http\Controllers\AlumnosController;
+use App\Http\Controllers\MateriasController;
 
 #NOTE: CONFIGURACION DE RUTAS
 Auth::routes(['register'=> false]);
@@ -69,4 +70,8 @@ Route::middleware(['auth','sucursal'])->group(function () {
     # NOTE: RUTAS ALUMNOS
     Route::post('alumnos/datatables', [ AlumnosController::class,'datatables'])->name('alumnos.datatables');
     Route::resource('alumnos', AlumnosController::class);
+
+    # NOTE: RUTAS MATERIAS
+    Route::post('materias/datatables', [ MateriasController::class,'datatables'])->name('materias.datatables');
+    Route::resource('materias', MateriasController::class)->except('show');
 });
