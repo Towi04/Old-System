@@ -1,5 +1,5 @@
 <fieldset class="form-group">
-    <legend><span>Informacion de alumno</span></legend>
+    <legend><span>Informacion de la Materia</span></legend>
     <div class="row">
 
         <div class="col-md-6">
