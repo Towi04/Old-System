@@ -20,6 +20,16 @@
             </a>
         @endcan --}}
 
+        @can('asignar_materias')
+            <a  href="{{ route("grupos.asignar-materias",$id) }}"
+                class="btn btn-success btn-sm text-white fas fa-id-card"
+                data-toggle="tooltip"
+                data-placement="top"
+                data-action="show"
+                title="Asignar Materia">
+            </a>
+        @endcan
+
         @can('eliminar_grupo')
             <a class="btn btn-danger btn-sm text-white fas fa-trash"
                 href="{{ route('grupos.destroy',$id) }}"

@@ -74,9 +74,15 @@ Route::middleware(['auth','sucursal'])->group(function () {
 
     # NOTE: RUTAS MATERIAS
     Route::post('materias/datatables', [ MateriasController::class,'datatables'])->name('materias.datatables');
+    Route::post('materias/traer_materias_select2', [MateriasController::class, 'traer_materias_select2']) ->name('materias.traer_materias_select2');
     Route::resource('materias', MateriasController::class)->except('show');
 
     # NOTE: RUTAS GRUPOS
     Route::post('grupos/datatables', [ GruposController::class,'datatables'])->name('grupos.datatables');
+    Route::post('grupos/datatables_materias', [ GruposController::class,'datatables_materias'])->name('grupos.datatables_materias');
+    Route::post('grupos/actualizar-materias-xeditable', [ GruposController::class,'actualizar_materias_xeditable'])->name('grupos.actualizar_materias_xeditable');
+    Route::post('grupos/eliminar-materias', [ GruposController::class,'eliminar_materias'])->name('grupos.eliminar-materias');
+    Route::get('grupos/{grupo}/asignar-materias', [ GruposController::class,'asignar_materias'])->name('grupos.asignar-materias');
+    Route::post('grupos/{grupo}/guardar-materias', [ GruposController::class,'guardar_materias'])->name('grupos.guardar-materias');
     Route::resource('grupos', GruposController::class);
 });
