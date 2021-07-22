@@ -10,23 +10,31 @@
             </a>
         @endcan
 
-        {{-- @can('consultar_grupo')
-            <a  href="{{ route("grupo.show",$id) }}"
-                class="btn btn-success btn-sm text-white fas fa-id-card"
+        @can('consultar_grupo')
+            <a  href="{{ route("grupos.show",$id) }}"
+                class="btn btn-warning btn-sm text-white fas fa-id-card"
                 data-toggle="tooltip"
                 data-placement="top"
-                data-action="show"
-                title="Ver">
+                title="Panel">
             </a>
-        @endcan --}}
+        @endcan
 
         @can('asignar_materias')
             <a  href="{{ route("grupos.asignar-materias",$id) }}"
-                class="btn btn-success btn-sm text-white fas fa-id-card"
+                class="btn btn-success btn-sm text-white fas fa-book"
                 data-toggle="tooltip"
                 data-placement="top"
                 data-action="show"
                 title="Asignar Materia">
+            </a>
+        @endcan
+
+        @can('asignar_alumnos')
+            <a  href="{{ route("grupos.asignar-alumnos",$id) }}"
+                class="btn btn-info btn-sm text-white fas fa-users"
+                data-toggle="tooltip"
+                data-placement="top"
+                title="Asignar alumnos">
             </a>
         @endcan
 

@@ -113,6 +113,7 @@ class AlumnosController extends Controller
             'domicilio_fiscal'      => 'nullable',
 
             'observaciones'         => 'nullable',
+            'id_grupo'              => 'nullable',
         ];
 
         $request->request->add([
@@ -144,6 +145,10 @@ class AlumnosController extends Controller
 
             $alumno->foto = $nombre_foto;
             $alumno->save();
+        }
+
+        if($request->has('id_grupo')) {
+            $alumno->grupos()->attach($request->input('id_grupo'));
         }
 
         return redirect()->route('alumnos.index')->with([
@@ -275,5 +280,49 @@ class AlumnosController extends Controller
         return redirect()->route('alumnos.index')->with([
             'message' => 'El alumno fue eliminado con éxito'
         ]);
+    }
+
+    public function traer_alumnos_select2(Request $request)
+    {
+        $term  = $request->input('term');
+        $page = $request->input('page', 1);
+
+        $resultCount = 10;
+        $offset = ($page - 1) * $resultCount;
+
+        $results = Alumno::query()
+            ->where('nombres', 'like', "%{$term}%")
+            ->orWhere('apellido_paterno', 'like', "%{$term}%")
+            ->orWhere('apellido_materno', 'like', "%{$term}%")
+            ->when($request->input('id_sucursal'),function($q,$sucursal){
+                $q->where('id_sucursal',$sucursal);
+            })
+            ->orderBy('nombres', 'asc')
+            ->skip($offset)
+            ->take($resultCount)
+            ->get();
+
+        $count = Alumno::query()
+            ->where('nombres', 'like', "%{$term}%")
+            ->orWhere('apellido_paterno', 'like', "%{$term}%")
+            ->orWhere('apellido_materno', 'like', "%{$term}%")
+            ->when($request->input('id_sucursal'),function($q,$sucursal){
+                $q->where('id_sucursal',$sucursal);
+            })
+            ->count();
+
+        $endCount = $offset + $resultCount;
+        $morePages = $count > $endCount;
+
+        if ($request->ajax()) {
+            return response()->json([
+                'results'       => $results,
+                'pagination'    => [
+                    'more' => $morePages
+                ]
+            ]);
+        }
+
+        return redirect()->back();
     }
 }

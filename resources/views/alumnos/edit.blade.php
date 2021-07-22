@@ -41,9 +41,63 @@
 
 
 @section('scripts')
-    <script type="text/javascript">
-        $(document).ready(function() {
+<script src="{{ asset('template-clean-admin/bower_components/select2/dist/js/i18n/es.js') }}"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#id_grupo').select2({
+            language: "es",
+            placeholder:'Selecciona un grupo',
+            ajax: {
+                method: 'POST',
+                data:function (params) {
+                    const $checkbox = document.querySelector('input[type="checkbox"][data-especialidad]:checked');
 
+                    return {
+                        term: params.term,
+                        page: params.page || 1,
+                        _token: '{{ csrf_token() }}',
+                        id_sucursal: "{{ optional(session('sucursal'))->id }}",
+                        especialidad: $checkbox.value,
+                    }
+                },
+                url: '{{ route("grupos.traer_grupos_select2") }}',
+                dataType: 'json',
+                cache: false,
+                delay:250,
+                beforeSend:function(xhr,type){
+                    xhr.setRequestHeader('X-CSRF-Token',$('meta[name="csrf-token"]').attr('content'))
+                }
+            },
+            escapeMarkup: function (markup) { return markup; },
+            minimumInputLength: 3,
+            templateResult: function(option){
+                if (option.loading) {
+                    return option.text;
+                }
+
+                if(!option.especialidad || !option.horario || !option.dias){
+                    return option.text
+                }
+
+                return `${option.especialidad} | ${option.horario} | ${option.dias}`;
+            },
+            templateSelection:function(option){
+                if(!option.especialidad || !option.horario || !option.dias){
+                    return option.text
+                }
+
+                return `${option.especialidad} | ${option.horario} | ${option.dias}`;
+            }
         });
-    </script>
+    });
+
+
+    @if($alumno->especialidad)
+        @php
+            $grupo = $alumno->grupos->firstWhere('especialidad',$alumno->especialidad[0]);
+        @endphp
+        var newOption = new Option('{{ $grupo->especialidad }} | {{ $grupo->horario }} | {{ $grupo->especialidad }} ', '{{ $grupo->id }}', false, false);
+        $('#id_grupo').append(newOption).trigger('change');
+    @endif
+</script>
 @endsection

@@ -92,6 +92,18 @@ class Alumno extends Model
         return $this->belongsTo(User::class,'id_asesor_educativo','id')->withDefault();
     }
 
+    public function getFullnameAttribute()
+    {
+        return $this->nombres . ' ' . $this->apellido_paterno . ' ' . $this->apellido_materno;
+    }
+
+    public function grupos()
+    {
+        return $this->belongsToMany(Grupo::class, 'alumnos_grupos', 'id_alumno','id_grupo')
+            ->withPivot('id','id_grupo')->using(AlumnoGrupo::class);
+    }
+
+
     # NOTE: Form Model Accessors (Laravel Collective) https://laravelcollective.com/docs/5.4/html
 
     public function formFechaNacimientoAttribute($value)

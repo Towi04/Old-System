@@ -154,10 +154,17 @@
             </div>
         </div>
 
-        <div class="col-md-12" id="seccion_escuela_procedencia" style="{{ in_array(['PREPA ABIERTA','PREPA ESCOLARIZADA'], $alumno->especialidad ?? [])?'display: none':'' }}">
+        <div class="col-md-12" id="seccion_escuela_procedencia" style="{{ in_array(['PREPA ABIERTA','PREPA ESCOLARIZADA'], $alumno->especialidad ?? [])?'':'display: none' }}">
             <div class="form-group">
                 {!! Form::label('escuela_procedencia', 'Escuela de procedencia:*'); !!}
                 {!! Form::text('escuela_procedencia', null, ['class' => 'form-control', 'placeholder' => 'Escribe la escuela de procedencia','autocomplete' => 'off']); !!}
+            </div>
+        </div>
+
+        <div class="col-md-12" id="seccion_grupo" style="{{ empty($alumno->especialidad)?'display:none':'' }}" >
+            <div class="form-group">
+                {!! Form::label('id_grupo', 'Grupo'); !!}
+                {!! Form::select('id_grupo',[],null, ['class' => 'form-control','style' => 'width:100%',]) !!}
             </div>
         </div>
 
@@ -253,6 +260,7 @@
 
 </fieldset>
 
+
 <script type="text/javascript">
     window.addEventListener('DOMContentLoaded', (event) => {
         $('.dropify').dropify({
@@ -276,6 +284,7 @@
             $("#otro_grado_estudios").attr('required',isOtrosSelected)
         });
 
+
         $('input[type="checkbox"][data-especialidad]').on('change', function(e){
             switch (e.target.value) {
                 case 'OTROS':
@@ -295,6 +304,10 @@
                 break;
             }
 
+            const $checkbox = document.querySelector('input[type="checkbox"][data-especialidad]:checked');
+            const existeCkbMarcado = ($checkbox != undefined);
+            $('#seccion_grupo').toggle(existeCkbMarcado);
         });
     });
 </script>
+

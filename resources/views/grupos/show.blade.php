@@ -1,0 +1,263 @@
+@extends('layouts.template-'.config('settings.template').'.plantilla')
+
+@section('titulo')
+    Panel del grupo <small></small>
+@endsection
+
+@section('breadcrumb')
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{ url('/') }}">Inicio</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{{ route('grupos.index') }}">Grupos</a>
+        </li>
+        <li class="breadcrumb-item active">
+            <strong>Panel del grupo</strong>
+        </li>
+    </ol>
+@endsection
+
+@section('contenido')
+
+<div class="row p-2">
+    <div class="col-5 col-lg-5 col-sm-5 col-md-5 col-xs-12">
+        <div class="user-profile compact">
+            <div class="up-head-w"
+                style="background-image: linear-gradient( rgb(24,41,72,0.9), 70%, rgb(24,41,72,0.9));">
+
+                <div class="up-main-info " style="padding-bottom: 150px; padding-top:100px">
+                    <h2 class="up-header">
+                        Grupo
+                    </h2>
+                    <h6 class="up-sub-header">
+                        Folio: {{ $grupo->id }}
+                    </h6>
+                </div>
+                <svg class="decor" width="842px" height="219px" viewBox="0 0 842 219"
+                    preserveAspectRatio="xMaxYMax meet" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g transform="translate(-381.000000, -362.000000)" fill="#FFFFFF">
+                        <path class="decor-path"
+                            d="M1223,362 L1223,581 L381,581 C868.912802,575.666667 1149.57947,502.666667 1223,362 Z">
+                        </path>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="up-controls">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="value-pair">
+                        </div>
+                    </div>
+                    <div class="col-sm-6 text-right">
+                    </div>
+                </div>
+            </div>
+
+            <div class="up-contents">
+                <div class="m-b">
+                    <div class="row m-b">
+                        <div class="col-sm-12 b-b">
+                        </div>
+                    </div>
+                    <div class="">
+                        @can(['editar_grupo'])
+                            <a href="{{ route('grupos.edit', $grupo) }}"
+                                class="btn btn-info btn-sm btn-circle float-right text-white mb-2" data-toggle="tooltip"
+                                data-placement="left" title="Editar informacion">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                        @endcan
+
+                        <table class="table table-bordered">
+                            <tr>
+                                <td class="bg-primary text-white"><b>Especialidad</b></td>
+                                <td>
+                                    {{ $grupo->especialidad }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="bg-primary text-white"><b>Horario</b></td>
+                                <td>
+                                    {{ $grupo->horario }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="bg-primary text-white"><b>Dias</b></td>
+                                <td>
+                                    {{ $grupo->dias }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="bg-primary text-white"><b>Tipo de grupo</b></td>
+                                <td>
+                                    {{ ($grupo->infantil)?'Infantil':'Adulto' }}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-7 col-lg-7 col-sm-7 col-md-7 col-xs-12">
+        <div class="row">
+            <div class="col-sm-12 col-xxxl-9">
+              <div class="element-wrapper">
+                {{-- <h6 class="element-header">
+                  Informacion del grupo
+                </h6> --}}
+                <div class="element-box">
+                  <div class="os-tabs-w">
+                    <div class="os-tabs-controls">
+                      <ul class="nav nav-tabs smaller">
+                        <li class="nav-item">
+                          <a class="nav-link active" data-toggle="tab" href="#tab-materias">Materias</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link " data-toggle="tab" href="#tab-alumnos">Alumnos</a>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="tab-content">
+                      <div class="tab-pane active" id="tab-materias">
+                        <table class="table table-striped table-bordered table-hover" id="tb-materias" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Materia</th>
+                                    <th>Profesor</th>
+                                    <th>Horas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                      </div>
+                      <div class="tab-pane " id="tab-alumnos">
+                        <table class="table table-striped table-bordered table-hover" id="tb-alumnos" width="100%" >
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Alumno</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+@endsection
+
+
+@section('scripts')
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            const dom = {
+                tb_alumnos: $("#tb-alumnos"),
+                tb_materias: $("#tb-materias"),
+            }
+
+            var dt_alumnos = dom.tb_alumnos.DataTable({
+                dom: "<'row'<'col-6'f><'col-6'>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
+                processing: true,
+                serverSide: true,
+                responsive: true,
+                pageLength: 10,
+                ajax: {
+                    url: "{{ route('grupos.datatables_alumnos') }}",
+                    type: "POST",
+                    data: function (d) {
+                        d.id_grupo = "{{ $grupo->id }}";
+                    },
+                    beforeSend: function(xhr,type) {
+                    if (!type.crossDomain) {
+                            xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+                        }
+                    },
+                },
+                columns: [
+                    {data: 'id', name: 'id'},
+                    {data: 'nombre_alumno', name: 'nombre_alumno'},
+                ],
+                order: [[ 0, "desc" ]],
+                language: {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontro ningún registro",
+                    "info": "Mostrando del _START_ al _END_ de _TOTAL_ registros. (Página _PAGE_ de _PAGES_)",
+                    "infoEmpty": "No hay registros disponibles",
+                    "infoFiltered": "(Filtrado de un total de _MAX_ registros)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "first": "Primera",
+                        "last": "Última",
+                        "previous": '<i class="fas fa-chevron-left"></i>',
+                        "next": '<i class="fas fa-chevron-right"></i>'
+                    },
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                },
+
+                drawCallback: function (settings) {
+                    $("[data-toggle='tooltip']").tooltip();
+                },
+            });
+
+            var dt_materias = dom.tb_materias.DataTable({
+                dom: "<'row'<'col-6' f><'col-6'>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
+                processing: true,
+                serverSide: true,
+                responsive: true,
+                pageLength: 10,
+                ajax: {
+                    url: "{{ route('grupos.datatables_materias') }}",
+                    type: "POST",
+                    data: function (d) {
+                        d.id_grupo = "{{ $grupo->id }}";
+                    },
+                    beforeSend: function(xhr,type) {
+                    if (!type.crossDomain) {
+                            xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+                        }
+                    },
+                },
+                columns: [
+                    {data: 'nombre_materia', name: 'materia.nombre'},
+                    {data: 'nombre_profesor',name:'nombre_profesor'},
+                    {data: 'horas_semana',name:'horas_semana'},
+                ],
+                order: [[ 0, "desc" ]],
+                language: {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontro ningún registro",
+                    "info": "Mostrando del _START_ al _END_ de _TOTAL_ registros. (Página _PAGE_ de _PAGES_)",
+                    "infoEmpty": "No hay registros disponibles",
+                    "infoFiltered": "(Filtrado de un total de _MAX_ registros)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "first": "Primera",
+                        "last": "Última",
+                        "previous": '<i class="fas fa-chevron-left"></i>',
+                        "next": '<i class="fas fa-chevron-right"></i>'
+                    },
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                },
+
+                drawCallback: function (settings) {
+                    $("[data-toggle='tooltip']").tooltip();
+                },
+            });
+        });
+    </script>
+@endsection

@@ -59,6 +59,12 @@ class Grupo extends Model
             ->withPivot('id','id_profesor','horas_semana')->using(GrupoMateria::class);
     }
 
+    public function alumnos()
+    {
+        return $this->belongsToMany(Alumno::class, 'alumnos_grupos', 'id_grupo', 'id_alumno')
+            ->withPivot('id','id_alumno')->using(AlumnoGrupo::class);
+    }
+
      # NOTE: Form Model Accessors (Laravel Collective) https://laravelcollective.com/docs/5.4/html
 
      public function formFechaInicioAttribute($value)

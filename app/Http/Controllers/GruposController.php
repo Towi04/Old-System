@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AlumnoGrupo;
 use App\Models\Grupo;
 use App\Models\GrupoMateria;
 use Illuminate\Http\Request;
@@ -166,6 +167,59 @@ class GruposController extends Controller
         ]);
     }
 
+    public function traer_grupos_select2(Request $request)
+    {
+        $term  = $request->input('term');
+        $page = $request->input('page', 1);
+
+        $resultCount = 10;
+        $offset = ($page - 1) * $resultCount;
+
+        $results = Grupo::query()
+            ->when($request->input('id_sucursal'),function($q,$sucursal){
+                $q->where('id_sucursal',$sucursal);
+            })
+            ->when($request->input('especialidad'),function($q,$especialidad){
+                $q->where('especialidad',$especialidad);
+            })
+            ->where(function($q)use($term){
+                $q->orWhere('horario', 'like', "%{$term}%");
+                $q->orWhere('dias', 'like', "%{$term}%");
+            })
+
+            ->orderBy('fecha_inicio', 'asc')
+            ->skip($offset)
+            ->take($resultCount)
+            ->get();
+
+        $count = Grupo::query()
+            ->when($request->input('id_sucursal'),function($q,$sucursal){
+                $q->where('id_sucursal',$sucursal);
+            })
+            ->when($request->input('especialidad'),function($q,$especialidad){
+                $q->where('especialidad',$especialidad);
+            })
+            ->where(function($q)use($term){
+                $q->orWhere('horario', 'like', "%{$term}%");
+                $q->orWhere('dias', 'like', "%{$term}%");
+            })
+            ->count();
+
+        $endCount = $offset + $resultCount;
+        $morePages = $count > $endCount;
+
+        if ($request->ajax()) {
+            return response()->json([
+                'results'       => $results,
+                'pagination'    => [
+                    'more' => $morePages
+                ]
+            ]);
+        }
+
+        return redirect()->back();
+    }
+
     # NOTE: ASIGNACION DE MATERIAS
 
     public function asignar_materias(Grupo $grupo)
@@ -272,6 +326,87 @@ class GruposController extends Controller
             })
             ->addColumn('buttons', 'grupos.datatables._buttons_materias')
             ->rawColumns(['nombre_materia','nombre_profesor','horas_semana','buttons'])
+            ->make(true);
+    }
+
+    # NOTE: ASIGNACION DE ALUMNOS
+
+    public function asignar_alumnos(Grupo $grupo)
+    {
+        abort_unless(Auth::user()->can('asignar_alumnos'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
+
+        return view('grupos.asignar_alumnos',compact('grupo'));
+    }
+
+    public function guardar_alumnos(Grupo $grupo, Request $request)
+    {
+        $rules = [
+            'id_alumno'            => 'required',
+        ];
+
+        $this->validate($request, $rules);
+
+        $grupo->alumnos()->attach($request->input('id_alumno'));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Alumno asociado correctamente',
+        ]);
+    }
+
+    public function actualizar_alumnos_xeditable(Request $request)
+    {
+        $alumno_grupo = AlumnoGrupo::find($request->pk);
+        $alumno_grupo[$request->name] = $request->value;
+        $alumno_grupo->save();
+
+        $alumno_grupo->load(['alumno']);
+
+        return response()->json([
+            'alumno_grupo' => $alumno_grupo
+        ]);
+    }
+
+    public function eliminar_alumnos(Request $request)
+    {
+        $rules = [
+            'id_alumno_grupo'            => 'required',
+        ];
+
+        $this->validate($request, $rules);
+
+        $alumno_grupo = AlumnoGrupo::findOrFail($request->input('id_alumno_grupo'));
+        $alumno_grupo->delete();
+
+        return response()->json([
+            'message' => 'Alumno removido correctamente'
+        ]);
+    }
+
+    public function datatables_alumnos(Request $request)
+    {
+        $query = AlumnoGrupo::query()
+            ->when($request->input('id_grupo'),function($q,$grupo){
+                $q->where('id_grupo',$grupo);
+            })->with(['alumno']);
+
+        return DataTables::eloquent($query)
+            ->addColumn('nombre_alumno',function($model){
+                $route = route('grupos.actualizar_alumnos_xeditable');
+
+                return "
+                <a  class='editable_id_alumno editable'
+                    data-type='select2'
+                    data-name='id_alumno'
+                    data-pk='{$model->id}'
+                    data-url='{$route}'
+                    data-value='{$model->id_alumno}'
+                    data-title='Selecciona un alumno'>
+                    {$model->alumno->full_name }
+                </a>";
+            })
+            ->addColumn('buttons', 'grupos.datatables._buttons_alumnos')
+            ->rawColumns(['nombre_alumno','buttons'])
             ->make(true);
     }
 }

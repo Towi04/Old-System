@@ -124,6 +124,11 @@ return [
             'display_name'  => 'Asignar Materias',
             'description'   => 'Permite asignar una materia',
         ],
+        [
+            'name'          => 'asignar_alumnos',
+            'display_name'  => 'Asignar alumnos',
+            'description'   => 'Permite asignar alumnos a un grupo',
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)
