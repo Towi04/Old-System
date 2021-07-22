@@ -70,6 +70,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
 
     # NOTE: RUTAS ALUMNOS
     Route::post('alumnos/datatables', [ AlumnosController::class,'datatables'])->name('alumnos.datatables');
+    Route::post('alumnos/datatables_pagos', [ AlumnosController::class,'datatables_pagos'])->name('alumnos.datatables_pagos');
     Route::post('alumnos/traer_alumnos_select2', [AlumnosController::class, 'traer_alumnos_select2']) ->name('alumnos.traer_alumnos_select2');
     Route::resource('alumnos', AlumnosController::class);
 

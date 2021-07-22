@@ -27,6 +27,19 @@
             </div>
         </div>
 
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('inscripcion', 'Inscripcion:*'); !!}
+                {!! Form::number('inscripcion', null, ['class' => 'form-control','required' => true]) !!}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('colegiatura', 'Colegiatura:*'); !!}
+                {!! Form::number('colegiatura', null, ['class' => 'form-control','required' => true]) !!}
+            </div>
+        </div>
+
         <div class="col-md-12">
             <br>
             {!! Form::label('infantil', '¿Grupo Infantil?*'); !!} &nbsp;

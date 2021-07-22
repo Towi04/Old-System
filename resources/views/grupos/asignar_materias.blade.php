@@ -121,6 +121,9 @@
                             <th>#</th>
                             <th>Materia</th>
                             <th>Profesor</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
                             <th>Horas</th>
                             <th>Acciones</th>
                         </tr>
@@ -174,6 +177,9 @@
                     {data: 'id', name: 'id'},
                     {data: 'nombre_materia', name: 'materia.nombre'},
                     {data: 'nombre_profesor',name:'nombre_profesor'},
+                    {data: 'profesor.nombres', name: 'profesor.nombres',visible:false},
+                    {data: 'profesor.apellido_paterno', name: 'profesor.apellido_paterno',visible:false},
+                    {data: 'profesor.apellido_materno', name: 'profesor.apellido_materno',visible:false},
                     {data: 'horas_semana',name:'horas_semana'},
                     {data: 'buttons', name: 'buttons', orderable: false, searchable: false}
                 ],
@@ -443,8 +449,8 @@
 
             dom.btn_asignar_materia.click(function(e){
                 dom.form_guardar_materia.trigger('reset');
-                dom.select_materia.trigger('change')
-                dom.select_profesor.trigger('change');
+                dom.select_materia.val(null).trigger('change')
+                dom.select_profesor.val(null).trigger('change');
                 dom.modal_asignar_materia.find('#modal-error').html(null);
 
                 dom.modal_asignar_materia.modal('show');

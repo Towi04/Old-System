@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Alumno;
 use App\Models\User;
-use App\Services\FacturacionService;
+use App\Models\Grupo;
+use App\Models\Alumno;
+use App\Models\AlumnoPago;
 use Illuminate\Http\Request;
+use App\Services\FacturacionService;
+use App\Services\PagosAlumnosService;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
@@ -74,7 +77,7 @@ class AlumnosController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request,PagosAlumnosService $pagosAlumnosService)
     {
         $rules = [
             'id_sucursal'           => 'required',
@@ -114,6 +117,7 @@ class AlumnosController extends Controller
 
             'observaciones'         => 'nullable',
             'id_grupo'              => 'nullable',
+            'forma_pago'            => 'required',
         ];
 
         $request->request->add([
@@ -149,6 +153,23 @@ class AlumnosController extends Controller
 
         if($request->has('id_grupo')) {
             $alumno->grupos()->attach($request->input('id_grupo'));
+        }
+
+        $grupo = Grupo::findOrFail($request->input('id_grupo'));
+
+        switch ($request->input('forma_pago')) {
+            case config('alumnos.forma_pago.mensual','mensual'):
+                $pagosAlumnosService
+                    ->setAlumno($alumno)
+                    ->mensual($grupo);
+            break;
+
+            case config('alumnos.forma_pago.semanal','semanal'):
+
+                $pagosAlumnosService
+                    ->setAlumno($alumno)
+                    ->semanal($grupo);
+            break;
         }
 
         return redirect()->route('alumnos.index')->with([
@@ -219,6 +240,7 @@ class AlumnosController extends Controller
             'domicilio_fiscal'      => 'nullable',
 
             'observaciones'         => 'nullable',
+            'forma_pago'            => 'required',
         ];
 
         $request->request->add([
@@ -324,5 +346,20 @@ class AlumnosController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    public function datatables_pagos(Request $request)
+    {
+        $query = AlumnoPago::query()
+            ->when($request->input('id_alumno'),function($q,$id_alumno){
+                $q->where('id_alumno',$id_alumno);
+            });
+
+        return DataTables::eloquent($query)
+            ->editColumn('fecha_limite',function($model){
+                return optional($model->fecha_limite)->format('d/m/Y');
+            })
+            ->rawColumns([])
+            ->make(true);
     }
 }

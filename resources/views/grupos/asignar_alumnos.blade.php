@@ -316,7 +316,7 @@
 
             dom.btn_asignar_alumno.click(function(e){
                 dom.form_asignar_alumno.trigger('reset');
-                dom.select_alumno.trigger('change');
+                dom.select_alumno.val(null).trigger('change');
 
                 dom.modal_asignar_alumno.find('#modal-error').html(null);
                 dom.modal_asignar_alumno.modal('show');

@@ -73,6 +73,12 @@
 
                         <table class="table table-bordered">
                             <tr>
+                                <td class="bg-primary text-white"><b>Fecha Inicio</b></td>
+                                <td>
+                                    {{ $grupo->fecha_inicio->format('d/m/Y') }}
+                                </td>
+                            </tr>
+                            <tr>
                                 <td class="bg-primary text-white"><b>Especialidad</b></td>
                                 <td>
                                     {{ $grupo->especialidad }}
@@ -94,6 +100,18 @@
                                 <td class="bg-primary text-white"><b>Tipo de grupo</b></td>
                                 <td>
                                     {{ ($grupo->infantil)?'Infantil':'Adulto' }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="bg-primary text-white"><b>Inscripcion</b></td>
+                                <td>
+                                    $ {{ number_format($grupo->inscripcion,2,'.',',') }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="bg-primary text-white"><b>Colegiatura</b></td>
+                                <td>
+                                    $ {{ number_format($grupo->colegiatura,2,'.',',') }}
                                 </td>
                             </tr>
                         </table>
@@ -128,6 +146,9 @@
                                 <tr>
                                     <th>Materia</th>
                                     <th>Profesor</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
                                     <th>Horas</th>
                                 </tr>
                             </thead>
@@ -141,6 +162,9 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Alumno</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -189,6 +213,9 @@
                 columns: [
                     {data: 'id', name: 'id'},
                     {data: 'nombre_alumno', name: 'nombre_alumno'},
+                    {data: 'alumno.nombres', name: 'alumno.nombres',visible:false},
+                    {data: 'alumno.apellido_paterno', name: 'alumno.apellido_paterno',visible:false},
+                    {data: 'alumno.apellido_materno', name: 'alumno.apellido_materno',visible:false},
                 ],
                 order: [[ 0, "desc" ]],
                 language: {
@@ -234,6 +261,9 @@
                 columns: [
                     {data: 'nombre_materia', name: 'materia.nombre'},
                     {data: 'nombre_profesor',name:'nombre_profesor'},
+                    {data: 'profesor.nombres', name: 'profesor.nombres',visible:false},
+                    {data: 'profesor.apellido_paterno', name: 'profesor.apellido_paterno',visible:false},
+                    {data: 'profesor.apellido_materno', name: 'profesor.apellido_materno',visible:false},
                     {data: 'horas_semana',name:'horas_semana'},
                 ],
                 order: [[ 0, "desc" ]],

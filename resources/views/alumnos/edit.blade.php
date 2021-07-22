@@ -96,8 +96,10 @@
         @php
             $grupo = $alumno->grupos->firstWhere('especialidad',$alumno->especialidad[0]);
         @endphp
-        var newOption = new Option('{{ $grupo->especialidad }} | {{ $grupo->horario }} | {{ $grupo->especialidad }} ', '{{ $grupo->id }}', false, false);
-        $('#id_grupo').append(newOption).trigger('change');
+        @if(!empty($grupo))
+            var newOption = new Option('{{ $grupo->especialidad }} | {{ $grupo->horario }} | {{ $grupo->especialidad }} ', '{{ $grupo->id }}', false, false);
+            $('#id_grupo').append(newOption).trigger('change');
+        @endif
     @endif
 </script>
 @endsection

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Alumno;
 use App\Models\AlumnoGrupo;
 use App\Models\Grupo;
 use App\Models\GrupoMateria;
+use App\Services\PagosAlumnosService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response as HTTPMessages;
@@ -81,6 +83,8 @@ class GruposController extends Controller
             'dias'          => 'required',
             'infantil'      => 'required',
             'fecha_inicio'  => 'required',
+            'colegiatura'   => 'required',
+            'inscripcion'   => 'required'
         ];
 
         $request->request->add([
@@ -128,6 +132,8 @@ class GruposController extends Controller
             'dias'                  => 'required',
             'infantil'              => 'required',
             'fecha_inicio'          => 'required',
+            'colegiatura'           => 'required',
+            'inscripcion'           => 'required'
         ];
 
         $request->request->add([
@@ -338,7 +344,7 @@ class GruposController extends Controller
         return view('grupos.asignar_alumnos',compact('grupo'));
     }
 
-    public function guardar_alumnos(Grupo $grupo, Request $request)
+    public function guardar_alumnos(Grupo $grupo, Request $request,PagosAlumnosService $pagosAlumnosService)
     {
         $rules = [
             'id_alumno'            => 'required',
@@ -347,6 +353,22 @@ class GruposController extends Controller
         $this->validate($request, $rules);
 
         $grupo->alumnos()->attach($request->input('id_alumno'));
+
+        $alumno = Alumno::findOrFail($request->input('id_alumno'));
+
+        switch ($alumno->forma_pago) {
+            case config('alumnos.forma_pago.mensual','mensual'):
+                $pagosAlumnosService
+                    ->setAlumno($alumno)
+                    ->mensual($grupo);
+            break;
+
+            case config('alumnos.forma_pago.semanal','semanal'):
+                $pagosAlumnosService
+                    ->setAlumno($alumno)
+                    ->semanal($grupo);
+            break;
+        }
 
         return response()->json([
             'success' => true,
@@ -376,6 +398,13 @@ class GruposController extends Controller
         $this->validate($request, $rules);
 
         $alumno_grupo = AlumnoGrupo::findOrFail($request->input('id_alumno_grupo'));
+        $alumno = $alumno_grupo->alumno;
+
+        $alumno->pagos()
+            ->where('id_grupo',$alumno_grupo->id_grupo)
+            ->where('status',config('pagos.status.pendiente'))
+            ->delete();
+
         $alumno_grupo->delete();
 
         return response()->json([

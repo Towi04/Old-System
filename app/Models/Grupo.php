@@ -46,6 +46,8 @@ class Grupo extends Model
         'dias',
         'infantil',
         'fecha_inicio',
+        'inscripcion',
+        'colegiatura',
     ];
 
     public function sucursal()
