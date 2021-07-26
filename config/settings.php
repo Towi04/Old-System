@@ -119,6 +119,16 @@ return [
             'display_name'  => 'Eliminar alumno',
             'description'   => 'Permite eliminar un grupo'
         ],
+        [
+            'name'          => 'asignar_materias',
+            'display_name'  => 'Asignar Materias',
+            'description'   => 'Permite asignar una materia',
+        ],
+        [
+            'name'          => 'asignar_alumnos',
+            'display_name'  => 'Asignar alumnos',
+            'description'   => 'Permite asignar alumnos a un grupo',
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

@@ -9,5 +9,8 @@ return [
         'Entre Semana' => 'Entre Semana',
         'Sabados'       => 'Sabados',
         'Domingos'      => 'Domingos',
+    ],
+    'duracion' => [
+        'cuatrimestre' => 4
     ]
 ];

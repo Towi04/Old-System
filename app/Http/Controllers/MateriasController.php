@@ -146,4 +146,50 @@ class MateriasController extends Controller
             'message' => 'La materia fue eliminada con éxito'
         ]);
     }
+
+    public function traer_materias_select2(Request $request)
+    {
+        $term  = $request->input('term');
+        $page = $request->input('page', 1);
+
+        $resultCount = 10;
+        $offset = ($page - 1) * $resultCount;
+
+        $results = Materia::query()
+            ->where('nombre', 'like', "%{$term}%")
+            ->when($request->input('especialidad'),function($q,$especialidad){
+                $q->where('especialidad',$especialidad);
+            })
+            ->when($request->input('id_sucursal'),function($q,$sucursal){
+                $q->where('id_sucursal',$sucursal);
+            })
+            ->orderBy('nombre', 'asc')
+            ->skip($offset)
+            ->take($resultCount)
+            ->get();
+
+        $count = Materia::query()
+            ->where('nombre', 'like', "%{$term}%")
+            ->when($request->input('especialidad'),function($q,$especialidad){
+                $q->where('especialidad',$especialidad);
+            })
+            ->when($request->input('id_sucursal'),function($q,$sucursal){
+                $q->where('id_sucursal',$sucursal);
+            })
+            ->count();
+
+        $endCount = $offset + $resultCount;
+        $morePages = $count > $endCount;
+
+        if ($request->ajax()) {
+            return response()->json([
+                'results'       => $results,
+                'pagination'    => [
+                    'more' => $morePages
+                ]
+            ]);
+        }
+
+        return redirect()->back();
+    }
 }

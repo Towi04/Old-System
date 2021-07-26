@@ -70,13 +70,31 @@ Route::middleware(['auth','sucursal'])->group(function () {
 
     # NOTE: RUTAS ALUMNOS
     Route::post('alumnos/datatables', [ AlumnosController::class,'datatables'])->name('alumnos.datatables');
+    Route::post('alumnos/datatables_pagos', [ AlumnosController::class,'datatables_pagos'])->name('alumnos.datatables_pagos');
+    Route::post('alumnos/traer_alumnos_select2', [AlumnosController::class, 'traer_alumnos_select2']) ->name('alumnos.traer_alumnos_select2');
     Route::resource('alumnos', AlumnosController::class);
 
     # NOTE: RUTAS MATERIAS
     Route::post('materias/datatables', [ MateriasController::class,'datatables'])->name('materias.datatables');
+    Route::post('materias/traer_materias_select2', [MateriasController::class, 'traer_materias_select2']) ->name('materias.traer_materias_select2');
     Route::resource('materias', MateriasController::class)->except('show');
 
-    # NOTE: RUTAS GRUPOS
+    # NOTE: RUTAS GRUPOS (RESPETAR EL ORDEN DE LAS RUTAS)
     Route::post('grupos/datatables', [ GruposController::class,'datatables'])->name('grupos.datatables');
+    Route::post('grupos/traer_grupos_select2', [ GruposController::class,'traer_grupos_select2'])->name('grupos.traer_grupos_select2');
+
+    Route::post('grupos/datatables_materias', [ GruposController::class,'datatables_materias'])->name('grupos.datatables_materias');
+    Route::post('grupos/actualizar-materias-xeditable', [ GruposController::class,'actualizar_materias_xeditable'])->name('grupos.actualizar_materias_xeditable');
+    Route::post('grupos/eliminar-materias', [ GruposController::class,'eliminar_materias'])->name('grupos.eliminar-materias');
+
+    Route::post('grupos/datatables_alumnos', [ GruposController::class,'datatables_alumnos'])->name('grupos.datatables_alumnos');
+    Route::post('grupos/actualizar-alumnos-xeditable', [ GruposController::class,'actualizar_alumnos_xeditable'])->name('grupos.actualizar_alumnos_xeditable');
+    Route::post('grupos/eliminar-alumnos', [ GruposController::class,'eliminar_alumnos'])->name('grupos.eliminar-alumnos');
+
+    Route::get('grupos/{grupo}/asignar-materias', [ GruposController::class,'asignar_materias'])->name('grupos.asignar-materias');
+    Route::post('grupos/{grupo}/guardar-materias', [ GruposController::class,'guardar_materias'])->name('grupos.guardar-materias');
+    Route::get('grupos/{grupo}/asignar-alumnos', [ GruposController::class,'asignar_alumnos'])->name('grupos.asignar-alumnos');
+    Route::post('grupos/{grupo}/guardar-alumnos', [ GruposController::class,'guardar_alumnos'])->name('grupos.guardar-alumnos');
+
     Route::resource('grupos', GruposController::class);
 });

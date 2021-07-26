@@ -14,5 +14,13 @@ return [
         'PREPA ABIERTA'         => 'PREPA ABIERTA',
         'PREPA ESCOLARIZADA'    => 'PREPA ESCOLARIZADA',
         'OTROS'                 => 'OTROS',
-    ]
+    ],
+    'forma_pago' => [
+        'mensual'   => 'mensual',
+        'semanal'   => 'semanal',
+    ],
+    'concepto' => [
+        'inscripcion' => 'inscripcion',
+        'colegiatura' => 'colegiatura',
+    ],
 ];

@@ -80,6 +80,7 @@ class Alumno extends Model
         'domicilio_fiscal',
 
         'observaciones',
+        'forma_pago',
     ];
 
     public function sucursal()
@@ -90,6 +91,22 @@ class Alumno extends Model
     public function asesor_educativo()
     {
         return $this->belongsTo(User::class,'id_asesor_educativo','id')->withDefault();
+    }
+
+    public function grupos()
+    {
+        return $this->belongsToMany(Grupo::class, 'alumnos_grupos', 'id_alumno','id_grupo')
+            ->withPivot('id','id_grupo')->using(AlumnoGrupo::class);
+    }
+
+    public function pagos()
+    {
+        return $this->hasMany(AlumnoPago::class,'id_alumno','id');
+    }
+
+    public function getFullnameAttribute()
+    {
+        return $this->nombres . ' ' . $this->apellido_paterno . ' ' . $this->apellido_materno;
     }
 
     # NOTE: Form Model Accessors (Laravel Collective) https://laravelcollective.com/docs/5.4/html
