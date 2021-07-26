@@ -16,8 +16,8 @@
         </div>
         <div class="col-md-4">
             <div class="form-group">
-                {!! Form::label('apellido_paterno', 'Apellido Paterno'); !!}
-                {!! Form::text('apellido_paterno', null, ['class' => 'form-control', 'placeholder' => 'Escribe aqui el apellido paterno','autocomplete' => 'off']); !!}
+                {!! Form::label('apellido_paterno', 'Apellido Paterno*'); !!}
+                {!! Form::text('apellido_paterno', null, ['class' => 'form-control', 'placeholder' => 'Escribe aqui el apellido paterno','autocomplete' => 'off','required'=> true]); !!}
             </div>
         </div>
         <div class="col-md-4">
@@ -139,7 +139,7 @@
                 <br>
                 @foreach (config('alumnos.especialidad') as $key => $value)
                     <label>
-                        {!! Form::checkbox('especialidad[]', $key,  in_array($key, $alumno->especialidad ?? []) , ['class' => 'i-checks','data-especialidad']) !!}
+                        {!! Form::radio('especialidad[]', $key,  in_array($key, $alumno->especialidad ?? []) , ['class' => 'i-checks','data-especialidad']) !!}
                         {{ $value }}
                     </label>
                     &nbsp;
@@ -248,7 +248,7 @@
 
     <div class="form-group">
         {!! Form::label('id_asesor_educativo', 'Asesor educativo:*'); !!}
-        {!! Form::select('id_asesor_educativo',$asesores, null, ['class' => 'form-control','autocomplete' => 'off']) !!}
+        {!! Form::select('id_asesor_educativo',$asesores, null, ['class' => 'form-control','autocomplete' => 'off','required'=>true]) !!}
     </div>
 
 </fieldset>
