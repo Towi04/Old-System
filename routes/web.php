@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\SucursalesController;
 use App\Http\Controllers\AlumnosController;
 use App\Http\Controllers\GruposController;
 use App\Http\Controllers\MateriasController;
+use App\Http\Controllers\PreRegistrosController;
 
 #NOTE: CONFIGURACION DE RUTAS
 Auth::routes(['register'=> false]);
@@ -46,14 +47,15 @@ Route::middleware(['auth','sucursal'])->group(function () {
 
         #NOTE: ROLES
         Route::post('roles/datatables', [ RolesController::class,'datatables'])->name('roles.datatables');
-        Route::resource('roles', RolesController::class)->except(['show']);
+        Route::resource('roles', RolesController::class)->except(['show'])->parameters([
+            'roles' => 'role'
+        ]);
 
 
         # NOTE: PERMISOS
         Route::resource('permisos', PermissionController::class)->parameters([
             'permisos' => 'permiso'
         ])->only('index');
-
         Route::post('permisos/guardar_permiso',[PermissionController::class,'guardar_permiso'] )->name('permisos.guardar-permiso');
         Route::post('permisos/traer_permisos',[PermissionController::class,'traer_permisos'] )->name('permisos.traer-permisos');
 
@@ -68,16 +70,26 @@ Route::middleware(['auth','sucursal'])->group(function () {
 
     });
 
+    #RUTAS PRE-REGISTRO ALUMNOS
+    Route::post('pre-registro-alumnos/datatables', [ PreRegistrosController::class,'datatables'])->name('pre-registro-alumnos.datatables');
+    Route::resource('pre-registro-alumnos', PreRegistrosController::class)->parameters([
+        'pre-registro-alumnos' => 'alumno'
+    ]);
+
     # NOTE: RUTAS ALUMNOS
     Route::post('alumnos/datatables', [ AlumnosController::class,'datatables'])->name('alumnos.datatables');
     Route::post('alumnos/datatables_pagos', [ AlumnosController::class,'datatables_pagos'])->name('alumnos.datatables_pagos');
     Route::post('alumnos/traer_alumnos_select2', [AlumnosController::class, 'traer_alumnos_select2']) ->name('alumnos.traer_alumnos_select2');
-    Route::resource('alumnos', AlumnosController::class);
+    Route::resource('alumnos', AlumnosController::class)->parameters([
+        'alumnos' => 'alumno'
+    ]);
 
     # NOTE: RUTAS MATERIAS
     Route::post('materias/datatables', [ MateriasController::class,'datatables'])->name('materias.datatables');
     Route::post('materias/traer_materias_select2', [MateriasController::class, 'traer_materias_select2']) ->name('materias.traer_materias_select2');
-    Route::resource('materias', MateriasController::class)->except('show');
+    Route::resource('materias', MateriasController::class)->except('show')->parameters([
+        'materias' => 'materia'
+    ]);
 
     # NOTE: RUTAS GRUPOS (RESPETAR EL ORDEN DE LAS RUTAS)
     Route::post('grupos/datatables', [ GruposController::class,'datatables'])->name('grupos.datatables');
@@ -96,5 +108,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::get('grupos/{grupo}/asignar-alumnos', [ GruposController::class,'asignar_alumnos'])->name('grupos.asignar-alumnos');
     Route::post('grupos/{grupo}/guardar-alumnos', [ GruposController::class,'guardar_alumnos'])->name('grupos.guardar-alumnos');
 
-    Route::resource('grupos', GruposController::class);
+    Route::resource('grupos', GruposController::class)->parameters([
+        'grupos' => 'grupo'
+    ]);
 });

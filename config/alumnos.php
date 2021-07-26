@@ -23,4 +23,8 @@ return [
         'inscripcion' => 'inscripcion',
         'colegiatura' => 'colegiatura',
     ],
+    'status' => [
+        'Pre-Registro'  => 'Pre-Registro',
+        'Alumno'        => 'Alumno'
+    ]
 ];

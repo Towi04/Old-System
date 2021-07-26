@@ -1,7 +1,7 @@
 @extends('layouts.template-'.config('settings.template').'.plantilla')
 
 @section('titulo')
-    Alumnos
+    Pre-Registro Alumnos
 @endsection
 
 
@@ -11,7 +11,7 @@
             <a href="{{ url('/') }}">Inicio</a>
         </li>
         <li class="breadcrumb-item active">
-            <strong>Alumnos</strong>
+            <strong>Pre-Registro Alumnos</strong>
         </li>
     </ol>
 @endsection
@@ -19,10 +19,10 @@
 @section('contenido')
 <div class="row justify-content-start px-4">
     <div>
-        @can('crear_alumno')
-            <a class="mb-3" href={{ route('alumnos.create') }}>
+        @can('realizar_pre_registro')
+            <a class="mb-3" href={{ route('pre-registro-alumnos.create') }}>
                 <button class="btn btn-success btn-sm" type="button">
-                    <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar Alumno
+                    <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar Pre-registro
                 </button>
             </a>
         @endcan
@@ -36,7 +36,10 @@
                 <table id="tb-alumnos" class="table table-padded  table-striped table-hover">
                     <thead>
                         <tr>
-                            <th># Control</th>
+                            <th>Asesor</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
                             <th>Nombre</th>
                             <th></th>
                             <th></th>
@@ -72,10 +75,11 @@
             serverSide: true,
             dom: "<'row'<'col-6 d-flex align-items-center' l><'col-6'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
             ajax: {
-                url: "{{ route('alumnos.datatables') }}",
+                url: "{{ route('pre-registro-alumnos.datatables') }}",
                 method:'POST',
                 data: function (d) {
                     d.id_sucursal = "{{ optional(session('sucursal'))->id }}"
+                    d.id_asesor_educativo = "{{ (auth()->user()->hasRole('administrador'))?'': ((auth()->user()->can('realizar_pre_registro'))? auth()->id():'')  }}"
                 },
                 beforeSend: function(xhr,type) {
                     if (!type.crossDomain) {
@@ -87,10 +91,14 @@
             responsive: true,
             buttons: [{
                 extend: 'excel',
-                title: 'Alumnos'
+                title: 'Pre-registro Alumnos'
             }],
             columns: [
-                { data: 'numero_control', name: 'numero_control',class: 'text-nowrap'},
+                { data: 'nombre_asesor', name: 'nombre_asesor',class: 'text-nowrap'},
+                { data: 'asesor_educativo.nombres', name: 'nombres',class: 'text-nowrap',visible:false},
+                { data: 'asesor_educativo.apellido_paterno', name: 'apellido_paterno',class: 'text-nowrap',visible:false},
+                { data: 'asesor_educativo.apellido_materno', name: 'apellido_materno',class: 'text-nowrap',visible:false},
+
                 { data: 'nombre_alumno', name: 'nombre_alumno',class: 'text-nowrap'},
                 { data: 'nombres', name: 'nombres',class: 'text-nowrap',visible:false},
                 { data: 'apellido_paterno', name: 'apellido_paterno',class: 'text-nowrap',visible:false},

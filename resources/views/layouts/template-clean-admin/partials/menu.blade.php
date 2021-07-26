@@ -54,6 +54,18 @@
         </li>
     @endcanany
 
+
+    @canany(['realizar_pre_registro','convertir_pre_registro_alumno'])
+    <li class="">
+        <a href="{{ route('pre-registro-alumnos.index') }}">
+            <div class="icon-w">
+                <div class="fa fa-bookmark"></div>
+            </div>
+            <span>Pre-Registro Alumnos</span></a>
+    </li>
+    @endcanany
+
+
     @can('listar_alumnos')
     <li class="">
         <a href="{{ route('alumnos.index') }}">
