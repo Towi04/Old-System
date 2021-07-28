@@ -2,7 +2,7 @@
     <div class="btn-group">
         @can('convertir_pre_registro_alumno')
             <a  href="{{ route("pre-registro-alumnos.edit",$id) }}"
-                class="btn btn-primary btn-sm text-white fas fa-pencil-alt"
+                class="btn btn-success btn-sm text-white fas fa-check"
                 data-toggle="tooltip"
                 data-placement="top"
                 data-action="edit"

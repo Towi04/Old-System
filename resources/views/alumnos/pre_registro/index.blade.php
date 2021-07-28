@@ -37,6 +37,7 @@
                     <thead>
                         <tr>
                             <th>Asesor</th>
+                            <th>F. Registro</th>
                             <th></th>
                             <th></th>
                             <th></th>
@@ -44,7 +45,7 @@
                             <th></th>
                             <th></th>
                             <th></th>
-                            <th>Fecha Nac.</th>
+                            <th>Especialidad</th>
                             <th>Telefono</th>
                             <th>Email</th>
                             {{-- <th>Descripcion</th>
@@ -95,6 +96,7 @@
             }],
             columns: [
                 { data: 'nombre_asesor', name: 'nombre_asesor',class: 'text-nowrap'},
+                { data: 'created_at', name: 'created_at',class: 'text-nowrap'},
                 { data: 'asesor_educativo.nombres', name: 'nombres',class: 'text-nowrap',visible:false},
                 { data: 'asesor_educativo.apellido_paterno', name: 'apellido_paterno',class: 'text-nowrap',visible:false},
                 { data: 'asesor_educativo.apellido_materno', name: 'apellido_materno',class: 'text-nowrap',visible:false},
@@ -103,7 +105,7 @@
                 { data: 'nombres', name: 'nombres',class: 'text-nowrap',visible:false},
                 { data: 'apellido_paterno', name: 'apellido_paterno',class: 'text-nowrap',visible:false},
                 { data: 'apellido_materno', name: 'apellido_materno',class: 'text-nowrap',visible:false},
-                { data: 'fecha_nacimiento',class: 'text-nowrap'},
+                { data: 'especialidad',class: 'text-nowrap'},
                 { data: 'telefono',name: 'nombre_alumno',class: 'text-nowrap'},
                 { data: 'email', name: 'email',class: 'text-nowrap'},
                 { data: 'buttons', name: 'buttons', orderable: false, searchable: false }

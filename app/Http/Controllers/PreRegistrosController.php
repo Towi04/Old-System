@@ -54,6 +54,9 @@ class PreRegistrosController extends Controller
                 return optional($model->fecha_nacimiento)->format('d/m/Y');
             })
             ->addColumn('buttons', 'alumnos.pre_registro.datatables._buttons')
+            ->editColumn('created_at', function($model){
+                return optional($model->created_at)->format('d/m/Y');
+            })
             ->rawColumns(['buttons'])
             ->make(true);
     }
@@ -169,6 +172,7 @@ class PreRegistrosController extends Controller
         ]);
     }
 
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -178,9 +182,11 @@ class PreRegistrosController extends Controller
     public function edit(Alumno $alumno,FacturacionService $facturacionService)
     {
         // abort_unless(Auth::user()->can('editar_alumno'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
+        $grupos = Grupo::whereIn('especialidad',$alumno->especialidad)->get();
 
         return view('alumnos.pre_registro.edit', [
             'alumno'    => $alumno,
+            'grupos'    => $grupos->pluck('nombre','id')->prepend('Selecciona un grupo',''),
             'asesores'  => User::query()->get()->pluck('fullname','id')->sort()->prepend('Selecciona un asesor',''),
             'cfdis'     => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
         ]);

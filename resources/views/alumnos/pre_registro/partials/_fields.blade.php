@@ -165,7 +165,7 @@
             <div class="col-md-12" id="seccion_grupo" style="{{ empty($alumno->especialidad)?'display:none':'' }}" >
                 <div class="form-group">
                     {!! Form::label('id_grupo', 'Grupo'); !!}
-                    {!! Form::select('id_grupo',[],null, ['class' => 'form-control','style' => 'width:100%',]) !!}
+                    {!! Form::select('id_grupo',$grupos,null, ['class' => 'form-control','style' => 'width:100%',]) !!}
                 </div>
             </div>
 

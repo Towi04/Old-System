@@ -45,6 +45,7 @@ class AlumnosController extends Controller
                 return optional($model->fecha_nacimiento)->format('d/m/Y');
             })
             ->addColumn('buttons', 'alumnos.datatables._buttons')
+           
             ->rawColumns(['buttons'])
             ->make(true);
     }

@@ -77,4 +77,8 @@ class Grupo extends Model
 
          return Carbon::parse($value)->format('Y-m-d');
      }
+
+     public function getNombreAttribute(){
+         return '('.$this->id.') '.$this->especialidad.' H:'.$this->horario.' FI:'.$this->fecha_inicio->format('d-m-Y');
+     }
 }
