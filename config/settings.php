@@ -129,6 +129,17 @@ return [
             'display_name'  => 'Asignar alumnos',
             'description'   => 'Permite asignar alumnos a un grupo',
         ],
+        [
+            'name'          => 'realizar_pre_registro',
+            'display_name'  => 'Realizar Pre Registro',
+            'description'   => 'Permite realizar el pre-registro de los alumnos',
+        ],
+
+        [
+            'name'          => 'convertir_pre_registro_alumno',
+            'display_name'  => 'Convertir Pre-registro en Alunno',
+            'description'   => 'Permite transformar un pre-registro en alumno',
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

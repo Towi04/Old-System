@@ -16,8 +16,8 @@
         </div>
         <div class="col-md-4">
             <div class="form-group">
-                {!! Form::label('apellido_paterno', 'Apellido Paterno*'); !!}
-                {!! Form::text('apellido_paterno', null, ['class' => 'form-control', 'placeholder' => 'Escribe aqui el apellido paterno','autocomplete' => 'off','required'=> true]); !!}
+                {!! Form::label('apellido_paterno', 'Apellido Paterno'); !!}
+                {!! Form::text('apellido_paterno', null, ['class' => 'form-control', 'placeholder' => 'Escribe aqui el apellido paterno','autocomplete' => 'off']); !!}
             </div>
         </div>
         <div class="col-md-4">
@@ -108,7 +108,7 @@
                 <br>
                 @foreach (config('alumnos.grado_estudios') as $key => $value)
                     <label>
-                        <input type="radio" name="grado_estudios[]" value="{{ $value }}" class="i-checks" data-grados {{ in_array($value, $alumno->grado_estudios ?? [])?'checked':'' }}>
+                        <input type="radio" name="grado_estudios[]" value="{{ $value }}" class="i-checks" data-grados {{ in_array($value, old('grado_estudios',$alumno->grado_estudios) ?? [])?'checked':'' }}>
                         {{ $value }}
                     </label>
                     &nbsp;
@@ -139,7 +139,7 @@
                 <br>
                 @foreach (config('alumnos.especialidad') as $key => $value)
                     <label>
-                        {!! Form::radio('especialidad[]', $key,  in_array($key, $alumno->especialidad ?? []) , ['class' => 'i-checks','data-especialidad']) !!}
+                        {!! Form::checkbox('especialidad[]', $key,  in_array($key, $alumno->especialidad ?? []) , ['class' => 'i-checks','data-especialidad']) !!}
                         {{ $value }}
                     </label>
                     &nbsp;
@@ -161,26 +161,29 @@
             </div>
         </div>
 
-        <div class="col-md-12" id="seccion_grupo" style="{{ empty($alumno->especialidad)?'display:none':'' }}" >
-            <div class="form-group">
-                {!! Form::label('id_grupo', 'Grupo'); !!}
-                {!! Form::select('id_grupo',[],null, ['class' => 'form-control','style' => 'width:100%',]) !!}
+        @if ($alumno->exists)
+            <div class="col-md-12" id="seccion_grupo" style="{{ empty($alumno->especialidad)?'display:none':'' }}" >
+                <div class="form-group">
+                    {!! Form::label('id_grupo', 'Grupo'); !!}
+                    {!! Form::select('id_grupo',[],null, ['class' => 'form-control','style' => 'width:100%',]) !!}
+                </div>
             </div>
-        </div>
 
-        <div class="col-md-12" id="seccion_grupo">
-            <div class="form-group">
-                {!! Form::label('forma_pago', 'Forma de pago:*'); !!}
-                <br>
-                @foreach (config('alumnos.forma_pago') as $key => $value)
-                    <label>
-                        <input type="radio" name="forma_pago" value="{{ $value }}" class="i-checks" data-grados {{ ($value == old('forma_pago',$alumno->forma_pago))?'checked':'' }}>
-                        {{ $value }}
-                    </label>
-                    &nbsp;
-                @endforeach
+            <div class="col-md-12">
+                <div class="form-group">
+                    {!! Form::label('forma_pago', 'Forma de pago:*'); !!}
+                    <br>
+                    @foreach (config('alumnos.forma_pago') as $key => $value)
+                        <label>
+                            <input type="radio" name="forma_pago" value="{{ $value }}" class="i-checks" data-grados {{ ($value == old('forma_pago',$alumno->forma_pago))?'checked':'' }}>
+                            {{ $value }}
+                        </label>
+                        &nbsp;
+                    @endforeach
+                </div>
             </div>
-        </div>
+        @endif
+
 
         <div class="col-md-12">
             <div class="form-group">
@@ -268,7 +271,7 @@
 
     <div class="form-group">
         {!! Form::label('id_asesor_educativo', 'Asesor educativo:*'); !!}
-        {!! Form::select('id_asesor_educativo',$asesores, null, ['class' => 'form-control','autocomplete' => 'off','required'=>true]) !!}
+        {!! Form::select('id_asesor_educativo',$asesores, null, ['class' => 'form-control','autocomplete' => 'off']) !!}
     </div>
 
 </fieldset>
@@ -296,7 +299,6 @@
             $("#seccion_otro_grado_estudios").toggle(isOtrosSelected);
             $("#otro_grado_estudios").attr('required',isOtrosSelected)
         });
-
 
         $('input[type="checkbox"][data-especialidad]').on('change', function(e){
             switch (e.target.value) {

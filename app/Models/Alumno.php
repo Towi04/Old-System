@@ -43,6 +43,7 @@ class Alumno extends Model
      * @var array
      */
     protected $fillable = [
+        'numero_control',
         'id_sucursal',
 
         'foto',
@@ -81,6 +82,7 @@ class Alumno extends Model
 
         'observaciones',
         'forma_pago',
+        'status',
     ];
 
     public function sucursal()
@@ -90,7 +92,11 @@ class Alumno extends Model
 
     public function asesor_educativo()
     {
-        return $this->belongsTo(User::class,'id_asesor_educativo','id')->withDefault();
+        return $this->belongsTo(User::class,'id_asesor_educativo','id')->withDefault([
+            'nombres'           => '' ,
+            'apellido_materno'  => '',
+            'apellido_materno'  => '',
+        ]);
     }
 
     public function grupos()
