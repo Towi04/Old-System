@@ -63,7 +63,7 @@ class Alumno extends Model
         'grado_estudios',
         'otro_grado_estudios',
         'tutor',
-        'especialidad',
+        'id_especialidad',
         'otra_especialidad',
         'escuela_procedencia',
         'objetivo_inscripcion',
@@ -84,6 +84,14 @@ class Alumno extends Model
         'forma_pago',
         'status',
     ];
+
+    public function especialidad()
+    {
+        return $this->belongsTo(Especialidad::class,'id_especialidad','id')->withDefault([
+            'nombre'        => '',
+            'descripcion'   => ''
+        ]);
+    }
 
     public function sucursal()
     {

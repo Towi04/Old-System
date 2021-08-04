@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Grupo;
 use App\Models\Alumno;
 use App\Models\AlumnoPago;
+use App\Models\Especialidad;
 use Illuminate\Http\Request;
 use App\Services\FacturacionService;
 use App\Services\PagosAlumnosService;
@@ -63,12 +64,13 @@ class AlumnosController extends Controller
      */
     public function create(FacturacionService $facturacionService)
     {
-        abort_unless(Auth::user()->can('crear_alumno'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
+        // abort_unless(Auth::user()->can('crear_alumno'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
         return view('alumnos.create',[
-            'alumno'    => new Alumno,
-            'asesores'  => User::query()->get()->pluck('fullname','id')->sort()->prepend('Selecciona un asesor',''),
-            'cfdis'      => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
+            'alumno'            => new Alumno,
+            'asesores'          => User::query()->get()->pluck('fullname','id')->sort()->prepend('Selecciona un asesor',''),
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
         ]);
     }
 
@@ -100,7 +102,7 @@ class AlumnosController extends Controller
             'grado_estudios'        => 'required',
             'otro_grado_estudios'   => 'nullable',
             'tutor'                 => 'nullable',
-            'especialidad'          => 'required',
+            'id_especialidad'       => 'required',
             'otra_especialidad'     => 'nullable',
             'escuela_procedencia'   => 'nullable',
             'objetivo_inscripcion'  => 'required',
@@ -200,9 +202,10 @@ class AlumnosController extends Controller
         abort_unless(Auth::user()->can('editar_alumno'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
         return view('alumnos.edit', [
-            'alumno'    => $alumno,
-            'asesores'  => User::query()->get()->pluck('fullname','id')->sort()->prepend('Selecciona un asesor',''),
-            'cfdis'     => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
+            'alumno'            => $alumno,
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'asesores'          => User::query()->get()->pluck('fullname','id')->sort()->prepend('Selecciona un asesor',''),
+            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
         ]);
     }
 
@@ -234,7 +237,7 @@ class AlumnosController extends Controller
             'grado_estudios'        => 'required',
             'otro_grado_estudios'   => 'nullable',
             'tutor'                 => 'nullable',
-            'especialidad'          => 'required',
+            'id_especialidad'       => 'required',
             'otra_especialidad'     => 'nullable',
             'escuela_procedencia'   => 'nullable',
             'objetivo_inscripcion'  => 'required',
@@ -300,6 +303,8 @@ class AlumnosController extends Controller
      */
     public function destroy(Alumno $alumno, Request $request)
     {
+        $alumno->grupos()->detach();
+        $alumno->pagos()->where('status',config('pagos.status.pendiente'))->delete();
         $alumno->delete();
 
         if ($request->ajax()) {

@@ -23,11 +23,19 @@ class Materia extends Model
      */
     protected $fillable = [
         'id_sucursal',
-        'especialidad',
+        'id_especialidad',
         'nombre',
         'fase',
         'orden',
     ];
+
+    public function especialidad()
+    {
+        return $this->belongsTo(Especialidad::class,'id_especialidad','id')->withDefault([
+            'nombre'        => '',
+            'descripcion'   => ''
+        ]);
+    }
 
     public function sucursal()
     {

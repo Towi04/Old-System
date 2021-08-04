@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Grupo;
 use App\Models\Alumno;
 use App\Models\AlumnoGrupo;
-use App\Models\Grupo;
+use App\Models\Especialidad;
 use App\Models\GrupoMateria;
-use App\Services\PagosAlumnosService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response as HTTPMessages;
+use App\Services\PagosAlumnosService;
 use Yajra\DataTables\Facades\DataTables;
+use Symfony\Component\HttpFoundation\Response as HTTPMessages;
 
 class GruposController extends Controller
 {
@@ -31,7 +32,8 @@ class GruposController extends Controller
         $query = Grupo::query()
             ->when($request->input('id_sucursal'),function($q,$id_sucursal){
                 $q->where('id_sucursal',$id_sucursal);
-            });
+            })
+            ->with('especialidad');
 
         return DataTables::eloquent($query)
             ->editColumn('fecha_inicio',function($model){
@@ -63,8 +65,8 @@ class GruposController extends Controller
         abort_unless(Auth::user()->can('crear_grupo'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
         return view('grupos.create',[
-            'grupo'    => new Grupo,
-
+            'grupo'         => new Grupo,
+            'especialidades'  => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
         ]);
     }
 
@@ -77,14 +79,14 @@ class GruposController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'id_sucursal'   => 'required',
-            'especialidad'  => 'required',
-            'horario'       => 'required',
-            'dias'          => 'required',
-            'infantil'      => 'required',
-            'fecha_inicio'  => 'required',
-            'colegiatura'   => 'required',
-            'inscripcion'   => 'required'
+            'id_sucursal'       => 'required',
+            'id_especialidad'   => 'required',
+            'horario'           => 'required',
+            'dias'              => 'required',
+            'infantil'          => 'required',
+            'fecha_inicio'      => 'required',
+            'colegiatura'       => 'required',
+            'inscripcion'       => 'required'
         ];
 
         $request->request->add([
@@ -112,7 +114,8 @@ class GruposController extends Controller
         abort_unless(Auth::user()->can('editar_grupo'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
         return view('grupos.edit', [
-            'grupo'    => $grupo,
+            'grupo'             => $grupo,
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
         ]);
     }
 
@@ -127,7 +130,7 @@ class GruposController extends Controller
     {
         $rules = [
             'id_sucursal'           => 'required',
-            'especialidad'          => 'required',
+            'id_especialidad'       => 'required',
             'horario'               => 'required',
             'dias'                  => 'required',
             'infantil'              => 'required',
@@ -175,51 +178,20 @@ class GruposController extends Controller
 
     public function traer_grupos_select2(Request $request)
     {
-        $term  = $request->input('term');
-        $page = $request->input('page', 1);
-
-        $resultCount = 10;
-        $offset = ($page - 1) * $resultCount;
-
         $results = Grupo::query()
             ->when($request->input('id_sucursal'),function($q,$sucursal){
                 $q->where('id_sucursal',$sucursal);
             })
-            ->when($request->input('especialidad'),function($q,$especialidad){
-                $q->where('especialidad',$especialidad);
+            ->when($request->input('id_especialidad'),function($q,$especialidad){
+                $q->where('id_especialidad',$especialidad);
             })
-            ->where(function($q)use($term){
-                $q->orWhere('horario', 'like', "%{$term}%");
-                $q->orWhere('dias', 'like', "%{$term}%");
-            })
-
             ->orderBy('fecha_inicio', 'asc')
-            ->skip($offset)
-            ->take($resultCount)
             ->get();
 
-        $count = Grupo::query()
-            ->when($request->input('id_sucursal'),function($q,$sucursal){
-                $q->where('id_sucursal',$sucursal);
-            })
-            ->when($request->input('especialidad'),function($q,$especialidad){
-                $q->where('especialidad',$especialidad);
-            })
-            ->where(function($q)use($term){
-                $q->orWhere('horario', 'like', "%{$term}%");
-                $q->orWhere('dias', 'like', "%{$term}%");
-            })
-            ->count();
-
-        $endCount = $offset + $resultCount;
-        $morePages = $count > $endCount;
 
         if ($request->ajax()) {
             return response()->json([
                 'results'       => $results,
-                'pagination'    => [
-                    'more' => $morePages
-                ]
             ]);
         }
 

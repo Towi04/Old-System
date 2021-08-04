@@ -183,8 +183,11 @@
                             toastr.success('Éxito', 'Se borró con éxito el registro');
                         }, false )
                     },
-                    fail:function(error){
-                        toastr.error('Error', 'Ocurrio un error inesperado');
+                    error:function(error){
+                        setTimeout(() => {
+                            wait.modal('hide');
+                            toastr.error('Error', 'Ocurrio un error inesperado');
+                        }, 250);
                     }
                 });
             })

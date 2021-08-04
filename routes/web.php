@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\EspecialidadesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
@@ -68,6 +69,11 @@ Route::middleware(['auth','sucursal'])->group(function () {
             'sucursales' => 'sucursal'
         ]);
 
+        # NOTE: ESPECIALIDADES
+        Route::post('especialidades/datatables', [ EspecialidadesController::class,'datatables'])->name('especialidades.datatables');
+        Route::resource('especialidades', EspecialidadesController::class)->parameters([
+            'especialidades' => 'especialidad'
+        ]);
     });
 
     #RUTAS PRE-REGISTRO ALUMNOS

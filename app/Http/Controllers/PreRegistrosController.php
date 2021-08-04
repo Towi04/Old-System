@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Grupo;
 use App\Models\Alumno;
 use App\Models\AlumnoPago;
+use App\Models\Especialidad;
 use Illuminate\Http\Request;
 use App\Services\FacturacionService;
 use App\Services\PagosAlumnosService;
@@ -72,12 +73,10 @@ class PreRegistrosController extends Controller
      */
     public function create(FacturacionService $facturacionService)
     {
-        #abort_unless(Auth::user()->can('crear_alumno'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
-
         return view('alumnos.pre_registro.create',[
-            'alumno'    => new Alumno,
-            'asesores'  => User::query()->get()->pluck('fullname','id')->sort()->prepend('Selecciona un asesor',''),
-            'cfdis'      => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
+            'alumno'            => new Alumno,
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
         ]);
     }
 
@@ -93,25 +92,25 @@ class PreRegistrosController extends Controller
             'id_sucursal'           => 'required',
             'foto'                  => 'nullable',
             'nombres'               => 'required',
-            'apellido_paterno'      => 'nullable',
-            'apellido_materno'      => 'nullable',
-            'edad'                  => 'required',
-            'fecha_nacimiento'      => 'required',
-            'domicilio'             => 'required',
-            'colonia'               => 'required',
-            'municipio'             => 'required',
-            'telefono'              => 'required',
-            'celular'               => 'required',
-            'email'                 => 'required',
-            'codigo_postal'         => 'required',
-            'ocupacion'             => 'required',
-            'grado_estudios'        => 'required',
+            'apellido_paterno'      => 'required',
+            'apellido_materno'      => 'required',
+            'edad'                  => 'nullable',
+            'fecha_nacimiento'      => 'nullable',
+            'domicilio'             => 'nullable',
+            'colonia'               => 'nullable',
+            'municipio'             => 'nullable',
+            'telefono'              => 'nullable',
+            'celular'               => 'nullable',
+            'email'                 => 'nullable',
+            'codigo_postal'         => 'nullable',
+            'ocupacion'             => 'nullable',
+            'grado_estudios'        => 'nullable',
             'otro_grado_estudios'   => 'nullable',
             'tutor'                 => 'nullable',
-            'especialidad'          => 'required',
+            'id_especialidad'       => 'nullable',
             'otra_especialidad'     => 'nullable',
             'escuela_procedencia'   => 'nullable',
-            'objetivo_inscripcion'  => 'required',
+            'objetivo_inscripcion'  => 'nullable',
             'enfermedad_cronica'    => 'nullable',
             'solicitud_factura'     => 'nullable',
             'id_asesor_educativo'   => 'required',
@@ -134,6 +133,7 @@ class PreRegistrosController extends Controller
 
         $request->request->add([
             'id_sucursal'         => $sucursal->id,
+            'id_asesor_educativo' => auth()->id(),
             'solicitud_factura'   => $request->has('solicitud_factura'),
             'status'              => config('alumnos.status.Pre-Registro'),
         ]);
@@ -177,12 +177,10 @@ class PreRegistrosController extends Controller
      */
     public function edit(Alumno $alumno,FacturacionService $facturacionService)
     {
-        // abort_unless(Auth::user()->can('editar_alumno'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
-
         return view('alumnos.pre_registro.edit', [
-            'alumno'    => $alumno,
-            'asesores'  => User::query()->get()->pluck('fullname','id')->sort()->prepend('Selecciona un asesor',''),
-            'cfdis'     => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
+            'alumno'            => $alumno,
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
         ]);
     }
 
@@ -200,28 +198,27 @@ class PreRegistrosController extends Controller
             'numero_control'        => 'required',
             'foto'                  => 'nullable',
             'nombres'               => 'required',
-            'apellido_paterno'      => 'nullable',
-            'apellido_materno'      => 'nullable',
-            'edad'                  => 'required',
-            'fecha_nacimiento'      => 'required',
-            'domicilio'             => 'required',
-            'colonia'               => 'required',
-            'municipio'             => 'required',
-            'telefono'              => 'required',
-            'celular'               => 'required',
-            'email'                 => 'required',
-            'codigo_postal'         => 'required',
-            'ocupacion'             => 'required',
-            'grado_estudios'        => 'required',
+            'apellido_paterno'      => 'required',
+            'apellido_materno'      => 'required',
+            'edad'                  => 'nullable',
+            'fecha_nacimiento'      => 'nullable',
+            'domicilio'             => 'nullable',
+            'colonia'               => 'nullable',
+            'municipio'             => 'nullable',
+            'telefono'              => 'nullable',
+            'celular'               => 'nullable',
+            'email'                 => 'nullable',
+            'codigo_postal'         => 'nullable',
+            'ocupacion'             => 'nullable',
+            'grado_estudios'        => 'nullable',
             'otro_grado_estudios'   => 'nullable',
             'tutor'                 => 'nullable',
-            'especialidad'          => 'required',
+            'id_especialidad'       => 'nullable',
             'otra_especialidad'     => 'nullable',
             'escuela_procedencia'   => 'nullable',
-            'objetivo_inscripcion'  => 'required',
+            'objetivo_inscripcion'  => 'nullable',
             'enfermedad_cronica'    => 'nullable',
             'solicitud_factura'     => 'nullable',
-            'id_asesor_educativo'   => 'required',
 
             # DATOS DE FACTURACION
             'razon_social'          => 'nullable',

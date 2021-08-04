@@ -140,6 +140,33 @@ return [
             'display_name'  => 'Convertir Pre-registro en Alunno',
             'description'   => 'Permite transformar un pre-registro en alumno',
         ],
+
+        [
+            'name'          => 'listar_especialidades',
+            'display_name'  => 'Listar Especialidades',
+            'description'   => 'Permite mostrar la lista de especialidades'
+        ],
+        [
+            'name'          => 'crear_especialidad',
+            'display_name'  => 'Crear especialidad',
+            'description'   => 'Permite crear una especialidad'
+        ],
+        [
+            'name'          => 'consultar_especialidad',
+            'display_name'  => 'Consultar especialidad',
+            'description'   => 'Permite consultar una especialidad'
+        ],
+        [
+            'name'          => 'editar_especialidad',
+            'display_name'  => 'Editar especialidad',
+            'description'   => 'Permite editar una especialidad'
+        ],
+        [
+            'name'          => 'eliminar_especialidad
+            ',
+            'display_name'  => 'Eliminar especialidad',
+            'description'   => 'Permite eliminar una especialidad'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)
@@ -192,5 +219,71 @@ return [
             'estado'            => 'Guanajuato',
         ],
 
+    ],
+
+    'especialidades' => [
+        [
+            'nombre'             => 'Ingles',
+            'id_sucursal'        => 1,
+            'descripcion'        => null,
+            'precio_inscripcion' => null,
+            'precio_mensualidad' => null,
+            'precio_mensualidad_pronto_pago' => null,
+            'precio_semanal'     => null,
+        ],
+        [
+            'nombre'             => 'Computacion',
+            'id_sucursal'        => 1,
+            'descripcion'        => null,
+            'precio_inscripcion' => null,
+            'precio_mensualidad' => null,
+            'precio_mensualidad_pronto_pago' => null,
+            'precio_semanal'     => null,
+        ],
+        [
+            'nombre'             => 'Computacion 2021',
+            'id_sucursal'        => 1,
+            'descripcion'        => null,
+            'precio_inscripcion' => null,
+            'precio_mensualidad' => null,
+            'precio_mensualidad_pronto_pago' => null,
+            'precio_semanal'     => null,
+        ],
+        [
+            'nombre'             => 'Prepa Abierta',
+            'id_sucursal'        => 1,
+            'descripcion'        => null,
+            'precio_inscripcion' => null,
+            'precio_mensualidad' => null,
+            'precio_mensualidad_pronto_pago' => null,
+            'precio_semanal'     => null,
+        ],
+        [
+            'nombre'             => 'Prepa Abierta',
+            'id_sucursal'        => 1,
+            'descripcion'        => null,
+            'precio_inscripcion' => null,
+            'precio_mensualidad' => null,
+            'precio_mensualidad_pronto_pago' => null,
+            'precio_semanal'     => null,
+        ],
+        [
+            'nombre'             => 'Prepa escoloarizada',
+            'id_sucursal'        => 1,
+            'descripcion'        => null,
+            'precio_inscripcion' => null,
+            'precio_mensualidad' => null,
+            'precio_mensualidad_pronto_pago' => null,
+            'precio_semanal'     => null,
+        ],
+        [
+            'nombre'             => 'Otros',
+            'id_sucursal'        => 1,
+            'descripcion'        => null,
+            'precio_inscripcion' => null,
+            'precio_mensualidad' => null,
+            'precio_mensualidad_pronto_pago' => null,
+            'precio_semanal'     => null,
+        ],
     ],
 ];
