@@ -8,9 +8,9 @@ use App\Models\AlumnoGrupo;
 use App\Models\Especialidad;
 use App\Models\GrupoMateria;
 use App\Models\Materia;
+use App\Services\PagoInscripcionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Services\PagosAlumnosService;
 use Yajra\DataTables\Facades\DataTables;
 use Symfony\Component\HttpFoundation\Response as HTTPMessages;
 
@@ -347,7 +347,7 @@ class GruposController extends Controller
         return view('grupos.asignar_alumnos',compact('grupo'));
     }
 
-    public function guardar_alumnos(Grupo $grupo, Request $request,PagosAlumnosService $pagosAlumnosService)
+    public function guardar_alumnos(Grupo $grupo, Request $request, PagoInscripcionService $pis)
     {
         $rules = [
             'id_alumno'            => 'required',
@@ -359,17 +359,17 @@ class GruposController extends Controller
 
         $alumno = Alumno::findOrFail($request->input('id_alumno'));
 
+        $alumno->load(['grupos']);
+
+        $pis->setAlumno($alumno);
+
         switch ($alumno->forma_pago) {
             case config('alumnos.forma_pago.mensual','mensual'):
-                $pagosAlumnosService
-                    ->setAlumno($alumno)
-                    ->mensual($grupo);
+                $pis->mensual();
             break;
 
             case config('alumnos.forma_pago.semanal','semanal'):
-                $pagosAlumnosService
-                    ->setAlumno($alumno)
-                    ->semanal($grupo);
+                $pis->semanal($grupo);
             break;
         }
 

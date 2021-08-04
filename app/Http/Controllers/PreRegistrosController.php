@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Grupo;
 use App\Models\Alumno;
-use App\Models\AlumnoPago;
 use App\Models\Especialidad;
 use Illuminate\Http\Request;
 use App\Services\FacturacionService;
-use App\Services\PagosAlumnosService;
+use App\Services\PagoInscripcionService;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
@@ -191,7 +189,7 @@ class PreRegistrosController extends Controller
      * @param  \App\Models\Alumno  $alumno
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Alumno $alumno,PagosAlumnosService $pagosAlumnosService)
+    public function update(Request $request, Alumno $alumno,PagoInscripcionService $pis)
     {
         $rules = [
             'id_sucursal'           => 'required',
@@ -277,21 +275,16 @@ class PreRegistrosController extends Controller
 
         if ($request->has('id_grupo')) {
             $alumno->grupos()->attach($request->input('id_grupo'));
+            $alumno->load('grupos');
 
-            $grupo = Grupo::findOrFail($request->input('id_grupo'));
+            $pis->setAlumno($alumno);
 
             switch ($request->input('forma_pago')) {
                 case config('alumnos.forma_pago.mensual','mensual'):
-                    $pagosAlumnosService
-                        ->setAlumno($alumno)
-                        ->mensual($grupo);
+                    $pis->mensual();
                 break;
-
                 case config('alumnos.forma_pago.semanal','semanal'):
-
-                    $pagosAlumnosService
-                        ->setAlumno($alumno)
-                        ->semanal($grupo);
+                    $pis->semanal();
                 break;
             }
         }

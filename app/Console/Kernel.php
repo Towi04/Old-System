@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Console\Commands\GenerarPagoMensual;
+use App\Console\Commands\GenerarPagoSemanal;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -13,7 +15,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        GenerarPagoMensual::class,
+        GenerarPagoSemanal::class,
     ];
 
     /**
@@ -24,7 +27,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('forma-pago:mensual')->monthlyOn(1, '00:00');
+        $schedule->command('forma-pago:semanal')->weeklyOn(1, '00:00');
     }
 
     /**
