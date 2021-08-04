@@ -22,7 +22,7 @@ class GruposController extends Controller
     */
     public function index()
     {
-        abort_unless(Auth::user()->can('listar_grupos'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
+        // abort_unless(Auth::user()->can('listar_grupos'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
         return view('grupos.index');
     }
@@ -79,19 +79,27 @@ class GruposController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'id_sucursal'       => 'required',
-            'id_especialidad'   => 'required',
-            'horario'           => 'required',
-            'dias'              => 'required',
-            'infantil'          => 'required',
-            'fecha_inicio'      => 'required',
-            'colegiatura'       => 'required',
-            'inscripcion'       => 'required'
+            'id_sucursal'                       => 'required',
+            'id_especialidad'                   => 'required',
+            'horario'                           => 'required',
+            'dias'                              => 'required',
+            'infantil'                          => 'required',
+            'fecha_inicio'                      => 'required',
+            'precio_semanal'                    => 'nullable',
+            'precio_mensualidad_pronto_pago'    => 'nullable',
+            'precio_mensualidad'                => 'nullable',
+            'precio_inscripcion'                => 'nullable',
         ];
 
+        $especialidad = Especialidad::findOrFail($request->input('id_especialidad'));
+
         $request->request->add([
-            'id_sucursal'   => optional(session('sucursal'))->id,
-            'infantil'      => $request->has('infantil'),
+            'id_sucursal'                       => optional(session('sucursal'))->id,
+            'infantil'                          => $request->has('infantil'),
+            'precio_semanal'                    => $especialidad->precio_semanal,
+            'precio_mensualidad_pronto_pago'    => $especialidad->precio_mensualidad_pronto_pago,
+            'precio_mensualidad'                => $especialidad->precio_mensualidad,
+            'precio_inscripcion'                => $especialidad->precio_inscripcion,
         ]);
 
         $data = $request->validate($rules);
@@ -129,19 +137,27 @@ class GruposController extends Controller
     public function update(Request $request, Grupo $grupo)
     {
         $rules = [
-            'id_sucursal'           => 'required',
-            'id_especialidad'       => 'required',
-            'horario'               => 'required',
-            'dias'                  => 'required',
-            'infantil'              => 'required',
-            'fecha_inicio'          => 'required',
-            'colegiatura'           => 'required',
-            'inscripcion'           => 'required'
+            'id_sucursal'                       => 'required',
+            'id_especialidad'                   => 'required',
+            'horario'                           => 'required',
+            'dias'                              => 'required',
+            'infantil'                          => 'required',
+            'fecha_inicio'                      => 'required',
+            'precio_semanal'                    => 'nullable',
+            'precio_mensualidad_pronto_pago'   => 'nullable',
+            'precio_mensualidad'               => 'nullable',
+            'precio_inscripcion'                => 'nullable',
         ];
 
+        $especialidad = Especialidad::findOrFail($request->input('id_especialidad'));
+
         $request->request->add([
-            'id_sucursal'   => optional(session('sucursal'))->id,
-            'infantil'      => $request->has('infantil'),
+            'id_sucursal'                       => optional(session('sucursal'))->id,
+            'infantil'                          => $request->has('infantil'),
+            'precio_semanal'                    => $especialidad->precio_semanal,
+            'precio_mensualidad_pronto_pago'    => $especialidad->precio_mensualidad_pronto_pago,
+            'precio_mensualidad'                => $especialidad->precio_mensualidad,
+            'precio_inscripcion'                => $especialidad->precio_inscripcion,
         ]);
 
         $data = $this->validate($request, $rules);

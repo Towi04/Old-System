@@ -29,7 +29,7 @@
                     <tr>
                         <td class="bg-primary text-white"><b>Especialidad</b></td>
                         <td>
-                            {{ $grupo->especialidad }}
+                            {{ $grupo->especialidad->nombre }}
                         </td>
                     </tr>
                     <tr>

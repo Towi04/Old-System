@@ -56,8 +56,10 @@ class Grupo extends Model
         'dias',
         'infantil',
         'fecha_inicio',
-        'inscripcion',
-        'colegiatura',
+        'precio_semanal',
+        'precio_mensualidad_pronto_pago',
+        'precio_mensualidad',
+        'precio_inscripcion',
     ];
 
     public function especialidad()

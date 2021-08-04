@@ -26,7 +26,7 @@ class PagosAlumnosService
         $this->alumno->pagos()->create([
             'id_grupo'      => $grupo->id,
             'concepto'      => config('alumnos.concepto.inscripcion'),
-            'monto'         => $grupo->inscripcion,
+            'monto'         => $grupo->precio_inscripcion ?? 0,
             'fecha_limite'  => $grupo->fecha_inicio,
         ]);
 
@@ -44,7 +44,7 @@ class PagosAlumnosService
             $colegiaturas[] = [
                 'id_grupo'      => $grupo->id,
                 'concepto'      => config('alumnos.concepto.colegiatura'),
-                'monto'         => $grupo->colegiatura,
+                'monto'         => $grupo->precio_mensualidad ?? 0,
                 'fecha_limite'  => $fecha_limite
             ];
         }
@@ -62,7 +62,7 @@ class PagosAlumnosService
         $this->alumno->pagos()->create([
             'id_grupo'      => $grupo->id,
             'concepto'      => config('alumnos.concepto.inscripcion'),
-            'monto'         => $grupo->inscripcion,
+            'monto'         => $grupo->precio_inscripcion ?? 0,
             'fecha_limite'  => $grupo->fecha_inicio,
         ]);
 
@@ -70,7 +70,7 @@ class PagosAlumnosService
         $fecha_inicio = $grupo->fecha_inicio->copy();
         $fecha_final = $grupo->fecha_inicio->copy()->addMonth(config('grupos.duracion.cuatrimestre'));
         $semanas = $fecha_inicio->diffInWeeks($fecha_final);
-        $monto_total_pago = $grupo->colegiatura * config('grupos.duracion.cuatrimestre');
+        $monto_total_pago = ($grupo->precio_semanal ?? 0) * config('grupos.duracion.cuatrimestre');
         $pago_semanal = ($semanas == 0) ? 0 :  $monto_total_pago / $semanas;
 
         $colegiaturas = [];
