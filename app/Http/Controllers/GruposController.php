@@ -7,6 +7,7 @@ use App\Models\Alumno;
 use App\Models\AlumnoGrupo;
 use App\Models\Especialidad;
 use App\Models\GrupoMateria;
+use App\Models\Materia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Services\PagosAlumnosService;
@@ -93,6 +94,8 @@ class GruposController extends Controller
 
         $especialidad = Especialidad::findOrFail($request->input('id_especialidad'));
 
+        $materias = Materia::query()->where('id_especialidad',$request->input('id_especialidad'))->pluck('id');
+
         $request->request->add([
             'id_sucursal'                       => optional(session('sucursal'))->id,
             'infantil'                          => $request->has('infantil'),
@@ -104,7 +107,12 @@ class GruposController extends Controller
 
         $data = $request->validate($rules);
 
-        Grupo::create($data);
+        $grupo = Grupo::create($data);
+
+        $grupo->materias()->attach($materias, [
+            'horas_semana'  => null,
+            'id_profesor'   => null,
+        ]);
 
         return redirect()->route('grupos.index')->with([
             'message' => 'Se agregó el grupo con éxito',
@@ -150,6 +158,7 @@ class GruposController extends Controller
         ];
 
         $especialidad = Especialidad::findOrFail($request->input('id_especialidad'));
+        $materias = Materia::query()->where('id_especialidad',$request->input('id_especialidad'))->pluck('id');
 
         $request->request->add([
             'id_sucursal'                       => optional(session('sucursal'))->id,
@@ -162,8 +171,14 @@ class GruposController extends Controller
 
         $data = $this->validate($request, $rules);
         $grupo->fill($data);
-
         $grupo->save();
+
+        $grupo->materias()->detach();
+
+        $grupo->materias()->attach($materias, [
+            'horas_semana'  => null,
+            'id_profesor'   => null,
+        ]);
 
         return redirect()->route('grupos.index')->with([
             'message' => 'Se actualizó el grupo con éxito'
