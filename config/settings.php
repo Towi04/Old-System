@@ -167,6 +167,32 @@ return [
             'display_name'  => 'Eliminar especialidad',
             'description'   => 'Permite eliminar una especialidad'
         ],
+
+        [
+            'name'          => 'listar_cuentas_bancarias',
+            'display_name'  => 'Listar cuentas bancarias',
+            'description'   => 'Permite mostrar la lista de cuentas_bancarias'
+        ],
+        [
+            'name'          => 'crear_cuenta_bancaria',
+            'display_name'  => 'Crear cuenta bancaria',
+            'description'   => 'Permite crear una cuenta bancaria'
+        ],
+        [
+            'name'          => 'consultar_cuenta_bancaria',
+            'display_name'  => 'Consultar cuenta_bancaria',
+            'description'   => 'Permite consultar una cuenta bancaria'
+        ],
+        [
+            'name'          => 'editar_cuenta_bancaria',
+            'display_name'  => 'Editar cuenta bancaria',
+            'description'   => 'Permite editar una cuenta bancaria'
+        ],
+        [
+            'name'          => 'eliminar_cuenta_bancaria',
+            'display_name'  => 'Eliminar cuenta bancaria',
+            'description'   => 'Permite eliminar una cuenta bancaria'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)
