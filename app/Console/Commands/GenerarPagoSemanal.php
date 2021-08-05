@@ -54,7 +54,7 @@ class GenerarPagoSemanal extends Command
             ->cursor()
             ->each(function($alumno){
                 $this->pcs->setAlumno($alumno);
-                $this->pcs->mensual();
+                $this->pcs->semanal();
             });
 
 

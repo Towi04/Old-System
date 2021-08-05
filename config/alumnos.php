@@ -20,8 +20,8 @@ return [
         'semanal'   => 'semanal',
     ],
     'concepto' => [
-        'inscripcion' => 'inscripcion',
-        'colegiatura' => 'colegiatura',
+        'inscripcion' => 'Inscripcion',
+        'colegiatura' => 'Colegiatura ',
     ],
     'status' => [
         'Pre-Registro'  => 'Pre-Registro',

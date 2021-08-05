@@ -263,6 +263,7 @@ integrity="sha256-YsJ7Lkc/YB0+ssBKz0c0GTx0RI+BnXcKH5SpnttERaY=" crossorigin="ano
                                     <th>Concepto</th>
                                     <th>Monto</th>
                                     <th>Fecha Limite</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -309,6 +310,7 @@ integrity="sha256-YsJ7Lkc/YB0+ssBKz0c0GTx0RI+BnXcKH5SpnttERaY=" crossorigin="ano
                     {data: 'concepto', name: 'concepto'},
                     {data: 'monto', name: 'monto'},
                     {data: 'fecha_limite', name: 'fecha_limite'},
+                    {data: 'status', className:"text-center", name: 'status'},
                 ],
                 order: [[ 0, "desc" ]],
                 language: {

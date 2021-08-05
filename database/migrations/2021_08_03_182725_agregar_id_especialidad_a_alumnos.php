@@ -14,7 +14,7 @@ class AgregarIdEspecialidadAAlumnos extends Migration
     public function up()
     {
         Schema::table('alumnos', function (Blueprint $table) {
-            $table->dropColumn('especialidad');
+            // $table->dropColumn('especialidad');
             $table->unsignedBigInteger('id_especialidad')->after('tutor')->nullable();
 
             $table->integer('edad')->nullable()->change();

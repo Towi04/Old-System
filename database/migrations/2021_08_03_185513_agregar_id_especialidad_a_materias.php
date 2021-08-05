@@ -14,7 +14,7 @@ class AgregarIdEspecialidadAMaterias extends Migration
     public function up()
     {
         Schema::table('materias', function (Blueprint $table) {
-            $table->dropColumn('especialidad');
+            // $table->dropColumn('especialidad');
             $table->unsignedBigInteger('id_especialidad')->after('id_sucursal')->nullable();
         });
     }

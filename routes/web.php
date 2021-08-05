@@ -84,6 +84,8 @@ Route::middleware(['auth','sucursal'])->group(function () {
     });
 
     #RUTAS PRE-REGISTRO ALUMNOS
+    Route::get('pre-registro-alumnos/formulario-inscripcion/{alumno}', [ PreRegistrosController::class,'formulario_inscripcion'])->name('pre-registro-alumnos.formulario-inscripcion');
+    Route::put('pre-registro-alumnos/inscribir/{id}', [ PreRegistrosController::class,'inscribir'])->name('pre-registro-alumnos.inscribir');
     Route::post('pre-registro-alumnos/datatables', [ PreRegistrosController::class,'datatables'])->name('pre-registro-alumnos.datatables');
     Route::resource('pre-registro-alumnos', PreRegistrosController::class)->parameters([
         'pre-registro-alumnos' => 'alumno'
@@ -120,6 +122,8 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::post('grupos/{grupo}/guardar-materias', [ GruposController::class,'guardar_materias'])->name('grupos.guardar-materias');
     Route::get('grupos/{grupo}/asignar-alumnos', [ GruposController::class,'asignar_alumnos'])->name('grupos.asignar-alumnos');
     Route::post('grupos/{grupo}/guardar-alumnos', [ GruposController::class,'guardar_alumnos'])->name('grupos.guardar-alumnos');
+
+    Route::post('grupos/traer_info', [ GruposController::class,'traer_info'])->name('grupos.traer_info');
 
     Route::resource('grupos', GruposController::class)->parameters([
         'grupos' => 'grupo'

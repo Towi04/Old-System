@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Grupo;
 use App\Models\Alumno;
+use App\Models\User;
 use App\Models\Especialidad;
 use Illuminate\Http\Request;
 use App\Services\FacturacionService;
@@ -38,9 +39,11 @@ class PreRegistrosController extends Controller
                 $q->orWhere('status',config('alumnos.status.Pre-Registro'));
             })
             ->when($request->input('id_asesor_educativo'),function($q,$id){
-                $q->where('id_asesor_educativo',$id);
+                if(!Auth::user()->canAny(['convertir_pre_registro_alumno'])){
+                    $q->where('id_asesor_educativo',$id);
+                }
             })
-            ->with(['asesor_educativo']);
+            ->with(['asesor_educativo','especialidad']);
 
         return DataTables::eloquent($query)
             ->addColumn('nombre_asesor',function($model){
@@ -182,9 +185,27 @@ class PreRegistrosController extends Controller
         return view('alumnos.pre_registro.edit', [
             'alumno'            => $alumno,
             'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
-            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
+            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi',''),
+            
         ]);
     }
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Alumno  $alumno
+     * @return \Illuminate\Http\Response
+     */
+    public function formulario_inscripcion(Alumno $alumno,FacturacionService $facturacionService)
+    {
+        return view('alumnos.pre_registro.inscribir', [
+            'alumno'            => $alumno,
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi',''),
+            'asesores'          => User::query()->get()->pluck('fullname','id')->sort()->prepend('Selecciona un asesor',''),
+        ]);
+    }
+
+
 
     /**
      * Update the specified resource in storage.
@@ -197,7 +218,7 @@ class PreRegistrosController extends Controller
     {
         $rules = [
             'id_sucursal'           => 'required',
-            'numero_control'        => 'required',
+            'numero_control'        => 'nullable',
             'foto'                  => 'nullable',
             'nombres'               => 'required',
             'apellido_paterno'      => 'required',
@@ -233,11 +254,112 @@ class PreRegistrosController extends Controller
 
             'observaciones'         => 'nullable',
             'forma_pago'            => 'required',
+            'status'                => 'nullable',
+        ];
+
+        $sucursal = optional(session('sucursal'));
+
+        $max_alumno = Alumno::query()
+            ->where('status',config('alumnos.status.Alumno'))
+            ->where('id_sucursal', $sucursal->id)
+            ->max('numero_control') ?? 0;
+
+        $request->request->add([
+            'id_sucursal'         => $sucursal->id,
+            'solicitud_factura'   => $request->has('solicitud_factura'),
+            // 'status'              => config('alumnos.status.Alumno'),
+            // 'numero_control'      => $max_alumno + 1,
+        ]);
+
+        $data = $this->validate($request, $rules);
+        $alumno->fill($data);
+
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+
+            $image = Image::make($file);
+
+            $nombre_foto = $file->getClientOriginalName();
+
+            if (!Storage::exists('alumnos_foto')) {
+                Storage::makeDirectory('usuarios_foto');
+            }
+
+            if (!Storage::exists("alumnos_foto/{$alumno->id}")) {
+                Storage::makeDirectory("alumnos_foto/{$alumno->id}");
+            }
+
+            $path = storage_path() . "/app/alumnos_foto/{$alumno->id}/";
+            $image->save($path . $nombre_foto);
+
+            $alumno->foto = $nombre_foto;
+            $alumno->save();
+        }
+
+        $alumno->save();
+
+
+
+        return redirect()->route('pre-registro-alumnos.index')->with([
+            'message' => 'El alumno se edito con éxito'
+        ]);
+    }
+
+     /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Alumno  $alumno
+     * @return \Illuminate\Http\Response
+     */
+    public function inscribir(Request $request, $id,PagoInscripcionService $pis)
+    {
+        $rules = [
+            'id_sucursal'           => 'required',
+            'numero_control'        => 'required',
+            'foto'                  => 'nullable',
+            'nombres'               => 'required',
+            'apellido_paterno'      => 'required',
+            'apellido_materno'      => 'required',
+            'edad'                  => 'required',
+            'fecha_nacimiento'      => 'required',
+            'domicilio'             => 'required',
+            'colonia'               => 'required',
+            'municipio'             => 'required',
+            'telefono'              => 'required',
+            'celular'               => 'required',
+            'email'                 => 'required',
+            'codigo_postal'         => 'required',
+            'ocupacion'             => 'required',
+            'grado_estudios'        => 'required',
+            'otro_grado_estudios'   => 'nullable',
+            'tutor'                 => 'required',
+            'id_especialidad'       => 'required',
+            'otra_especialidad'     => 'nullable',
+            'escuela_procedencia'   => 'nullable',
+            'objetivo_inscripcion'  => 'required',
+            'enfermedad_cronica'    => 'required',
+            'solicitud_factura'     => 'nullable',
+            'id_asesor_educativo'   => 'required',
+            # DATOS DE FACTURACION
+            'razon_social'          => 'nullable',
+            'rfc'                   => 'nullable',
+            'cfdi'                  => 'nullable',
+            'curp'                  => 'nullable',
+            'telefono_general'      => 'nullable',
+            'correo_general'        => 'nullable',
+            'domicilio_fiscal'      => 'nullable',
+
+            'observaciones'         => 'nullable',
+            'forma_pago'            => 'required',
             'status'                => 'required',
         ];
 
         $sucursal = optional(session('sucursal'));
 
+        
+        $alumno = Alumno::find($id);
+        
         $max_alumno = Alumno::query()
             ->where('status',config('alumnos.status.Alumno'))
             ->where('id_sucursal', $sucursal->id)
@@ -276,13 +398,13 @@ class PreRegistrosController extends Controller
         }
 
         $alumno->save();
-
+        
         if ($request->has('id_grupo')) {
             $alumno->grupos()->attach($request->input('id_grupo'));
             $alumno->load('grupos');
 
             $pis->setAlumno($alumno);
-
+            
             switch ($request->input('forma_pago')) {
                 case config('alumnos.forma_pago.mensual','mensual'):
                     $pis->mensual();
@@ -297,6 +419,7 @@ class PreRegistrosController extends Controller
             'message' => 'El alumno se inscribio con éxito'
         ]);
     }
+
 
     /**
      * Remove the specified resource from storage.

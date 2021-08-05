@@ -183,7 +183,7 @@
                     {data: 'horas_semana',name:'horas_semana'},
                     {data: 'buttons', name: 'buttons', orderable: false, searchable: false}
                 ],
-                order: [[ 0, "desc" ]],
+                order: [[ 0, "asc" ]],
                 language: {
                     "lengthMenu": "Mostrar _MENU_ registros por pagina",
                     "zeroRecords": "No se encontro ningún registro",

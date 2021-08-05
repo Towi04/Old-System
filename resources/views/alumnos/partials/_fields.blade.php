@@ -16,14 +16,14 @@
         </div>
         <div class="col-md-4">
             <div class="form-group">
-                {!! Form::label('apellido_paterno', 'Apellido Paterno'); !!}
-                {!! Form::text('apellido_paterno', null, ['class' => 'form-control', 'placeholder' => 'Escribe aqui el apellido paterno','autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']); !!}
+                {!! Form::label('apellido_paterno', 'Apellido Paterno*'); !!}
+                {!! Form::text('apellido_paterno', null, ['class' => 'form-control', 'placeholder' => 'Escribe aqui el apellido paterno','autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();','required'=> true,]); !!}
             </div>
         </div>
         <div class="col-md-4">
             <div class="form-group">
                 {!! Form::label('apellido_materno', 'Apellido Materno:*'); !!}
-                {!! Form::text('apellido_materno', null, ['class' => 'form-control', 'placeholder' => 'Escribe aqui el apellido materno','placeholder' => 'Escribe aqui el apellido materno','autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']); !!}
+                {!! Form::text('apellido_materno', null, ['class' => 'form-control', 'placeholder' => 'Escribe aqui el apellido materno','placeholder' => 'Escribe aqui el apellido materno','autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();','required'=> true,]); !!}
             </div>
         </div>
         <div class="col-md-6">

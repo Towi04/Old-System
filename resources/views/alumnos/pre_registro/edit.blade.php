@@ -30,7 +30,7 @@
                     @include('alumnos.pre_registro.partials._fields')
 
                     <div class="form-buttons-w text-right">
-                        <button class="btn btn-success" type="submit"><i class="fa fa-plus"></i> Inscribir</button>
+                        <button class="btn btn-success" type="submit"><i class="fa fa-plus"></i> Guardar cambios</button>
                     </div>
                 {!! Form::close() !!}
             </div>

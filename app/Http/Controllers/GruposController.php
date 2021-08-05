@@ -441,4 +441,13 @@ class GruposController extends Controller
             ->rawColumns(['nombre_alumno','buttons'])
             ->make(true);
     }
+
+    //traer info para ver inscripcion en
+    public function traer_info(Request $request){
+        $grupo = Grupo::with('especialidad')->find($request->id_grupo);
+
+        return response()->json([
+            'grupo'=> $grupo
+        ]);
+    }
 }

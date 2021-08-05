@@ -105,7 +105,7 @@
                 { data: 'nombres', name: 'nombres',class: 'text-nowrap',visible:false},
                 { data: 'apellido_paterno', name: 'apellido_paterno',class: 'text-nowrap',visible:false},
                 { data: 'apellido_materno', name: 'apellido_materno',class: 'text-nowrap',visible:false},
-                { data: 'especialidad',class: 'text-nowrap'},
+                { data: 'especialidad.nombre', name:'especialidad.nombre',class: 'text-nowrap'},
                 { data: 'telefono',name: 'nombre_alumno',class: 'text-nowrap'},
                 { data: 'email', name: 'email',class: 'text-nowrap'},
                 { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
