@@ -14,6 +14,7 @@ use App\Http\Controllers\AlumnosController;
 use App\Http\Controllers\GruposController;
 use App\Http\Controllers\MateriasController;
 use App\Http\Controllers\PreRegistrosController;
+use App\Http\Controllers\PuntoDeVentaController;
 
 #NOTE: CONFIGURACION DE RUTAS
 Auth::routes(['register'=> false]);
@@ -94,6 +95,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
     # NOTE: RUTAS ALUMNOS
     Route::post('alumnos/datatables', [ AlumnosController::class,'datatables'])->name('alumnos.datatables');
     Route::post('alumnos/datatables_pagos', [ AlumnosController::class,'datatables_pagos'])->name('alumnos.datatables_pagos');
+    Route::post('alumnos/datatables_pagos_pendientes', [ AlumnosController::class,'datatables_pagos_pendientes'])->name('alumnos.datatables_pagos_pendientes');
     Route::post('alumnos/traer_alumnos_select2', [AlumnosController::class, 'traer_alumnos_select2']) ->name('alumnos.traer_alumnos_select2');
     Route::resource('alumnos', AlumnosController::class)->parameters([
         'alumnos' => 'alumno'
@@ -128,4 +130,6 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::resource('grupos', GruposController::class)->parameters([
         'grupos' => 'grupo'
     ]);
+
+    Route::resource('punto_de_venta', PuntoDeVentaController::class);
 });

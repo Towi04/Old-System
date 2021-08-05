@@ -193,6 +193,11 @@ return [
             'display_name'  => 'Eliminar cuenta bancaria',
             'description'   => 'Permite eliminar una cuenta bancaria'
         ],
+        [
+            'name'          => 'ingresar_punto_venta',
+            'display_name'  => 'Ingresar al punto de venta',
+            'description'   => 'Permite ingresar al punto de venta y realizar cobros a los alumnos'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

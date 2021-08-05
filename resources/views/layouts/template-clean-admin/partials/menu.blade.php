@@ -107,6 +107,15 @@
                 <span>Grupos</span></a>
         </li>
     @endcan
+    @can('listar_grupos')
+        <li class="">
+            <a href="{{ route('punto_de_venta.index') }}">
+                <div class="icon-w">
+                <div class="fas fa-cash-register"></div>
+                </div>
+                <span>Punto de venta</span></a>
+        </li>
+    @endcan
 
     <li class="sub-header d-none d-sm-none d-md-none d-lg-block d-xl-block">
         <span>Opciones</span>

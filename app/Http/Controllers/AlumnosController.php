@@ -361,16 +361,59 @@ class AlumnosController extends Controller
 
     public function datatables_pagos(Request $request)
     {
-        $query = AlumnoPago::query()
-            ->when($request->input('id_alumno'),function($q,$id_alumno){
-                $q->where('id_alumno',$id_alumno);
-            });
+
+            $query = AlumnoPago::query()
+                ->when($request->input('id_alumno'),function($q,$id_alumno){
+                    $q->where('id_alumno',$id_alumno);
+                })
+                ->when($request->input('status'),function($q,$status){
+                    $q->where('status',$status);
+                });;
+        
+
 
         return DataTables::eloquent($query)
             ->editColumn('fecha_limite',function($model){
                 return optional($model->fecha_limite)->format('d/m/Y');
             })
             ->rawColumns([])
+            ->make(true);
+    }
+
+    public function datatables_pagos_pendientes(Request $request)
+    {
+        if(isset($request->id_alumno)){
+            $query = AlumnoPago::query()
+                ->when($request->input('id_alumno'),function($q,$id_alumno){
+                    $q->where('id_alumno',$id_alumno);
+                })
+                ->when($request->input('status'),function($q,$status){
+                    $q->where('status',$status);
+                });
+
+                $total_pendiente = AlumnoPago::query()
+                ->when($request->input('id_alumno'),function($q,$id_alumno){
+                    $q->where('id_alumno',$id_alumno);
+                })
+                ->when($request->input('status'),function($q,$status){
+                    $q->where('status',$status);
+                })->sum('monto');
+        }else{
+            $query = AlumnoPago::where('id_alumno','xxxxxxxxx');
+            $total_pendiente = 0;
+        }
+       
+       
+
+        
+        return DataTables::eloquent($query)
+            ->editColumn('fecha_limite',function($model){
+                return optional($model->fecha_limite)->format('d/m/Y');
+            })
+            ->rawColumns([])
+            ->with([
+                'total_pendiente' => $total_pendiente
+            ])
             ->make(true);
     }
 }
