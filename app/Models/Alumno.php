@@ -63,7 +63,7 @@ class Alumno extends Model
         'grado_estudios',
         'otro_grado_estudios',
         'tutor',
-        'especialidad',
+        'id_especialidad',
         'otra_especialidad',
         'escuela_procedencia',
         'objetivo_inscripcion',
@@ -84,6 +84,15 @@ class Alumno extends Model
         'forma_pago',
         'status',
     ];
+
+    # NOTE: MODEL RELATIONSHIPS
+    public function especialidad()
+    {
+        return $this->belongsTo(Especialidad::class,'id_especialidad','id')->withDefault([
+            'nombre'        => '',
+            'descripcion'   => ''
+        ]);
+    }
 
     public function sucursal()
     {
@@ -110,6 +119,7 @@ class Alumno extends Model
         return $this->hasMany(AlumnoPago::class,'id_alumno','id');
     }
 
+    # NOTE: MODEL ACCESORS
     public function getFullnameAttribute()
     {
         return $this->nombres . ' ' . $this->apellido_paterno . ' ' . $this->apellido_materno;
@@ -124,5 +134,22 @@ class Alumno extends Model
         }
 
         return Carbon::parse($value)->format('Y-m-d');
+    }
+
+    #NOTE: scopes
+
+    public function scopeAlumno($query)
+    {
+        return $query->where('status',config('alumnos.status.Alumno'));
+    }
+
+    public function scopeSemanal($query)
+    {
+        return $query->where('forma_pago',config('alumnos.forma_pago.semanal'));
+    }
+
+    public function scopeMensual($query)
+    {
+        return $query->where('forma_pago',config('alumnos.forma_pago.mensual'));
     }
 }

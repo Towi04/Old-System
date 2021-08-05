@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\CuentasBancariasController;
+use App\Http\Controllers\Admin\EspecialidadesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
@@ -68,6 +70,17 @@ Route::middleware(['auth','sucursal'])->group(function () {
             'sucursales' => 'sucursal'
         ]);
 
+        # NOTE: ESPECIALIDADES
+        Route::post('especialidades/datatables', [ EspecialidadesController::class,'datatables'])->name('especialidades.datatables');
+        Route::resource('especialidades', EspecialidadesController::class)->parameters([
+            'especialidades' => 'especialidad'
+        ]);
+
+        # NOTE: CUENTAS BANCARIAS
+        Route::post('cuentas-bancarias/datatables', [ CuentasBancariasController::class,'datatables'])->name('cuentas-bancarias.datatables');
+        Route::resource('cuentas-bancarias', CuentasBancariasController::class)->parameters([
+            'cuentas-bancarias' => 'cuentaBancaria'
+        ]);
     });
 
     #RUTAS PRE-REGISTRO ALUMNOS

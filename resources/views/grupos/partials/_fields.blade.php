@@ -3,8 +3,8 @@
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
-                {!! Form::label('especialidad', 'Especialidad:*'); !!}
-                {!! Form::select('especialidad', config('alumnos.especialidad'), null, ['class' => 'form-control','required' => true]) !!}
+                {!! Form::label('id_especialidad', 'Especialidad:*'); !!}
+                {!! Form::select('id_especialidad', $especialidades, null, ['class' => 'form-control','required' => true]) !!}
             </div>
         </div>
         <div class="col-md-6">
@@ -27,18 +27,33 @@
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('inscripcion', 'Inscripcion:*'); !!}
-                {!! Form::number('inscripcion', null, ['class' => 'form-control','required' => true]) !!}
+        @if($grupo->exists)
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('precio_semanal', 'Precio semanal:'); !!}
+                    {!! Form::number('precio_semanal', null, ['class' => 'form-control','disabled' => true]) !!}
+                </div>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('colegiatura', 'Colegiatura:*'); !!}
-                {!! Form::number('colegiatura', null, ['class' => 'form-control','required' => true]) !!}
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('precio_mensualidad_pronto_pago', 'Pronto Pago:*'); !!}
+                    {!! Form::number('precio_mensualidad_pronto_pago', null, ['class' => 'form-control','disabled' => true]) !!}
+                </div>
             </div>
-        </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('precio_mensualidad', 'Mensualidad:*'); !!}
+                    {!! Form::number('precio_mensualidad', null, ['class' => 'form-control','disabled' => true]) !!}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('precio_inscripcion', 'Inscripcion:*'); !!}
+                    {!! Form::number('precio_inscripcion', null, ['class' => 'form-control','disabled' => true]) !!}
+                </div>
+            </div>
+        @endif
 
         <div class="col-md-12">
             <br>

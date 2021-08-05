@@ -81,7 +81,7 @@
                             <tr>
                                 <td class="bg-primary text-white"><b>Especialidad</b></td>
                                 <td>
-                                    {{ $grupo->especialidad }}
+                                    {{ $grupo->especialidad->nombre }}
                                 </td>
                             </tr>
                             <tr>
@@ -103,15 +103,27 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="bg-primary text-white"><b>Inscripcion</b></td>
+                                <td class="bg-primary text-white"><b>Precio Semanal</b></td>
                                 <td>
-                                    $ {{ number_format($grupo->inscripcion,2,'.',',') }}
+                                    $ {{ number_format($grupo->precio_semanal,2,'.',',') }}
                                 </td>
                             </tr>
                             <tr>
-                                <td class="bg-primary text-white"><b>Colegiatura</b></td>
+                                <td class="bg-primary text-white"><b>Pronto Pago</b></td>
                                 <td>
-                                    $ {{ number_format($grupo->colegiatura,2,'.',',') }}
+                                    $ {{ number_format($grupo->precio_mensualidad_pronto_pago,2,'.',',') }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="bg-primary text-white"><b>Mensualidad</b></td>
+                                <td>
+                                    $ {{ number_format($grupo->precio_mensualidad,2,'.',',') }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="bg-primary text-white"><b>Inscripción</b></td>
+                                <td>
+                                    $ {{ number_format($grupo->precio_inscripcion,2,'.',',') }}
                                 </td>
                             </tr>
                         </table>

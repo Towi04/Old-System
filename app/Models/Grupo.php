@@ -35,20 +35,40 @@ class Grupo extends Model
     protected $dates = ['created_at', 'updated_at', 'fecha_inicio'];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'tipo_grupo',
+        'fecha_inicio_format'
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
         'id_sucursal',
-        'especialidad',
+        'id_especialidad',
         'horario',
         'dias',
         'infantil',
         'fecha_inicio',
-        'inscripcion',
-        'colegiatura',
+        'precio_semanal',
+        'precio_mensualidad_pronto_pago',
+        'precio_mensualidad',
+        'precio_inscripcion',
     ];
+
+    public function especialidad()
+    {
+        return $this->belongsTo(Especialidad::class,'id_especialidad','id')->withDefault([
+            'nombre'        => '',
+            'descripcion'   => '',
+        ]);
+    }
 
     public function sucursal()
     {
@@ -65,6 +85,25 @@ class Grupo extends Model
     {
         return $this->belongsToMany(Alumno::class, 'alumnos_grupos', 'id_grupo', 'id_alumno')
             ->withPivot('id','id_alumno')->using(AlumnoGrupo::class);
+    }
+
+
+    public function getTipoGrupoAttribute()
+    {
+        $tipo_grupo = ($this->infantil)? 'Infantil':'Adulto';
+
+        return $tipo_grupo;
+
+    }
+
+    public function getFechaInicioFormatAttribute()
+    {
+        if (empty($this->fecha_inicio)) {
+            return null;
+        }
+
+        return Carbon::parse($this->fecha_inicio)->format('Y-m-d');
+
     }
 
      # NOTE: Form Model Accessors (Laravel Collective) https://laravelcollective.com/docs/5.4/html

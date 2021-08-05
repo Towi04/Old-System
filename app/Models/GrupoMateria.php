@@ -27,9 +27,9 @@ class GrupoMateria extends Pivot
     public function profesor()
     {
         return $this->belongsTo(User::class,'id_profesor','id')->withDefault([
-            'nombres'=>'SIN ASIGNAR',
-            'apellido_paterno'=>'',
-            'apellido_materno'=>'',
+            'nombres'           => '',
+            'apellido_paterno'  => '',
+            'apellido_materno'  => '',
         ]);
     }
 

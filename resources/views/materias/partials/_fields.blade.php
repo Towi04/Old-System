@@ -11,8 +11,8 @@
 
         <div class="col-md-6">
             <div class="form-group">
-                {!! Form::label('especialidad', 'Especialidad:*'); !!}
-                {!! Form::select('especialidad', config('alumnos.especialidad'), null, ['class' => 'form-control']) !!}
+                {!! Form::label('id_especialidad', 'Especialidad:*'); !!}
+                {!! Form::select('id_especialidad',$especialidades, null, ['class' => 'form-control']) !!}
             </div>
         </div>
 

@@ -48,6 +48,18 @@
                                 <a href="{{ route('admin.sucursales.index') }}">Sucursal</a>
                             </li>
                         @endcan
+
+                        @can(['listar_especialidades'])
+                            <li>
+                                <a href="{{ route('admin.especialidades.index') }}">Especialidades</a>
+                            </li>
+                        @endcan
+
+                        @can(['listar_cuentas_bancarias'])
+                            <li>
+                                <a href="{{ route('admin.cuentas-bancarias.index') }}">Cuentas Bancarias</a>
+                            </li>
+                        @endcan
                     </ul>
                 </div>
             </div>

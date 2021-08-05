@@ -37,8 +37,8 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Especialidad</th>
                             <th>Nombre</th>
+                            <th>Especialidad</th>
                             <th>Fase</th>
                             <th>Orden</th>
                             <th class="text-center">Acciones</th>
@@ -87,7 +87,7 @@
             columns: [
                 { data: 'id', name: 'id',class: 'text-nowrap'},
                 { data: 'nombre', name: 'nombre',class: 'text-nowrap'},
-                { data: 'especialidad', name: 'especialidad',class: 'text-nowrap'},
+                { data: 'especialidad.nombre', name: 'especialidad.nombre',class: 'text-nowrap'},
                 { data: 'fase', name: 'fase',class: 'text-nowrap'},
                 { data: 'orden', name: 'orden',class: 'text-nowrap'},
                 { data: 'buttons', name: 'buttons', orderable: false, searchable: false }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Especialidad;
 use App\Models\Materia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +28,8 @@ class MateriasController extends Controller
         $query = Materia::query()
             ->when($request->input('id_sucursal'),function($q,$id_sucursal){
                 $q->where('id_sucursal',$id_sucursal);
-            });
+            })
+            ->with(['especialidad']);
 
         return DataTables::eloquent($query)
             ->addColumn('buttons', 'materias.datatables._buttons')
@@ -45,8 +47,8 @@ class MateriasController extends Controller
         abort_unless(Auth::user()->can('crear_materia'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
         return view('materias.create',[
-            'materia'    => new Materia,
-
+            'materia'           => new Materia,
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
         ]);
     }
 
@@ -59,11 +61,11 @@ class MateriasController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'id_sucursal'   => 'required',
-            'especialidad'  => 'required',
-            'nombre'        => 'required',
-            'fase'          => 'required',
-            'orden'         => 'required',
+            'id_sucursal'       => 'required',
+            'id_especialidad'   => 'required',
+            'nombre'            => 'required',
+            'fase'              => 'required',
+            'orden'             => 'required',
         ];
 
         $request->request->add([
@@ -90,7 +92,8 @@ class MateriasController extends Controller
         abort_unless(Auth::user()->can('editar_materia'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
         return view('materias.edit', [
-            'materia'    => $materia,
+            'materia'           => $materia,
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
         ]);
     }
 
@@ -105,7 +108,7 @@ class MateriasController extends Controller
     {
         $rules = [
             'id_sucursal'           => 'required',
-            'especialidad'          => 'required',
+            'id_especialidad'       => 'required',
             'nombre'                => 'required',
             'fase'                  => 'required',
             'orden'                 => 'required',

@@ -140,6 +140,59 @@ return [
             'display_name'  => 'Convertir Pre-registro en Alunno',
             'description'   => 'Permite transformar un pre-registro en alumno',
         ],
+
+        [
+            'name'          => 'listar_especialidades',
+            'display_name'  => 'Listar Especialidades',
+            'description'   => 'Permite mostrar la lista de especialidades'
+        ],
+        [
+            'name'          => 'crear_especialidad',
+            'display_name'  => 'Crear especialidad',
+            'description'   => 'Permite crear una especialidad'
+        ],
+        [
+            'name'          => 'consultar_especialidad',
+            'display_name'  => 'Consultar especialidad',
+            'description'   => 'Permite consultar una especialidad'
+        ],
+        [
+            'name'          => 'editar_especialidad',
+            'display_name'  => 'Editar especialidad',
+            'description'   => 'Permite editar una especialidad'
+        ],
+        [
+            'name'          => 'eliminar_especialidad
+            ',
+            'display_name'  => 'Eliminar especialidad',
+            'description'   => 'Permite eliminar una especialidad'
+        ],
+
+        [
+            'name'          => 'listar_cuentas_bancarias',
+            'display_name'  => 'Listar cuentas bancarias',
+            'description'   => 'Permite mostrar la lista de cuentas_bancarias'
+        ],
+        [
+            'name'          => 'crear_cuenta_bancaria',
+            'display_name'  => 'Crear cuenta bancaria',
+            'description'   => 'Permite crear una cuenta bancaria'
+        ],
+        [
+            'name'          => 'consultar_cuenta_bancaria',
+            'display_name'  => 'Consultar cuenta_bancaria',
+            'description'   => 'Permite consultar una cuenta bancaria'
+        ],
+        [
+            'name'          => 'editar_cuenta_bancaria',
+            'display_name'  => 'Editar cuenta bancaria',
+            'description'   => 'Permite editar una cuenta bancaria'
+        ],
+        [
+            'name'          => 'eliminar_cuenta_bancaria',
+            'display_name'  => 'Eliminar cuenta bancaria',
+            'description'   => 'Permite eliminar una cuenta bancaria'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)
@@ -192,5 +245,71 @@ return [
             'estado'            => 'Guanajuato',
         ],
 
+    ],
+
+    'especialidades' => [
+        [
+            'nombre'             => 'Ingles',
+            'id_sucursal'        => 1,
+            'descripcion'        => null,
+            'precio_inscripcion' => null,
+            'precio_mensualidad' => null,
+            'precio_mensualidad_pronto_pago' => null,
+            'precio_semanal'     => null,
+        ],
+        [
+            'nombre'             => 'Computacion',
+            'id_sucursal'        => 1,
+            'descripcion'        => null,
+            'precio_inscripcion' => null,
+            'precio_mensualidad' => null,
+            'precio_mensualidad_pronto_pago' => null,
+            'precio_semanal'     => null,
+        ],
+        [
+            'nombre'             => 'Computacion 2021',
+            'id_sucursal'        => 1,
+            'descripcion'        => null,
+            'precio_inscripcion' => null,
+            'precio_mensualidad' => null,
+            'precio_mensualidad_pronto_pago' => null,
+            'precio_semanal'     => null,
+        ],
+        [
+            'nombre'             => 'Prepa Abierta',
+            'id_sucursal'        => 1,
+            'descripcion'        => null,
+            'precio_inscripcion' => null,
+            'precio_mensualidad' => null,
+            'precio_mensualidad_pronto_pago' => null,
+            'precio_semanal'     => null,
+        ],
+        [
+            'nombre'             => 'Prepa Abierta',
+            'id_sucursal'        => 1,
+            'descripcion'        => null,
+            'precio_inscripcion' => null,
+            'precio_mensualidad' => null,
+            'precio_mensualidad_pronto_pago' => null,
+            'precio_semanal'     => null,
+        ],
+        [
+            'nombre'             => 'Prepa escoloarizada',
+            'id_sucursal'        => 1,
+            'descripcion'        => null,
+            'precio_inscripcion' => null,
+            'precio_mensualidad' => null,
+            'precio_mensualidad_pronto_pago' => null,
+            'precio_semanal'     => null,
+        ],
+        [
+            'nombre'             => 'Otros',
+            'id_sucursal'        => 1,
+            'descripcion'        => null,
+            'precio_inscripcion' => null,
+            'precio_mensualidad' => null,
+            'precio_mensualidad_pronto_pago' => null,
+            'precio_semanal'     => null,
+        ],
     ],
 ];

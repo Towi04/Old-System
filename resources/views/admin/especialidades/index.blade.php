@@ -1,7 +1,7 @@
 @extends('layouts.template-'.config('settings.template').'.plantilla')
 
 @section('titulo')
-    Grupos
+    Especialidades
 @endsection
 
 
@@ -11,7 +11,7 @@
             <a href="{{ url('/') }}">Inicio</a>
         </li>
         <li class="breadcrumb-item active">
-            <strong>Grupos</strong>
+            <strong>Especialidades</strong>
         </li>
     </ol>
 @endsection
@@ -19,8 +19,8 @@
 @section('contenido')
 <div class="row justify-content-start px-4">
     <div>
-        @can('crear_grupo')
-            <a class="mb-3" href={{ route('grupos.create') }}>
+        @can('crear_especialidad')
+            <a class="mb-3" href={{ route('admin.especialidades.create') }}>
                 <button class="btn btn-success btn-sm" type="button">
                     <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar
                 </button>
@@ -33,15 +33,16 @@
     <div class="widget-holder widget-full-height widget-flex col-lg-12">
         <div class="widget-body">
             <div class="table-responsive mt-3">
-                <table id="tb-grupos" class="table table-padded  table-striped table-hover">
+                <table id="tb-especialidades" class="table table-padded  table-striped table-hover">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Especialidad</th>
-                            <th>Horario</th>
-                            <th>Dias</th>
-                            <th>Tipo</th>
-                            <th>Fecha Inicio</th>
+                            <th>Nombre</th>
+                            <th>Descripcion</th>
+                            <th>inscripcion</th>
+                            <th>Mensualidad</th>
+                            <th>Pronto Pago</th>
+                            <th>Pago semanal</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -60,7 +61,7 @@
 <script type="text/javascript">
     $(function() {
         const dom = {
-            table: $('#tb-grupos'),
+            table: $('#tb-especialidades'),
         };
 
         var dt = dom.table.DataTable({
@@ -68,7 +69,7 @@
             serverSide: true,
             dom: "<'row'<'col-6 d-flex align-items-center' l><'col-6'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
             ajax: {
-                url: "{{ route('grupos.datatables') }}",
+                url: "{{ route('admin.especialidades.datatables') }}",
                 method:'POST',
                 data: function (d) {
                     d.id_sucursal = "{{ optional(session('sucursal'))->id }}"
@@ -83,15 +84,16 @@
             responsive: true,
             buttons: [{
                 extend: 'excel',
-                title: 'Grupos'
+                title: 'Especialidades'
             }],
             columns: [
                 { data: 'id', name: 'id',class: 'text-nowrap'},
-                { data: 'especialidad.nombre', name: 'especialidad.nombre',class: 'text-nowrap'},
-                { data: 'horario', name: 'horario',class: 'text-nowrap'},
-                { data: 'dias', name: 'dias',class: 'text-nowrap'},
-                { data: 'infantil', name: 'infantil',class: 'text-nowrap'},
-                { data: 'fecha_inicio', name: 'fecha_inicio',class: 'text-nowrap'},
+                { data: 'nombre', name: 'nombre',class: 'text-nowrap'},
+                { data: 'descripcion', name: 'descripcion',class: 'text-nowrap'},
+                { data: 'precio_inscripcion', name: 'precio_inscripcion',class: 'text-nowrap text-right'},
+                { data: 'precio_mensualidad', name: 'precio_mensualidad',class: 'text-nowrap text-right'},
+                { data: 'precio_mensualidad_pronto_pago', name: 'precio_mensualidad_pronto_pago',class: 'text-nowrap text-right'},
+                { data: 'precio_semanal', name: 'precio_semanal',class: 'text-nowrap text-right'},
                 { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
             ],
             language: {

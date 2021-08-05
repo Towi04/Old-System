@@ -1,7 +1,7 @@
 @extends('layouts.template-'.config('settings.template').'.plantilla')
 
 @section('titulo')
-    Grupos
+    Cuentas Bancarias
 @endsection
 
 
@@ -11,7 +11,7 @@
             <a href="{{ url('/') }}">Inicio</a>
         </li>
         <li class="breadcrumb-item active">
-            <strong>Grupos</strong>
+            <strong>Cuentas Bancarias</strong>
         </li>
     </ol>
 @endsection
@@ -19,8 +19,8 @@
 @section('contenido')
 <div class="row justify-content-start px-4">
     <div>
-        @can('crear_grupo')
-            <a class="mb-3" href={{ route('grupos.create') }}>
+        @can('crear_cuenta_bancaria')
+            <a class="mb-3" href={{ route('admin.cuentas-bancarias.create') }}>
                 <button class="btn btn-success btn-sm" type="button">
                     <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar
                 </button>
@@ -33,15 +33,13 @@
     <div class="widget-holder widget-full-height widget-flex col-lg-12">
         <div class="widget-body">
             <div class="table-responsive mt-3">
-                <table id="tb-grupos" class="table table-padded  table-striped table-hover">
+                <table id="tb-cuentas-bancarias" class="table table-padded  table-striped table-hover">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Especialidad</th>
-                            <th>Horario</th>
-                            <th>Dias</th>
-                            <th>Tipo</th>
-                            <th>Fecha Inicio</th>
+                            <th>Nombre</th>
+                            <th>Banco</th>
+                            <th>N° Cuenta</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -60,7 +58,7 @@
 <script type="text/javascript">
     $(function() {
         const dom = {
-            table: $('#tb-grupos'),
+            table: $('#tb-cuentas-bancarias'),
         };
 
         var dt = dom.table.DataTable({
@@ -68,7 +66,7 @@
             serverSide: true,
             dom: "<'row'<'col-6 d-flex align-items-center' l><'col-6'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
             ajax: {
-                url: "{{ route('grupos.datatables') }}",
+                url: "{{ route('admin.cuentas-bancarias.datatables') }}",
                 method:'POST',
                 data: function (d) {
                     d.id_sucursal = "{{ optional(session('sucursal'))->id }}"
@@ -83,15 +81,13 @@
             responsive: true,
             buttons: [{
                 extend: 'excel',
-                title: 'Grupos'
+                title: 'Cuentas Bancarias'
             }],
             columns: [
                 { data: 'id', name: 'id',class: 'text-nowrap'},
-                { data: 'especialidad.nombre', name: 'especialidad.nombre',class: 'text-nowrap'},
-                { data: 'horario', name: 'horario',class: 'text-nowrap'},
-                { data: 'dias', name: 'dias',class: 'text-nowrap'},
-                { data: 'infantil', name: 'infantil',class: 'text-nowrap'},
-                { data: 'fecha_inicio', name: 'fecha_inicio',class: 'text-nowrap'},
+                { data: 'nombre', name: 'nombre',class: 'text-nowrap'},
+                { data: 'banco', name: 'banco',class: 'text-nowrap'},
+                { data: 'no_cuenta', name: 'no_cuenta',class: 'text-nowrap'},
                 { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
             ],
             language: {
@@ -169,8 +165,11 @@
                             toastr.success('Éxito', 'Se borró con éxito el registro');
                         }, false )
                     },
-                    fail:function(error){
-                        toastr.error('Error', 'Ocurrio un error inesperado');
+                    error:function(error){
+                        setTimeout(() => {
+                            wait.modal('hide');
+                            toastr.error('Error', 'Ocurrio un error inesperado');
+                        }, 250);
                     }
                 });
             })
