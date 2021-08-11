@@ -135,7 +135,8 @@ Route::middleware(['auth','sucursal'])->group(function () {
 
     # NOTE RUTAS PUNTO DE DE VENTA
     Route::post('punto_de_venta/recibir_abonos',[ PuntoDeVentaController::class,'recibir_abonos'])->name('punto_de_venta.recibir_abonos');
-    Route::resource('punto_de_venta', PuntoDeVentaController::class);
+    Route::get('punto_de_venta/ticket/{id}',[ PuntoDeVentaController::class,'ticket'])->name('punto_de_venta.ticket');
+    Route::resource('punto_de_venta', PuntoDeVentaController::class)->only('index');
 
 
 

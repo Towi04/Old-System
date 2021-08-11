@@ -89,6 +89,29 @@
 
         </div>
     </div>
+
+
+    <div class="modal inmodal fade animated" id="modal-ticket" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Ticket</h4>
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">
+                            &times;</span><span class="sr-only">Close</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div id="contenido-ticket"></div>
+                    </div>
+
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
@@ -107,7 +130,12 @@
             const dom = {
                 select_alumno: $("#id_alumno"),
                 tb_pagos: $("#tb-pagos"),
-                form_abonos: $("#form-recibir-abono")
+                form_abonos: $("#form-recibir-abono"),
+
+                tikets:{
+                    contenido_ticket:$("#contenido-ticket"),
+                    modal: $("#modal-ticket"),
+                }
             };
 
             const disableForm = (disable = false) => {
@@ -244,20 +272,24 @@
                     processData: false,
                     data: formData
                 }).done(function(response){
-                    dom.form_abonos[0].reset();
+                    const pago = response.data.pago;
+                    const route = "{{ url('punto_de_venta/ticket/_pago') }}".replace('_pago',pago.id);
 
                     dt_pagos.ajax.reload(function(){
+                        dom.form_abonos[0].reset();
                         wait.modal('hide');
-                        toastr.success('Éxito', response.message);
-                    },false)
+
+                        dom.tikets.modal.modal('show');
+                        dom.tikets.contenido_ticket.html();
+                        dom.tikets.contenido_ticket.html(`<iframe scrolling='auto' type='text/html' scroll='auto' src='${route}' width='100%' height='450px' align='center'></iframe>`);
+                    },false);
+
                 }).fail(function(error){
                     setTimeout(() => {
                         wait.modal('hide');
                         toastr.error('Error', 'Ocurrio un error inesperado');
                     }, 250);
                 });
-
-
             });
 
         });

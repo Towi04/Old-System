@@ -82,6 +82,15 @@ class PuntoDeVentaController extends Controller
             }
 
             DB::commit();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'message' => 'Abono Registrado correctamente',
+                    'data'    => [
+                        'pago' => $pago
+                    ]
+                ]);
+            }
         } catch (\Throwable $th) {
             DB::rollBack();
 
@@ -91,12 +100,17 @@ class PuntoDeVentaController extends Controller
         }
 
 
-        if ($request->ajax()) {
-            return response()->json([
-                'message' => 'Abono Registrado correctamente'
-            ]);
-        }
+
 
         return redirect()->back();
+    }
+
+    public function ticket($id)
+    {
+        $pago = Pago::findOrFail($id);
+
+        $pago->load(['abonos.alumno_pago','abonos.pago','alumno','sucursal']);
+
+        return view('punto_de_venta.ticket',compact('pago'));
     }
 }
