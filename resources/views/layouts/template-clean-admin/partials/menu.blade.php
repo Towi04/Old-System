@@ -117,6 +117,29 @@
         </li>
     @endcan
 
+
+
+    <li class="selected has-sub-menu">
+        <a href="#">
+            <div class="icon-w">
+                <div class="fa fa-cogs"></div>
+            </div>
+            <span>Reportes</span>
+        </a>
+        <div class="sub-menu-w">
+            <div class="sub-menu-header d-none d-sm-none d-md-none d-lg-block d-xl-block">
+                Reportes
+            </div>
+            <div class="sub-menu-i">
+                <ul class="sub-menu">
+                    <li>
+                        <a href="{{ route('reportes.reporte-ventas.index') }}">Reporte de Ventas</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </li>
+
     <li class="sub-header d-none d-sm-none d-md-none d-lg-block d-xl-block">
         <span>Opciones</span>
     </li>

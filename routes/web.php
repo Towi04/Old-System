@@ -15,6 +15,7 @@ use App\Http\Controllers\GruposController;
 use App\Http\Controllers\MateriasController;
 use App\Http\Controllers\PreRegistrosController;
 use App\Http\Controllers\PuntoDeVentaController;
+use App\Http\Controllers\Reportes\ReporteVentasController;
 
 #NOTE: CONFIGURACION DE RUTAS
 Auth::routes(['register'=> false]);
@@ -135,4 +136,10 @@ Route::middleware(['auth','sucursal'])->group(function () {
     # NOTE RUTAS PUNTO DE DE VENTA
     Route::post('punto_de_venta/recibir_abonos',[ PuntoDeVentaController::class,'recibir_abonos'])->name('punto_de_venta.recibir_abonos');
     Route::resource('punto_de_venta', PuntoDeVentaController::class);
+
+
+
+    Route::prefix('reportes')->name('reportes.')->group(function () {
+        Route::get('reporte-ventas',[ReporteVentasController::class,'index'])->name('reporte-ventas.index');
+    });
 });

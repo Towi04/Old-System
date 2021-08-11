@@ -29,6 +29,13 @@ class Abono extends Model
         'monto',
     ];
 
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['created_at', 'updated_at'];
+
 
     public function sucursal()
     {
@@ -39,6 +46,11 @@ class Abono extends Model
 
     public function pago()
     {
-        $this->belongsTo(Pago::class, 'id_pago', 'id')->withDefault();
+        return $this->belongsTo(Pago::class, 'id_pago', 'id')->withDefault();
+    }
+
+    public function alumno_pago()
+    {
+        return $this->belongsTo(AlumnoPago::class, 'id_alumno_pago', 'id')->withDefault();
     }
 }
