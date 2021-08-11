@@ -19,7 +19,7 @@ class PuntoDeVentaController extends Controller
     {
         $this->validate($request,[
             'id_alumno' => 'required',
-            'monto'     => 'required'
+            'monto'     => 'required|numeric|min:1|not_in:0'
         ]);
 
         $id_sucursal = optional(session('sucursal'))->id;
@@ -59,7 +59,7 @@ class PuntoDeVentaController extends Controller
                         $pago->abonos()->create([
                             'id_sucursal'       => $id_sucursal,
                             'id_alumno_pago'    => $pa->id,
-                            'monto'             => $monto,
+                            'monto'             => $saldo_alumno,
                         ]);
 
                     }else{
@@ -67,7 +67,7 @@ class PuntoDeVentaController extends Controller
 
                         $pa->update([
                             'saldo'     => $nuevo_saldo,
-                            'status'    => config('pagos.status.pendiente'),
+                            'status'    => ($nuevo_saldo == 0)?config('pagos.status.pagado') : config('pagos.status.pendiente'),
                         ]);
 
                         $pago->abonos()->create([
