@@ -45,7 +45,7 @@ class AlumnosController extends Controller
                 return optional($model->fecha_nacimiento)->format('d/m/Y');
             })
             ->addColumn('buttons', 'alumnos.datatables._buttons')
-           
+
             ->rawColumns(['buttons'])
             ->make(true);
     }
@@ -369,7 +369,7 @@ class AlumnosController extends Controller
                 ->when($request->input('status'),function($q,$status){
                     $q->where('status',$status);
                 });;
-        
+
 
 
         return DataTables::eloquent($query)
@@ -391,26 +391,34 @@ class AlumnosController extends Controller
                     $q->where('status',$status);
                 });
 
-                $total_pendiente = AlumnoPago::query()
+            $total_pendiente = AlumnoPago::query()
                 ->when($request->input('id_alumno'),function($q,$id_alumno){
                     $q->where('id_alumno',$id_alumno);
                 })
                 ->when($request->input('status'),function($q,$status){
                     $q->where('status',$status);
-                })->sum('monto');
+                })->sum('saldo');
         }else{
             $query = AlumnoPago::where('id_alumno','xxxxxxxxx');
             $total_pendiente = 0;
         }
-       
-       
 
-        
         return DataTables::eloquent($query)
             ->editColumn('fecha_limite',function($model){
                 return optional($model->fecha_limite)->format('d/m/Y');
             })
-            ->rawColumns([])
+            ->editColumn('monto',function($model){
+                return number_format($model->monto,2,'.',',');
+            })
+            ->editColumn('saldo',function($model){
+                return number_format($model->saldo,2,'.',',');
+            })
+            ->editColumn('status',function($model){
+                return "<span class='badge badge-danger text-white'>{$model->status}</span>";
+            })
+
+
+            ->rawColumns(['status'])
             ->with([
                 'total_pendiente' => $total_pendiente
             ])

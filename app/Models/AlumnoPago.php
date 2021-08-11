@@ -31,6 +31,7 @@ class AlumnoPago extends Model
         'id_grupo',
         'concepto',
         'monto',
+        'saldo',
         'fecha_limite',
         'status',
     ];
@@ -47,5 +48,17 @@ class AlumnoPago extends Model
     public function grupo()
     {
         return $this->belongsTo(Grupo::class,'id_grupo','id')->withDefault();
+    }
+
+    public function abonos()
+    {
+        return $this->hasMany(Abono::class,'id_alumno_pago','id');
+    }
+
+    # NOTE: SCOPES
+
+    public function scopePendientes($query)
+    {
+        return $query->where('status',config('pagos.status.pendiente'));
     }
 }

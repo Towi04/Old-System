@@ -28,7 +28,7 @@
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
             <div class="element-box">
                 <h5 class="element-header">
-                    Pagos pendientes 
+                    Pagos pendientes
                 </h5>
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -40,6 +40,7 @@
                                 <tr>
                                     <th>Concepto</th>
                                     <th>Monto</th>
+                                    <th>Saldo</th>
                                     <th>Fecha Limite</th>
                                     <th>Status</th>
                                 </tr>
@@ -47,64 +48,72 @@
                         </table>
                     </div>
                 </div>
-                
+
             </div>
-            
+
         </div>
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
             <div class="element-box">
                 <h5 class="element-header">
                     Recibir abono
                 </h5>
-                <div class="row justify-content-end">
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                        <div class="form-group">
-                          <label for="">Monto</label>
-                          <input type="number" name="" id="" class="form-control" placeholder="Ingresa el monto " aria-describedby="helpId">
+
+                {!! Form::open(['id' => 'form-recibir-abono','route' => 'punto_de_venta.recibir_abonos']) !!}
+                    <div class="row justify-content-end">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                {!! Form::label('monto','Monto:') !!}
+                                {!! Form::number('monto', null, ['class' => 'form-control','placeholder' => 'Ingresa el monto','required' => true,'autocomplete' => 'off','form-selector' => '','step' => '0.01','disabled' => true]) !!}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+
+                            <div class="form-group">
+                                <label for="">Forma de pago</label>
+                                {!! Form::label('forma_pago','Forma Pago:') !!}
+                                {!! Form::select('forma_pago', [
+                                        'Efectivo'              => 'Efectivo',
+                                        'Tarjate de debito'     => 'Tarjate de debito',
+                                        'Tarjate de crédito'    => 'Tarjate de crédito',
+                                        'Transferencia'         => 'Transferencia'
+                                    ],null, ['class' => 'form-control form-control-sm','form-selector'=> '','disabled' => true]) !!}
+                            </div>
+
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <button class="btn btn-success float-right" type="submit" disabled form-selector >Recibir abono</button>
                         </div>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-
-                          <div class="form-group">
-                            <label for="">Forma de pago</label>
-                            <select class="form-control form-control-sm" name="" id="">
-                              <option>Efectivo</option>
-                              <option>Tarjate de debito</option>
-                              <option>Tarjate de crédito</option>
-                              <option>Transferencia</option>
-                            </select>
-                          </div>
-
-                    </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                        <button class="btn btn-success float-right">Recibir abono</button>
-                    </div>
-                </div>
+                {!! Form::close() !!}
             </div>
-            
+
         </div>
     </div>
-
-
-
 @endsection
 
 @section('scripts')
-<script>
+    <script src="{{ asset('template-clean-admin/bower_components/select2/dist/js/i18n/es.js') }}"></script>
 
-$(function() {
-    var Helpers = function() {};
+    <script type="text/javascript">
+        $(function() {
+            var Helpers = function() {};
 
-    Helpers.prototype.number_format = function(number,decimals) {
-      return parseFloat(number).toFixed(decimals).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString()
-    }
+            Helpers.prototype.number_format = function(number,decimals) {
+                return parseFloat(number).toFixed(decimals).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString()
+            }
 
-    Helpers = new Helpers();
+            Helpers = new Helpers();
 
             const dom = {
                 select_alumno: $("#id_alumno"),
                 tb_pagos: $("#tb-pagos"),
+                form_abonos: $("#form-recibir-abono")
             };
+
+            const disableForm = (disable = false) => {
+                const $elements = dom.form_abonos[0].querySelectorAll('[form-selector]');
+                Array.from($elements).forEach(formElement => formElement.disabled = disable);
+            }
 
             dom.select_alumno.select2({
                 language: "es",
@@ -178,11 +187,12 @@ $(function() {
                 },
                 columns: [
                     {data: 'concepto', name: 'concepto'},
-                    {data: 'monto', name: 'monto'},
+                    {data: 'monto', name: 'monto',className:'text-right'},
+                    {data: 'saldo', name: 'saldo',className:'text-right'},
                     {data: 'fecha_limite', name: 'fecha_limite'},
                     {data: 'status', className:"text-center", name: 'status'},
                 ],
-                order: [[ 2, "desc" ]],
+                order: [[ 3, "asc" ]],
                 language: {
                     "lengthMenu": "Mostrar _MENU_ registros por pagina",
                     "zeroRecords": "No se encontro ningún registro",
@@ -207,8 +217,49 @@ $(function() {
 
             dom.select_alumno.on('select2:select', function (e) {
                 dt_pagos.draw();
+
+                disableForm( !$(this).val());
             });
-            
-});
-</script>
+
+
+            dom.form_abonos.submit(function(e)
+            {
+                e.preventDefault();
+
+                wait.modal('show');
+
+                const id_alumno = dom.select_alumno.val()
+
+                if(!id_alumno){
+                    toastr.error('Error', 'Debes seleccionar primero un alumno');
+                }
+
+                let formData = new FormData(this);
+                formData.append('id_alumno',id_alumno);
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    contentType: false,
+                    processData: false,
+                    data: formData
+                }).done(function(response){
+                    dom.form_abonos[0].reset();
+
+                    dt_pagos.ajax.reload(function(){
+                        wait.modal('hide');
+                        toastr.success('Éxito', response.message);
+                    },false)
+                }).fail(function(error){
+                    setTimeout(() => {
+                        wait.modal('hide');
+                        toastr.error('Error', 'Ocurrio un error inesperado');
+                    }, 250);
+                });
+
+
+            });
+
+        });
+    </script>
 @endsection
