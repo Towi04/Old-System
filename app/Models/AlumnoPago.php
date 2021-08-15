@@ -40,6 +40,10 @@ class AlumnoPago extends Model
         'status' => 'pendiente'
     ];
 
+    public $appends = [
+        'status_vencimiento'
+    ];
+
     public function alumno()
     {
         return $this->belongsTo(Alumno::class,'id_alumno','id')->withDefault();
@@ -60,5 +64,13 @@ class AlumnoPago extends Model
     public function scopePendientes($query)
     {
         return $query->where('status',config('pagos.status.pendiente'));
+    }
+
+    public function getStatusVencimientoAttribute(){
+        if($this->fecha_limite->lt(\Carbon\Carbon::today()) && $this->status == 'pendiente'){
+            return 'Vencido';
+        }else{
+            return $this->status;
+        }
     }
 }

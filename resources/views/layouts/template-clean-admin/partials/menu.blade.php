@@ -135,6 +135,12 @@
                     <li>
                         <a href="{{ route('reportes.reporte-ventas.index') }}">Reporte de Ventas</a>
                     </li>
+                    <li>
+                        <a href="{{ route('reportes.reporte-ventas.vencimientos') }}">Reporte de Vencimientos</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('reportes.reporte-ventas.proyeccion') }}">Reporte de Proyección</a>
+                    </li>
                 </ul>
             </div>
         </div>

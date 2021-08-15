@@ -39,14 +39,14 @@ class AlumnosController extends Controller
 
         return DataTables::eloquent($query)
             ->addColumn('nombre_alumno',function($model){
-                return "{$model->nombres} {$model->apellido_paterno} {$model->apellido_materno}";
+                return "<a href=".route('alumnos.show', $model->id).">{$model->nombres} {$model->apellido_paterno} {$model->apellido_materno}</a>";
             })
             ->addColumn('fecha_nacimiento',function($model){
                 return optional($model->fecha_nacimiento)->format('d/m/Y');
             })
             ->addColumn('buttons', 'alumnos.datatables._buttons')
 
-            ->rawColumns(['buttons'])
+            ->rawColumns(['buttons','nombre_alumno'])
             ->make(true);
     }
 

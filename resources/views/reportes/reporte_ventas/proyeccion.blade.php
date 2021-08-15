@@ -1,7 +1,7 @@
 @extends('layouts.template-'.config('settings.template').'.plantilla')
 
 @section('titulo')
-    Pre-Registro Alumnos
+        Proyección cobranza
 @endsection
 
 
@@ -11,47 +11,45 @@
             <a href="{{ url('/') }}">Inicio</a>
         </li>
         <li class="breadcrumb-item active">
-            <strong>Pre-Registro Alumnos</strong>
+            <strong>Proyeccion cobranza</strong>
         </li>
     </ol>
 @endsection
 
 @section('contenido')
-<div class="row justify-content-start px-4">
-    <div>
-        @can('realizar_pre_registro')
-            <a class="mb-3" href={{ route('pre-registro-alumnos.create') }}>
-                <button class="btn btn-success btn-sm" type="button">
-                    <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar Pre-registro
-                </button>
+
+
+<div class="row widget-list justify-content-end">
+    <div class="col-lg-3 mb-3 no_print">
+        {{-- <button onclick="window.print();" class="btn btn-block btn-secondary mb-3">
+            <i class="fas fa-print"></i> Imprimir
+        </button> --}}
+        <div class="col-sm-12 col-xxxl-12 p-1">
+            <a class="element-box el-tablo" href="#">
+              <div class="label mb-2">
+                Total
+              </div>
+              <div class="total_proyeccion">
+              </div>
             </a>
-        @endcan
+        </div>
     </div>
 </div>
-
-<div class="row widget-list">
+<div class="row">
+    <div class="col-lg-12 mb-3 no_print">
     <div class="widget-holder widget-full-height widget-flex col-lg-12">
         <div class="widget-body">
             <div class="table-responsive mt-3">
                 <table id="tb-alumnos" class="table table-padded  table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>Asesor</th>
-                            <th>F. Registro</th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
+                            <th># Control</th>
                             <th>Nombre</th>
                             <th></th>
                             <th></th>
                             <th></th>
-                            
-                            <th>Telefono</th>
-                            <th>Email</th>
-                            <th>Observaciones</th>
-                            {{-- <th>Descripcion</th>
-                            <th class="text-center">Acciones</th> --}}
-                            <th class="text-center">Acciones</th>
+                            <th>Pagos por cobrar</th>
+                            <th>Monto por cobrar</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,6 +58,8 @@
             </div>
         </div>
     </div>
+    </div>
+    
 </div>
 
 
@@ -77,11 +77,10 @@
             serverSide: true,
             dom: "<'row'<'col-6 d-flex align-items-center' l><'col-6'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
             ajax: {
-                url: "{{ route('pre-registro-alumnos.datatables') }}",
+                url: "{{ route('reportes.reporte-ventas.datatables_proyeccion') }}",
                 method:'POST',
                 data: function (d) {
                     d.id_sucursal = "{{ optional(session('sucursal'))->id }}"
-                    d.id_asesor_educativo = "{{ (auth()->user()->hasRole('administrador'))?'': ((auth()->user()->can('realizar_pre_registro'))? auth()->id():'')  }}"
                 },
                 beforeSend: function(xhr,type) {
                     if (!type.crossDomain) {
@@ -93,24 +92,17 @@
             responsive: true,
             buttons: [{
                 extend: 'excel',
-                title: 'Pre-registro Alumnos'
+                title: 'Alumnos'
             }],
             columns: [
-                { data: 'nombre_asesor', name: 'nombre_asesor',class: 'text-nowrap'},
-                { data: 'created_at', name: 'created_at',class: 'text-nowrap'},
-                { data: 'asesor_educativo.nombres', name: 'nombres',class: 'text-nowrap',visible:false},
-                { data: 'asesor_educativo.apellido_paterno', name: 'apellido_paterno',class: 'text-nowrap',visible:false},
-                { data: 'asesor_educativo.apellido_materno', name: 'apellido_materno',class: 'text-nowrap',visible:false},
-
+                { data: 'numero_control', name: 'numero_control',class: 'text-nowrap text-center'},
                 { data: 'nombre_alumno', name: 'nombre_alumno',class: 'text-nowrap'},
                 { data: 'nombres', name: 'nombres',class: 'text-nowrap',visible:false},
                 { data: 'apellido_paterno', name: 'apellido_paterno',class: 'text-nowrap',visible:false},
                 { data: 'apellido_materno', name: 'apellido_materno',class: 'text-nowrap',visible:false},
-                
-                { data: 'telefono',name: 'nombre_alumno',class: 'text-nowrap'},
-                { data: 'celular', name: 'celular',class: 'text-nowrap'},
-                { data: 'observaciones', name:'observaciones',class: ''},
-                { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
+                { data: 'pagos_por_cobrar', class: 'text-nowrap text-center'},
+                { data: 'monto_por_cobrar', class: 'text-nowrap text-right'},
+                // { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
             ],
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por pagina",

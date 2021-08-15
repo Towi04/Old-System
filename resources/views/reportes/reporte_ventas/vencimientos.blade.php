@@ -1,7 +1,7 @@
 @extends('layouts.template-'.config('settings.template').'.plantilla')
 
 @section('titulo')
-    Pre-Registro Alumnos
+    Alumnos con pagos vencidos
 @endsection
 
 
@@ -11,23 +11,13 @@
             <a href="{{ url('/') }}">Inicio</a>
         </li>
         <li class="breadcrumb-item active">
-            <strong>Pre-Registro Alumnos</strong>
+            <strong>Alumnos con pagos vencidos</strong>
         </li>
     </ol>
 @endsection
 
 @section('contenido')
-<div class="row justify-content-start px-4">
-    <div>
-        @can('realizar_pre_registro')
-            <a class="mb-3" href={{ route('pre-registro-alumnos.create') }}>
-                <button class="btn btn-success btn-sm" type="button">
-                    <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar Pre-registro
-                </button>
-            </a>
-        @endcan
-    </div>
-</div>
+
 
 <div class="row widget-list">
     <div class="widget-holder widget-full-height widget-flex col-lg-12">
@@ -36,22 +26,16 @@
                 <table id="tb-alumnos" class="table table-padded  table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>Asesor</th>
-                            <th>F. Registro</th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
+                            <th># Control</th>
                             <th>Nombre</th>
                             <th></th>
                             <th></th>
                             <th></th>
-                            
-                            <th>Telefono</th>
-                            <th>Email</th>
-                            <th>Observaciones</th>
+                            <th>Pagos vencidos</th>
+                            <th>Monto vencidos</th>
                             {{-- <th>Descripcion</th>
                             <th class="text-center">Acciones</th> --}}
-                            <th class="text-center">Acciones</th>
+                            {{-- <th class="text-center">Acciones</th> --}}
                         </tr>
                     </thead>
                     <tbody>
@@ -77,11 +61,10 @@
             serverSide: true,
             dom: "<'row'<'col-6 d-flex align-items-center' l><'col-6'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
             ajax: {
-                url: "{{ route('pre-registro-alumnos.datatables') }}",
+                url: "{{ route('reportes.reporte-ventas.datatables_vencimientos') }}",
                 method:'POST',
                 data: function (d) {
                     d.id_sucursal = "{{ optional(session('sucursal'))->id }}"
-                    d.id_asesor_educativo = "{{ (auth()->user()->hasRole('administrador'))?'': ((auth()->user()->can('realizar_pre_registro'))? auth()->id():'')  }}"
                 },
                 beforeSend: function(xhr,type) {
                     if (!type.crossDomain) {
@@ -93,24 +76,17 @@
             responsive: true,
             buttons: [{
                 extend: 'excel',
-                title: 'Pre-registro Alumnos'
+                title: 'Alumnos'
             }],
             columns: [
-                { data: 'nombre_asesor', name: 'nombre_asesor',class: 'text-nowrap'},
-                { data: 'created_at', name: 'created_at',class: 'text-nowrap'},
-                { data: 'asesor_educativo.nombres', name: 'nombres',class: 'text-nowrap',visible:false},
-                { data: 'asesor_educativo.apellido_paterno', name: 'apellido_paterno',class: 'text-nowrap',visible:false},
-                { data: 'asesor_educativo.apellido_materno', name: 'apellido_materno',class: 'text-nowrap',visible:false},
-
+                { data: 'numero_control', name: 'numero_control',class: 'text-nowrap text-center'},
                 { data: 'nombre_alumno', name: 'nombre_alumno',class: 'text-nowrap'},
                 { data: 'nombres', name: 'nombres',class: 'text-nowrap',visible:false},
                 { data: 'apellido_paterno', name: 'apellido_paterno',class: 'text-nowrap',visible:false},
                 { data: 'apellido_materno', name: 'apellido_materno',class: 'text-nowrap',visible:false},
-                
-                { data: 'telefono',name: 'nombre_alumno',class: 'text-nowrap'},
-                { data: 'celular', name: 'celular',class: 'text-nowrap'},
-                { data: 'observaciones', name:'observaciones',class: ''},
-                { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
+                { data: 'pagos_vencidos', class: 'text-nowrap text-center'},
+                { data: 'monto_vencido', class: 'text-nowrap text-right'},
+                // { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
             ],
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por pagina",

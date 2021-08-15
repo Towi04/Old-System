@@ -207,7 +207,7 @@
                         <table class="table table-bordered mt-3 float-right print_only" style="width:50%;">
                             <tr>
                                 <td style="font-size: 1rem;">Total: </td>
-                                <td class="text-right"><b style="font-size: 1rem;"> ${{ number_format($abonos->sum('importe'), 2, '.', ',') }}</b>
+                                <td class="text-right"><b style="font-size: 1rem;"> ${{ number_format($abonos->sum('monto'), 2, '.', ',') }}</b>
                                 </td>
                             </tr>
                             <tr>
@@ -231,7 +231,7 @@
                     Total
                   </div>
                   <div class="value">
-                    $ {{ number_format($abonos->sum('total'), 2, '.', ',') }}
+                    $ {{ number_format($abonos->sum('monto'), 2, '.', ',') }}
                   </div>
                 </a>
             </div>

@@ -55,6 +55,7 @@ class PagoInscripcionService
                 'id_grupo'      => $grupo->id,
                 'concepto'      => config('alumnos.concepto.colegiatura').' '.$fecha_mes->format('F \d\e\l Y'),
                 'monto'         => $mensualidad,
+                'saldo'         => $mensualidad,
                 'fecha_limite'  => optional($grupo->fecha_inicio)->copy()->endOfMonth(),
             ]);
         }

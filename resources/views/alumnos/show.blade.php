@@ -310,9 +310,9 @@ integrity="sha256-YsJ7Lkc/YB0+ssBKz0c0GTx0RI+BnXcKH5SpnttERaY=" crossorigin="ano
                     {data: 'concepto', name: 'concepto'},
                     {data: 'monto', name: 'monto'},
                     {data: 'fecha_limite', name: 'fecha_limite'},
-                    {data: 'status', className:"text-center", name: 'status'},
+                    {data: 'status_vencimiento', className:"text-center", name: 'status'},
                 ],
-                order: [[ 0, "desc" ]],
+                order: [[ 2, "asc" ]],
                 language: {
                     "lengthMenu": "Mostrar _MENU_ registros por pagina",
                     "zeroRecords": "No se encontro ningún registro",

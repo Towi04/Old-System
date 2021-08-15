@@ -85,6 +85,10 @@ class Alumno extends Model
         'status',
     ];
 
+    public $appends = [
+        'pagos_vencidos','monto_vencido'
+    ];
+    
     # NOTE: MODEL RELATIONSHIPS
     public function especialidad()
     {
@@ -152,4 +156,30 @@ class Alumno extends Model
     {
         return $query->where('forma_pago',config('alumnos.forma_pago.mensual'));
     }
+
+    public function getPagosVencidosAttribute(){
+        return $this->pagos->filter(function($pago){
+            return $pago->status == 'pendiente' && $pago->fecha_limite->lt(\Carbon\Carbon::today());
+        });
+    }
+
+    public function getMontoVencidoAttribute(){
+        return $this->pagos_vencidos->sum('saldo');
+
+    }
+
+
+    public function getPagosPorCobrarAttribute(){
+        return $this->pagos->filter(function($pago){
+            return $pago->status == 'pendiente' && $pago->fecha_limite->lte(\Carbon\Carbon::today()->endOfMonth());
+        });
+    }
+
+    public function getMontoPorCobrarAttribute(){
+        return $this->pagos_por_cobrar->sum('saldo');
+
+    }
+
+
+
 }

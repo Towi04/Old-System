@@ -50,7 +50,7 @@ class PreRegistrosController extends Controller
                 return $model->asesor_educativo->fullname;
             })
             ->addColumn('nombre_alumno',function($model){
-                return "{$model->nombres} {$model->apellido_paterno} {$model->apellido_materno}";
+                return "<a href=".route('pre-registro-alumnos.show', $model->id).">{$model->nombres} {$model->apellido_paterno} {$model->apellido_materno}</a>";
             })
             ->addColumn('fecha_nacimiento',function($model){
                 return optional($model->fecha_nacimiento)->format('d/m/Y');
@@ -59,7 +59,7 @@ class PreRegistrosController extends Controller
             ->editColumn('created_at', function($model){
                 return optional($model->created_at)->format('d/m/Y');
             })
-            ->rawColumns(['buttons'])
+            ->rawColumns(['buttons','nombre_alumno'])
             ->make(true);
     }
 
@@ -253,7 +253,7 @@ class PreRegistrosController extends Controller
             'domicilio_fiscal'      => 'nullable',
 
             'observaciones'         => 'nullable',
-            'forma_pago'            => 'required',
+            'forma_pago'            => 'nullable',
             'status'                => 'nullable',
         ];
 
