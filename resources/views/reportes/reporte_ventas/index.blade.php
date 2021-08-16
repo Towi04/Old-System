@@ -115,7 +115,7 @@
 
                         @if (request('tipo','dia') == 'semanal')
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'semenal','fecha' => $fecha_antes->startOfWeek()->format('d-m-Y') ]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'semanal','fecha' => $fecha_antes->startOfWeek()->format('d-m-Y') ]) }}"
                                     data-toggle="tooltip"
                                     data-title="{{ $fecha_antes->format('d \d\e F  \d\e\l  Y') }}"
                                     data-placement="top"
