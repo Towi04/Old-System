@@ -27,6 +27,7 @@ class Abono extends Model
         'id_pago',
         'id_alumno_pago',
         'monto',
+        'venta_fiscal',
     ];
 
     /**

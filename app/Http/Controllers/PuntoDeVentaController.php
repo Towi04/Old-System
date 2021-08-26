@@ -8,18 +8,21 @@ use App\Models\Alumno;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Jenssegers\Date\Date;
 
 class PuntoDeVentaController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         return view('punto_de_venta.index');
     }
 
     public function recibir_abonos(Request $request)
     {
         $this->validate($request,[
-            'id_alumno' => 'required',
-            'monto'     => 'required|numeric|min:1|not_in:0'
+            'id_alumno'     => 'required',
+            'monto'         => 'required|numeric|min:1|not_in:0',
+            'forma_pago'    => 'required',
         ]);
 
         $id_sucursal = optional(session('sucursal'))->id;
@@ -31,6 +34,8 @@ class PuntoDeVentaController extends Controller
         $monto = $request->input('monto');
 
         $folio = Pago::query()->select('folio')->where('id_sucursal', $id_sucursal)->max('folio') ?? 0;
+
+        $venta_fiscal = ($request->input('forma_pago','') != 'Efectivo') ? true : $alumno->solicitud_factura;
 
         try {
             DB::beginTransaction();
@@ -53,13 +58,14 @@ class PuntoDeVentaController extends Controller
 
                         $pa->update([
                             'saldo'     => 0,
-                            'status'    => config('pagos.status.pagado'),
+                            'status'    => config('pagos.status.Pagado'),
                         ]);
 
                         $pago->abonos()->create([
                             'id_sucursal'       => $id_sucursal,
                             'id_alumno_pago'    => $pa->id,
                             'monto'             => $saldo_alumno,
+                            'venta_fiscal'      => $venta_fiscal,
                         ]);
 
                     }else{
@@ -67,13 +73,14 @@ class PuntoDeVentaController extends Controller
 
                         $pa->update([
                             'saldo'     => $nuevo_saldo,
-                            'status'    => ($nuevo_saldo == 0)?config('pagos.status.pagado') : config('pagos.status.pendiente'),
+                            'status'    => ($nuevo_saldo == 0)?config('pagos.status.Pagado') : config('pagos.status.Pendiente'),
                         ]);
 
                         $pago->abonos()->create([
                             'id_sucursal'       => $id_sucursal,
                             'id_alumno_pago'    => $pa->id,
                             'monto'             => $monto,
+                            'venta_fiscal'      => $venta_fiscal,
                         ]);
 
                         $monto = 0;
@@ -85,6 +92,7 @@ class PuntoDeVentaController extends Controller
 
             if ($request->ajax()) {
                 return response()->json([
+                    'success' => true,
                     'message' => 'Abono Registrado correctamente',
                     'data'    => [
                         'pago' => $pago

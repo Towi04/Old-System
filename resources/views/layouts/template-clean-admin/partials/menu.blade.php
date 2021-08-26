@@ -67,7 +67,7 @@
     @endcanany
 
 
-    @canany(['realizar_pre_registro','convertir_pre_registro_alumno'])
+    @canany(['consultar_preregistros_alumnos','realizar_pre_registro','convertir_pre_registro_alumno'])
     <li class="">
         <a href="{{ route('pre-registro-alumnos.index') }}">
             <div class="icon-w">

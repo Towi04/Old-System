@@ -4,8 +4,7 @@
         <div class="col-md-12">
             <div class="form-group">
                 <label for="input-file-now">Foto: </label>
-                <input type="file" id="input-file-now" class="dropify" name="foto"
-                    value="{{ @$alumno->foto }}" @if ($alumno->foto) data-default-file="{{ url('archivo/alumnos_foto/'.$alumno->id.'/'. $alumno->foto) }}" @endif />
+                <input type="file" id="input-file-now" class="dropify" name="foto" value="{{ @$alumno->foto }}" @if ($alumno->foto) data-default-file="{{ url('archivo/alumnos_foto/'.$alumno->id.'/'. $alumno->foto) }}" @endif />
             </div>
         </div>
         <div class="col-md-4">
@@ -36,6 +35,17 @@
             <div class="form-group">
                 {!! Form::label('fecha_nacimiento', 'Fecha nacimiento:*'); !!}
                 {!! Form::date('fecha_nacimiento', null, ['class' => 'form-control', 'placeholder' => 'Escribe la fecha de nacimiento','required' => true]); !!}
+            </div>
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <legend><span>¿Como Supiste de nosotros?</span></legend>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                {!! Form::textarea('como_supiste_nosotros', null, ['class' => 'form-control','rows'=> 3,'placeholder' => 'Escribe las observaciones','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();',]) !!}
             </div>
         </div>
     </div>
@@ -144,21 +154,19 @@
             </div>
         </div>
 
-        <div class="col-md-12" id="seccion_otra_especialidad" style="{{ in_array('OTROS', $alumno->especialidad ?? [])?'':'display: none'}}">
+        <div class="col-md-12" id="seccion_otra_especialidad" style="{{ ($alumno->especialidad->nombre == 'OTROS')?'':'display: none'}}">
             <div class="form-group">
                 {!! Form::label('otra_especialidad', 'Otra Especialidad:*'); !!}
                 {!! Form::text('otra_especialidad', null, ['class' => 'form-control', 'placeholder' => 'Escribe otra especialidad','autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']); !!}
             </div>
         </div>
 
-        <div class="col-md-12" id="seccion_escuela_procedencia" style="{{ in_array(['PREPA ABIERTA','PREPA ESCOLARIZADA'], $alumno->especialidad ?? [])?'':'display: none' }}">
+        <div class="col-md-12" id="seccion_escuela_procedencia" style="{{ in_array($alumno->especialidad->nombre,['PREPA ABIERTA','PREPA ESCOLARIZADA'])?'':'display: none' }}">
             <div class="form-group">
                 {!! Form::label('escuela_procedencia', 'Escuela de procedencia:*'); !!}
                 {!! Form::text('escuela_procedencia', null, ['class' => 'form-control', 'placeholder' => 'Escribe la escuela de procedencia','autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']); !!}
             </div>
         </div>
-
-
 
         <div class="col-md-12">
             <div class="form-group">
@@ -187,65 +195,69 @@
             </div>
         </div>
 
+        @can('editar_datos_fiscales')
         <div class="col-md-12">
             {!! Form::label('solicitud_factura', 'Solicitud Factura*'); !!} &nbsp;
             <label>
                 {!! Form::checkbox('solicitud_factura', 1, null, ['class' => 'i-checks']) !!}
             </label>
         </div>
+        @endcan
     </div>
 </fieldset>
 
-<fieldset class="form-group" id="informacion_fiscal" style="{{ (old('solicitud_factura',$alumno->solicitud_factura))?'':'display: none;' }}">
-    <legend><span>Información fiscal</span></legend>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('rfc', 'RFC:*'); !!}
-                {!! Form::text('rfc', null, ['class' => 'form-control','placeholder' => 'Escribe el RFC','autocomplete' => 'off','data-fiscal','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']) !!}
+@can('editar_datos_fiscales')
+    <fieldset class="form-group" id="informacion_fiscal" style="{{ (old('solicitud_factura',$alumno->solicitud_factura))?'':'display: none;' }}">
+        <legend><span>Información fiscal</span></legend>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('rfc', 'RFC:*'); !!}
+                    {!! Form::text('rfc', null, ['class' => 'form-control','placeholder' => 'Escribe el RFC','autocomplete' => 'off','data-fiscal','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']) !!}
+                </div>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('cfdi', 'CFDI:*'); !!}
-                {!! Form::select('cfdi', $cfdis,null, ['class' => 'form-control','autocomplete' => 'off','data-fiscal']) !!}
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('cfdi', 'CFDI:*'); !!}
+                    {!! Form::select('cfdi', $cfdis,null, ['class' => 'form-control','autocomplete' => 'off','data-fiscal']) !!}
+                </div>
             </div>
-        </div>
 
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('curp', 'Curp:*'); !!}
-                {!! Form::text('curp', null, ['class' => 'form-control','placeholder' => 'Escribe el CURP','autocomplete' => 'off','data-fiscal','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']) !!}
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('curp', 'Curp:*'); !!}
+                    {!! Form::text('curp', null, ['class' => 'form-control','placeholder' => 'Escribe el CURP','autocomplete' => 'off','data-fiscal','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']) !!}
+                </div>
             </div>
-        </div>
 
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('telefono_general', 'Telefono:*'); !!}
-                {!! Form::text('telefono_general', null, ['class' => 'form-control','placeholder' => 'Escribe el Telefono General','autocomplete' => 'off','data-fiscal','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']) !!}
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('telefono_general', 'Telefono:*'); !!}
+                    {!! Form::text('telefono_general', null, ['class' => 'form-control','placeholder' => 'Escribe el Telefono General','autocomplete' => 'off','data-fiscal','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']) !!}
+                </div>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('razon_social', 'Razon Social:*'); !!}
-                {!! Form::text('razon_social', null, ['class' => 'form-control','placeholder' => 'Escribe la Razón Social','autocomplete' => 'off','data-fiscal','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']) !!}
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('razon_social', 'Razon Social:*'); !!}
+                    {!! Form::text('razon_social', null, ['class' => 'form-control','placeholder' => 'Escribe la Razón Social','autocomplete' => 'off','data-fiscal','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']) !!}
+                </div>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('correo_general', 'Correo:*'); !!}
-                {!! Form::email('correo_general', null, ['class' => 'form-control', 'placeholder' => 'Escribe el correo','autocomplete' => 'off','data-fiscal','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']); !!}
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('correo_general', 'Correo:*'); !!}
+                    {!! Form::email('correo_general', null, ['class' => 'form-control', 'placeholder' => 'Escribe el correo','autocomplete' => 'off','data-fiscal','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']); !!}
+                </div>
             </div>
-        </div>
 
-        <div class="col-md-12">
-            <div class="form-group">
-                {!! Form::label('domicilio_fiscal', 'Domicilio Fiscal:*'); !!}
-                {!! Form::text('domicilio_fiscal', null, ['class' => 'form-control','placeholder' => 'Escribe el domicilio fiscal','data-fiscal','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']) !!}
+            <div class="col-md-12">
+                <div class="form-group">
+                    {!! Form::label('domicilio_fiscal', 'Domicilio Fiscal:*'); !!}
+                    {!! Form::text('domicilio_fiscal', null, ['class' => 'form-control','placeholder' => 'Escribe el domicilio fiscal','data-fiscal','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']) !!}
+                </div>
             </div>
         </div>
-    </div>
-</fieldset>
+    </fieldset>
+@endcan
 
 
 <fieldset class="form-group">
@@ -277,10 +289,12 @@
             }
         });
 
-        $("#solicitud_factura").change(function(e){
-            $("#informacion_fiscal").toggle(e.target.checked);
-            $("[data-fiscal]").attr('required',e.target.checked)
-        })
+        @can('editar_datos_fiscales')
+            $("#solicitud_factura").change(function(e){
+                $("#informacion_fiscal").toggle(e.target.checked);
+                $("[data-fiscal]").attr('required',e.target.checked)
+            })
+        @endcan
 
         $('input[type=radio][data-grados]').on('change', function(e){
             const isOtrosSelected = e.target.value == 'OTROS';
@@ -288,34 +302,6 @@
             $("#seccion_otro_grado_estudios").toggle(isOtrosSelected);
             $("#otro_grado_estudios").attr('required',isOtrosSelected)
         });
-
-
-
-
-
-        // $('input[type="checkbox"][data-especialidad]').on('change', function(e){
-        //     switch (e.target.value) {
-        //         case 'OTROS':
-        //             const isOtrosSelected = e.target.value == 'OTROS';
-        //             $("#seccion_otra_especialidad").toggle(e.target.checked);
-        //             $("#otra_especialidad").attr('required',e.target.checked)
-        //             break;
-
-        //         case 'PREPA ABIERTA':
-        //         case 'PREPA ESCOLARIZADA':
-        //             const isPrepa = e.target.value == 'PREPA ABIERTA' || e.target.value == 'PREPA ESCOLARIZADA';
-        //             $("#seccion_escuela_procedencia").toggle(e.target.checked);
-        //             $("#escuela_procedencia").val('').attr('required',e.target.checked)
-        //         break
-
-        //         default:
-        //         break;
-        //     }
-
-        //     const $checkbox = document.querySelector('input[type="checkbox"][data-especialidad]:checked');
-        //     const existeCkbMarcado = ($checkbox != undefined);
-        //     $('#seccion_grupo').toggle(existeCkbMarcado);
-        // });
     });
 </script>
 

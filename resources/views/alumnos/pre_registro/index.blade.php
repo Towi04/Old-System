@@ -32,7 +32,7 @@
 <div class="row widget-list">
     <div class="widget-holder widget-full-height widget-flex col-lg-12">
         <div class="widget-body">
-            <div class="table-responsive mt-3">
+            <div class="mt-3">
                 <table id="tb-alumnos" class="table table-padded  table-striped table-hover">
                     <thead>
                         <tr>
@@ -45,7 +45,7 @@
                             <th></th>
                             <th></th>
                             <th></th>
-                            
+
                             <th>Telefono</th>
                             <th>Email</th>
                             <th>Observaciones</th>
@@ -75,7 +75,7 @@
         var dt = dom.table.DataTable({
             processing: true,
             serverSide: true,
-            dom: "<'row'<'col-6 d-flex align-items-center' l><'col-6'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
+            dom: "<'row'<'col-6 d-flex align-items-center' l><'col-6'f>><'row'<'col-12 table-responsive'tr>><'row'<'col-5'i><'col-7'p>>",
             ajax: {
                 url: "{{ route('pre-registro-alumnos.datatables') }}",
                 method:'POST',
@@ -106,7 +106,7 @@
                 { data: 'nombres', name: 'nombres',class: 'text-nowrap',visible:false},
                 { data: 'apellido_paterno', name: 'apellido_paterno',class: 'text-nowrap',visible:false},
                 { data: 'apellido_materno', name: 'apellido_materno',class: 'text-nowrap',visible:false},
-                
+
                 { data: 'telefono',name: 'nombre_alumno',class: 'text-nowrap'},
                 { data: 'celular', name: 'celular',class: 'text-nowrap'},
                 { data: 'observaciones', name:'observaciones',class: ''},

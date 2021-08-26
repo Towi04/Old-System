@@ -24,8 +24,7 @@ class PreRegistrosController extends Controller
      */
     public function index()
     {
-        abort_unless(Auth::user()->canAny(['realizar_pre_registro','convertir_pre_registro_alumno']), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
-
+        // abort_unless(Auth::user()->canAny(['realizar_pre_registro','convertir_pre_registro_alumno']), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
         return view('alumnos.pre_registro.index');
     }
 
@@ -77,9 +76,11 @@ class PreRegistrosController extends Controller
      */
     public function create(FacturacionService $facturacionService)
     {
+        $sucursal = optional(session('sucursal'));
+
         return view('alumnos.pre_registro.create',[
             'alumno'            => new Alumno,
-            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'especialidades'    => Especialidad::query()->where('id_sucursal',$sucursal->id)->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
             'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
         ]);
     }
@@ -182,30 +183,15 @@ class PreRegistrosController extends Controller
      */
     public function edit(Alumno $alumno,FacturacionService $facturacionService)
     {
+        $sucursal = optional(session('sucursal'));
+
         return view('alumnos.pre_registro.edit', [
             'alumno'            => $alumno,
-            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'especialidades'    => Especialidad::query()->where('id_sucursal',$sucursal->id)->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
             'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi',''),
-            
+
         ]);
     }
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Alumno  $alumno
-     * @return \Illuminate\Http\Response
-     */
-    public function formulario_inscripcion(Alumno $alumno,FacturacionService $facturacionService)
-    {
-        return view('alumnos.pre_registro.inscribir', [
-            'alumno'            => $alumno,
-            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
-            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi',''),
-            'asesores'          => User::query()->get()->pluck('fullname','id')->sort()->prepend('Selecciona un asesor',''),
-        ]);
-    }
-
-
 
     /**
      * Update the specified resource in storage.
@@ -214,10 +200,11 @@ class PreRegistrosController extends Controller
      * @param  \App\Models\Alumno  $alumno
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Alumno $alumno,PagoInscripcionService $pis)
+    public function update(Request $request, Alumno $alumno)
     {
         $rules = [
             'id_sucursal'           => 'required',
+            'como_supiste_nosotros' => 'nullable',
             'numero_control'        => 'nullable',
             'foto'                  => 'nullable',
             'nombres'               => 'required',
@@ -259,16 +246,9 @@ class PreRegistrosController extends Controller
 
         $sucursal = optional(session('sucursal'));
 
-        $max_alumno = Alumno::query()
-            ->where('status',config('alumnos.status.Alumno'))
-            ->where('id_sucursal', $sucursal->id)
-            ->max('numero_control') ?? 0;
-
         $request->request->add([
             'id_sucursal'         => $sucursal->id,
             'solicitud_factura'   => $request->has('solicitud_factura'),
-            // 'status'              => config('alumnos.status.Alumno'),
-            // 'numero_control'      => $max_alumno + 1,
         ]);
 
         $data = $this->validate($request, $rules);
@@ -305,6 +285,25 @@ class PreRegistrosController extends Controller
         ]);
     }
 
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Alumno  $alumno
+     * @return \Illuminate\Http\Response
+     */
+    public function formulario_inscripcion(Alumno $alumno,FacturacionService $facturacionService)
+    {
+        $sucursal = optional(session('sucursal'));
+
+        return view('alumnos.pre_registro.inscribir', [
+            'alumno'            => $alumno,
+            'especialidades'    => Especialidad::query()->where('id_sucursal',$sucursal->id)->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi',''),
+            'asesores'          => User::query()->get()->pluck('fullname','id')->sort()->prepend('CNCM',''),
+        ]);
+    }
+
      /**
      * Update the specified resource in storage.
      *
@@ -316,6 +315,7 @@ class PreRegistrosController extends Controller
     {
         $rules = [
             'id_sucursal'           => 'required',
+            'como_supiste_nosotros' => 'nullable',
             'numero_control'        => 'required',
             'foto'                  => 'nullable',
             'nombres'               => 'required',
@@ -340,7 +340,7 @@ class PreRegistrosController extends Controller
             'objetivo_inscripcion'  => 'required',
             'enfermedad_cronica'    => 'required',
             'solicitud_factura'     => 'nullable',
-            'id_asesor_educativo'   => 'required',
+            'id_asesor_educativo'   => 'nullable',
             # DATOS DE FACTURACION
             'razon_social'          => 'nullable',
             'rfc'                   => 'nullable',
@@ -357,9 +357,8 @@ class PreRegistrosController extends Controller
 
         $sucursal = optional(session('sucursal'));
 
-        
         $alumno = Alumno::find($id);
-        
+
         $max_alumno = Alumno::query()
             ->where('status',config('alumnos.status.Alumno'))
             ->where('id_sucursal', $sucursal->id)
@@ -398,19 +397,20 @@ class PreRegistrosController extends Controller
         }
 
         $alumno->save();
-        
+
         if ($request->has('id_grupo')) {
             $alumno->grupos()->attach($request->input('id_grupo'));
-            $alumno->load('grupos');
+
+            $grupo_inscripcion = Grupo::findOrFail($request->input('id_grupo'));
 
             $pis->setAlumno($alumno);
-            
+
             switch ($request->input('forma_pago')) {
                 case config('alumnos.forma_pago.mensual','mensual'):
-                    $pis->mensual();
+                    $pis->mensualPorGrupo($grupo_inscripcion);
                 break;
                 case config('alumnos.forma_pago.semanal','semanal'):
-                    $pis->semanal();
+                    $pis->semanalPorGrupo($grupo_inscripcion);
                 break;
             }
         }

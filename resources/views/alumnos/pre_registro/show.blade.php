@@ -104,7 +104,7 @@
 
                         </div>
                     </div>
-                    <div class="">
+                    <div class="p-2">
                         @can(['editar_alumno'])
                             <a href="{{ route('alumnos.edit', $alumno) }}"
                                 class="btn btn-info btn-sm btn-circle float-right text-white mb-2" data-toggle="tooltip"
@@ -112,130 +112,41 @@
                                 <i class="fas fa-edit"></i> Editar
                             </a>
                         @endcan
-
-                        <table class="table table-bordered">
-                            <tr>
-                                <td class="bg-primary text-white"><b>Nombre:</b></td>
-                                <td>
-                                    <a @can('editar_alumno') class="editable_nombres editable" @endcan
-                                        data-name="nombres"
-                                        data-type="text"
-                                        data-value="{{ $alumno->nombres }}"
-                                        data-url=""
-                                        data-pk="{{ $alumno->id }}"
-                                        data-placeholder="Nombre del cliente"> {{ $alumno->nombres }} </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="bg-primary text-white"><b>Email:</b></td>
-                                <td>
-                                    <a @can('editar_alumno') class="editable_email_alumno editable" @endcan
-                                        data-name="email"
-                                        data-type="text"
-                                        data-value="{{ $alumno->email }}"
-                                        data-pk="{{ $alumno->id }}"
-                                        data-url=""
-                                        data-placeholder="Telefono fijo"> {{ $alumno->email }} </a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="bg-primary text-white"><b>Edad:</b></td>
-                                <td>
-                                    <a @can('editar_alumno') class="editable_edad_alumno editable" @endcan
-                                        data-name="email"
-                                        data-type="text"
-                                        data-value="{{ $alumno->edad }}"
-                                        data-pk="{{ $alumno->id }}"
-                                        data-url=""
-                                        data-placeholder="Edad"> {{ $alumno->edad }} </a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="bg-primary text-white"><b>Observaciones:</b></td>
-                                <td>
-                                    <a @can('editar_alumno') class="editable_observaciones_alumno editable" @endcan
-                                        data-name="observaciones"
-                                        data-type="text"
-                                        data-value="{{ $alumno->observaciones }}"
-                                        data-pk="{{ $alumno->id }}"
-                                        data-url=""
-                                        data-placeholder="Edad"> {{ $alumno->observaciones }} </a>
-                                    </a>
-                                </td>
-                            </tr>
-
-                            {{--
-
-                            <tr>
-                                <td class="bg-primary text-white"><b>Celular:</b></td>
-                                <td>
-                                    <a @can('gestionar_clientes') class="editable_celular_cliente editable" @endcan
-                                        data-name="celular"
-                                        data-type="text"
-                                        data-value="{{ $cliente->celular }}"
-                                        data-pk="{{ $cliente->id }}"
-                                        data-url="{{ route('clientes.actualizar_informacion_cliente') }}"
-                                        data-placeholder="Celular del cliente"> {{ $cliente->celular }} </a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="bg-primary text-white"><b>Direccion:</b></td>
-                                <td> <a @can('gestionar_clientes') class="editable_direccion_cliente editable" @endcan
-                                        data-name="direccion"
-                                        data-type="text"
-                                        data-value="{{ $cliente->direccion }}"
-                                        data-pk="{{ $cliente->id }}"
-                                        data-url="{{ route('clientes.actualizar_informacion_cliente') }}"
-                                        data-placeholder="Direccion del cliente"> {{ $cliente->direccion }} </a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="bg-primary text-white"><b>Ciudad:</b></td>
-                                <td> <a @can('gestionar_clientes')class="editable_ciudad_cliente editable" @endcan
-                                        data-name="ciudad"
-                                        data-type="text"
-                                        data-value="{{ $cliente->ciudad }}"
-                                        data-pk="{{ $cliente->id }}"
-                                        data-url="{{ route('clientes.actualizar_informacion_cliente') }}"
-                                        data-placeholder="Ciudad"> {{ $cliente->ciudad }} </a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="bg-primary text-white"><b>Estado:</b></td>
-                                <td>
-                                    <a @can('gestionar_clientes') class="editable_estado_cliente editable" @endcan
-                                        data-name="estado"
-                                        data-type="text"
-                                        data-value="{{ $cliente->estado }}"
-                                        data-pk="{{ $cliente->id }}"
-                                        data-url="{{ route('clientes.actualizar_informacion_cliente') }}"
-                                        data-placeholder="Estado"> {{ $cliente->telefono }} </a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="bg-primary text-white"><b>Observaciones:</b></td>
-                                <td>
-                                    <a @can('gestionar_clientes') class="editable_observaciones_cliente editable" @endcan
-                                        data-name="observaciones"
-                                        data-type="textarea"
-                                        data-value="{{ $cliente->observaciones }}"
-                                        data-pk="{{ $cliente->id }}"
-                                        data-url="{{ route('clientes.actualizar_informacion_cliente') }}"
-                                        data-placeholder="Observaciones"> {{ $cliente->observaciones }}
-                                    </a>
-                                </td>
-                            </tr> --}}
-                        </table>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="col-7 col-lg-7 col-sm-7 col-md-7 col-xs-12">
+
+        <div class="row">
+            <div class="col-sm-12 col-xxxl-9">
+                <div class="element-wrapper">
+                    <div class="element-box">
+                        <div class="os-tabs-w">
+                            <div class="os-tabs-controls">
+                                <ul class="nav nav-tabs smaller">
+
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="tab" href="#tab-info-alumno">Información del alumno</a>
+                                    </li>
+
+                                </ul>
+                                <ul class="nav nav-pills smaller d-none d-md-flex">
+                                </ul>
+                            </div>
+
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="tab-info-alumno">
+                                    @include('alumnos.partials._info_alumno')
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 @endsection

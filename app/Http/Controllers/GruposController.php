@@ -65,9 +65,15 @@ class GruposController extends Controller
     {
         abort_unless(Auth::user()->can('crear_grupo'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
+        $sucursal = optional(session('sucursal'));
+
         return view('grupos.create',[
             'grupo'         => new Grupo,
-            'especialidades'  => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
+            'especialidades'  => Especialidad::query()
+                ->where('id_sucursal',$sucursal->id)
+                ->pluck('nombre','id')
+                ->sort()
+                ->prepend('Selecciona una especialidad','')
         ]);
     }
 
@@ -129,9 +135,12 @@ class GruposController extends Controller
     {
         abort_unless(Auth::user()->can('editar_grupo'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
+        $sucursal = optional(session('sucursal'));
+
+
         return view('grupos.edit', [
             'grupo'             => $grupo,
-            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
+            'especialidades'    => Especialidad::query()->where('id_sucursal',$sucursal->id)->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
         ]);
     }
 
@@ -350,7 +359,7 @@ class GruposController extends Controller
     public function guardar_alumnos(Grupo $grupo, Request $request, PagoInscripcionService $pis)
     {
         $rules = [
-            'id_alumno'            => 'required',
+            'id_alumno' =>  'required',
         ];
 
         $this->validate($request, $rules);
@@ -365,11 +374,11 @@ class GruposController extends Controller
 
         switch ($alumno->forma_pago) {
             case config('alumnos.forma_pago.mensual','mensual'):
-                $pis->mensual();
+                $pis->mensualPorGrupo($grupo);
             break;
 
             case config('alumnos.forma_pago.semanal','semanal'):
-                $pis->semanal($grupo);
+                $pis->semanalPorGrupo($grupo);
             break;
         }
 
@@ -405,7 +414,7 @@ class GruposController extends Controller
 
         $alumno->pagos()
             ->where('id_grupo',$alumno_grupo->id_grupo)
-            ->where('status',config('pagos.status.pendiente'))
+            ->where('status',config('pagos.status.Pendiente'))
             ->delete();
 
         $alumno_grupo->delete();

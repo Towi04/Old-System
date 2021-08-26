@@ -2,7 +2,7 @@
 
 return  [
     'status' => [
-        'pendiente' => 'pendiente',
-        'pagado'    => 'pagado',
+        'Pendiente' => 'Pendiente',
+        'Pagado'    => 'Pagado',
     ]
 ];

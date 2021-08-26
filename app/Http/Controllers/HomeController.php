@@ -50,9 +50,33 @@ class HomeController extends Controller
                             'Content-Disposition' => 'inline;',
                         ]
                     );
-                } else {
-                    return response()->download($url);
                 }
+
+                if (Str::endsWith($url, '.txt')) {
+                    return Response::make(
+                        file_get_contents($url),
+                        200,
+                        [
+                            'Content-Type' => 'text/html',
+                            'Content-Disposition' => 'inline;',
+                        ]
+                    );
+                }
+
+                if (Str::endsWith($url, '.jpg') || Str::endsWith($url, '.png') || Str::endsWith($url, '.gif') || Str::endsWith($url, '.JPG') || Str::endsWith($url, '.PNG') || Str::endsWith($url, '.jpeg') ) {
+                    return Response::make(
+                        file_get_contents($url),
+                        200,
+                        [
+                            'Content-Type' => 'image/jpeg',
+                            'Content-Disposition' => 'inline;',
+                        ]
+                    );
+                }
+
+
+                return response()->download($url);
+
             } else {
                 return response()->download("{$public_path}/no_image/{$modulo}.png");
             }

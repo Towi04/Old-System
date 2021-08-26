@@ -295,7 +295,7 @@
                                         term: params.term,
                                         page: params.page || 1,
                                         id_sucursal: "{{ optional(session('sucursal'))->id }}",
-                                        especialidad: "{{ $grupo->especialidad }}",
+                                        id_especialidad: "{{ $grupo->id_especialidad }}",
                                     }
                                 },
                                 beforeSend:function(xhr,type){
@@ -414,7 +414,7 @@
                             term: params.term,
                             page: params.page || 1,
                             id_sucursal: "{{ optional(session('sucursal'))->id }}",
-                            especialidad: "{{ $grupo->especialidad }}",
+                            id_especialidad: "{{ $grupo->id_especialidad }}",
                         }
                     },
                     url: '{{ route("materias.traer_materias_select2") }}',
