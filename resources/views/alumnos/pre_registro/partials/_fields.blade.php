@@ -152,14 +152,14 @@
             </div>
         </div>
 
-        <div class="col-md-12" id="seccion_otra_especialidad" style="{{ ($alumno->especialidad->nombre == 'OTROS') ?'':'display: none'}}">
+        <div class="col-md-12" id="seccion_otra_especialidad" style="{{ (optional($alumno->especialidad)->nombre == 'OTROS') ?'':'display: none'}}">
             <div class="form-group">
                 {!! Form::label('otra_especialidad', 'Otra Especialidad:*'); !!}
                 {!! Form::text('otra_especialidad', null, ['class' => 'form-control', 'placeholder' => 'Escribe otra especialidad','autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();','readonly' =>  ($alumno->exists)? ((empty($alumno->otra_especialidad))?false:true) : false]); !!}
             </div>
         </div>
 
-        <div class="col-md-12" id="seccion_escuela_procedencia" style="{{ in_array($alumno->especialidad->nombre,['PREPA ABIERTA','PREPA ESCOLARIZADA'])?'':'display: none' }}">
+        <div class="col-md-12" id="seccion_escuela_procedencia" style="{{ in_array(optional($alumno->especialidad)->nombre,['PREPA ABIERTA','PREPA ESCOLARIZADA'])?'':'display: none' }}">
             <div class="form-group">
                 {!! Form::label('escuela_procedencia', 'Escuela de procedencia:*'); !!}
                 {!! Form::text('escuela_procedencia', null, ['class' => 'form-control', 'placeholder' => 'Escribe la escuela de procedencia','autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();','readonly' =>  ($alumno->exists)? ((empty($alumno->escuela_procedencia))?false:true) : false]); !!}
