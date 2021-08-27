@@ -10,7 +10,7 @@
             <a href="{{ url('/') }}">Inicio</a>
         </li>
         <li class="breadcrumb-item">
-            <a href="{{ route('alumnos.index') }}">Alumnos</a>
+            <a href="{{ route('pre-registro-alumnos.index') }}">Pre-registro Alumnos</a>
         </li>
         <li class="breadcrumb-item active">
             <strong>Inscribir alumno {{ $alumno->nombres }}</strong>
@@ -97,15 +97,15 @@
                     function (result) {
                         inscripcion = result.grupo.precio_inscripcion;
                         grupo = result.grupo;
-                        swal({   
-                                title: "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". Tienes que solicitar la inscripción de $ "+inscripcion+" que quedará registrada como pagada en la ficha del alumno.",   
-                                text: '',   
-                                type: "success",   
-                                showCancelButton: true,   
-                                confirmButtonColor: "#1ee60b",  
+                        swal({
+                                title: "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". Tienes que solicitar la inscripción de $ "+inscripcion+" que quedará registrada como pagada en la ficha del alumno.",
+                                text: '',
+                                type: "success",
+                                showCancelButton: true,
+                                confirmButtonColor: "#1ee60b",
                                 cancelButtonColor: "#999999",
-                                confirmButtonText: "Sí, inscribir",   
-                                cancelButtonText: "Cancelar", 
+                                confirmButtonText: "Sí, inscribir",
+                                cancelButtonText: "Cancelar",
                                 showLoaderOnConfirm: true,
                             }).then((result) => {
                                 if (result.value) {
@@ -117,22 +117,22 @@
                     },
                     "json"
                 );
-                
+
             }else{
-                
-                swal({   
-                                title: "Tienes que seleccionar Grupo y forma de pago",   
-                                text: '',   
-                                type: "error",   
-                                showCancelButton: true,   
-                                confirmButtonColor: "#DD6B55",  
+
+                swal({
+                                title: "Tienes que seleccionar Grupo y forma de pago",
+                                text: '',
+                                type: "error",
+                                showCancelButton: true,
+                                confirmButtonColor: "#DD6B55",
                                 cancelButtonColor: "#999999",
-                                cancelButtonText: "Cerrar", 
+                                cancelButtonText: "Cerrar",
                                 showLoaderOnConfirm: true,
                             }).then((result) => {
-                                
+
                             })
-               
+
             }
 
 

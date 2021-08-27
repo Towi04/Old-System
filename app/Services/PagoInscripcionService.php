@@ -33,31 +33,7 @@ class PagoInscripcionService
         $grupos = $this->alumno->grupos;
 
         foreach ($grupos as $grupo) {
-            $this->alumno->pagos()->create([
-                'id_grupo'      => $grupo->id,
-                'concepto'      => config('alumnos.concepto.inscripcion'),
-                'monto'         => $grupo->precio_inscripcion ?? 0,
-                'fecha_limite'  => $grupo->fecha_inicio,
-                'status' => 'Pagado'
-            ]);
-
-            $precio_mensualidad = $grupo->precio_mensualidad ?? 0;
-
-            $dias_del_mes = $this->fecha_actual->copy()->daysInMonth;
-            $fecha_inicio = $this->fecha_actual->copy()->firstOfMonth();
-            $fecha_final = $this->fecha_actual->copy();
-            $dias_transcurridos = $fecha_inicio->diffInDays($fecha_final);
-            $dias_faltan = $dias_del_mes - $dias_transcurridos;
-            $mensualidad = ($dias_faltan * $precio_mensualidad) / $dias_del_mes;
-            $fecha_mes = new Date($fecha_inicio);
-
-            $this->alumno->pagos()->create([
-                'id_grupo'      => $grupo->id,
-                'concepto'      => config('alumnos.concepto.colegiatura').' '.$fecha_mes->format('F \d\e\l Y'),
-                'monto'         => $mensualidad,
-                'saldo'         => $mensualidad,
-                'fecha_limite'  => optional($grupo->fecha_inicio)->copy()->endOfMonth(),
-            ]);
+           $this->mensualPorGrupo($grupo);
         }
     }
 
@@ -66,31 +42,71 @@ class PagoInscripcionService
         $grupos = $this->alumno->grupos;
 
         foreach ($grupos as $grupo) {
-            $this->alumno->pagos()->create([
-                'id_grupo'      => $grupo->id,
-                'concepto'      => config('alumnos.concepto.inscripcion'),
-                'monto'         => $grupo->precio_inscripcion ?? 0,
-                'fecha_limite'  => $grupo->fecha_inicio,
-                'status' => 'Pagado'
-            ]);
-
-
-            $precio_semanal = $grupo->precio_semanal ?? 0;
-
-            $dias_de_la_semana = 7;
-            $fecha_inicio = $this->fecha_actual->copy()->startOfWeek(Carbon::MONDAY);
-            $fecha_final = $this->fecha_actual->copy();
-            $dias_transcurridos = $fecha_inicio->diffInDays($fecha_final);
-            $dias_faltan = $dias_de_la_semana - $dias_transcurridos;
-            $semanal = ($dias_faltan * $precio_semanal ) / $dias_de_la_semana;
-
-            $this->alumno->pagos()->create([
-                'id_grupo'      => $grupo->id,
-                'concepto'      => config('alumnos.concepto.colegiatura'),
-                'monto'         => $semanal,
-                'fecha_limite'  => optional($grupo->fecha_inicio)->copy(),
-            ]);
-
+            $this->semanalPorGrupo($grupo);
         }
+    }
+
+    public function mensualPorGrupo(Grupo $grupo)
+    {
+       $this->inscripcion($grupo);
+
+        $precio_semanal = $grupo->precio_semanal ?? 0;
+
+        if ($grupo->fecha_inicio->greaterThan($this->fecha_actual)) {
+            # EL GRUPO NO HA COMENZADO
+            $fecha_inicio = $this->fecha_actual->copy();
+            $fecha_final = $this->fecha_actual->copy()->lastOfMonth();
+        }else{
+            # EL GRUPO YA COMENZO
+            $fecha_inicio = $grupo->fecha_inicio->copy();
+            $fecha_final = $grupo->fecha_inicio->copy()->lastOfMonth();
+        }
+
+        while($fecha_inicio->next('Saturday') &&  $fecha_inicio->isCurrentMonth() )
+        {
+            $formato_fecha = new Date($fecha_inicio);
+            $concepto = config('alumnos.concepto.colegiatura').' '.$formato_fecha->format('F \d\e\l Y');
+
+            $this->alumno->pagos()->create([
+                'id_grupo'      => $grupo->id,
+                'concepto'      => $concepto,
+                'monto'         => $precio_semanal,
+                'saldo'         => $precio_semanal,
+                'fecha_limite'  => $fecha_final,
+                'status'        => config('pagos.status.Pendiente'),
+            ]);
+        }
+    }
+
+    public function semanalPorGrupo(Grupo $grupo)
+    {
+       $this->inscripcion($grupo);
+
+        $precio_semanal = $grupo->precio_semanal ?? 0;
+
+        if ($grupo->fecha_inicio->greaterThan($this->fecha_actual)) {
+            $fecha_inicio = $grupo->fecha_inicio->copy();
+        }else{
+            $fecha_inicio = $this->fecha_actual->copy();
+        }
+
+        $this->alumno->pagos()->create([
+            'id_grupo'      => $grupo->id,
+            'concepto'      => config('alumnos.concepto.colegiatura').'Semana: '.$grupo->fecha_inicio->week .' del '.$grupo->fecha_inicio->year,
+            'monto'         => $precio_semanal,
+            'fecha_limite'  => $fecha_inicio->endOfWeek(Carbon::SATURDAY),
+            'status'        => config('pagos.status.Pendiente'),
+        ]);
+    }
+
+    private function inscripcion(Grupo $grupo)
+    {
+        $this->alumno->pagos()->create([
+            'id_grupo'      => $grupo->id,
+            'concepto'      => config('alumnos.concepto.inscripcion') .' Semana: '.$grupo->fecha_inicio->week .' del '.$grupo->fecha_inicio->year,
+            'monto'         => $grupo->precio_inscripcion ?? 0,
+            'fecha_limite'  => $grupo->fecha_inicio,
+            'status'        => config('pagos.status.Pagado'),
+        ]);
     }
 }

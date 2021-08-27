@@ -37,7 +37,7 @@ class AlumnoPago extends Model
     ];
 
     protected $attributes = [
-        'status' => 'pendiente'
+        'status' => 'Pendiente',
     ];
 
     public $appends = [
@@ -63,7 +63,7 @@ class AlumnoPago extends Model
 
     public function scopePendientes($query)
     {
-        return $query->where('status',config('pagos.status.pendiente'));
+        return $query->where('status',config('pagos.status.Pendiente'));
     }
 
     public function getStatusVencimientoAttribute(){

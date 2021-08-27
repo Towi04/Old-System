@@ -19,42 +19,40 @@
 @endsection
 
 @section('contenido')
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap-editable/css/bootstrap-editable.css"
-integrity="sha256-YsJ7Lkc/YB0+ssBKz0c0GTx0RI+BnXcKH5SpnttERaY=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="{{ asset('plugins/xeditable/css/bootstrap-editable.css') }}">
 
 <style>
-.contact-box:hover {
-    transform: scale(1.05)
-}
+    .contact-box:hover {
+        transform: scale(1.05)
+    }
 
-.borderless td,
-.borderless th {
-    border: none;
-}
+    .borderless td,
+    .borderless th {
+        border: none;
+    }
 
-.contact-box:hover {
-    transform: scale(1.05)
-}
+    .contact-box:hover {
+        transform: scale(1.05)
+    }
 
-.activity-boxes-w .activity-box:before {
-    position: absolute;
-    top: 50%;
-    left: -30px;
-    content: "";
-    width: 12px;
-    height: 12px;
-    border: 0px solid #60769f;
-    background-color: #f2f4f8;
-    border-radius: 20px;
-    -webkit-transform: translateY(-50%);
-    transform: translateY(-50%);
-    z-index: 2;
-}
+    .activity-boxes-w .activity-box:before {
+        position: absolute;
+        top: 50%;
+        left: -30px;
+        content: "";
+        width: 12px;
+        height: 12px;
+        border: 0px solid #60769f;
+        background-color: #f2f4f8;
+        border-radius: 20px;
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+        z-index: 2;
+    }
 
-.content-box {
-    padding: 0px !important;
-}
+    .content-box {
+        padding: 0px !important;
+    }
 
 </style>
 
@@ -62,14 +60,14 @@ integrity="sha256-YsJ7Lkc/YB0+ssBKz0c0GTx0RI+BnXcKH5SpnttERaY=" crossorigin="ano
     <div class="col-5 col-lg-5 col-sm-5 col-md-5 col-xs-12">
         <div class="user-profile compact">
             <div class="up-head-w"
-                style="background-image: linear-gradient( rgb(24,41,72,0.9), 70%, rgb(24,41,72,0.9));">
+                style="background-image: linear-gradient( var(--primary), 70%, var(--primary));">
 
                 <div class="up-main-info " style="padding-bottom: 150px; padding-top:100px">
                     <h2 class="up-header">
                         Alumno
                     </h2>
                     <h6 class="up-sub-header">
-                        {{ $alumno->nombres }} {{ $alumno->apellido_paterno }} {{ $alumno->apellido_materno }}
+                        {{ $alumno->full_name }}
                     </h6>
                 </div>
                 <svg class="decor" width="842px" height="219px" viewBox="0 0 842 219"
@@ -107,7 +105,7 @@ integrity="sha256-YsJ7Lkc/YB0+ssBKz0c0GTx0RI+BnXcKH5SpnttERaY=" crossorigin="ano
 
                         </div>
                     </div>
-                    <div class="">
+                    <div class="p-2">
                         @can(['editar_alumno'])
                             <a href="{{ route('alumnos.edit', $alumno) }}"
                                 class="btn btn-info btn-sm btn-circle float-right text-white mb-2" data-toggle="tooltip"
@@ -115,167 +113,61 @@ integrity="sha256-YsJ7Lkc/YB0+ssBKz0c0GTx0RI+BnXcKH5SpnttERaY=" crossorigin="ano
                                 <i class="fas fa-edit"></i> Editar
                             </a>
                         @endcan
-
-                        <table class="table table-bordered">
-                            <tr>
-                                <td class="bg-primary text-white"><b>Nombre:</b></td>
-                                <td>
-                                    <a @can('editar_alumno') class="editable_nombres editable" @endcan
-                                        data-name="nombres"
-                                        data-type="text"
-                                        data-value="{{ $alumno->nombres }}"
-                                        data-url=""
-                                        data-pk="{{ $alumno->id }}"
-                                        data-placeholder="Nombre del cliente"> {{ $alumno->nombres }} </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="bg-primary text-white"><b>Email:</b></td>
-                                <td>
-                                    <a @can('editar_alumno') class="editable_email_alumno editable" @endcan
-                                        data-name="email"
-                                        data-type="text"
-                                        data-value="{{ $alumno->email }}"
-                                        data-pk="{{ $alumno->id }}"
-                                        data-url=""
-                                        data-placeholder="Telefono fijo"> {{ $alumno->email }} </a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="bg-primary text-white"><b>Edad:</b></td>
-                                <td>
-                                    <a @can('editar_alumno') class="editable_edad_alumno editable" @endcan
-                                        data-name="email"
-                                        data-type="text"
-                                        data-value="{{ $alumno->edad }}"
-                                        data-pk="{{ $alumno->id }}"
-                                        data-url=""
-                                        data-placeholder="Edad"> {{ $alumno->edad }} </a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="bg-primary text-white"><b>Observaciones:</b></td>
-                                <td>
-                                    <a @can('editar_alumno') class="editable_observaciones_alumno editable" @endcan
-                                        data-name="observaciones"
-                                        data-type="text"
-                                        data-value="{{ $alumno->observaciones }}"
-                                        data-pk="{{ $alumno->id }}"
-                                        data-url=""
-                                        data-placeholder="Edad"> {{ $alumno->observaciones }} </a>
-                                    </a>
-                                </td>
-                            </tr>
-
-                            {{--
-
-                            <tr>
-                                <td class="bg-primary text-white"><b>Celular:</b></td>
-                                <td>
-                                    <a @can('gestionar_clientes') class="editable_celular_cliente editable" @endcan
-                                        data-name="celular"
-                                        data-type="text"
-                                        data-value="{{ $cliente->celular }}"
-                                        data-pk="{{ $cliente->id }}"
-                                        data-url="{{ route('clientes.actualizar_informacion_cliente') }}"
-                                        data-placeholder="Celular del cliente"> {{ $cliente->celular }} </a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="bg-primary text-white"><b>Direccion:</b></td>
-                                <td> <a @can('gestionar_clientes') class="editable_direccion_cliente editable" @endcan
-                                        data-name="direccion"
-                                        data-type="text"
-                                        data-value="{{ $cliente->direccion }}"
-                                        data-pk="{{ $cliente->id }}"
-                                        data-url="{{ route('clientes.actualizar_informacion_cliente') }}"
-                                        data-placeholder="Direccion del cliente"> {{ $cliente->direccion }} </a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="bg-primary text-white"><b>Ciudad:</b></td>
-                                <td> <a @can('gestionar_clientes')class="editable_ciudad_cliente editable" @endcan
-                                        data-name="ciudad"
-                                        data-type="text"
-                                        data-value="{{ $cliente->ciudad }}"
-                                        data-pk="{{ $cliente->id }}"
-                                        data-url="{{ route('clientes.actualizar_informacion_cliente') }}"
-                                        data-placeholder="Ciudad"> {{ $cliente->ciudad }} </a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="bg-primary text-white"><b>Estado:</b></td>
-                                <td>
-                                    <a @can('gestionar_clientes') class="editable_estado_cliente editable" @endcan
-                                        data-name="estado"
-                                        data-type="text"
-                                        data-value="{{ $cliente->estado }}"
-                                        data-pk="{{ $cliente->id }}"
-                                        data-url="{{ route('clientes.actualizar_informacion_cliente') }}"
-                                        data-placeholder="Estado"> {{ $cliente->telefono }} </a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="bg-primary text-white"><b>Observaciones:</b></td>
-                                <td>
-                                    <a @can('gestionar_clientes') class="editable_observaciones_cliente editable" @endcan
-                                        data-name="observaciones"
-                                        data-type="textarea"
-                                        data-value="{{ $cliente->observaciones }}"
-                                        data-pk="{{ $cliente->id }}"
-                                        data-url="{{ route('clientes.actualizar_informacion_cliente') }}"
-                                        data-placeholder="Observaciones"> {{ $cliente->observaciones }}
-                                    </a>
-                                </td>
-                            </tr> --}}
-                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-7 col-lg-7 col-sm-7 col-md-7 col-xs-12">
+
         <div class="row">
             <div class="col-sm-12 col-xxxl-9">
-              <div class="element-wrapper">
-                {{-- <h6 class="element-header">
-                </h6> --}}
-                <div class="element-box">
-                  <div class="os-tabs-w">
-                    <div class="os-tabs-controls">
-                      <ul class="nav nav-tabs smaller">
-                        <li class="nav-item">
-                          <a class="nav-link active" data-toggle="tab" href="#tab-pagos">Pagos Pendientes</a>
-                        </li>
-                      </ul>
+                <div class="element-wrapper">
+                    <div class="element-box">
+                        <div class="os-tabs-w">
+                            <div class="os-tabs-controls">
+                                <ul class="nav nav-tabs smaller">
+
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="tab" href="#tab-pagos-pendientes">Pagos Pendientes</a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#tab-info-alumno">Información del alumno</a>
+                                    </li>
+
+                                </ul>
+                                <ul class="nav nav-pills smaller d-none d-md-flex">
+                                </ul>
+                            </div>
+
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="tab-pagos-pendientes">
+                                    <table class="table table-striped table-bordered table-hover" id="tb-pagos" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th># Pago</th>
+                                                <th>Concepto</th>
+                                                <th>Monto</th>
+                                                <th>Fecha Limite</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="tab-pane" id="tab-info-alumno">
+                                    @include('alumnos.partials._info_alumno')
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="tab-content">
-                      <div class="tab-pane active" id="tab-pagos">
-                        <table class="table table-striped table-bordered table-hover" id="tb-pagos" width="100%">
-                            <thead>
-                                <tr>
-                                    <th>Concepto</th>
-                                    <th>Monto</th>
-                                    <th>Fecha Limite</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
                 </div>
-              </div>
             </div>
         </div>
+
     </div>
 </div>
 @endsection
@@ -307,6 +199,7 @@ integrity="sha256-YsJ7Lkc/YB0+ssBKz0c0GTx0RI+BnXcKH5SpnttERaY=" crossorigin="ano
                     },
                 },
                 columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'concepto', name: 'concepto'},
                     {data: 'monto', name: 'monto'},
                     {data: 'fecha_limite', name: 'fecha_limite'},

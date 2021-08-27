@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Collective\Html\Eloquent\FormAccessible;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Alumno extends Model
 {
-    use HasFactory,FormAccessible;
+    use HasFactory, FormAccessible;
 
     /**
      * The table associated with the model.
@@ -27,7 +28,6 @@ class Alumno extends Model
     protected $casts = [
         'solicitud_factura' => 'boolean',
         'grado_estudios'    => 'array',
-        'especialidad'      => 'array',
     ];
 
     /**
@@ -45,6 +45,8 @@ class Alumno extends Model
     protected $fillable = [
         'numero_control',
         'id_sucursal',
+
+        'como_supiste_nosotros',
 
         'foto',
         'nombres',
@@ -85,14 +87,14 @@ class Alumno extends Model
         'status',
     ];
 
-    public $appends = [
-        'pagos_vencidos','monto_vencido'
+    protected $appends = [
+        'pagos_vencidos', 'monto_vencido'
     ];
-    
+
     # NOTE: MODEL RELATIONSHIPS
     public function especialidad()
     {
-        return $this->belongsTo(Especialidad::class,'id_especialidad','id')->withDefault([
+        return $this->belongsTo(Especialidad::class, 'id_especialidad', 'id')->withDefault([
             'nombre'        => '',
             'descripcion'   => ''
         ]);
@@ -100,27 +102,27 @@ class Alumno extends Model
 
     public function sucursal()
     {
-        return $this->belongsTo(Sucursal::class,'id_sucursal','id')->withDefault();
+        return $this->belongsTo(Sucursal::class, 'id_sucursal', 'id')->withDefault();
     }
 
     public function asesor_educativo()
     {
-        return $this->belongsTo(User::class,'id_asesor_educativo','id')->withDefault([
-            'nombres'           => '' ,
-            'apellido_materno'  => '',
+        return $this->belongsTo(User::class, 'id_asesor_educativo', 'id')->withDefault([
+            'nombres'           => 'CNCM',
+            'apellido_paterno'  => '',
             'apellido_materno'  => '',
         ]);
     }
 
     public function grupos()
     {
-        return $this->belongsToMany(Grupo::class, 'alumnos_grupos', 'id_alumno','id_grupo')
-            ->withPivot('id','id_grupo')->using(AlumnoGrupo::class);
+        return $this->belongsToMany(Grupo::class, 'alumnos_grupos', 'id_alumno', 'id_grupo')
+            ->withPivot('id', 'id_grupo')->using(AlumnoGrupo::class);
     }
 
     public function pagos()
     {
-        return $this->hasMany(AlumnoPago::class,'id_alumno','id');
+        return $this->hasMany(AlumnoPago::class, 'id_alumno', 'id');
     }
 
     # NOTE: MODEL ACCESORS
@@ -144,42 +146,54 @@ class Alumno extends Model
 
     public function scopeAlumno($query)
     {
-        return $query->where('status',config('alumnos.status.Alumno'));
+        return $query->where('status', config('alumnos.status.Alumno'));
     }
 
     public function scopeSemanal($query)
     {
-        return $query->where('forma_pago',config('alumnos.forma_pago.semanal'));
+        return $query->where('forma_pago', config('alumnos.forma_pago.semanal'));
     }
 
     public function scopeMensual($query)
     {
-        return $query->where('forma_pago',config('alumnos.forma_pago.mensual'));
+        return $query->where('forma_pago', config('alumnos.forma_pago.mensual'));
     }
 
-    public function getPagosVencidosAttribute(){
-        return $this->pagos->filter(function($pago){
+    public function getPagosVencidosAttribute()
+    {
+        return $this->pagos->filter(function ($pago) {
             return $pago->status == 'pendiente' && $pago->fecha_limite->lt(\Carbon\Carbon::today());
         });
     }
 
-    public function getMontoVencidoAttribute(){
+    public function getMontoVencidoAttribute()
+    {
         return $this->pagos_vencidos->sum('saldo');
-
     }
 
-
-    public function getPagosPorCobrarAttribute(){
-        return $this->pagos->filter(function($pago){
+    public function getPagosPorCobrarAttribute()
+    {
+        return $this->pagos->filter(function ($pago) {
             return $pago->status == 'pendiente' && $pago->fecha_limite->lte(\Carbon\Carbon::today()->endOfMonth());
         });
     }
 
-    public function getMontoPorCobrarAttribute(){
+    public function getMontoPorCobrarAttribute()
+    {
         return $this->pagos_por_cobrar->sum('saldo');
-
     }
 
+    public function getUrlFotoAttribute()
+    {
+        if(empty($this->id) || empty($this->foto) ){
+            return asset('no_image/alumnos_foto.png');
+        }
+
+        if(!Storage::disk('local')->exists("alumnos_foto/{$this->id}/{$this->foto}")){
+            return asset('no_image/alumnos_foto.png');
+        }
 
 
+        return url("archivo/alumnos_foto/{$this->id}/{$this->foto}");
+    }
 }

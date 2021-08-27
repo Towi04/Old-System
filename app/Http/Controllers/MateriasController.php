@@ -46,9 +46,11 @@ class MateriasController extends Controller
     {
         abort_unless(Auth::user()->can('crear_materia'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
+        $sucursal = optional(session('sucursal'));
+
         return view('materias.create',[
             'materia'           => new Materia,
-            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
+            'especialidades'    => Especialidad::query()->where('id_sucursal',$sucursal->id)->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
         ]);
     }
 
@@ -91,9 +93,11 @@ class MateriasController extends Controller
     {
         abort_unless(Auth::user()->can('editar_materia'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
+        $sucursal = optional(session('sucursal'));
+
         return view('materias.edit', [
             'materia'           => $materia,
-            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
+            'especialidades'    => Especialidad::query()->where('id_sucursal',$sucursal->id)->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
         ]);
     }
 
@@ -160,8 +164,8 @@ class MateriasController extends Controller
 
         $results = Materia::query()
             ->where('nombre', 'like', "%{$term}%")
-            ->when($request->input('especialidad'),function($q,$especialidad){
-                $q->where('especialidad',$especialidad);
+            ->when($request->input('id_especialidad'),function($q,$id_especialidad){
+                $q->where('id_especialidad',$id_especialidad);
             })
             ->when($request->input('id_sucursal'),function($q,$sucursal){
                 $q->where('id_sucursal',$sucursal);

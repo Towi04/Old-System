@@ -198,6 +198,16 @@ return [
             'display_name'  => 'Ingresar al punto de venta',
             'description'   => 'Permite ingresar al punto de venta y realizar cobros a los alumnos'
         ],
+        [
+            'name'          => 'editar_datos_fiscales',
+            'display_name'  => 'Editar Datos Fiscales',
+            'description'   => 'Permiso para editar los datos fiscales del alumno'
+        ],
+        [
+            'name'          => 'consultar_preregistros_alumnos',
+            'display_name'  => 'Consultar Pre-registros Alunnos',
+            'description'   => 'Permiso para mostrar los pre-registros de alumnos'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

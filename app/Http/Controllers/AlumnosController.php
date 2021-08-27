@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Alumno;
 use App\Models\AlumnoPago;
 use App\Models\Especialidad;
+use App\Models\Grupo;
 use Illuminate\Http\Request;
 use App\Services\FacturacionService;
 use App\Services\PagoInscripcionService;
@@ -24,8 +25,6 @@ class AlumnosController extends Controller
      */
     public function index()
     {
-        // abort_unless(Auth::user()->can('listar_alumnos'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
-
         return view('alumnos.index');
     }
 
@@ -52,7 +51,7 @@ class AlumnosController extends Controller
 
     public function show(Alumno $alumno)
     {
-        abort_unless(Auth::user()->can('consultar_alumno'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
+        $alumno->load(['especialidad']);
 
         return view('alumnos.show',compact('alumno'));
     }
@@ -64,12 +63,12 @@ class AlumnosController extends Controller
      */
     public function create(FacturacionService $facturacionService)
     {
-        // abort_unless(Auth::user()->can('crear_alumno'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
+        $sucursal = optional(session('sucursal'));
 
         return view('alumnos.create',[
             'alumno'            => new Alumno,
-            'asesores'          => User::query()->get()->pluck('fullname','id')->sort()->prepend('Selecciona un asesor',''),
-            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'asesores'          => User::query()->get()->pluck('fullname','id')->sort()->prepend('CNCM',''),
+            'especialidades'    => Especialidad::query()->where('id_sucursal',$sucursal->id)->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
             'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
         ]);
     }
@@ -84,6 +83,7 @@ class AlumnosController extends Controller
     {
         $rules = [
             'id_sucursal'           => 'required',
+            'como_supiste_nosotros' => 'nullable',
             'numero_control'        => 'required',
             'foto'                  => 'nullable',
             'nombres'               => 'required',
@@ -108,7 +108,7 @@ class AlumnosController extends Controller
             'objetivo_inscripcion'  => 'required',
             'enfermedad_cronica'    => 'nullable',
             'solicitud_factura'     => 'nullable',
-            'id_asesor_educativo'   => 'required',
+            'id_asesor_educativo'   => 'nullable',
 
             # DATOS DE FACTURACION
             'razon_social'          => 'nullable',
@@ -165,19 +165,19 @@ class AlumnosController extends Controller
             $alumno->save();
         }
 
-        if($request->has('id_grupo')) {
+        if ($request->has('id_grupo')) {
             $alumno->grupos()->attach($request->input('id_grupo'));
-            $alumno->load(['grupos']);
+            $grupo_inscripcion = Grupo::findOrFail($request->input('id_grupo'));
 
             $pis->setAlumno($alumno);
 
             switch ($request->input('forma_pago')) {
                 case config('alumnos.forma_pago.mensual','mensual'):
-                    $pis->mensual();
+                    $pis->mensualPorGrupo($grupo_inscripcion);
                 break;
 
                 case config('alumnos.forma_pago.semanal','semanal'):
-                    $pis->semanal();
+                    $pis->semanalPorGrupo($grupo_inscripcion);
                 break;
             }
         }
@@ -197,10 +197,12 @@ class AlumnosController extends Controller
     {
         abort_unless(Auth::user()->can('editar_alumno'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
+        $sucursal = optional(session('sucursal'));
+
         return view('alumnos.edit', [
             'alumno'            => $alumno,
-            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
-            'asesores'          => User::query()->get()->pluck('fullname','id')->sort()->prepend('Selecciona un asesor',''),
+            'especialidades'    => Especialidad::query()->where('id_sucursal',$sucursal->id)->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'asesores'          => User::query()->get()->pluck('fullname','id')->sort()->prepend('CNCM',''),
             'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
         ]);
     }
@@ -239,7 +241,7 @@ class AlumnosController extends Controller
             'objetivo_inscripcion'  => 'required',
             'enfermedad_cronica'    => 'nullable',
             'solicitud_factura'     => 'nullable',
-            'id_asesor_educativo'   => 'required',
+            'id_asesor_educativo'   => 'nullable',
 
             # DATOS DE FACTURACION
             'razon_social'          => 'nullable',
@@ -300,7 +302,7 @@ class AlumnosController extends Controller
     public function destroy(Alumno $alumno, Request $request)
     {
         $alumno->grupos()->detach();
-        $alumno->pagos()->where('status',config('pagos.status.pendiente'))->delete();
+        $alumno->pagos()->where('status',config('pagos.status.Pendiente'))->delete();
         $alumno->delete();
 
         if ($request->ajax()) {
@@ -324,11 +326,14 @@ class AlumnosController extends Controller
         $offset = ($page - 1) * $resultCount;
 
         $results = Alumno::query()
-            ->where('nombres', 'like', "%{$term}%")
-            ->orWhere('apellido_paterno', 'like', "%{$term}%")
-            ->orWhere('apellido_materno', 'like', "%{$term}%")
             ->when($request->input('id_sucursal'),function($q,$sucursal){
                 $q->where('id_sucursal',$sucursal);
+            })
+            ->where('status',config('alumnos.status.Alumno'))
+            ->where(function($q) use($term){
+                $q->where('nombres', 'like', "%{$term}%")
+                ->orWhere('apellido_paterno', 'like', "%{$term}%")
+                ->orWhere('apellido_materno', 'like', "%{$term}%");
             })
             ->orderBy('nombres', 'asc')
             ->skip($offset)
@@ -336,11 +341,13 @@ class AlumnosController extends Controller
             ->get();
 
         $count = Alumno::query()
-            ->where('nombres', 'like', "%{$term}%")
-            ->orWhere('apellido_paterno', 'like', "%{$term}%")
-            ->orWhere('apellido_materno', 'like', "%{$term}%")
-            ->when($request->input('id_sucursal'),function($q,$sucursal){
-                $q->where('id_sucursal',$sucursal);
+            ->when($request->input('id_sucursal'),function($q,$id_sucursal){
+                $q->where('id_sucursal',$id_sucursal);
+            })
+            ->where(function($q) use($term){
+                $q->where('nombres', 'like', "%{$term}%")
+                ->orWhere('apellido_paterno', 'like', "%{$term}%")
+                ->orWhere('apellido_materno', 'like', "%{$term}%");
             })
             ->count();
 
@@ -362,17 +369,16 @@ class AlumnosController extends Controller
     public function datatables_pagos(Request $request)
     {
 
-            $query = AlumnoPago::query()
-                ->when($request->input('id_alumno'),function($q,$id_alumno){
-                    $q->where('id_alumno',$id_alumno);
-                })
-                ->when($request->input('status'),function($q,$status){
-                    $q->where('status',$status);
-                });;
-
-
+        $query = AlumnoPago::query()
+            ->when($request->input('id_alumno'),function($q,$id_alumno){
+                $q->where('id_alumno',$id_alumno);
+            })
+            ->when($request->input('status'),function($q,$status){
+                $q->where('status',$status);
+            });
 
         return DataTables::eloquent($query)
+            ->addIndexColumn()
             ->editColumn('fecha_limite',function($model){
                 return optional($model->fecha_limite)->format('d/m/Y');
             })

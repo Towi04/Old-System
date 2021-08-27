@@ -69,7 +69,6 @@
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
 
                             <div class="form-group">
-                                <label for="">Forma de pago</label>
                                 {!! Form::label('forma_pago','Forma Pago:') !!}
                                 {!! Form::select('forma_pago', [
                                         'Efectivo'              => 'Efectivo',
@@ -273,18 +272,23 @@
                     processData: false,
                     data: formData
                 }).done(function(response){
-                    const pago = response.data.pago;
-                    const route = "{{ url('punto_de_venta/ticket/_pago') }}".replace('_pago',pago.id);
+                    if(response.success) {
+                        const pago = response.data.pago;
+                        const route = "{{ url('punto_de_venta/ticket/_pago') }}".replace('_pago',pago.id);
 
-                    dt_pagos.ajax.reload(function(){
-                        dom.form_abonos[0].reset();
-                        wait.modal('hide');
+                        dt_pagos.ajax.reload(function(){
+                            dom.form_abonos[0].reset();
+                            wait.modal('hide');
 
-                        dom.tikets.modal.modal('show');
-                        dom.tikets.contenido_ticket.html();
-                        dom.tikets.contenido_ticket.html(`<iframe scrolling='auto' type='text/html' scroll='auto' src='${route}' width='100%' height='450px' align='center'></iframe>`);
-                    },false);
-
+                            dom.tikets.modal.modal('show');
+                            dom.tikets.contenido_ticket.html();
+                            dom.tikets.contenido_ticket.html(`<iframe scrolling='auto' type='text/html' scroll='auto' src='${route}' width='100%' height='450px' align='center'></iframe>`);
+                        },false);
+                    }else {
+                        setTimeout(() => {
+                            wait.modal('hide');
+                        }, 250);
+                    }
                 }).fail(function(error){
                     setTimeout(() => {
                         wait.modal('hide');
