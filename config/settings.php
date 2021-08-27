@@ -205,7 +205,7 @@ return [
         ],
         [
             'name'          => 'consultar_preregistros_alumnos',
-            'display_name'  => 'Consultar Pre-registros Alunnos',
+            'display_name'  => 'Consultar Pre-registros Alumnos',
             'description'   => 'Permiso para mostrar los pre-registros de alumnos'
         ],
     ],
