@@ -25,10 +25,7 @@ class EspecialidadesController extends Controller
 
     public function datatables(Request $request)
     {
-        $query = Especialidad::query()
-        ->when($request->input('id_sucursal'),function($q,$id_sucursal){
-            $q->where('id_sucursal',$id_sucursal);
-        });
+        $query = Especialidad::query();
 
         return DataTables::eloquent($query)
             ->editColumn('precio_inscripcion',function($model){

@@ -70,7 +70,7 @@ class GruposController extends Controller
         return view('grupos.create',[
             'grupo'         => new Grupo,
             'especialidades'  => Especialidad::query()
-                ->where('id_sucursal',$sucursal->id)
+                
                 ->pluck('nombre','id')
                 ->sort()
                 ->prepend('Selecciona una especialidad','')
@@ -140,7 +140,7 @@ class GruposController extends Controller
 
         return view('grupos.edit', [
             'grupo'             => $grupo,
-            'especialidades'    => Especialidad::query()->where('id_sucursal',$sucursal->id)->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
         ]);
     }
 

@@ -80,7 +80,7 @@ class PreRegistrosController extends Controller
 
         return view('alumnos.pre_registro.create',[
             'alumno'            => new Alumno,
-            'especialidades'    => Especialidad::query()->where('id_sucursal',$sucursal->id)->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
             'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
         ]);
     }
@@ -187,7 +187,7 @@ class PreRegistrosController extends Controller
 
         return view('alumnos.pre_registro.edit', [
             'alumno'            => $alumno,
-            'especialidades'    => Especialidad::query()->where('id_sucursal',$sucursal->id)->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
             'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi',''),
 
         ]);
@@ -298,7 +298,7 @@ class PreRegistrosController extends Controller
 
         return view('alumnos.pre_registro.inscribir', [
             'alumno'            => $alumno,
-            'especialidades'    => Especialidad::query()->where('id_sucursal',$sucursal->id)->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
             'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi',''),
             'asesores'          => User::query()->get()->pluck('fullname','id')->sort()->prepend('CNCM',''),
         ]);

@@ -55,15 +55,19 @@ class PagoInscripcionService
         if ($grupo->fecha_inicio->greaterThan($this->fecha_actual)) {
               # EL GRUPO YA COMENZO
               $fecha_inicio = $grupo->fecha_inicio->copy();
+              $fecha_mes = $grupo->fecha_inicio->copy();
               $fecha_final = $grupo->fecha_inicio->copy()->lastOfMonth();
         }else{
             # EL GRUPO NO HA COMENZADO
             $fecha_inicio = $this->fecha_actual->copy();
+            $fecha_mes =  $this->fecha_actual->copy();
             $fecha_final = $this->fecha_actual->copy()->lastOfMonth();
 
         }
 
-        while($fecha_inicio->next('Saturday') &&  $fecha_inicio->isCurrentMonth() )
+        
+
+        while($fecha_inicio->next('Saturday') &&  $fecha_inicio->isSameMonth($fecha_mes, true) )
         {
             $formato_fecha = new Date($fecha_inicio);
             $concepto = config('alumnos.concepto.colegiatura').' de la semana '.$formato_fecha->week.' de  '.$formato_fecha->format('F \d\e\l Y');
@@ -73,7 +77,7 @@ class PagoInscripcionService
                 'concepto'      => $concepto,
                 'monto'         => $precio_semanal,
                 'saldo'         => $precio_semanal,
-                'fecha_limite'  => $fecha_final,
+                'fecha_limite'  => $fecha_inicio,
                 'status'        => config('pagos.status.Pendiente'),
             ]);
         }

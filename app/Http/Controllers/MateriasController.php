@@ -25,11 +25,7 @@ class MateriasController extends Controller
 
     public function datatables(Request $request)
     {
-        $query = Materia::query()
-            ->when($request->input('id_sucursal'),function($q,$id_sucursal){
-                $q->where('id_sucursal',$id_sucursal);
-            })
-            ->with(['especialidad']);
+        $query = Materia::with(['especialidad']);
 
         return DataTables::eloquent($query)
             ->addColumn('buttons', 'materias.datatables._buttons')
@@ -50,7 +46,7 @@ class MateriasController extends Controller
 
         return view('materias.create',[
             'materia'           => new Materia,
-            'especialidades'    => Especialidad::query()->where('id_sucursal',$sucursal->id)->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
         ]);
     }
 
@@ -97,7 +93,7 @@ class MateriasController extends Controller
 
         return view('materias.edit', [
             'materia'           => $materia,
-            'especialidades'    => Especialidad::query()->where('id_sucursal',$sucursal->id)->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
         ]);
     }
 
