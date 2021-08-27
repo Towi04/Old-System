@@ -115,7 +115,7 @@
     <tr>
         <td class="bg-primary text-white"><b>Especialidad:</b></td>
         <td>
-            {{ $alumno->especialidad->nombre }}
+            {{ optional($alumno->especialidad)->nombre }}
         </td>
     </tr>
 
