@@ -205,7 +205,7 @@
                     {data: 'fecha_limite', name: 'fecha_limite'},
                     {data: 'status_vencimiento', className:"text-center", name: 'status'},
                 ],
-                order: [[ 2, "asc" ]],
+                order: [[ 3, "asc" ]],
                 language: {
                     "lengthMenu": "Mostrar _MENU_ registros por pagina",
                     "zeroRecords": "No se encontro ningún registro",

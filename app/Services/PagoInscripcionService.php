@@ -53,19 +53,20 @@ class PagoInscripcionService
         $precio_semanal = $grupo->precio_semanal ?? 0;
 
         if ($grupo->fecha_inicio->greaterThan($this->fecha_actual)) {
+              # EL GRUPO YA COMENZO
+              $fecha_inicio = $grupo->fecha_inicio->copy();
+              $fecha_final = $grupo->fecha_inicio->copy()->lastOfMonth();
+        }else{
             # EL GRUPO NO HA COMENZADO
             $fecha_inicio = $this->fecha_actual->copy();
             $fecha_final = $this->fecha_actual->copy()->lastOfMonth();
-        }else{
-            # EL GRUPO YA COMENZO
-            $fecha_inicio = $grupo->fecha_inicio->copy();
-            $fecha_final = $grupo->fecha_inicio->copy()->lastOfMonth();
+
         }
 
         while($fecha_inicio->next('Saturday') &&  $fecha_inicio->isCurrentMonth() )
         {
             $formato_fecha = new Date($fecha_inicio);
-            $concepto = config('alumnos.concepto.colegiatura').' '.$formato_fecha->format('F \d\e\l Y');
+            $concepto = config('alumnos.concepto.colegiatura').' de la semana '.$formato_fecha->week.' de  '.$formato_fecha->format('F \d\e\l Y');
 
             $this->alumno->pagos()->create([
                 'id_grupo'      => $grupo->id,
@@ -103,7 +104,7 @@ class PagoInscripcionService
     {
         $this->alumno->pagos()->create([
             'id_grupo'      => $grupo->id,
-            'concepto'      => config('alumnos.concepto.inscripcion') .' Semana: '.$grupo->fecha_inicio->week .' del '.$grupo->fecha_inicio->year,
+            'concepto'      => config('alumnos.concepto.inscripcion').' del '.$grupo->fecha_inicio->year,
             'monto'         => $grupo->precio_inscripcion ?? 0,
             'fecha_limite'  => $grupo->fecha_inicio,
             'status'        => config('pagos.status.Pagado'),
