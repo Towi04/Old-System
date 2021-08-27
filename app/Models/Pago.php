@@ -29,6 +29,7 @@ class Pago extends Model
         'monto',
         'fecha',
         'id_recibio',
+        'folio_fiscal',
     ];
 
 

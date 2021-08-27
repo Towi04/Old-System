@@ -63,7 +63,7 @@
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                             <div class="form-group">
                                 {!! Form::label('monto','Monto:') !!}
-                                {!! Form::number('monto', null, ['class' => 'form-control','placeholder' => 'Ingresa el monto','required' => true,'autocomplete' => 'off','form-selector' => '','step' => '0.01','disabled' => true,'min' => 1]) !!}
+                                {!! Form::number('monto', null, ['class' => 'form-control','placeholder' => 'Ingresa el monto','required' => true,'autocomplete' => 'off','form-selector' => '','step' => '0.01','disabled' => true,'min' => 0.01]) !!}
                             </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">

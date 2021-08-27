@@ -184,9 +184,16 @@
                             <tbody>
                                 @foreach ($abonos as $abono)
                                     <tr class="gradeX" id="abono-{{ $abono->id }}">
-                                        <td class="text-danger text-center">
-                                            {{ $abono->pago->folio }}
-                                        </td>
+                                        @if(isset($_GET['f']))
+                                            <td class="text-primary text-center">
+                                            {{ $abono->pago->folio_fiscal }}
+                                            </td>
+                                        @else 
+                                            <td class="text-danger text-center">
+                                                {{ $abono->pago->folio }}
+                                            </td>
+                                        @endif
+                                        
                                         <td nowrap>{{ $abono->pago->fecha->format('d-m-Y H:i') }}</td>
                                         <td>
                                             {{ $abono->pago->alumno->fullname }}

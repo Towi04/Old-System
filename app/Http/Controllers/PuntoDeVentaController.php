@@ -21,7 +21,7 @@ class PuntoDeVentaController extends Controller
     {
         $this->validate($request,[
             'id_alumno'     => 'required',
-            'monto'         => 'required|numeric|min:1|not_in:0',
+            'monto'         => 'required|numeric|min:0.01|not_in:0',
             'forma_pago'    => 'required',
         ]);
 
@@ -34,14 +34,20 @@ class PuntoDeVentaController extends Controller
         $monto = $request->input('monto');
 
         $folio = Pago::query()->select('folio')->where('id_sucursal', $id_sucursal)->max('folio') ?? 0;
+        $folio_fiscal = Pago::query()->select('folio_fiscal')->where('id_sucursal', $id_sucursal)->max('folio_fiscal') ?? 0;
 
         $venta_fiscal = ($request->input('forma_pago','') != 'Efectivo') ? true : $alumno->solicitud_factura;
+
+        // dd(($venta_fiscal)?$folio_fiscal + 1 : null);
 
         try {
             DB::beginTransaction();
 
+           
+
             $pago = Pago::create([
                 'folio'         => $folio + 1,
+                'folio_fiscal'   => ($venta_fiscal)?$folio_fiscal + 1 : null,
                 'id_sucursal'   => $id_sucursal,
                 'id_alumno'     => $alumno->id,
                 'monto'         => $monto,

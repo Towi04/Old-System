@@ -18,6 +18,8 @@ class ReporteVentasController extends Controller
         } else {
             $tipo = 'dia';
         }
+        
+        $sucursal = optional(session('sucursal'));
 
         if ($tipo == 'dia') {
             $tipo = 'dia';
@@ -32,7 +34,9 @@ class ReporteVentasController extends Controller
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDay();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDay();
 
+            
             $abonos = Abono::query()
+                ->where('id_sucursal','=',$sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
@@ -51,6 +55,7 @@ class ReporteVentasController extends Controller
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addMonth();
 
             $abonos = Abono::query()
+                ->where('id_sucursal','=',$sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
@@ -69,6 +74,7 @@ class ReporteVentasController extends Controller
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDays(7);
 
             $abonos = Abono::query()
+                ->where('id_sucursal','=',$sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
@@ -86,11 +92,16 @@ class ReporteVentasController extends Controller
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addYear();
 
             $abonos = Abono::query()
+                ->where('id_sucursal','=',$sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
             $fecha_antes = new Date($fecha_antes);
             $fecha_despues = new Date($fecha_despues);
+        }
+
+        if(isset($_GET['f'])){
+            $abonos->where('venta_fiscal','=',1);
         }
 
         $abonos =  $abonos->with(['pago.alumno','alumno_pago'])->get();
