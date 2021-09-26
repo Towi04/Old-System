@@ -184,7 +184,7 @@
                             <tbody>
                                 @foreach ($abonos as $abono)
                                     <tr class="gradeX" id="abono-{{ $abono->id }}">
-                                        @if(isset($_GET['f']))
+                                        @if( $abono->pago->folio_fiscal )
                                             <td class="text-primary text-center">
                                             {{ $abono->pago->folio_fiscal }}
                                             </td>
@@ -310,6 +310,7 @@
                 'title': 'Reporte de ventas',
                 "className": 'btn btn-primary',
             }],
+            order: [['1','asc']]
 
         });
 

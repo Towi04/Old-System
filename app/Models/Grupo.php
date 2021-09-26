@@ -120,4 +120,14 @@ class Grupo extends Model
      public function getNombreAttribute(){
          return '('.$this->id.') '.$this->especialidad.' H:'.$this->horario.' FI:'.$this->fecha_inicio->format('d-m-Y');
      }
+
+     /**
+      * Get all of the dias for the Grupo
+      *
+      * @return \Illuminate\Database\Eloquent\Relations\HasMany
+      */
+     public function days()
+     {
+         return $this->hasMany(GrupoDia::class, 'id_grupo', 'id');
+     }
 }

@@ -1,3 +1,4 @@
+@can('editar_alumno')
 <fieldset class="form-group">
     <legend><span>Informacion de alumno</span></legend>
     <div class="row">
@@ -194,19 +195,19 @@
                 {!! Form::text('enfermedad_cronica', null, ['class' => 'form-control','placeholder' => 'Escribe la enfermedad cronica','autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']) !!}
             </div>
         </div>
-
-        @can('editar_datos_fiscales')
+@endcan
+        
         <div class="col-md-12">
             {!! Form::label('solicitud_factura', 'Solicitud Factura*'); !!} &nbsp;
             <label>
                 {!! Form::checkbox('solicitud_factura', 1, null, ['class' => 'i-checks']) !!}
             </label>
         </div>
-        @endcan
+
     </div>
 </fieldset>
 
-@can('editar_datos_fiscales')
+
     <fieldset class="form-group" id="informacion_fiscal" style="{{ (old('solicitud_factura',$alumno->solicitud_factura))?'':'display: none;' }}">
         <legend><span>Información fiscal</span></legend>
         <div class="row">
@@ -257,9 +258,9 @@
             </div>
         </div>
     </fieldset>
-@endcan
 
 
+@can('editar_alumno')
 <fieldset class="form-group">
     <legend><span>Observaciones</span></legend>
     <div class="row">
@@ -276,6 +277,7 @@
     </div>
 
 </fieldset>
+@endcan
 
 
 <script type="text/javascript">

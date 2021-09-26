@@ -195,7 +195,7 @@ class AlumnosController extends Controller
      */
     public function edit(Alumno $alumno,FacturacionService $facturacionService)
     {
-        abort_unless(Auth::user()->can('editar_alumno'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
+        abort_unless(Auth::user()->canany(['editar_alumno','editar_datos_fiscales']), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
         $sucursal = optional(session('sucursal'));
 
@@ -216,50 +216,66 @@ class AlumnosController extends Controller
      */
     public function update(Request $request, Alumno $alumno)
     {
-        $rules = [
-            'id_sucursal'           => 'required',
-            'foto'                  => 'nullable',
-            'nombres'               => 'required',
-            'apellido_paterno'      => 'nullable',
-            'apellido_materno'      => 'nullable',
-            'edad'                  => 'required',
-            'fecha_nacimiento'      => 'required',
-            'domicilio'             => 'required',
-            'colonia'               => 'required',
-            'municipio'             => 'required',
-            'telefono'              => 'required',
-            'celular'               => 'required',
-            'email'                 => 'required',
-            'codigo_postal'         => 'required',
-            'ocupacion'             => 'required',
-            'grado_estudios'        => 'required',
-            'otro_grado_estudios'   => 'nullable',
-            'tutor'                 => 'nullable',
-            'id_especialidad'       => 'required',
-            'otra_especialidad'     => 'nullable',
-            'escuela_procedencia'   => 'nullable',
-            'objetivo_inscripcion'  => 'required',
-            'enfermedad_cronica'    => 'nullable',
-            'solicitud_factura'     => 'nullable',
-            'id_asesor_educativo'   => 'nullable',
-
-            # DATOS DE FACTURACION
-            'razon_social'          => 'nullable',
-            'rfc'                   => 'nullable',
-            'cfdi'                  => 'nullable',
-            'curp'                  => 'nullable',
-            'telefono_general'      => 'nullable',
-            'correo_general'        => 'nullable',
-            'domicilio_fiscal'      => 'nullable',
-
-            'observaciones'         => 'nullable',
-            'forma_pago'            => 'required',
-        ];
-
+        if(Auth::user()->can('editar_alumno')){
+            $rules = [
+                'id_sucursal'           => 'required',
+                'foto'                  => 'nullable',
+                'nombres'               => 'required',
+                'apellido_paterno'      => 'nullable',
+                'apellido_materno'      => 'nullable',
+                'edad'                  => 'required',
+                'fecha_nacimiento'      => 'required',
+                'domicilio'             => 'required',
+                'colonia'               => 'required',
+                'municipio'             => 'required',
+                'telefono'              => 'required',
+                'celular'               => 'required',
+                'email'                 => 'required',
+                'codigo_postal'         => 'required',
+                'ocupacion'             => 'required',
+                'grado_estudios'        => 'required',
+                'otro_grado_estudios'   => 'nullable',
+                'tutor'                 => 'nullable',
+                'id_especialidad'       => 'required',
+                'otra_especialidad'     => 'nullable',
+                'escuela_procedencia'   => 'nullable',
+                'objetivo_inscripcion'  => 'required',
+                'enfermedad_cronica'    => 'nullable',
+                'solicitud_factura'     => 'nullable',
+                'id_asesor_educativo'   => 'nullable',
+    
+                # DATOS DE FACTURACION
+                'razon_social'          => 'required_if:solicitud_factura,1',
+                'rfc'                   => 'required_if:solicitud_factura,1',
+                'cfdi'                  => 'required_if:solicitud_factura,1',
+                'curp'                  => 'required_if:solicitud_factura,1',
+                'telefono_general'      => 'nullable',
+                'correo_general'        => 'nullable',
+                'domicilio_fiscal'      => 'nullable',
+    
+                'observaciones'         => 'nullable',
+                'forma_pago'            => 'required',
+            ];
+        }else{
+            $rules = [
+                # DATOS DE FACTURACION
+                'solicitud_factura'      => 'nullable',
+                'razon_social'          => 'required_if:solicitud_factura,1',
+                'rfc'                   => 'required_if:solicitud_factura,1',
+                'cfdi'                  => 'required_if:solicitud_factura,1',
+                'curp'                  => 'required_if:solicitud_factura,1',
+                'telefono_general'      => 'required_if:solicitud_factura,1',
+                'correo_general'        => 'required_if:solicitud_factura,1',
+                'domicilio_fiscal'      => 'nullable',
+            ];
+        }
+        
+       
         $request->request->add([
             'id_sucursal'         => optional(session('sucursal'))->id,
             'solicitud_factura'   => $request->has('solicitud_factura'),
         ]);
+
 
         $data = $this->validate($request, $rules);
         $alumno->fill($data);

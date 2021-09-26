@@ -1,6 +1,6 @@
 <div class="text-center">
     <div class="btn-group">
-        @can('editar_alumno')
+        @canany(['editar_datos_fiscales','editar_alumno'])
             <a  href="{{ route("alumnos.edit",$id) }}"
                 class="btn btn-primary btn-sm text-white fas fa-pencil-alt"
                 data-toggle="tooltip"
@@ -8,7 +8,7 @@
                 data-action="edit"
                 title="Editar">
             </a>
-        @endcan
+        @endcanany
 
         @can('consultar_alumno')
             <a  href="{{ route("alumnos.show",$id) }}"

@@ -8,6 +8,7 @@ use App\Models\AlumnoGrupo;
 use App\Models\Especialidad;
 use App\Models\GrupoMateria;
 use App\Models\Materia;
+use App\Models\GrupoDia;
 use App\Services\PagoInscripcionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +31,7 @@ class GruposController extends Controller
 
     public function datatables(Request $request)
     {
-        $query = Grupo::query()
+        $query = Grupo::with('days')
             ->when($request->input('id_sucursal'),function($q,$id_sucursal){
                 $q->where('id_sucursal',$id_sucursal);
             })
@@ -44,8 +45,15 @@ class GruposController extends Controller
                 $tipo_grupo = ($model->infantil)? 'Infantil':'Adulto';
                 return "<a class='badge badge-primary text-white'>{$tipo_grupo}</a>";
             })
+            ->addColumn('days', function($model){
+                $horario = '';
+                foreach($model->days as $day){
+                    $horario .= ucfirst($day->dia).' H '.$day->hora_inicio.' - '.$day->hora_final.'<br>';
+                }
+                return $horario;
+            })
             ->addColumn('buttons', 'grupos.datatables._buttons')
-            ->rawColumns(['buttons','infantil'])
+            ->rawColumns(['buttons','infantil','days'])
             ->make(true);
     }
 
@@ -66,6 +74,15 @@ class GruposController extends Controller
         abort_unless(Auth::user()->can('crear_grupo'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
         $sucursal = optional(session('sucursal'));
+        $dias_semana = [
+            'lunes'=>'Lunes',
+            'martes'=>'Martes',
+            'miercoles'=>'Miércoles',
+            'jueves'=>'Jueves',
+            'viernes'=>'Viernes',
+            'sabado'=>'Sábado',
+            'domingo'=>'Domingo',
+        ];
 
         return view('grupos.create',[
             'grupo'         => new Grupo,
@@ -73,7 +90,8 @@ class GruposController extends Controller
                 
                 ->pluck('nombre','id')
                 ->sort()
-                ->prepend('Selecciona una especialidad','')
+                ->prepend('Selecciona una especialidad',''),
+            'dias_semana'=>$dias_semana
         ]);
     }
 
@@ -89,7 +107,7 @@ class GruposController extends Controller
             'id_sucursal'                       => 'required',
             'id_especialidad'                   => 'required',
             'horario'                           => 'required',
-            'dias'                              => 'required',
+            'dia'                              => 'required',
             'infantil'                          => 'required',
             'fecha_inicio'                      => 'required',
             'precio_semanal'                    => 'nullable',
@@ -120,6 +138,19 @@ class GruposController extends Controller
             'id_profesor'   => null,
         ]);
 
+        // CREACION DE HORAS Y DIAS
+
+        foreach($request->dia as $dia){
+            $grupo_dia = new GrupoDia();
+            $grupo_dia ->id_grupo = $grupo->id;
+            $grupo_dia -> dia = $dia;
+            $grupo_dia ->hora_inicio = $request['inicio_'.$dia];
+            $grupo_dia ->hora_final = $request['fin_'.$dia];
+            $grupo_dia->save();
+
+        }
+        
+
         return redirect()->route('grupos.index')->with([
             'message' => 'Se agregó el grupo con éxito',
         ]);
@@ -137,10 +168,20 @@ class GruposController extends Controller
 
         $sucursal = optional(session('sucursal'));
 
+        $dias_semana = [
+            'lunes'=>'Lunes',
+            'martes'=>'Martes',
+            'miercoles'=>'Miércoles',
+            'jueves'=>'Jueves',
+            'viernes'=>'Viernes',
+            'sabado'=>'Sábado',
+            'domingo'=>'Domingo',
+        ];
 
         return view('grupos.edit', [
             'grupo'             => $grupo,
-            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'dias_semana' => $dias_semana,
         ]);
     }
 
@@ -157,7 +198,7 @@ class GruposController extends Controller
             'id_sucursal'                       => 'required',
             'id_especialidad'                   => 'required',
             'horario'                           => 'required',
-            'dias'                              => 'required',
+            // 'dias'                              => 'required',
             'infantil'                          => 'required',
             'fecha_inicio'                      => 'required',
             'precio_semanal'                    => 'nullable',
@@ -188,6 +229,20 @@ class GruposController extends Controller
             'horas_semana'  => null,
             'id_profesor'   => null,
         ]);
+
+        // CREACION DE HORAS Y DIAS
+        $grupo->days()->delete();
+
+        foreach($request->dia as $dia){
+            $grupo_dia = new GrupoDia();
+            $grupo_dia ->id_grupo = $grupo->id;
+            $grupo_dia -> dia = $dia;
+            $grupo_dia ->hora_inicio = $request['inicio_'.$dia];
+            $grupo_dia ->hora_final = $request['fin_'.$dia];
+            $grupo_dia->save();
+
+        }
+        
 
         return redirect()->route('grupos.index')->with([
             'message' => 'Se actualizó el grupo con éxito'

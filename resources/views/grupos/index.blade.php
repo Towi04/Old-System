@@ -89,7 +89,7 @@
                 { data: 'id', name: 'id',class: 'text-nowrap'},
                 { data: 'especialidad.nombre', name: 'especialidad.nombre',class: 'text-nowrap'},
                 { data: 'horario', name: 'horario',class: 'text-nowrap'},
-                { data: 'dias', name: 'dias',class: 'text-nowrap'},
+                { data: 'days', name: 'days',class: 'text-nowrap'},
                 { data: 'infantil', name: 'infantil',class: 'text-nowrap'},
                 { data: 'fecha_inicio', name: 'fecha_inicio',class: 'text-nowrap'},
                 { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
