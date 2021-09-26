@@ -94,4 +94,14 @@ class User extends Authenticatable
 
         return $sucursales->pluck('nombre')->implode(',');
     }
+
+    /**
+     * Get all of the alumnos for the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function registros()
+    {
+        return $this->hasMany(Alumno::class, 'id_asesor_educativo', 'id');
+    }
 }

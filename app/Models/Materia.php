@@ -27,6 +27,7 @@ class Materia extends Model
         'nombre',
         'fase',
         'orden',
+        'semanas'
     ];
 
     public function especialidad()

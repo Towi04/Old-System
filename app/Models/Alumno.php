@@ -108,6 +108,7 @@ class Alumno extends Model
     public function asesor_educativo()
     {
         return $this->belongsTo(User::class, 'id_asesor_educativo', 'id')->withDefault([
+            'id'           => 'CNCM',
             'nombres'           => 'CNCM',
             'apellido_paterno'  => '',
             'apellido_materno'  => '',

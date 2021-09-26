@@ -1,7 +1,7 @@
 @extends('layouts.template-'.config('settings.template').'.plantilla')
 
 @section('titulo')
-    Reporte de ventas {{ date('Y') }}
+    Reporte por asesor {{ date('Y') }}
 @endsection
 
 @section('breadcrumb')
@@ -16,7 +16,7 @@
             Reportes
         </li>
         <li class="breadcrumb-item active">
-            <strong>Reporte de ventas</strong>
+            <strong>Reporte asesores</strong>
         </li>
     </ol>
 @endsection
@@ -50,26 +50,26 @@
     <div class="row ">
         <div class="col-lg-12 no_print">
             <div class="btn-group ">
-                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'dia']) }}"
+                <a href="{{ route('reportes.reporte-ventas.asesores',['tipo' => 'dia']) }}"
                     class="btn @if ($tipo=='dia' ) btn-primary  text-white @else btn-white @endif">Día</a>
-                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'semanal']) }}"
+                <a href="{{ route('reportes.reporte-ventas.asesores',['tipo' => 'semanal']) }}"
                     class="btn  @if ($tipo=='semanal' ) btn-primary  text-white @else btn-white @endif">Semanal</a>
-                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'mes']) }}"
+                <a href="{{ route('reportes.reporte-ventas.asesores',['tipo' => 'mes']) }}"
                     class="btn  @if ($tipo=='mes' ) btn-primary  text-white @else btn-white @endif">Mensual</a>
-                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'anual']) }}"
+                <a href="{{ route('reportes.reporte-ventas.asesores',['tipo' => 'anual']) }}"
                     class="btn  @if ($tipo=='anual' ) btn-primary  text-white @else btn-white @endif">Anual</a>
             </div>
         </div>
     </div>
     <div class="row mt-2">
-        <div class="col-lg-9">
+        <div class="col-lg-12">
             <div class="element-box p-3">
                 <div class="ibox-title mb-2">
                     <div class="row">
 
                         @if (request('tipo','dia') == 'dia')
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'dia','fecha'=>$fecha_antes->format('d-m-Y') ]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.asesores',['tipo' => 'dia','fecha'=>$fecha_antes->format('d-m-Y') ]) }}"
                                     data-toggle="tooltip" data-title="{{ $fecha_antes->format('d \d\e F  \d\e\l  Y') }}"
                                     data-placement="top" class="btn btn-primary btn-sm text-white no_print"><i
                                         class="fas fa-arrow-alt-circle-left fa-2x"></i></a>
@@ -82,7 +82,7 @@
                                 </center>
                             </div>
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo'=>'dia','fecha' => $fecha_despues->format('d-m-Y') ]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.asesores',['tipo'=>'dia','fecha' => $fecha_despues->format('d-m-Y') ]) }}"
                                     data-toggle="tooltip" data-title="{{ $fecha_despues->format('d \d\e F \d\e\l Y') }}"
                                     data-placement="top" class="btn btn-primary btn-sm text-white no_print"><i
                                         class="fas fa-arrow-alt-circle-right fa-2x"></i></a>
@@ -90,7 +90,7 @@
                         @endif
                         @if (request('tipo','dia') == 'mes')
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo'=>'mes','fecha'=> $fecha_antes->format('d-m-Y') ]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.asesores',['tipo'=>'mes','fecha'=> $fecha_antes->format('d-m-Y') ]) }}"
                                     data-toggle="tooltip"
                                     data-title="{{ $fecha_antes->format('d \d\e F  \d\e\l  Y') }}"
                                     data-placement="top"
@@ -106,7 +106,7 @@
                                 </center>
                             </div>
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'mes','fecha' => $fecha_despues->format('d-m-Y') ]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.asesores',['tipo' => 'mes','fecha' => $fecha_despues->format('d-m-Y') ]) }}"
                                     data-toggle="tooltip" data-title="{{ $fecha_despues->format('d \d\e F \d\e\l Y') }}"
                                     data-placement="top" class="btn btn-primary btn-sm text-white no_print"><i
                                         class="fas fa-arrow-alt-circle-right fa-2x"></i></a>
@@ -115,7 +115,7 @@
 
                         @if (request('tipo','dia') == 'semanal')
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'semanal','fecha' => $fecha_antes->startOfWeek()->format('d-m-Y') ]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.asesores',['tipo' => 'semanal','fecha' => $fecha_antes->startOfWeek()->format('d-m-Y') ]) }}"
                                     data-toggle="tooltip"
                                     data-title="{{ $fecha_antes->format('d \d\e F  \d\e\l  Y') }}"
                                     data-placement="top"
@@ -132,7 +132,7 @@
                                 </center>
                             </div>
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo'=> 'semanal','fecha'=>$fecha_despues->startOfWeek()->format('d-m-Y')]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.asesores',['tipo'=> 'semanal','fecha'=>$fecha_despues->startOfWeek()->format('d-m-Y')]) }}"
                                     data-toggle="tooltip" data-title="{{ $fecha_despues->format('d \d\e F \d\e\l Y') }}"
                                     data-placement="top" class="btn btn-primary btn-sm text-white no_print"><i
                                         class="fas fa-arrow-alt-circle-right fa-2x"></i></a>
@@ -141,7 +141,7 @@
 
                         @if (request('tipo','dia') == 'anual')
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'anual','fecha'=> $fecha_antes->format('d-m-Y'), ]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.asesores',['tipo' => 'anual','fecha'=> $fecha_antes->format('d-m-Y'), ]) }}"
                                     data-toggle="tooltip"
                                     data-title="{{ $fecha_antes->format('Y') }}"
                                     data-placement="top"
@@ -160,7 +160,7 @@
                                 </center>
                             </div>
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo'=>'anual','fecha'=> $fecha_despues->format('d-m-Y') ]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.asesores',['tipo'=>'anual','fecha'=> $fecha_despues->format('d-m-Y') ]) }}"
                                     data-toggle="tooltip" data-title="{{ $fecha_despues->format(' Y') }}"
                                     data-placement="top" class="btn btn-primary btn-sm text-white no_print"><i
                                         class="fas fa-arrow-alt-circle-right fa-2x"></i></a>
@@ -169,57 +169,27 @@
                     </div>
                 </div>
                 <div class="ibox-content mt-2">
-
+                    <div id="container"></div>
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover" id="tabla_abonos">
+                        <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Folio</th>
-                                    <th>Fecha Abono</th>
-                                    <th>Alumno</th>
-                                    <th>Concepto</th>
-                                    <th>Total</th>
+                                    <th>Asesor</th>
+                                    <th>Preregistros</th>
+                                    <th>Alumnos</th>
+                                    <th>Asistentes</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($abonos as $abono)
-                                    <tr class="gradeX" id="abono-{{ $abono->id }}">
-                                        @if( $abono->pago->folio_fiscal )
-                                            <td class="text-primary text-center">
-                                            {{ $abono->pago->folio_fiscal }}
-                                            </td>
-                                        @else 
-                                            <td class="text-danger text-center">
-                                                {{ $abono->pago->folio }}
-                                            </td>
-                                        @endif
-                                        
-                                        <td nowrap>{{ $abono->pago->fecha->format('d-m-Y H:i') }}</td>
-                                        <td>
-                                            {{ $abono->pago->alumno->fullname }}
-                                        </td>
-                                        <td>
-                                            {{ $abono->alumno_pago->concepto }}
-                                        </td>
-
-                                        <td class="text-right text-nowrap" style="cursor:pointer">
-                                            $ {{ number_format($abono->monto, '2', '.', ',') }}
-                                        </td>
+                                @foreach ($asesores as $asesor)
+                                    <tr>
+                                        <td>{{$asesor->fullname}}</td>
+                                        <td>{{$alumnos[$asesor->id]->count()}}</td>
+                                        <td>{{$alumnos[$asesor->id]->where('status','=','Alumno')->count()}}</td>
+                                        <td>{{$alumnos[$asesor->id]->where('status','=','Alumno')->count()}}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
-
-                        </table>
-
-                        <table class="table table-bordered mt-3 float-right print_only" style="width:50%;">
-                            <tr>
-                                <td style="font-size: 1rem;">Total: </td>
-                                <td class="text-right"><b style="font-size: 1rem;"> ${{ number_format($abonos->sum('monto'), 2, '.', ',') }}</b>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" class="bg-primary"></td>
-                            </tr>
                         </table>
                     </div>
 
@@ -228,61 +198,7 @@
 
         </div>
 
-        <div class="col-lg-3 mb-3 no_print">
-            {{-- <button onclick="window.print();" class="btn btn-block btn-secondary mb-3">
-                <i class="fas fa-print"></i> Imprimir
-            </button> --}}
-            <div class="col-sm-12 col-xxxl-12 p-1">
-                <a class="element-box el-tablo" href="#">
-                  <div class="label mb-2">
-                    Total
-                  </div>
-                  <div class="value">
-                    $ {{ number_format($abonos->sum('monto'), 2, '.', ',') }}
-                  </div>
-                </a>
-            </div>
-            @can('convertir_no_fiscales_a_fiscales')
-                @if($tipo == 'semanal' || $tipo == 'mes' )
-                    <div class="col-sm-12 col-xxxl-12 p-1">
-                        <a class="element-box el-tablo" href="#">
-                        <div class="label mb-2">
-                            No fiscales
-                        </div>
-                        <div class="value">
-                            $ {{ number_format($abonos->where('venta_fiscal',0)->sum('monto'), 2, '.', ',') }}
-                        </div>
-                        </a>
-                    </div>
-                    <div class="col-sm-12 col-xxxl-12 p-1">
-                        <a class="element-box el-tablo" href="#">
-                        <div class="label mb-2">
-                            Fiscales
-                        </div>
-                        <div class="value">
-                            $ {{ number_format($abonos->where('venta_fiscal',1)->sum('monto'), 2, '.', ',') }}
-                        </div>
-                        </a>
-                    </div>
-                    <div class="col-sm-12 col-xxxl-12 p-1">
-                        <a class="element-box el-tablo" href="#">
-                        <div class="label mb-2">
-                            % de fiscales
-                        </div>
-                        <div class="value">
-                            @if($abonos->sum('monto') > 0)
-                            {{ number_format( $abonos->where('venta_fiscal',1)->sum('monto') / $abonos->sum('monto') *100, 2, '.', ',') }} %
-                            @else 
-                            NO SE HAN REGISTRADO VENTAS
-                            @endif
-                        </div>
-                        </a>
-                    </div>
-                    <button id="convertir_fiscales" class="btn btn-primary btn-block ">Convertir ventas no fiscales a fiscales</button>
-                @endif
-                
-            @endcan
-        </div>
+        
     </div>
 
     <div class="modal fade" id="seleccionarFecha" tabindex="-1" role="dialog" aria-hidden="true">
@@ -350,7 +266,7 @@
                 'title': 'Reporte de ventas',
                 "className": 'btn btn-primary',
             }],
-            order: [[0,'desc']]
+            order: [['1','asc']]
 
         });
 
@@ -363,42 +279,75 @@
         });
 
         $('#datepicker').on('changeDate', function() {
-            window.location = "{{route('reportes.reporte-ventas.index')}}?tipo={{$tipo}}&fecha="+$('#datepicker').datepicker('getFormattedDate')+"&forma_pago={{@$_GET['forma_pago']}}"
+            window.location = "{{route('reportes.reporte-ventas.asesores')}}?tipo={{$tipo}}&fecha="+$('#datepicker').datepicker('getFormattedDate')+"&forma_pago={{@$_GET['forma_pago']}}"
         });
 
-        $('#convertir_fiscales').click(function(){
-                swal({
-                    title: "¿Estas seguro de convertir las ventas no fiscales a fiscales en este periodo?",
-                    text:'Esta acción no podrá deshacerse',
-                    type: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#1bc51c",
-                    cancelButtonColor: "#CDCDCD",
-                    confirmButtonText: "Si",
-                    cancelButtonText: "Cancelar",
-                    showLoaderOnConfirm: false,
-                }).then(function(result) {
-                    if (!result.value) {
-                        return;
-                    }
-                    // wait.modal('show');
+        Highcharts.chart('container', {
+    chart: {
+        type: 'column'
+    },
+    title: {
+        text: 'Reporte de asesores'
+    },
+    subtitle: {
+        text: ''
+    },
+    xAxis: {
+        categories: [
+            @foreach($asesores as $asesor)
+            '{{$asesor->nombre}}',
+            @endforeach
+        ],
+        crosshair: true
+    },
+    yAxis: {
+        min: 0,
+        title: {
+            text: 'Registros'
+        }
+    },
+    tooltip: {
+        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+        footerFormat: '</table>',
+        shared: true,
+        useHTML: true
+    },
+    plotOptions: {
+        column: {
+            pointPadding: 0.2,
+            borderWidth: 0
+        }
+    },
+    series: [
+        
+    {
+        name: 'PREREGISTROS',
 
-                    $.ajax({
-                        url: "{{route('reportes.reporte-ventas.convertir_ventas_fiscales')}}",
-                        type: 'POST',
-                        data: {
-                            tipo: "{{$tipo}}"
-                        },
-                        success: function (response){
-                            //  wait.modal('hide');
-                            
-                            location.reload();
-                        },
-                        fail:function(error){
-                            toastr.error('Error', 'Ocurrio un error inesperado');
-                        }
-                    });
-                })
-        });
+        data: [
+            @foreach ($asesores as $asesor)
+                {{$alumnos[$asesor->id]->count()}}, 
+            @endforeach
+        ]
+
+    }, {
+        name: 'REGISTROS',
+        data: [
+            @foreach ($asesores as $asesor)
+                {{$alumnos[$asesor->id]->where('status','=','Alumno')->count()}}, 
+            @endforeach
+            ]
+
+    }, {
+        name: 'ASISTENTES',
+        data: [
+            @foreach ($asesores as $asesor)
+                {{$alumnos[$asesor->id]->where('status','=','Alumno')->count()}}, 
+            @endforeach
+        ]
+
+    }]
+});
     </script>
 @endsection

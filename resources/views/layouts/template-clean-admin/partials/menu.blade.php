@@ -25,6 +25,12 @@
                 </div>
                 <div class="sub-menu-i">
                     <ul class="sub-menu">
+                        @can(['gestionar_configuraciones'])
+                            <li>
+                                <a href="{{ route('configuraciones.index') }}">Configuraciones</a>
+                            </li>
+                        @endcan
+
                         @can(['gestionar_usuarios'])
                             <li>
                                 <a href="{{ route('admin.usuarios.index') }}">Usuarios</a>
@@ -168,6 +174,9 @@
                     </li>
                     <li>
                         <a href="{{ route('reportes.reporte-ventas.proyeccion') }}">Reporte de Proyección</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('reportes.reporte-ventas.asesores') }}">Reporte de Asesores</a>
                     </li>
                 </ul>
             </div>

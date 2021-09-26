@@ -74,6 +74,7 @@ class MateriasController extends Controller
             'nombre'            => 'required',
             'fase'              => 'required',
             'orden'             => 'required',
+            'semanas'             => 'nullable',
         ];
 
         $request->request->add([
@@ -122,6 +123,7 @@ class MateriasController extends Controller
             'nombre'                => 'required',
             'fase'                  => 'required',
             'orden'                 => 'required',
+            'semanas'             => 'nullable',
         ];
 
         $request->request->add([

@@ -213,6 +213,16 @@ return [
             'display_name'  => 'Inscribir a alumnos a otros grupos',
             'description'   => 'Inscribir alumnos a otros grupos'
         ],
+        [
+            'name'          => 'gestionar_configuraciones',
+            'display_name'  => 'Gestionar configuraciones',
+            'description'   => 'Actualizar y modificar las configuraciones globales del sistema'
+        ],
+        [
+            'name'          => 'convertir_no_fiscales_a_fiscales',
+            'display_name'  => 'Convertir ventas no fiscales a fiscales',
+            'description'   => 'Permite convertir las ventas no fiscales a fiscales de acuerdo al porcentaje de la configuracion'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)
@@ -330,6 +340,19 @@ return [
             'precio_mensualidad' => null,
             'precio_mensualidad_pronto_pago' => null,
             'precio_semanal'     => null,
+        ],
+    ],
+    # Configuraciones del sistema
+    'configuraciones' => [
+        [
+            'nombre'          => 'mostrar_solo_fiscales',
+            'descripcion'  => '¿Mostrar solo la información de ventas fiscales?',
+            'valor'   => 'No',
+        ],
+        [
+            'nombre'          => 'porcentaje_fiscal',
+            'descripcion'  => 'Porcentaje de referencia para convertir ventas no fiscales en fiscales',
+            'valor'   => '20',
         ],
     ],
 ];

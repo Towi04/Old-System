@@ -38,7 +38,7 @@
                         <tr>
                             <th>Orden</th>
                             <th>Nombre</th>
-                            {{-- <th>Especialidad</th> --}}
+                            <th>Semanas</th>
                             <th>Fase</th>
                             <th class="text-center">Acciones</th>
                         </tr>
@@ -87,7 +87,7 @@
             columns: [
                 { data: 'orden', name: 'orden',class: 'text-nowrap'},
                 { data: 'nombre', name: 'nombre',class: 'text-nowrap'},
-                // { data: 'especialidad.nombre', name: 'especialidad.nombre',class: 'text-nowrap'},
+                { data: 'semanas', name: 'semanas',class: 'text-nowrap'},
                 { data: 'fase', name: 'fase',class: 'text-nowrap'},
                 
                 { data: 'buttons', name: 'buttons', orderable: false, searchable: false }

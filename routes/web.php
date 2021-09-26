@@ -15,6 +15,7 @@ use App\Http\Controllers\GruposController;
 use App\Http\Controllers\MateriasController;
 use App\Http\Controllers\PreRegistrosController;
 use App\Http\Controllers\PuntoDeVentaController;
+use App\Http\Controllers\ConfiguracionesController;
 use App\Http\Controllers\Reportes\ReporteVentasController;
 
 #NOTE: CONFIGURACION DE RUTAS
@@ -132,7 +133,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::post('grupos/{grupo}/guardar-alumnos', [ GruposController::class,'guardar_alumnos'])->name('grupos.guardar-alumnos');
 
     Route::post('grupos/traer_info', [ GruposController::class,'traer_info'])->name('grupos.traer_info');
-
+    Route::get('grupos/cronograma/{grupo}', [ GruposController::class,'cronograma'])->name('grupos.cronograma');
     Route::resource('grupos', GruposController::class)->parameters([
         'grupos' => 'grupo'
     ]);
@@ -151,5 +152,11 @@ Route::middleware(['auth','sucursal'])->group(function () {
         Route::post('datatables_vencimientos',[ReporteVentasController::class,'datatables_vencimientos'])->name('reporte-ventas.datatables_vencimientos');
         Route::get('proyeccion',[ReporteVentasController::class,'proyeccion'])->name('reporte-ventas.proyeccion');
         Route::post('datatables_proyeccion',[ReporteVentasController::class,'datatables_proyeccion'])->name('reporte-ventas.datatables_proyeccion');
+        Route::get('asesores',[ReporteVentasController::class,'asesores'])->name('reporte-ventas.asesores');
+        Route::post('convertir_ventas_fiscales',[ReporteVentasController::class,'convertir_ventas_fiscales'])->name('reporte-ventas.convertir_ventas_fiscales');
     });
+
+    Route::get('configuraciones', [ ConfiguracionesController::class,'index'])->name('configuraciones.index');
+    Route::post('configuraciones/actualizar_informacion_xeditables', [ ConfiguracionesController::class,'actualizar_informacion_xeditables'])->name('configuraciones.actualizar_informacion_xeditables');
+    
 });

@@ -514,4 +514,12 @@ class GruposController extends Controller
             'grupo'=> $grupo
         ]);
     }
+
+    public function cronograma(Grupo $grupo)
+    {
+        abort_unless(Auth::user()->can('consultar_grupo'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
+
+        return view('grupos.cronograma',compact('grupo'));
+    }
+
 }

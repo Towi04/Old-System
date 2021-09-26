@@ -48,5 +48,14 @@
                 title="Eliminar">
             </a>
         @endcan
+
+        @can('consultar_grupo')
+        <a  href="{{ route("grupos.cronograma",$id) }}"
+            class="btn btn-secondary btn-sm text-white fas fa-clock"
+            data-toggle="tooltip"
+            data-placement="top"
+            title="Cronograma">
+        </a>
+    @endcan
     </div>
 </div>

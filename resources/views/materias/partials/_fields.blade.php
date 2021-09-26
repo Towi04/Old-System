@@ -33,5 +33,14 @@
                 {!! Form::number('orden', @$max_orden, ['class' => 'form-control', 'placeholder' => 'Escribe aqui la fase','required' => true,'autocomplete' => 'off']); !!}
             </div>
         </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('semanas', 'Semanas de duración:*'); !!}
+                {!! Form::number('semanas', null, ['class' => 'form-control', 'placeholder' => 'Escribe aqui el número de semanas de duración','required' => true,'autocomplete' => 'off']); !!}
+            </div>
+        </div>
+
+
     </div>
 </fieldset>

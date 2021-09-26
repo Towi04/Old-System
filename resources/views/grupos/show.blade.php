@@ -19,6 +19,39 @@
 @endsection
 
 @section('contenido')
+<style>
+    .contact-box:hover{
+        transform: scale(1.05)
+    }
+    .table-responsive {
+        overflow-x: auto !important;
+    }
+
+    .content-w {
+        overflow: hidden !important;
+    }
+    td:hover{
+        background-color: #abd0ea;
+        cursor:pointer;
+    }
+
+    .table-responsive>.fixed-column {
+        position: absolute;
+        display: inline-block;
+        width: auto;
+        border-right: 1px solid #ddd;
+    }
+    @media(min-width:768px) {
+        .table-responsive>.fixed-column {
+            display: none;
+        }
+    }
+    table.dataTable {
+        clear: both;
+        margin-top: 0px !important;
+        margin-bottom: 0px !important;
+    }
+</style>
 
 <div class="row p-2">
     <div class="col-5 col-lg-5 col-sm-5 col-md-5 col-xs-12">
@@ -149,6 +182,9 @@
                         <li class="nav-item">
                           <a class="nav-link " data-toggle="tab" href="#tab-alumnos">Alumnos</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link " data-toggle="tab" href="#tab-cronograma">Cronograma</a>
+                          </li>
                       </ul>
                     </div>
                     <div class="tab-content">
@@ -183,6 +219,51 @@
                             </tbody>
                         </table>
                       </div>
+                      <div class="tab-pane " id="tab-cronograma">
+                          <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover"  id="table_cronograma" >
+                                <thead>
+                                    <tr>
+                                        <th>Materia</th>
+                                        @php 
+                                            $fecha_inicio = $grupo->fecha_inicio->startOfWeek();
+                                        @endphp
+                                        @foreach($grupo->materias as $materia)
+                                            @for($i =1; $i <=$materia->semanas; $i++ )
+                                                <th> <a data-toggle="tooltip" title="{{$fecha_inicio->format('d-m-Y')}} - {{$fecha_inicio->endOfWeek()->format('d-m-Y')}}" >{{$fecha_inicio->weekOfYear}}</a></th>
+                                                @php 
+                                                    $fecha_inicio->addDay();
+                                                @endphp
+                                            @endfor
+                                        @endforeach
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        @foreach($grupo->materias as $materia)
+                                        <tr>
+                                            <td>
+                                                {{$materia->nombre}}
+                                            </td>
+                                            {{-- Materias antes --}}
+                                            
+                                            @for($i =1; $i <=$grupo->materias->where('orden','<',$materia->orden)->sum('semanas'); $i++ )
+                                                <td> - </td>
+                                            @endfor
+                                             {{-- Semanas de la materia --}}
+                                            @for($i =1; $i <=$materia->semanas; $i++ )
+                                                <td class="bg-primary text-primary" > OK </td>
+                                            @endfor
+                                             {{-- Materias despues --}}
+                                             @for($i =1; $i <=$grupo->materias->where('orden','>',$materia->orden)->sum('semanas'); $i++ )
+                                             <td> - </td>
+                                            @endfor
+                                        </tr>
+                                        @endforeach
+                                </tbody>
+                            </table>
+                          </div>
+                       
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -196,6 +277,7 @@
 
 
 @section('scripts')
+{{-- <script src="https://cdn.datatables.net/fixedcolumns/3.3.0/js/dataTables.fixedColumns.min.js" crossorigin="anonymous"></script> --}}
     <script type="text/javascript">
         $(document).ready(function() {
 
@@ -300,6 +382,10 @@
                     $("[data-toggle='tooltip']").tooltip();
                 },
             });
+
+
+
+        
         });
     </script>
 @endsection
