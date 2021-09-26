@@ -208,6 +208,11 @@ return [
             'display_name'  => 'Consultar Pre-registros Alumnos',
             'description'   => 'Permiso para mostrar los pre-registros de alumnos'
         ],
+        [
+            'name'          => 'inscribir_a_otros_grupos',
+            'display_name'  => 'Inscribir a alumnos a otros grupos',
+            'description'   => 'Inscribir alumnos a otros grupos'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

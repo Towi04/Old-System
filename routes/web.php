@@ -98,6 +98,9 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::post('alumnos/datatables_pagos', [ AlumnosController::class,'datatables_pagos'])->name('alumnos.datatables_pagos');
     Route::post('alumnos/datatables_pagos_pendientes', [ AlumnosController::class,'datatables_pagos_pendientes'])->name('alumnos.datatables_pagos_pendientes');
     Route::post('alumnos/traer_alumnos_select2', [AlumnosController::class, 'traer_alumnos_select2']) ->name('alumnos.traer_alumnos_select2');
+    Route::get('alumnos/formulario_inscribir_otro_grupo/{alumno}', [ AlumnosController::class,'formulario_inscribir_otro_grupo'])->name('alumnos.formulario_inscribir_otro_grupo');
+    Route::put('alumnos/inscribir_a_otro_grupo/{id}', [ AlumnosController::class,'inscribir_a_otro_grupo'])->name('alumnos.inscribir_a_otro_grupo');
+
     Route::resource('alumnos', AlumnosController::class)->parameters([
         'alumnos' => 'alumno'
     ]);

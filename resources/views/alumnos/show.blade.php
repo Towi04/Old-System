@@ -20,7 +20,7 @@
 
 @section('contenido')
     <link rel="stylesheet" href="{{ asset('plugins/xeditable/css/bootstrap-editable.css') }}">
-
+    {{-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"> --}}
 <style>
     .contact-box:hover {
         transform: scale(1.05)
@@ -64,10 +64,10 @@
 
                 <div class="up-main-info " style="padding-bottom: 150px; padding-top:100px">
                     <h2 class="up-header">
-                        Alumno
+                        {{ $alumno->full_name }}
                     </h2>
                     <h6 class="up-sub-header">
-                        {{ $alumno->full_name }}
+                       Alumno
                     </h6>
                 </div>
                 <svg class="decor" width="842px" height="219px" viewBox="0 0 842 219"
@@ -113,6 +113,35 @@
                                 <i class="fas fa-edit"></i> Editar
                             </a>
                         @endcan
+                        <h3>Grupos</h3>
+                        @foreach ($alumno->grupos as $grupo)
+                        <div class="post-box">
+                            {{-- <div class="post-media" style="background-image: url(img/portfolio1.jpg)"></div> --}}
+                            <div class="post-content">
+                              <h6 class="post-title">
+                                Grupo: {{$grupo->id}} - {{$grupo->especialidad->nombre}}
+                              </h6>
+                              <div class="post-text">
+                                Fecha inicio: {{$grupo->fecha_inicio->format('d-m-Y')}}<br>
+                                Horario:<br> {!!$grupo->horario_corto!!}
+                              </div>
+                              <div class="post-foot">
+                                <div class="post-tags">
+                                  <div class="badge badge-primary">
+                                    Alumnos {{$grupo->alumnos->count()}}
+                                  </div>
+                                  {{-- <div class="badge badge-primary">
+                                    Crypto
+                                  </div> --}}
+                                </div>
+                                <a class="post-link" href="{{route('grupos.show', $grupo)}}"><span>Ir a grupo</span><i class="os-icon os-icon-arrow-right7"></i></a>
+                              </div>
+                            </div>
+                          </div>
+
+                        
+                            
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -143,6 +172,8 @@
 
                             <div class="tab-content">
                                 <div class="tab-pane active" id="tab-pagos-pendientes">
+                                    Selecciona el grupo:
+                                    {!! Form::select('id_grupo', $alumno->grupos->pluck('nombre_compuesto','id'), $alumno->grupos->first()->id, ['id'=>'select_grupo','class'=>'form-control']) !!}
                                     <table class="table table-striped table-bordered table-hover" id="tb-pagos" width="100%">
                                         <thead>
                                             <tr>
@@ -191,6 +222,7 @@
                     type: "POST",
                     data: function (d) {
                         d.id_alumno = "{{ $alumno->id }}";
+                        d.id_grupo = $('#select_grupo').val();
                     },
                     beforeSend: function(xhr,type) {
                     if (!type.crossDomain) {
@@ -226,6 +258,10 @@
                 drawCallback: function (settings) {
                     $("[data-toggle='tooltip']").tooltip();
                 },
+            });
+
+            $('#select_grupo').change(function(){
+                dt_pagos.draw();
             });
         });
     </script>

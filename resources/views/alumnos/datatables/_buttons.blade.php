@@ -30,5 +30,16 @@
                 title="Eliminar">
             </a>
         @endcan
+
+        @can('inscribir_a_otros_grupos')
+       
+            <a class="btn btn-info btn-sm text-white fas fa-file-contract"
+                href="{{ route('alumnos.formulario_inscribir_otro_grupo',$id) }}"
+                data-toggle="tooltip"
+                data-id="{{ $id }}"
+                data-placement="top"
+                title="Inscribir a otro grupo">
+            </a>
+        @endcan
     </div>
 </div>

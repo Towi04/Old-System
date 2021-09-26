@@ -13,6 +13,7 @@ use App\Services\PagoInscripcionService;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\Facades\DataTables;
 use Symfony\Component\HttpFoundation\Response as HTTPMessages;
 
@@ -341,7 +342,7 @@ class AlumnosController extends Controller
         $resultCount = 10;
         $offset = ($page - 1) * $resultCount;
 
-        $results = Alumno::query()
+        $results = Alumno::with('grupos.especialidad')
             ->when($request->input('id_sucursal'),function($q,$sucursal){
                 $q->where('id_sucursal',$sucursal);
             })
@@ -391,6 +392,9 @@ class AlumnosController extends Controller
             })
             ->when($request->input('status'),function($q,$status){
                 $q->where('status',$status);
+            })
+            ->when($request->input('id_grupo'),function($q,$id_grupo){
+                $q->where('id_grupo',$id_grupo);
             });
 
         return DataTables::eloquent($query)
@@ -411,6 +415,8 @@ class AlumnosController extends Controller
                 })
                 ->when($request->input('status'),function($q,$status){
                     $q->where('status',$status);
+                })->when($request->input('id_grupo'),function($q,$id_grupo){
+                    $q->where('id_grupo',$id_grupo);
                 });
 
             $total_pendiente = AlumnoPago::query()
@@ -419,6 +425,8 @@ class AlumnosController extends Controller
                 })
                 ->when($request->input('status'),function($q,$status){
                     $q->where('status',$status);
+                })->when($request->input('id_grupo'),function($q,$id_grupo){
+                    $q->where('id_grupo',$id_grupo);
                 })->sum('saldo');
         }else{
             $query = AlumnoPago::where('id_alumno','xxxxxxxxx');
@@ -445,5 +453,48 @@ class AlumnosController extends Controller
                 'total_pendiente' => $total_pendiente
             ])
             ->make(true);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Alumno  $alumno
+     * @return \Illuminate\Http\Response
+     */
+    public function formulario_inscribir_otro_grupo(Alumno $alumno)
+    {
+        $sucursal = optional(session('sucursal'));
+
+        return view('alumnos.inscripcion', [
+            'alumno'            => $alumno,
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+        ]);
+    }
+
+    public function inscribir_a_otro_grupo(Request $request, $id,PagoInscripcionService $pis){
+
+        $sucursal = optional(session('sucursal'));
+
+        $alumno = Alumno::find($id);
+
+        if ($request->has('id_grupo')) {
+            $alumno->grupos()->attach($request->input('id_grupo'));
+
+            $grupo_inscripcion = Grupo::findOrFail($request->input('id_grupo'));
+
+            $pis->setAlumno($alumno);
+
+            switch ($request->input('forma_pago')) {
+                case config('alumnos.forma_pago.mensual','mensual'):
+                    $pis->mensualPorGrupo($grupo_inscripcion);
+                break;
+                case config('alumnos.forma_pago.semanal','semanal'):
+                    $pis->semanalPorGrupo($grupo_inscripcion);
+                break;
+            }
+        }
+
+        Session::flash('message','Se inscribio al alumno con éxito');
+        return redirect()->route('alumnos.show', $alumno->id);
     }
 }

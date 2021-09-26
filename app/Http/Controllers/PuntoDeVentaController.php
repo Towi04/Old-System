@@ -30,7 +30,7 @@ class PuntoDeVentaController extends Controller
         $fecha_abono = now();
 
         $alumno = Alumno::find($request->input('id_alumno'));
-        $pagos_alumno = $alumno->pagos()->pendientes()->orderBy('fecha_limite','asc')->get();
+        $pagos_alumno = $alumno->pagos()->pendientes()->where('id_grupo','=', $request->id_grupo)->orderBy('fecha_limite','asc')->get();
         $monto = $request->input('monto');
 
         $folio = Pago::query()->select('folio')->where('id_sucursal', $id_sucursal)->max('folio') ?? 0;
@@ -54,6 +54,8 @@ class PuntoDeVentaController extends Controller
                 'fecha'         => $fecha_abono,
                 'id_recibio'    => $id_recibio,
             ]);
+
+            // dd($pagos_alumno);
 
             foreach ($pagos_alumno as $pa) {
                 if ($monto > 0) {

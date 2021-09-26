@@ -32,6 +32,10 @@
                 </h5>
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        Selecciona el grupo:
+                        {!! Form::select('id_grupo', [], null, ['id'=>'select_grupo','class'=>'form-control']) !!}
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <span class="float-right"> Total pendiente: $ <span class="total_pendiente"></span></span>
                     </div>
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -199,6 +203,7 @@
                     data: function (d) {
                         d.id_alumno = dom.select_alumno.val();
                         d.status = 'pendiente';
+                        d.id_grupo = $('#select_grupo').val();
                     },
                     complete: function(data) {
                         let response = data.responseJSON || {};
@@ -244,9 +249,21 @@
             });
 
             dom.select_alumno.on('select2:select', function (e) {
+
+                grupos = e.params.data.grupos;
+                $('#select_grupo').empty();
+
+                $.each(grupos, function (index, grupo) { 
+                    $('#select_grupo').append(`<option value="${grupo.id}" > ${grupo.nombre_compuesto} </option>`);
+                });
+
                 dt_pagos.draw();
 
                 disableForm( !$(this).val());
+            });
+
+            $('#select_grupo').change(function(){
+                dt_pagos.draw();
             });
 
 
@@ -262,8 +279,12 @@
                     toastr.error('Error', 'Debes seleccionar primero un alumno');
                 }
 
+                
+
                 let formData = new FormData(this);
+                formData.append('id_grupo',$('#select_grupo').val());
                 formData.append('id_alumno',id_alumno);
+
 
                 $.ajax({
                     url: $(this).attr('action'),
@@ -278,7 +299,11 @@
 
                         dt_pagos.ajax.reload(function(){
                             dom.form_abonos[0].reset();
-                            wait.modal('hide');
+                            
+                            setInterval(function(){
+                                wait.modal('hide');
+                            }, 200);
+                            
 
                             dom.tikets.modal.modal('show');
                             dom.tikets.contenido_ticket.html();

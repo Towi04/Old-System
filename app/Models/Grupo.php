@@ -41,7 +41,10 @@ class Grupo extends Model
      */
     protected $appends = [
         'tipo_grupo',
-        'fecha_inicio_format'
+        'fecha_inicio_format',
+        'dias_corto',
+        'horario_corto',
+        'nombre_compuesto',
     ];
 
     /**
@@ -61,6 +64,8 @@ class Grupo extends Model
         'precio_mensualidad',
         'precio_inscripcion',
     ];
+
+   
 
     public function especialidad()
     {
@@ -130,4 +135,33 @@ class Grupo extends Model
      {
          return $this->hasMany(GrupoDia::class, 'id_grupo', 'id');
      }
+
+     public function getDiasCortoAttribute(){
+         $horario = '';
+        foreach($this->days as $day){
+            $horario .= ucfirst(substr($day->dia,0,2)).' H '.$day->hora_inicio.' - '.$day->hora_final.' | ';
+        }
+
+        return $horario;
+
+     }
+     public function getHorarioCortoAttribute(){
+        $horario = '';
+       foreach($this->days as $day){
+           $horario .= ucfirst(substr($day->dia,0,2)).' '.$day->hora_inicio.' - '.$day->hora_final.' <br> ';
+       }
+
+       return $horario;
+
+    }
+
+    public function getNombreCompuestoAttribute(){
+        $horario = '';
+       foreach($this->days as $day){
+           $horario .= ucfirst(substr($day->dia,0,2)).' '.$day->hora_inicio.' - '.$day->hora_final.' <br> ';
+       }
+
+       return $this->id .' | '.$this->especialidad->nombre .' | '. $horario;
+
+    }
 }
