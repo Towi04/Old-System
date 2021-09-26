@@ -1,7 +1,7 @@
 @extends('layouts.template-'.config('settings.template').'.plantilla')
 
 @section('titulo')
-    Crear Materia <small></small>
+    Crear Materia de {{$especialidad->nombre}}
 @endsection
 
 @section('breadcrumb')
@@ -10,10 +10,10 @@
             <a href="{{ url('/') }}">Inicio</a>
         </li>
         <li class="breadcrumb-item">
-            <a href="{{ route('materias.index') }}">Materias</a>
+            <a href="{{ route('materias.index', $especialidad->id) }}">Materias</a>
         </li>
         <li class="breadcrumb-item active">
-            <strong>Nuevo Materia</strong>
+            <strong>Nuevo Materia de {{$especialidad->nombre}}</strong>
         </li>
     </ol>
 @endsection

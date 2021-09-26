@@ -300,7 +300,7 @@
                         dt_pagos.ajax.reload(function(){
                             dom.form_abonos[0].reset();
                             
-                            setInterval(function(){
+                            setTimeout(function(){
                                 wait.modal('hide');
                             }, 200);
                             

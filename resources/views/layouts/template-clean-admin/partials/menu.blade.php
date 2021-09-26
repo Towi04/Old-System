@@ -89,13 +89,41 @@
     @endcan
 
     @can('listar_materias')
-        <li class="">
+    <li class="selected has-sub-menu">
+        <a href="#">
+            <div class="icon-w">
+                <div class="fa fa-cogs"></div>
+            </div>
+            <span>Especialidades</span>
+        </a>
+        <div class="sub-menu-w">
+            <div class="sub-menu-header d-none d-sm-none d-md-none d-lg-block d-xl-block">
+                Especialidades
+            </div>
+            <div class="sub-menu-i">
+                <ul class="sub-menu">
+                    @php
+                        $especialidades = \App\Models\Especialidad::get();   
+                    @endphp
+                    @foreach($especialidades as $especialidad)
+                        <li>
+                            <a href="{{ route('materias.index', $especialidad->id) }}">{{$especialidad->nombre}}</a>
+                        </li>
+                    @endforeach
+                    
+                </ul>
+            </div>
+        </div>
+    </li>
+
+
+        {{-- <li class="">
             <a href="{{ route('materias.index') }}">
                 <div class="icon-w">
                 <div class="fa fa-book"></div>
                 </div>
                 <span>Materias</span></a>
-        </li>
+        </li> --}}
     @endcan
 
     @can('listar_grupos')

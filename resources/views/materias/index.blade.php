@@ -1,7 +1,7 @@
 @extends('layouts.template-'.config('settings.template').'.plantilla')
 
 @section('titulo')
-    Materias
+    Materias de {{$especialidad->nombre}}
 @endsection
 
 
@@ -11,7 +11,7 @@
             <a href="{{ url('/') }}">Inicio</a>
         </li>
         <li class="breadcrumb-item active">
-            <strong>Materias</strong>
+            <strong>Materias de {{$especialidad->nombre}}</strong>
         </li>
     </ol>
 @endsection
@@ -20,7 +20,7 @@
 <div class="row justify-content-start px-4">
     <div>
         @can('crear_materia')
-            <a class="mb-3" href={{ route('materias.create') }}>
+            <a class="mb-3" href={{ route('materias.create', $id) }}>
                 <button class="btn btn-success btn-sm" type="button">
                     <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar
                 </button>
@@ -36,11 +36,10 @@
                 <table id="tb-materias" class="table table-padded  table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th>Nombre</th>
-                            <th>Especialidad</th>
-                            <th>Fase</th>
                             <th>Orden</th>
+                            <th>Nombre</th>
+                            {{-- <th>Especialidad</th> --}}
+                            <th>Fase</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -70,7 +69,8 @@
                 url: "{{ route('materias.datatables') }}",
                 method:'POST',
                 data: function (d) {
-                    d.id_sucursal = "{{ optional(session('sucursal'))->id }}"
+                    d.id_sucursal = "{{ optional(session('sucursal'))->id }}",
+                    d.id_especialidad = {{$id}}
                 },
                 beforeSend: function(xhr,type) {
                     if (!type.crossDomain) {
@@ -85,11 +85,11 @@
                 title: 'Materias'
             }],
             columns: [
-                { data: 'id', name: 'id',class: 'text-nowrap'},
-                { data: 'nombre', name: 'nombre',class: 'text-nowrap'},
-                { data: 'especialidad.nombre', name: 'especialidad.nombre',class: 'text-nowrap'},
-                { data: 'fase', name: 'fase',class: 'text-nowrap'},
                 { data: 'orden', name: 'orden',class: 'text-nowrap'},
+                { data: 'nombre', name: 'nombre',class: 'text-nowrap'},
+                // { data: 'especialidad.nombre', name: 'especialidad.nombre',class: 'text-nowrap'},
+                { data: 'fase', name: 'fase',class: 'text-nowrap'},
+                
                 { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
             ],
             language: {
@@ -108,7 +108,7 @@
                 "loadingRecords": "Cargando...",
                 "processing": "Procesando...",
             },
-            order: [[ 0, 'desc' ] ],
+            order: [[ 0, 'asc' ] ],
             drawCallback: function(settings) {
                 $("[data-toggle='tooltip']").tooltip();
             },
@@ -152,7 +152,9 @@
                     return;
                 }
 
-                wait.modal('show');
+                setTimeout(function(){
+                    wait.modal('hide');
+                }, 200);
 
                 $.ajax({
                     url: event.target.href,

@@ -10,7 +10,7 @@
             <a href="{{ url('/') }}">Inicio</a>
         </li>
         <li class="breadcrumb-item">
-            <a href="{{ route('materias.index') }}">Materias</a>
+            <a href="{{ route('materias.index', $materia->id_especialidad) }}">Materias</a>
         </li>
         <li class="breadcrumb-item active">
             <strong>Editar Materia {{ $materia->nombre }}</strong>

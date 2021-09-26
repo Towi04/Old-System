@@ -108,7 +108,9 @@ Route::middleware(['auth','sucursal'])->group(function () {
     # NOTE: RUTAS MATERIAS
     Route::post('materias/datatables', [ MateriasController::class,'datatables'])->name('materias.datatables');
     Route::post('materias/traer_materias_select2', [MateriasController::class, 'traer_materias_select2']) ->name('materias.traer_materias_select2');
-    Route::resource('materias', MateriasController::class)->except('show')->parameters([
+    Route::get('materias/{id}', [ MateriasController::class,'index'])->name('materias.index');
+    Route::get('materias/create/{id}', [ MateriasController::class,'create'])->name('materias.create');
+    Route::resource('materias', MateriasController::class)->except(['index', 'show','create'])->parameters([
         'materias' => 'materia'
     ]);
 

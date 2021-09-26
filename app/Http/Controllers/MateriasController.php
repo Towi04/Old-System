@@ -16,16 +16,21 @@ class MateriasController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id)
     {
         abort_unless(Auth::user()->can('listar_materias'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
-        return view('materias.index');
+        $especialidad = Especialidad::find($id);
+        return view('materias.index', compact('id','especialidad'));
     }
 
     public function datatables(Request $request)
     {
-        $query = Materia::with(['especialidad']);
+        $query = Materia::with(['especialidad'])
+        ->when($request->id_especialidad, function ($query, $id_especialidad){
+            return $query->where('id_especialidad','=',$id_especialidad);
+        });
+
 
         return DataTables::eloquent($query)
             ->addColumn('buttons', 'materias.datatables._buttons')
@@ -38,15 +43,20 @@ class MateriasController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($id)
     {
         abort_unless(Auth::user()->can('crear_materia'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
         $sucursal = optional(session('sucursal'));
+        $especialidad = Especialidad::find($id);
+
+        $max_orden = Materia::where('id_especialidad','=', $id)->max('orden');
 
         return view('materias.create',[
             'materia'           => new Materia,
-            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad','')
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'especialidad'    => $especialidad,
+            'max_orden' => $max_orden+1
         ]);
     }
 
@@ -74,7 +84,7 @@ class MateriasController extends Controller
 
         Materia::create($data);
 
-        return redirect()->route('materias.index')->with([
+        return redirect()->route('materias.index',$request->id_especialidad)->with([
             'message' => 'Se agregó la materia con éxito',
         ]);
     }
@@ -123,7 +133,7 @@ class MateriasController extends Controller
 
         $materia->save();
 
-        return redirect()->route('materias.index')->with([
+        return redirect()->route('materias.index', $materia->id_especialidad)->with([
             'message' => 'Se actualizó la materia con éxito'
         ]);
     }

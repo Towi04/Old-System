@@ -12,7 +12,11 @@
         <div class="col-md-6">
             <div class="form-group">
                 {!! Form::label('id_especialidad', 'Especialidad:*'); !!}
-                {!! Form::select('id_especialidad',$especialidades, null, ['class' => 'form-control']) !!}
+                @if(isset($especialidad))
+                {!! Form::select('id_especialidad',$especialidades, @$especialidad->id, ['class' => 'form-control', 'readonly'=>'readonly']) !!}
+                @else 
+                {!! Form::select('id_especialidad',$especialidades, @$especialidad->id, ['class' => 'form-control']) !!}
+                @endif
             </div>
         </div>
 
@@ -26,7 +30,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 {!! Form::label('orden', 'Orden:*'); !!}
-                {!! Form::number('orden', null, ['class' => 'form-control', 'placeholder' => 'Escribe aqui la fase','required' => true,'autocomplete' => 'off']); !!}
+                {!! Form::number('orden', @$max_orden, ['class' => 'form-control', 'placeholder' => 'Escribe aqui la fase','required' => true,'autocomplete' => 'off']); !!}
             </div>
         </div>
     </div>
