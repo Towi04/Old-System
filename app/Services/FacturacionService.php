@@ -9,34 +9,29 @@ class FacturacionService
 {
     protected $cliente;
 
-    protected $url;
-
-    protected $headers;
+    protected $facturacom;
 
     public function __construct()
     {
-        if(empty(config('facturacom.' . env('FACTURACOM_ENVIRONMENT')))){
-            throw new \Exception("Debes definr las variables de entorno para facturacion", 1);
+        $enviroment = env('FACTURACOM_ENVIRONMENT');
+
+        if(empty($enviroment)) {
+            throw new \Exception("No has definio FACTURACOM_ENVIRONMENT", 1);
         }
 
+        $this->facturacom = config('facturacom')[$enviroment] ?? [];
 
-        $this->url = config('facturacom.' . env('FACTURACOM_ENVIRONMENT') . '.url') . "";
+        if (empty($this->facturacom)) {
+            throw new \Exception("El entorno {$enviroment} para facturacion no esta definido", 1);
+        }
 
-        $this->headers = array(
-            "Content-Type"  => "application/json",
-            "F-PLUGIN"      => '9d4095c8f7ed5785cb14c0e3b033eeb8252416ed',
-            "F-Api-Key"     => config('facturacom.' . env('FACTURACOM_ENVIRONMENT') . '.api-key'),
-            "F-Secret-Key"  => config('facturacom.' . env('FACTURACOM_ENVIRONMENT') . '.secret-key')
-        );
-
-        $this->cliente = new Client(['base_uri' => $this->url]);
+        $this->cliente = new Client(['base_uri' => $this->facturacom['url']]);
     }
 
     public function usosCfdi()
     {
-
-        $response = $this->cliente->get($this->url . '/api/v3/catalogo/UsoCfdi', [
-            'headers' => $this->headers,
+        $response = $this->cliente->get($this->facturacom['url'] . '/api/v3/catalogo/UsoCfdi', [
+            'headers' => $this->facturacom['headers'],
         ]);
 
         $collection = $this->buildCollection($response->getBody());
@@ -46,8 +41,8 @@ class FacturacionService
 
     public function metodoPago()
     {
-        $response = $this->cliente->get($this->url . '/api/v3/catalogo/MetodoPago', [
-            'headers' => $this->headers,
+        $response = $this->cliente->get($this->facturacom['url'] . '/api/v3/catalogo/MetodoPago', [
+            'headers' => $this->facturacom['headers'],
         ]);
 
         $collection = $this->buildCollection($response->getBody());
@@ -57,8 +52,8 @@ class FacturacionService
 
     public function formaPago()
     {
-        $response = $this->cliente->get($this->url . '/api/v3/catalogo/FormaPago', [
-            'headers' => $this->headers,
+        $response = $this->cliente->get($this->facturacom['url'] . '/api/v3/catalogo/FormaPago', [
+            'headers' => $this->facturacom['headers'],
         ]);
 
         $collection =  $this->buildCollection($response->getBody());
@@ -68,8 +63,8 @@ class FacturacionService
 
     public function claveUnidad()
     {
-        $response = $this->cliente->get($this->url . '/api/v3/catalogo/ClaveUnidad', [
-            'headers' => $this->headers,
+        $response = $this->cliente->get($this->facturacom['url'] . '/api/v3/catalogo/ClaveUnidad', [
+            'headers' => $this->facturacom['headers'],
         ]);
 
         $collection  =  $this->buildCollection($response->getBody());
@@ -79,10 +74,10 @@ class FacturacionService
 
     public function getInfoCliente(string $rfc)
     {
-        $client = new Client(['base_uri' => $this->url]);
+        $client = new Client(['base_uri' => $this->facturacom['url']]);
 
-        $response = $client->get("{$this->url}/api/v1/clients/{$rfc}", [
-            'headers' => $this->headers,
+        $response = $client->get("{$this->facturacom['url']}/api/v1/clients/{$rfc}", [
+            'headers' => $this->facturacom['headers'],
         ]);
 
         if(json_decode($response->getBody())->status == 'error' ){
@@ -109,18 +104,12 @@ class FacturacionService
 
         $jsonfield = json_encode($fields);
 
-        curl_setopt($ch, CURLOPT_URL, $this->url . "/api/v1/clients/create");
+        curl_setopt($ch, CURLOPT_URL, $this->facturacom['url'] . "/api/v1/clients/create");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonfield);
-
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Content-Type: application/json",
-            "F-PLUGIN: " . '9d4095c8f7ed5785cb14c0e3b033eeb8252416ed',
-            "F-Api-Key: " . config('facturacom.' . env('FACTURACOM_ENVIRONMENT') . '.api-key'),
-            "F-Secret-Key: " . config('facturacom.' . env('FACTURACOM_ENVIRONMENT') . '.secret-key'),
-        ));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $this->facturacom['headers_curl']);
 
 
         $curl_crear_cliente = curl_exec($ch);
@@ -165,18 +154,13 @@ class FacturacionService
 
         $jsonfield = json_encode($fields);
 
-        curl_setopt($ch, CURLOPT_URL, $this->url . "/api/v3/cfdi33/create");
+        curl_setopt($ch, CURLOPT_URL, $this->facturacom['url'] . "/api/v3/cfdi33/create");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonfield);
 
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Content-Type: application/json",
-            "F-PLUGIN: " . '9d4095c8f7ed5785cb14c0e3b033eeb8252416ed',
-            "F-Api-Key: " . config('facturacom.' . env('FACTURACOM_ENVIRONMENT') . '.api-key'),
-            "F-Secret-Key: " . config('facturacom.' . env('FACTURACOM_ENVIRONMENT') . '.secret-key'),
-        ));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $this->facturacom['headers_curl']);
 
         $request_timbrado = curl_exec($ch);
         $response = json_decode($request_timbrado);
@@ -223,15 +207,10 @@ class FacturacionService
     {
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, $this->url . "/api/v3/cfdi33/{$uid}/{$tipo}");
+        curl_setopt($ch, CURLOPT_URL, $this->facturacom['url'] . "/api/v3/cfdi33/{$uid}/{$tipo}");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Content-Type: application/json",
-            "F-PLUGIN: " . '9d4095c8f7ed5785cb14c0e3b033eeb8252416ed',
-            "F-Api-Key: " . config('facturacom.' . env('FACTURACOM_ENVIRONMENT') . '.api-key'),
-            "F-Secret-Key: " . config('facturacom.' . env('FACTURACOM_ENVIRONMENT') . '.secret-key'),
-        ));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $this->facturacom['headers_curl']);
 
         $response = curl_exec($ch);
 
@@ -251,15 +230,10 @@ class FacturacionService
 
     public function cancelacion(string $uid)
     {
-        $client = new Client(['base_uri' => $this->url]);
+        $client = new Client(['base_uri' => $this->facturacom['url']]);
 
-        $request = $client->get("{$this->url}/api/v3/cfdi33/{$uid}/cancel", [
-            'headers' => array(
-                "Content-Type"  => "application/json",
-                "F-PLUGIN"      => '9d4095c8f7ed5785cb14c0e3b033eeb8252416ed',
-                "F-Api-Key"     => config('facturacom.' . env('FACTURACOM_ENVIRONMENT') . '.api-key'),
-                "F-Secret-Key"  => config('facturacom.' . env('FACTURACOM_ENVIRONMENT') . '.secret-key')
-            )
+        $request = $client->get("{$this->facturacom['url']}/api/v3/cfdi33/{$uid}/cancel", [
+            'headers' => $this->facturacom['headers']
         ]);
 
         $result = json_decode($request->getBody());

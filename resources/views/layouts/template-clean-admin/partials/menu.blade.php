@@ -66,6 +66,12 @@
                                 <a href="{{ route('admin.cuentas-bancarias.index') }}">Cuentas Bancarias</a>
                             </li>
                         @endcan
+
+                        @can(['listar_productos'])
+                            <li>
+                                <a href="{{ route('admin.productos.index') }}">Productos</a>
+                            </li>
+                        @endcan
                     </ul>
                 </div>
             </div>
@@ -109,14 +115,14 @@
             <div class="sub-menu-i">
                 <ul class="sub-menu">
                     @php
-                        $especialidades = \App\Models\Especialidad::get();   
+                        $especialidades = \App\Models\Especialidad::get();
                     @endphp
                     @foreach($especialidades as $especialidad)
                         <li>
                             <a href="{{ route('materias.index', $especialidad->id) }}">{{$especialidad->nombre}}</a>
                         </li>
                     @endforeach
-                    
+
                 </ul>
             </div>
         </div>

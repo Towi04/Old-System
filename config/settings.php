@@ -223,6 +223,28 @@ return [
             'display_name'  => 'Convertir ventas no fiscales a fiscales',
             'description'   => 'Permite convertir las ventas no fiscales a fiscales de acuerdo al porcentaje de la configuracion'
         ],
+
+        # PRODUCTOS
+        [
+            'name'          => 'listar_productos',
+            'display_name'  => 'Listar Productos',
+            'description'   => 'Permite Mostrar los productos'
+        ],
+        [
+            'name'          => 'crear_producto',
+            'display_name'  => 'Crear producto',
+            'description'   => 'Permite crear un producto'
+        ],
+        [
+            'name'          => 'editar_producto',
+            'display_name'  => 'Editar Producto',
+            'description'   => 'Permite editar un producto'
+        ],
+        [
+            'name'          => 'eliminar_producto',
+            'display_name'  => 'Eliminar producto',
+            'description'   => 'Permite eliminar un producto'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

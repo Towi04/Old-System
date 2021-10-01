@@ -9,6 +9,7 @@ use App\Http\Controllers\SoporteController;
 use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\ProductosController;
 use App\Http\Controllers\Admin\SucursalesController;
 use App\Http\Controllers\AlumnosController;
 use App\Http\Controllers\GruposController;
@@ -84,6 +85,15 @@ Route::middleware(['auth','sucursal'])->group(function () {
         Route::resource('cuentas-bancarias', CuentasBancariasController::class)->parameters([
             'cuentas-bancarias' => 'cuentaBancaria'
         ]);
+
+        # NOTE: PRODUCTOS
+        Route::prefix('productos')->name('productos.')->group(function () {
+            Route::post('datatables', [ ProductosController::class,'datatables'])->name('datatables');
+        });
+
+        Route::resource('productos', ProductosController::class)->parameters([
+            'productos' => 'producto',
+        ])->except('show');
     });
 
     #RUTAS PRE-REGISTRO ALUMNOS
@@ -158,5 +168,5 @@ Route::middleware(['auth','sucursal'])->group(function () {
 
     Route::get('configuraciones', [ ConfiguracionesController::class,'index'])->name('configuraciones.index');
     Route::post('configuraciones/actualizar_informacion_xeditables', [ ConfiguracionesController::class,'actualizar_informacion_xeditables'])->name('configuraciones.actualizar_informacion_xeditables');
-    
+
 });
