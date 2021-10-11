@@ -88,7 +88,7 @@ class Alumno extends Model
     ];
 
     protected $appends = [
-        'pagos_vencidos', 'monto_vencido'
+        'pagos_vencidos', 'monto_vencido','url_foto','fullname'
     ];
 
     # NOTE: MODEL RELATIONSHIPS
@@ -197,4 +197,15 @@ class Alumno extends Model
 
         return url("archivo/alumnos_foto/{$this->id}/{$this->foto}");
     }
+
+    /**
+     * Get all of the asistencias for the Alumno
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function asistencias()
+    {
+        return $this->hasMany(Asistencia::class, 'id_alumno', 'id');
+    }
+
 }

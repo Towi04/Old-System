@@ -62,7 +62,8 @@
             <div class="up-head-w"
                 style="background-image: linear-gradient( var(--primary), 70%, var(--primary));">
 
-                <div class="up-main-info " style="padding-bottom: 150px; padding-top:100px">
+                <div class="up-main-info " style="padding-bottom: 150px; padding-top:10px">
+                    <img alt="" src="{{ $alumno->url_foto }}" style="width: 50%">
                     <h2 class="up-header">
                         {{ $alumno->full_name }}
                     </h2>
@@ -164,6 +165,9 @@
                                     <li class="nav-item">
                                         <a class="nav-link" data-toggle="tab" href="#tab-info-alumno">Información del alumno</a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#tab-info-asistencias">Asistencias</a>
+                                    </li>
 
                                 </ul>
                                 <ul class="nav nav-pills smaller d-none d-md-flex">
@@ -191,6 +195,21 @@
 
                                 <div class="tab-pane" id="tab-info-alumno">
                                     @include('alumnos.partials._info_alumno')
+                                </div>
+
+                                <div class="tab-pane" id="tab-info-asistencias">
+                                    <table class="table">
+                                        @foreach ($alumno->asistencias as $asistencia)
+                                            <tr>
+                                                <td>
+                                                    <i class="fas fa-check text-success   "></i>
+                                                </td>
+                                                <td>
+                                                    {{$asistencia->fecha->format('l d \d\e F \d\e\l Y \a \l\a\s H:i')}} 
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
                                 </div>
                             </div>
                         </div>

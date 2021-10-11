@@ -20,6 +20,7 @@ use App\Http\Controllers\ConfiguracionesController;
 use App\Http\Controllers\ComprasController;
 use App\Http\Controllers\Reportes\ReporteVentasController;
 use App\Http\Controllers\PuntoDeVentaProductosController;
+use App\Http\Controllers\AsistenciasController;
 
 #NOTE: CONFIGURACION DE RUTAS
 Auth::routes(['register'=> false]);
@@ -199,5 +200,10 @@ Route::middleware(['auth','sucursal'])->group(function () {
 
     Route::get('configuraciones', [ ConfiguracionesController::class,'index'])->name('configuraciones.index');
     Route::post('configuraciones/actualizar_informacion_xeditables', [ ConfiguracionesController::class,'actualizar_informacion_xeditables'])->name('configuraciones.actualizar_informacion_xeditables');
+
+    # NOTE RUTAS ASISTENCIAS
+    Route::get('asistencias',[ AsistenciasController::class,'index'])->name('asistencias.index');
+    Route::post('asistencias/registrar_asistencia',[ AsistenciasController::class,'registrar_asistencia'])->name('asistencias.registrar_asistencia');
+    Route::post('asistencias/eliminar_asistencia',[ AsistenciasController::class,'eliminar_asistencia'])->name('asistencias.eliminar_asistencia');
 
 });

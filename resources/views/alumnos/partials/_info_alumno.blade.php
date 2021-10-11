@@ -2,33 +2,33 @@
     <tr>
         <td colspan="2">
             <div class="user-with-avatar">
-                <img alt="" src="{{ $alumno->url_foto }}"><span>{{ $alumno->nombres }}</span>
+                <img class="foto" alt="" src="{{ $alumno->url_foto }}"><span>{{ $alumno->nombres }}</span>
             </div>
         </td>
     </tr>
 
     <tr>
-        <td class="bg-primary text-white"><b>Nombre:</b></td>
+        <td class="bg-primary text-white nombre"><b>Nombre:</b></td>
         <td>
             {{ $alumno->fullname }}
         </td>
     </tr>
     <tr>
-        <td class="bg-primary text-white"><b>Email:</b></td>
+        <td class="bg-primary text-white email"><b>Email:</b></td>
         <td>
             {{ $alumno->email }}
         </td>
     </tr>
 
     <tr>
-        <td class="bg-primary text-white"><b>Edad:</b></td>
+        <td class="bg-primary text-white edad"><b>Edad:</b></td>
         <td>
            {{ $alumno->edad }}
         </td>
     </tr>
 
     <tr>
-        <td class="bg-primary text-white"><b>Fecha de nacimiento:</b></td>
+        <td class="bg-primary text-white fecha_nacimiento"><b>Fecha de nacimiento:</b></td>
         <td>
            {{ optional($alumno->fecha_nacimiento)->format('d/m/Y') }}
         </td>
@@ -39,31 +39,31 @@
         </td>
     </tr>
     <tr>
-        <td class="bg-primary text-white">Domicilio</td>
+        <td class="bg-primary text-white domicilio">Domicilio</td>
         <td>{{ $alumno->domicilio }}</td>
     </tr>
     <tr>
-        <td class="bg-primary text-white">Colonia</td>
+        <td class="bg-primary text-white colonia">Colonia</td>
         <td>{{ $alumno->colonia}}</td>
     </tr>
     <tr>
-        <td class="bg-primary text-white">Municipio</td>
+        <td class="bg-primary text-white municipio">Municipio</td>
         <td>{{ $alumno->municipio }}</td>
     </tr>
     <tr>
-        <td class="bg-primary text-white">Telefono</td>
+        <td class="bg-primary text-white telefono">Teléfono</td>
         <td>{{ $alumno->telefono }}</td>
     </tr>
     <tr>
-        <td class="bg-primary text-white">Celular</td>
+        <td class="bg-primary text-white celular">Celular</td>
         <td>{{ $alumno->celular }}</td>
     </tr>
     <tr>
-        <td class="bg-primary text-white">Correo Electrónico</td>
+        <td class="bg-primary text-white email">Correo Electrónico</td>
         <td>{{ $alumno->email }}</td>
     </tr>
     <tr>
-        <td class="bg-primary text-white">Codigo Postal</td>
+        <td class="bg-primary text-white codio_postal">Codigo Postal</td>
         <td>{{ $alumno->codigo_postal }}</td>
     </tr>
 

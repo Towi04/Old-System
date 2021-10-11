@@ -128,6 +128,10 @@
             background-color: #b7182E!important;
         }
 
+        .img-responsive{
+          width: 100%;
+        }
+
         /* .menu-w.color-scheme-dark.color-style-bright ul.main-menu .icon-w {
             color: #b7182E!important;
         } */

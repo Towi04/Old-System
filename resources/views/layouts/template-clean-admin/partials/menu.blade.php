@@ -99,6 +99,15 @@
             <span>Alumnos</span></a>
     </li>
     @endcan
+    @can('registrar_asistencias')
+    <li class="">
+        <a href="{{ route('asistencias.index') }}">
+            <div class="icon-w">
+            <div class="fas fa-check"></div>
+            </div>
+            <span>Registrar asistencias</span></a>
+    </li>
+@endcan
 
     @can('listar_materias')
     <li class="selected has-sub-menu">

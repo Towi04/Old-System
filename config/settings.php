@@ -255,6 +255,11 @@ return [
             'display_name'  => 'Entrar al punto de venta de productos',
             'description'   => 'Permite generar ventas en el punto de ventas de productos'
         ],
+        [
+            'name'          => 'registrar_asistencias',
+            'display_name'  => 'Registrar asistencias',
+            'description'   => 'Permite registrar asistencias de los alumnos'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)
