@@ -38,15 +38,23 @@
     <u>Désgloce del pago</u>
     <br>
         <table  style="width:100%;">
-            @foreach ($pago->abonos as $abono)
+            @if($pago->abonos->count() > 0)
+                @foreach ($pago->abonos as $abono)
+                    <tr>
+                        <td>{{ $abono->alumno_pago->concepto }}</td>
+                        <td style="text-align: right">$ {{ number_format($abono->monto,2,'.',',') }}</td>
+                    </tr>
+                @endforeach
                 <tr>
-                    <td>{{ $abono->alumno_pago->concepto }}</td>
-                    <td style="text-align: right">$ {{ number_format($abono->monto,2,'.',',') }}</td>
+                    <td colspan="2" style="padding-top:35px;border-top:2px solid black; text-align:right"><b>Total: $ {{ number_format($pago->abonos->sum('monto'),2,'.',',') }}</td>
                 </tr>
-            @endforeach
-            <tr>
-                <td colspan="2" style="padding-top:35px;border-top:2px solid black; text-align:right"><b>Total: $ {{ number_format($pago->abonos->sum('monto'),2,'.',',') }}</td>
-            </tr>
+            @else 
+                <tr>
+                    <td>A CUENTA</td>
+                    <td style="text-align: right">$ {{ number_format($pago->monto,2,'.',',') }}</td>
+                </tr>
+            @endif
+           
         </table>
 
 <br>

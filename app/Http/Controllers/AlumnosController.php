@@ -346,11 +346,14 @@ class AlumnosController extends Controller
             ->when($request->input('id_sucursal'),function($q,$sucursal){
                 $q->where('id_sucursal',$sucursal);
             })
-            ->where('status',config('alumnos.status.Alumno'))
+            ->when($request->input('status'),function($q,$status){
+                $q->where('status','=',$status);
+            })
             ->where(function($q) use($term){
                 $q->where('nombres', 'like', "%{$term}%")
                 ->orWhere('apellido_paterno', 'like', "%{$term}%")
-                ->orWhere('apellido_materno', 'like', "%{$term}%");
+                ->orWhere('apellido_materno', 'like', "%{$term}%")
+                ->orWhere('numero_control', 'like', "%{$term}%");
             })
             ->orderBy('nombres', 'asc')
             ->skip($offset)
@@ -360,6 +363,9 @@ class AlumnosController extends Controller
         $count = Alumno::query()
             ->when($request->input('id_sucursal'),function($q,$id_sucursal){
                 $q->where('id_sucursal',$id_sucursal);
+            })
+            ->when($request->input('status'),function($q,$status){
+                $q->where('status',$status);
             })
             ->where(function($q) use($term){
                 $q->where('nombres', 'like', "%{$term}%")

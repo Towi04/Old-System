@@ -93,12 +93,20 @@
 
              if(dom.grupo.val() != '' && $('input[name=forma_pago]:checked').val() !== undefined){
 
-                $.post("{{route('grupos.traer_info')}}", { id_grupo: dom.grupo.val(), forma_pago: $('input[name=forma_pago]:checked').val() },
+                $.post("{{route('grupos.traer_info')}}", {id_alumno:{{$alumno->id}}, id_grupo: dom.grupo.val(), forma_pago: $('input[name=forma_pago]:checked').val() },
                     function (result) {
                         inscripcion = result.grupo.precio_inscripcion;
                         grupo = result.grupo;
+                        alumno = result.alumno;
+                        saldo = alumno.saldo;
+                        inscripcion = inscripcion - saldo;
+                        if(saldo > 0){
+                            txt = "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". El alumno ya tiene un apartado por "+saldo+" por lo que solo tienes que solicitar la inscripción de $ "+inscripcion+" que quedará registrada como pagada en la ficha del alumno.";
+                        }else{
+                            txt = "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". Tienes que solicitar la inscripción de $ "+inscripcion+" que quedará registrada como pagada en la ficha del alumno.";
+                        }
                         swal({
-                                title: "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". Tienes que solicitar la inscripción de $ "+inscripcion+" que quedará registrada como pagada en la ficha del alumno.",
+                                title:txt,
                                 text: '',
                                 type: "success",
                                 showCancelButton: true,

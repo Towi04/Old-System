@@ -509,9 +509,11 @@ class GruposController extends Controller
     //traer info para ver inscripcion en
     public function traer_info(Request $request){
         $grupo = Grupo::with('especialidad')->find($request->id_grupo);
+        $alumno = Alumno::find($request->id_alumno);
 
         return response()->json([
-            'grupo'=> $grupo
+            'grupo'=> $grupo,
+            'alumno'=>$alumno
         ]);
     }
 

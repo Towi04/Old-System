@@ -19,12 +19,27 @@
 @section('contenido')
 
     <div class="row">
-        <div class="col-md-12">
-            <div class="form-group">
-                {!! Form::label('id_alumno', 'Selecciona al alumno que va a pagar:*'); !!}
-                {!! Form::select('id_alumno',[], null, ['class' => 'form-control','required' => true,'style' => 'width:100%']) !!}
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="element-box">
+
+                <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            {!! Form::label('id_alumno', 'Selecciona al alumno que va a pagar:*'); !!}
+                            {!! Form::select('id_alumno',[], null, ['class' => 'form-control','required' => true,'style' => 'width:100%']) !!}
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                        <div class="form-group">
+                            {!! Form::label('id_preregistro', 'o Busca un preregistro para realizar un apartado:*'); !!}
+                            {!! Form::select('id_preregistro',[], null, ['class' => 'form-control','required' => true,'style' => 'width:100%']) !!}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
+    <div class="row">
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
             <div class="element-box">
                 <h5 class="element-header">
@@ -133,6 +148,7 @@
 
             const dom = {
                 select_alumno: $("#id_alumno"),
+                select_preregistro: $("#id_preregistro"),
                 tb_pagos: $("#tb-pagos"),
                 form_abonos: $("#form-recibir-abono"),
 
@@ -159,6 +175,7 @@
                             term: params.term,
                             page: params.page || 1,
                             id_sucursal: "{{ optional(session('sucursal'))->id }}",
+                            status:'Alumno'
                         }
                     },
                     url: '{{ route("alumnos.traer_alumnos_select2") }}',
@@ -170,7 +187,52 @@
                     }
                 },
                 escapeMarkup: function (markup) { return markup; },
-                minimumInputLength: 3,
+                minimumInputLength: 2,
+                templateResult: function(option){
+                    if (option.loading) {
+                        return option.text;
+                    }
+
+                    if(!option.numero_control || !option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                        return option.text
+                    }
+
+                    return `No. Control: ${option.numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                },
+                templateSelection:function(option){
+                    if(!option.numero_control ||  !option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                        return option.text
+                    }
+
+                    return `No. Control: ${option.numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                }
+            });
+
+            dom.select_preregistro.select2({
+                language: "es",
+                placeholder:'Selecciona un pre registro',
+                // dropdownParent: dom.modal_asignar_alumno,
+                ajax: {
+                    method: 'POST',
+                    data:function (params) {
+                        return {
+                            _token: '{{ csrf_token() }}',
+                            term: params.term,
+                            page: params.page || 1,
+                            id_sucursal: "{{ optional(session('sucursal'))->id }}",
+                            status:'Pre-Registro'
+                        }
+                    },
+                    url: '{{ route("alumnos.traer_alumnos_select2") }}',
+                    dataType: 'json',
+                    cache: false,
+                    delay:250,
+                    beforeSend:function(xhr,type){
+                        xhr.setRequestHeader('X-CSRF-Token',$('meta[name="csrf-token"]').attr('content'))
+                    }
+                },
+                escapeMarkup: function (markup) { return markup; },
+                minimumInputLength: 2,
                 templateResult: function(option){
                     if (option.loading) {
                         return option.text;
@@ -180,14 +242,14 @@
                         return option.text
                     }
 
-                    return `${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                    return ` Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
                 },
                 templateSelection:function(option){
-                    if(!option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                    if( !option.nombres || !option.apellido_paterno || !option.apellido_materno){
                         return option.text
                     }
 
-                    return `${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                    return `Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
                 }
             });
 
@@ -260,6 +322,13 @@
                 dt_pagos.draw();
 
                 disableForm( !$(this).val());
+                dom.select_preregistro.val(null).trigger('change');
+            });
+
+            dom.select_preregistro.on('select2:select', function (e) {
+
+                disableForm( false);
+                dom.select_alumno.val(null).trigger('change');
             });
 
             $('#select_grupo').change(function(){
@@ -274,16 +343,25 @@
                 wait.modal('show');
 
                 const id_alumno = dom.select_alumno.val()
+                const id_preregistro = dom.select_preregistro.val()
 
-                if(!id_alumno){
-                    toastr.error('Error', 'Debes seleccionar primero un alumno');
+                if(!id_alumno && !id_preregistro){
+                    toastr.error('Error', 'Debes seleccionar primero un alumno o preregistro');
                 }
 
                 
 
                 let formData = new FormData(this);
                 formData.append('id_grupo',$('#select_grupo').val());
-                formData.append('id_alumno',id_alumno);
+                if(id_alumno){
+                    formData.append('id_alumno',id_alumno);
+                } 
+
+                if(id_preregistro){
+                    formData.append('id_preregistro',id_preregistro);
+                } 
+                
+                
 
 
                 $.ajax({

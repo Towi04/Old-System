@@ -245,6 +245,7 @@
                             term: params.term,
                             page: params.page || 1,
                             id_sucursal: "{{ optional(session('sucursal'))->id }}",
+                            status:'Alumno'
                         }
                     },
                     url: '{{ route("alumnos.traer_alumnos_select2") }}',
@@ -256,24 +257,24 @@
                     }
                 },
                 escapeMarkup: function (markup) { return markup; },
-                minimumInputLength: 3,
+                minimumInputLength: 2,
                 templateResult: function(option){
                     if (option.loading) {
                         return option.text;
                     }
 
-                    if(!option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                    if(!option.numero_control || !option.nombres || !option.apellido_paterno || !option.apellido_materno){
                         return option.text
                     }
 
-                    return `${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                    return `No. Control: ${option.numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
                 },
                 templateSelection:function(option){
-                    if(!option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                    if(!option.numero_control ||  !option.nombres || !option.apellido_paterno || !option.apellido_materno){
                         return option.text
                     }
 
-                    return `${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                    return `No. Control: ${option.numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
                 }
             });
 
