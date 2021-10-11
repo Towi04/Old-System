@@ -52,6 +52,6 @@ class Abono extends Model
 
     public function alumno_pago()
     {
-        return $this->belongsTo(AlumnoPago::class, 'id_alumno_pago', 'id')->withDefault();
+        return $this->belongsTo(AlumnoPago::class, 'id_alumno_pago', 'id')->withDefault(['concepto'=>'A CUENTA']);
     }
 }

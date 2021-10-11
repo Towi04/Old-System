@@ -115,6 +115,13 @@ class PuntoDeVentaController extends Controller
             else{
                 $alumno->saldo = $monto;
                 $alumno->save();
+
+                $pago->abonos()->create([
+                    'id_sucursal'       => $id_sucursal,
+                    'id_alumno_pago'    => null,
+                    'monto'             => $monto,
+                    'venta_fiscal'      => $venta_fiscal,
+                ]);
             }
             
 
