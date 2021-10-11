@@ -156,6 +156,15 @@
                 <span>Punto de venta</span></a>
         </li>
     @endcan
+    @can('punto_de_venta_productos')
+        <li class="">
+            <a href="{{ route('punto_de_venta_productos.index') }}">
+                <div class="icon-w">
+                <div class="fas fa-cash-register"></div>
+                </div>
+                <span>Venta de productos</span></a>
+        </li>
+    @endcan
 
 
 

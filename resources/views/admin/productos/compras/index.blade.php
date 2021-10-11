@@ -1,14 +1,17 @@
 @extends('layouts.template-'.config('settings.template').'.plantilla')
 
-@section('titulo', 'Productos')
+@section('titulo', 'Compras' )
 
 @section('breadcrumb')
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
             <a href="{{ url('/') }}">Inicio</a>
         </li>
+        <li  class="breadcrumb-item">
+            <a href="{{ route('admin.productos.index') }}">Productos</a>
+        </li>
         <li class="breadcrumb-item active">
-            <a>Productos</a>
+            <a>Compras del producto {{$producto->nombre}}</a>
         </li>
     </ol>
 @endsection
@@ -16,13 +19,11 @@
 @section('contenido')
     <div class="row justify-content-start px-4">
         <div>
-            @can('crear_producto')
-                <a class="mb-3" href={{ route('admin.productos.create') }}>
+                <a class="mb-3" href={{ route('admin.compras.create', $producto->id) }}>
                     <button class="btn btn-success btn-sm" type="button">
-                        <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar Producto
+                        <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar Compra
                     </button>
                 </a>
-            @endcan
         </div>
     </div>
 
@@ -30,16 +31,14 @@
         <div class="widget-holder widget-full-height widget-flex col-lg-12">
             <div class="widget-body">
                 <div class="mt-3">
-                    <table class="table table-striped table-padded  table-hover" id="tb-productos" style="width: 100%">
+                    <table class="table table-striped table-padded  table-hover" id="tb-compras" style="width: 100%">
                         <thead>
                             <tr>
                                 <th class="text-nowrap">#</th>
-                                <th class="text-nowrap">Nombre</th>
-                                <th class="text-nowrap">Descripción</th>
-                                <th class="text-nowrap">Clave Sat</th>
-                                <th class="text-nowrap">Clave unidad Sat</th>
-                                <th class="text-nowrap">Precio</th>
-                                <th class="text-nowrap">Existencias</th>
+                                <th class="text-nowrap">Fecha</th>
+                                <th class="text-nowrap">Cantidad</th>
+                                <th class="text-nowrap">Usuario</th>
+                                <th class="text-nowrap">Apellido Paterno</th>
                                 <th class="text-nowrap">Acciones</th>
                             </tr>
                         </thead>
@@ -57,7 +56,7 @@
     <script type="text/javascript">
         $(function() {
             const dom = {
-                table: $('#tb-productos'),
+                table: $('#tb-compras'),
             };
 
             var dt = dom.table.DataTable({
@@ -65,10 +64,10 @@
                 serverSide: true,
                 dom: "<'row'<'col-12 col-sm-6'l><'col-12 col-sm-6 'f>><'row'<'col-12 table-responsive 'tr>><'row'<'col-12 col-sm-5'i><'col-12 col-sm-7 d-flex justify-content-center justify-content-sm-end'p>>",
                 ajax: {
-                    url: "{{ route('admin.productos.datatables') }}",
+                    url: "{{ route('admin.compras.datatables') }}",
                     type: "POST",
                     data: function (d) {
-                        d.id_sucursal = "{{ optional(session('sucursal'))->id }}"
+                        d.id_producto = "{{ $producto->id }}"
                     },
                     beforeSend: function(xhr,type) {
                         if (!type.crossDomain) {
@@ -81,17 +80,15 @@
                 buttons: [
                     {
                         extend: 'excel',
-                        title: 'Productos'
+                        title: 'Compras'
                     }
                 ],
                 columns: [
                     {data: 'id', name: 'id',class:'text-nowrap'},
-                    {data: 'nombre', name: 'nombre',class:'text-nowrap'},
-                    {data: 'descripcion', name: 'descripcion',class:'text-nowrap'},
-                    {data: 'clave_sat', name: 'clave_sat',class:'text-nowrap'},
-                    {data: 'clave_unidad_sat', name: 'clave_unidad_sat',class:'text-nowrap'},
-                    {data: 'precio', name: 'precio', class:'text-nowrap text-right'},
-                    {data: 'existencias', name: 'existencias', class:'text-nowrap text-center', orderable: false, searchable: false},
+                    {data: 'fecha', name: 'fecha',class:'text-nowrap'},
+                    {data: 'cantidad', name: 'cantidad',class:'text-nowrap'},
+                    {data: 'usuario.nombres', name: 'usuario.nombres',class:'text-nowrap'},
+                    {data: 'usuario.apellido_paterno', name: 'usuario.apellido_paterno',class:'text-nowrap',orderable: false, visible: false},
                     {data: 'buttons', name: 'buttons', orderable: false, searchable: false}
                 ],
                 language: {
@@ -113,6 +110,7 @@
                 drawCallback: function (settings) {
                     $("[data-toggle='tooltip']").tooltip();
                 },
+                order:[[1,'desc']]
             });
 
             var searchWait = 0;

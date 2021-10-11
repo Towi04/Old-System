@@ -245,6 +245,16 @@ return [
             'display_name'  => 'Eliminar producto',
             'description'   => 'Permite eliminar un producto'
         ],
+        [
+            'name'          => 'gestionar_compras',
+            'display_name'  => 'Gestionar compras',
+            'description'   => 'Permite gestionar compras'
+        ],
+        [
+            'name'          => 'punto_de_venta_productos',
+            'display_name'  => 'Entrar al punto de venta de productos',
+            'description'   => 'Permite generar ventas en el punto de ventas de productos'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

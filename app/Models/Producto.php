@@ -47,4 +47,79 @@ class Producto extends Model
             ]);
     }
 
+    /**
+     * Get all of the partidas_compras for the Producto
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function partidas_compras()
+    {
+        return $this->hasMany(Compra::class, 'id_producto', 'id');
+    }
+
+    /**
+     * Get all of the partidas_compras for the Producto
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function partidas_ventas()
+    {
+        return $this->hasMany(PartidaVenta::class, 'id_producto', 'id');
+    }
+
+
+
+    public function getExistenciasAttribute(){
+        
+        
+        $partidas_compras = $this->partidas_compras->sum('cantidad');
+        $partidas_ventas = $this->partidas_ventas->filter(function($partida){
+            return $partida->venta->status == 'Cerrada';
+        })->sum(function($partida){
+            return -1* $partida->cantidad;
+        });
+
+        
+        // AQUI SE VA A PONER LO DE LAS VENTAS
+
+
+      
+        
+
+        return [
+
+            'compras' => $partidas_compras, 
+            'ventas' => $partidas_ventas,
+            
+        ];
+
+}
+
+
+public function getExistencias(){
+    $suma = 0;
+    $existencias = $this->existencias;
+
+    // dd($existencias);
+ 
+    if(isset($existencias['compras'])){
+        $suma +=$existencias['compras'];
+    }
+    // dd($suma);
+
+    if(isset($existencias['ventas'])){
+        $suma +=$existencias['ventas'];
+    }
+   
+  
+    
+
+    return  $suma;
+
+}
+
+    
+
+
+
 }

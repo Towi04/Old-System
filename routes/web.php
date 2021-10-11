@@ -17,7 +17,9 @@ use App\Http\Controllers\MateriasController;
 use App\Http\Controllers\PreRegistrosController;
 use App\Http\Controllers\PuntoDeVentaController;
 use App\Http\Controllers\ConfiguracionesController;
+use App\Http\Controllers\ComprasController;
 use App\Http\Controllers\Reportes\ReporteVentasController;
+use App\Http\Controllers\PuntoDeVentaProductosController;
 
 #NOTE: CONFIGURACION DE RUTAS
 Auth::routes(['register'=> false]);
@@ -87,6 +89,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
         ]);
 
         # NOTE: PRODUCTOS
+        Route::post('productos/traer_productos_select2', [ProductosController::class, 'traer_productos_select2']) ->name('productos.traer_productos_select2');
         Route::prefix('productos')->name('productos.')->group(function () {
             Route::post('datatables', [ ProductosController::class,'datatables'])->name('datatables');
         });
@@ -94,6 +97,23 @@ Route::middleware(['auth','sucursal'])->group(function () {
         Route::resource('productos', ProductosController::class)->parameters([
             'productos' => 'producto',
         ])->except('show');
+
+        # NOTE: COMPRAS
+        Route::prefix('compras')->name('compras.')->group(function () {
+            Route::post('datatables', [ ComprasController::class,'datatables'])->name('datatables');
+        });
+
+        Route::get('compras/{id_producto}', [ ComprasController::class,'index'])->name('compras.index');
+
+        Route::get('compras/create/{id_producto}', [ ComprasController::class,'create'])->name('compras.create');
+        Route::post('compras/store', [ ComprasController::class,'store'])->name('compras.store');
+        Route::delete('compras/{id}', [ ComprasController::class,'destroy'])->name('compras.destroy');
+        Route::get('compras/{id_producto}/edit', [ ComprasController::class,'edit'])->name('compras.edit');
+        Route::put('compras/update/{id}', [ ComprasController::class,'update'])->name('compras.update');
+        // Route::resource('compras', ComprasController::class)->parameters([
+        //     'compras' => 'compra',
+        // ])->except('show');
+
     });
 
     #RUTAS PRE-REGISTRO ALUMNOS
@@ -150,9 +170,20 @@ Route::middleware(['auth','sucursal'])->group(function () {
 
 
     # NOTE RUTAS PUNTO DE DE VENTA
+    
     Route::post('punto_de_venta/recibir_abonos',[ PuntoDeVentaController::class,'recibir_abonos'])->name('punto_de_venta.recibir_abonos');
     Route::get('punto_de_venta/ticket/{id}',[ PuntoDeVentaController::class,'ticket'])->name('punto_de_venta.ticket');
     Route::resource('punto_de_venta', PuntoDeVentaController::class)->only('index');
+
+    # NOTE RUTAS PUNTO DE DE VENTA
+    Route::post('punto_de_venta_productos/actualizar_informacion_partida',[ PuntoDeVentaProductosController::class,'actualizar_informacion_partida'])->name('punto_de_venta_productos.actualizar_informacion_partida');
+    Route::post('punto_de_venta_productos/guardar_partida',[ PuntoDeVentaProductosController::class,'guardar_partida'])->name('punto_de_venta_productos.guardar_partida');
+    Route::post('punto_de_venta_productos/eliminar_partida/{id}',[ PuntoDeVentaProductosController::class,'eliminar_partida'])->name('punto_de_venta_productos.eliminar_partida');
+    Route::post('punto_de_venta_productos/recibir_abonos',[ PuntoDeVentaProductosController::class,'recibir_abonos'])->name('punto_de_venta_productos.recibir_abonos');
+    Route::post('punto_de_venta_productos/datatables_partidas',[ PuntoDeVentaProductosController::class,'datatables_partidas'])->name('punto_de_venta_productos.datatables_partidas');
+    Route::post('punto_de_venta_productos/cerrar_venta',[ PuntoDeVentaProductosController::class,'cerrar_venta'])->name('punto_de_venta_productos.cerrar_venta');
+    Route::get('punto_de_venta_productos/ticket/{id}',[ PuntoDeVentaProductosController::class,'ticket'])->name('punto_de_venta_productos.ticket');
+    Route::resource('punto_de_venta_productos', PuntoDeVentaProductosController::class)->only('index');
 
 
 

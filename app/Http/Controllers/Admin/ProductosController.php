@@ -22,7 +22,7 @@ class ProductosController extends Controller
 
     public function datatables(Request $request)
     {
-        $query = Producto::query()
+        $query = Producto::with(['partidas_compras'])
             ->select(['id', 'nombre', 'descripcion', 'clave_sat', 'clave_unidad_sat','precio'])
             ->when($request->input('id_sucursal'),function($q,$id_sucursal){
                 $q->where('id_sucursal',$id_sucursal);
@@ -30,6 +30,9 @@ class ProductosController extends Controller
 
         $datatables = DataTables::eloquent($query)
             ->addColumn('buttons', 'admin.productos.datatables._buttons')
+            ->addColumn('existencias',function($model){
+                return $model->getExistencias();
+            })
             ->rawColumns(['buttons'])
             ->make(true);
 
@@ -88,6 +91,8 @@ class ProductosController extends Controller
      */
     public function edit(Producto $producto,FacturacionService $fs)
     {
+        
+        // dd($producto->getExistencias());
         return view('admin.productos.edit', [
             'producto'      => $producto,
             'claves_unidad' => $fs->claveUnidad()->prepend('Selecciona una unidad','')
@@ -149,4 +154,55 @@ class ProductosController extends Controller
             ->route('admin.productos.index')
             ->with(['message' => "Producto eliminado"]);
     }
+
+    public function traer_productos_select2(Request $request)
+    {
+        $term  = $request->input('term');
+        $page = $request->input('page', 1);
+
+        $resultCount = 10;
+        $offset = ($page - 1) * $resultCount;
+
+        $results = Producto::query()
+            ->when($request->input('id_sucursal'),function($q,$sucursal){
+                $q->where('id_sucursal',$sucursal);
+            })
+            // ->where('status',config('alumnos.status.Alumno'))
+            // ->where(function($q) use($term){
+            //     $q->where('nombres', 'like', "%{$term}%")
+            //     ->orWhere('apellido_paterno', 'like', "%{$term}%")
+            //     ->orWhere('apellido_materno', 'like', "%{$term}%");
+            // })
+            ->orderBy('nombre', 'asc')
+            ->skip($offset)
+            ->take($resultCount)
+            ->get();
+
+        $count = Producto::query()
+            ->when($request->input('id_sucursal'),function($q,$id_sucursal){
+                $q->where('id_sucursal',$id_sucursal);
+            })
+            // ->where(function($q) use($term){
+            //     $q->where('nombres', 'like', "%{$term}%")
+            //     ->orWhere('apellido_paterno', 'like', "%{$term}%")
+            //     ->orWhere('apellido_materno', 'like', "%{$term}%");
+            // })
+            ->count();
+
+        $endCount = $offset + $resultCount;
+        $morePages = $count > $endCount;
+
+        if ($request->ajax()) {
+            return response()->json([
+                'results'       => $results,
+                'pagination'    => [
+                    'more' => $morePages
+                ]
+            ]);
+        }
+
+        return redirect()->back();
+    }
+
+   
 }
