@@ -11,7 +11,7 @@
       <span >Menú principal</span>
     </li>
 
-    @canany(['gestionar_usuarios','gestionar_roles','gestionar_permisos','gestionar_sucursales'])
+    @canany(['gestionar_usuarios','gestionar_roles','gestionar_permisos','gestionar_sucursales','listar_productos'])
         <li class="selected has-sub-menu">
             <a href="#">
                 <div class="icon-w">
