@@ -39,9 +39,7 @@
                 <li class="{{UrlActive::active('seguimiento', 'active')}}{{UrlActive::active('seguimiento/*', 'active')}}">
                     <a href="{{route('seguimiento.index')}}"><i class="fas fa-user-friends"></i> <span class="nav-label">Seguimiento</span></a>
                 </li>
-                {{-- <li class="{{UrlActive::active('cotizaciones', 'active')}}{{UrlActive::active('cotizaciones/*', 'active')}}">
-                    <a href="{{route('cotizaciones.index')}}"><i class="fas fa-file-invoice-dollar"></i> <span class="nav-label">Cotizaciones</span></a>
-                </li> --}}
+
                 @endrole
                 @role(['administrador'])
                 {{-- <li class="{{UrlActive::active('salones', 'active')}}{{UrlActive::active('salones/*', 'active')}}">
