@@ -168,6 +168,9 @@
                                     <li class="nav-item">
                                         <a class="nav-link" data-toggle="tab" href="#tab-info-asistencias">Asistencias</a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#tab-info-productos">Productos</a>
+                                    </li>
 
                                 </ul>
                                 <ul class="nav nav-pills smaller d-none d-md-flex">
@@ -177,7 +180,7 @@
                             <div class="tab-content">
                                 <div class="tab-pane active" id="tab-pagos-pendientes">
                                     Selecciona el grupo:
-                                    {!! Form::select('id_grupo', $alumno->grupos->pluck('nombre_compuesto','id'), $alumno->grupos->first()->id, ['id'=>'select_grupo','class'=>'form-control']) !!}
+                                    {!! Form::select('id_grupo', $alumno->grupos->pluck('nombre_compuesto','id'), optional($alumno->grupos->first())->id, ['id'=>'select_grupo','class'=>'form-control']) !!}
                                     <table class="table table-striped table-bordered table-hover" id="tb-pagos" width="100%">
                                         <thead>
                                             <tr>
@@ -206,6 +209,34 @@
                                                 </td>
                                                 <td>
                                                     {{$asistencia->fecha->format('l d \d\e F \d\e\l Y \a \l\a\s H:i')}} 
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
+                                </div>
+
+
+                                <div class="tab-pane" id="tab-info-productos">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Conceptos</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        @foreach ($alumno->ventas as $venta)
+
+                                                <td>
+                                                    {{$venta->fecha->format('d-m-Y')}}
+                                                </td>
+                                                <td>
+                                                    @foreach ($venta->partidas as $partida)
+                                                        {{optional($partida->producto)->nombre}}<br>
+                                                    @endforeach
+                                                </td>
+                                                <td class="text-right">
+                                                    {{number_format($partida->total,2,'.',',')}}
                                                 </td>
                                             </tr>
                                         @endforeach

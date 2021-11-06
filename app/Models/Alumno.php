@@ -208,4 +208,14 @@ class Alumno extends Model
         return $this->hasMany(Asistencia::class, 'id_alumno', 'id');
     }
 
+    /**
+     * Get all of the ventas for the Alumno
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function ventas()
+    {
+        return $this->hasMany(Venta::class, 'id_alumno', 'id');
+    }
+
 }

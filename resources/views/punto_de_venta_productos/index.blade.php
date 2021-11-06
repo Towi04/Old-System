@@ -302,7 +302,7 @@
                     }
                 },
                 escapeMarkup: function (markup) { return markup; },
-                minimumInputLength: 3,
+                minimumInputLength: 0,
                 templateResult: function(option){
                     if (option.loading) {
                         return option.text;

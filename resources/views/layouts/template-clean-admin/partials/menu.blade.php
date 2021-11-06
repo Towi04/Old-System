@@ -194,6 +194,9 @@
                         <a href="{{ route('reportes.reporte-ventas.index') }}">Reporte de Ventas</a>
                     </li>
                     <li>
+                        <a href="{{ route('reportes.reporte-ventas.index_productos') }}">Reporte de Ventas (Productos)</a>
+                    </li>
+                    <li>
                         <a href="{{ route('reportes.reporte-ventas.vencimientos') }}">Reporte de Vencimientos</a>
                     </li>
                     <li>

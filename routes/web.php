@@ -191,6 +191,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
 
     Route::prefix('reportes')->name('reportes.')->group(function () {
         Route::get('reporte-ventas',[ReporteVentasController::class,'index'])->name('reporte-ventas.index');
+        Route::get('reporte-ventas-productos',[ReporteVentasController::class,'index_productos'])->name('reporte-ventas.index_productos');
         Route::get('vencimientos',[ReporteVentasController::class,'vencimientos'])->name('reporte-ventas.vencimientos');
         Route::post('datatables_vencimientos',[ReporteVentasController::class,'datatables_vencimientos'])->name('reporte-ventas.datatables_vencimientos');
         Route::get('proyeccion',[ReporteVentasController::class,'proyeccion'])->name('reporte-ventas.proyeccion');

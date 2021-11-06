@@ -40,4 +40,6 @@ class Venta extends Model
     {
         return $this->belongsTo(User::class, 'id_recibio', 'id');
     }
+
+    
 }

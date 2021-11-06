@@ -10,6 +10,7 @@ use App\Models\Abono;
 use App\Models\Pago;
 use App\Models\Alumno;
 use App\Models\User;
+use App\Models\Venta;
 use App\Models\Configuracion;
 
 class ReporteVentasController extends Controller
@@ -387,6 +388,106 @@ class ReporteVentasController extends Controller
         // Session::flash('message','Se ajustaron las ventas no fiscales a fiscales de acuerdo al porcentaje correctamente');
         // return redirect()->back();
 
+    }
+
+    public function index_productos(Request $request)
+    {
+        if ($request->has('tipo')) {
+            $tipo = $request->input('tipo');
+        } else {
+            $tipo = 'dia';
+        }
+        
+        $sucursal = optional(session('sucursal'));
+
+        if ($tipo == 'dia') {
+            $tipo = 'dia';
+
+            if (isset($request->fecha)) {
+                $fecha = Carbon::createFromFormat('d-m-Y', $request->input('fecha'));
+            } else {
+                $fecha = Carbon::today();
+            }
+
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDay();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDay();
+
+            
+            $ventas = Venta::query()->where('status','=','Cerrada')
+                ->where('id_sucursal','=',$sucursal->id)
+                ->whereBetween('created_at', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
+                ->orderBy('created_at', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'mes') {
+            if (isset($request->fecha)) {
+                $fecha = Carbon::createFromFormat('d-m-Y', $request->fecha);
+            } else {
+                $fecha = Carbon::today();
+            }
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subMonth();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addMonth();
+
+            $ventas = Venta::query()->where('status','=','Cerrada')
+                ->where('id_sucursal','=',$sucursal->id)
+                ->whereBetween('created_at', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
+                ->orderBy('created_at', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'semanal') {
+            if (isset($request->fecha)) {
+                $fecha = Carbon::createFromFormat('d-m-Y', $request->fecha);
+            } else {
+                $fecha = Carbon::today();
+            }
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDays(7);
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDays(7);
+
+            $ventas = Venta::query()->where('status','=','Cerrada')
+                ->where('id_sucursal','=',$sucursal->id)
+                ->whereBetween('created_at', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
+                ->orderBy('created_at', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+        if ($tipo == 'anual') {
+            if (isset($request->fecha)) {
+                $fecha = Carbon::createFromFormat('d-m-Y', $request->fecha);
+            } else {
+                $fecha = Carbon::today();
+            }
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subYear();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addYear();
+
+            $ventas = Venta::query()->where('status','=','Cerrada')
+                ->where('id_sucursal','=',$sucursal->id)
+                ->whereBetween('created_at', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
+                ->orderBy('created_at', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        // dd(Configuracion::where('nombre','=','mostrar_solo_fiscales')->first()->valor);
+
+        // if(Configuracion::where('nombre','=','mostrar_solo_fiscales')->first()->valor == 'Si'){
+        //    $abonos =  $abonos->where('venta_fiscal','=',1);
+        // }
+
+        $ventas =  $ventas->get();
+
+        return view('reportes.reporte_ventas.index_productos',compact('ventas', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo'));
     }
 
 }

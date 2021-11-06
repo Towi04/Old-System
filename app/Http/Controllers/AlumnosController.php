@@ -52,7 +52,8 @@ class AlumnosController extends Controller
 
     public function show(Alumno $alumno)
     {
-        $alumno->load(['especialidad']);
+        $alumno->load(['especialidad','ventas.partidas.producto']);
+
 
         return view('alumnos.show',compact('alumno'));
     }
