@@ -166,4 +166,30 @@ class EspecialidadesController extends Controller
             'message' => 'La especialidad fue eliminada con éxito'
         ]);
     }
+
+    public function cronograma($id){
+        $especialidad = Especialidad::find($id);
+
+        $sucursal = optional(session('sucursal'));
+
+        $grupos = $especialidad->grupos->load('materias')->where('status','Activo');
+
+        // Se obtiene la fecha de inicio mas antigua para saber de que semena se va a comenzar
+        $fecha_inicio = $grupos->min('fecha_inicio');
+
+        // Se obtiene la fecha de inico mas reciente para calcular hasta que semana se va a mostrar en el calendario. 
+        $fecha_reciente_inicio = $grupos->max('fecha_inicio');
+
+        // Se obtiene el numero de semanas del grupo
+        $max_semanas = $grupos->max(function($grupo){
+            return $grupo->materias->sum('semanas');
+        });
+
+        // Se obtiene el total de semanas que se van a dibujar en la tabla
+        $dif_semanas = $fecha_inicio->diffInWeeks($fecha_reciente_inicio->addWeeks($max_semanas));
+        
+
+        return view('admin.especialidades.cronograma', compact('grupos','dif_semanas','especialidad','fecha_inicio'));
+
+    }
 }

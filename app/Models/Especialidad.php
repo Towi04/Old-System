@@ -30,4 +30,15 @@ class Especialidad extends Model
         'precio_mensualidad_pronto_pago',
         'precio_semanal',
     ];
+
+
+    /**
+     * Get all of the grupos for the Especialidad
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function grupos()
+    {
+        return $this->hasMany(Grupo::class, 'id_especialidad', 'id');
+    }
 }

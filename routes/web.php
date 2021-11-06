@@ -78,6 +78,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
         ]);
 
         # NOTE: ESPECIALIDADES
+        Route::get('especialidades/cronograma/{id}', [ EspecialidadesController::class,'cronograma'])->name('especialidades.cronograma');
         Route::post('especialidades/datatables', [ EspecialidadesController::class,'datatables'])->name('especialidades.datatables');
         Route::resource('especialidades', EspecialidadesController::class)->parameters([
             'especialidades' => 'especialidad'

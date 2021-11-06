@@ -23,8 +23,15 @@
             <a class="mb-3" href={{ route('materias.create', $id) }}>
                 <button class="btn btn-success btn-sm" type="button">
                     <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar
+
+                    
                 </button>
             </a>
+
+            <a href="{{route('admin.especialidades.cronograma', $id)}}">
+                <button class="btn btn-dark btn-sm" type="button">
+                    <i class="fas fa-clock    "></i> Cronograma especialidad
+                </button></a>
         @endcan
     </div>
 </div>
