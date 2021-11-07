@@ -265,6 +265,32 @@ return [
             'display_name'  => 'Finalizar grupo',
             'description'   => 'Permite finalizar grupos'
         ],
+        [
+            'name'          => 'ver_reporte_ventas',
+            'display_name'  => 'Ver reporte de ventas',
+            'description'   => 'Permite ver el reporte de ventas'
+        ],
+        [
+            'name'          => 'ver_reporte_ventas_productos',
+            'display_name'  => 'Ver reporte de ventas por productos',
+            'description'   => 'Permite ver el reporte de ventas por productos'
+        ],
+        [
+            'name'          => 'ver_reporte_vencimiento',
+            'display_name'  => 'Ver reporte de vencimientos',
+            'description'   => 'Permite ver el reporte de vencimientos'
+        ],
+        [
+            'name'          => 'ver_reporte_proyeccion',
+            'display_name'  => 'Ver reporte de proyección',
+            'description'   => 'Permite ver el la proyeccion'
+        ],
+        [
+            'name'          => 'ver_reporte_asesores',
+            'display_name'  => 'Ver reporte de asesores',
+            'description'   => 'Permite ver el la asesores'
+        ],
+
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

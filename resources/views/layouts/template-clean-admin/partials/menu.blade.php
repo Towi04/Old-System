@@ -190,21 +190,31 @@
             </div>
             <div class="sub-menu-i">
                 <ul class="sub-menu">
+                    @can('ver_reporte_ventas')
                     <li>
                         <a href="{{ route('reportes.reporte-ventas.index') }}">Reporte de Ventas</a>
                     </li>
+                    @endcan
+                    @can('ver_reporte_ventas_productos')
                     <li>
                         <a href="{{ route('reportes.reporte-ventas.index_productos') }}">Reporte de Ventas (Productos)</a>
                     </li>
+                    @endcan
+                    @can('ver_reporte_vencimiento')
                     <li>
                         <a href="{{ route('reportes.reporte-ventas.vencimientos') }}">Reporte de Vencimientos</a>
                     </li>
+                    @endcan
+                    @can('ver_reporte_proyeccion')
                     <li>
                         <a href="{{ route('reportes.reporte-ventas.proyeccion') }}">Reporte de Proyección</a>
                     </li>
+                    @endcan
+                    @can('ver_reporte_asesores')
                     <li>
                         <a href="{{ route('reportes.reporte-ventas.asesores') }}">Reporte de Asesores</a>
                     </li>
+                    @endcan
                 </ul>
             </div>
         </div>
