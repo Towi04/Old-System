@@ -148,6 +148,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
     ]);
 
     # NOTE: RUTAS GRUPOS (RESPETAR EL ORDEN DE LAS RUTAS)
+    Route::post('grupos/finalizar_grupo', [ GruposController::class,'finalizar_grupo'])->name('grupos.finalizar_grupo');
     Route::post('grupos/datatables', [ GruposController::class,'datatables'])->name('grupos.datatables');
     Route::post('grupos/traer_grupos_select2', [ GruposController::class,'traer_grupos_select2'])->name('grupos.traer_grupos_select2');
 

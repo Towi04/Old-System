@@ -32,6 +32,14 @@
 <div class="row widget-list">
     <div class="widget-holder widget-full-height widget-flex col-lg-12">
         <div class="widget-body">
+            <div class="form-group">
+              <label for="">Status</label>
+              <select class="form-control col-6" name="" id="status_grupo">
+                <option>Activo</option>
+                <option>Programado</option>
+                <option>Finalizado</option>
+              </select>
+            </div>
             <div class="table-responsive mt-3">
                 <table id="tb-grupos" class="table table-padded  table-striped table-hover">
                     <thead>
@@ -42,6 +50,7 @@
                             <th>Dias</th>
                             <th>Tipo</th>
                             <th>Fecha Inicio</th>
+                            <th>Status</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -71,7 +80,8 @@
                 url: "{{ route('grupos.datatables') }}",
                 method:'POST',
                 data: function (d) {
-                    d.id_sucursal = "{{ optional(session('sucursal'))->id }}"
+                    d.id_sucursal= "{{ optional(session('sucursal'))->id }}";
+                    d.status= $('#status_grupo').val()
                 },
                 beforeSend: function(xhr,type) {
                     if (!type.crossDomain) {
@@ -92,6 +102,7 @@
                 { data: 'days', name: 'days',class: 'text-nowrap'},
                 { data: 'infantil', name: 'infantil',class: 'text-nowrap'},
                 { data: 'fecha_inicio', name: 'fecha_inicio',class: 'text-nowrap'},
+                { data: 'status', name: 'status',class: 'text-nowrap'},
                 { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
             ],
             language: {
@@ -113,6 +124,45 @@
             order: [[ 0, 'desc' ] ],
             drawCallback: function(settings) {
                 $("[data-toggle='tooltip']").tooltip();
+
+                $('.finalizar_grupo').on('click',function(){
+                    id= $(this).data('id')
+                    swal({
+                title: "¿Estas seguro de FINALIZAR el grupo?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#ff3333",
+                cancelButtonColor: "#CDCDCD",
+                confirmButtonText: "Si, finalizar",
+                cancelButtonText: "Cancelar",
+                showLoaderOnConfirm: false,
+            }).then(function(result) {
+                if (!result.value) {
+                    return;
+                }
+
+                wait.modal('show');
+
+                $.ajax({
+                    url: "{{route('grupos.finalizar_grupo')}}",
+                    type: 'POST',
+                    cache: false,
+                    data: {
+                        _token: $("meta[name='csrf-token']").attr("content"),
+                        id:id
+                    },
+                    success: function (response){
+                        dt.ajax.reload( function(e){
+                            wait.modal('hide');
+                            toastr.success('Éxito', 'Se borró con éxito el registro');
+                        }, false )
+                    },
+                    fail:function(error){
+                        toastr.error('Error', 'Ocurrio un error inesperado');
+                    }
+                });
+            })
+                })
             },
         });
 
@@ -175,6 +225,10 @@
                 });
             })
         })
+
+        $('#status_grupo').change(function(){
+            dt.draw();
+        });
     })
 </script>
 @endsection

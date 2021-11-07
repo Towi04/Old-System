@@ -35,6 +35,9 @@ class GruposController extends Controller
             ->when($request->input('id_sucursal'),function($q,$id_sucursal){
                 $q->where('id_sucursal',$id_sucursal);
             })
+            ->when($request->input('status'),function($q,$status){
+                $q->where('status',$status);
+            })
             ->with('especialidad');
 
         return DataTables::eloquent($query)
@@ -522,6 +525,17 @@ class GruposController extends Controller
         abort_unless(Auth::user()->can('consultar_grupo'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
         return view('grupos.cronograma',compact('grupo'));
+    }
+
+    public function finalizar_grupo(Request $request)
+    {
+        $grupo = Grupo::find($request->id);
+        $grupo->status = 'Finalizado';
+        $grupo->save();
+
+        return response()->json([
+            'grupo'=>$grupo
+        ]);
     }
 
 }

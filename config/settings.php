@@ -260,6 +260,11 @@ return [
             'display_name'  => 'Registrar asistencias',
             'description'   => 'Permite registrar asistencias de los alumnos'
         ],
+        [
+            'name'          => 'finalizar_grupo',
+            'display_name'  => 'Finalizar grupo',
+            'description'   => 'Permite finalizar grupos'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)
