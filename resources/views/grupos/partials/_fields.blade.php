@@ -3,6 +3,12 @@
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
+                {!! Form::label('clave', 'Clave del grupo:*'); !!}
+                {!! Form::text('clave', null, ['class' => 'form-control','required' => true]) !!}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
                 {!! Form::label('id_especialidad', 'Especialidad:*'); !!}
                 {!! Form::select('id_especialidad', $especialidades, null, ['class' => 'form-control','required' => true]) !!}
             </div>

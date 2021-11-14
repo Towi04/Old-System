@@ -45,6 +45,7 @@ class Grupo extends Model
         'dias_corto',
         'horario_corto',
         'nombre_compuesto',
+        
     ];
 
     /**
@@ -63,6 +64,7 @@ class Grupo extends Model
         'precio_mensualidad_pronto_pago',
         'precio_mensualidad',
         'precio_inscripcion',
+        'clave',
     ];
 
    

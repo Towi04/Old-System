@@ -45,6 +45,7 @@
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th>Clave</th>
                             <th>Especialidad</th>
                             <th>Horario</th>
                             <th>Dias</th>
@@ -97,6 +98,7 @@
             }],
             columns: [
                 { data: 'id', name: 'id',class: 'text-nowrap'},
+                { data: 'clave', name: 'clave',class: 'text-nowrap'},
                 { data: 'especialidad.nombre', name: 'especialidad.nombre',class: 'text-nowrap'},
                 { data: 'horario', name: 'horario',class: 'text-nowrap'},
                 { data: 'days', name: 'days',class: 'text-nowrap'},

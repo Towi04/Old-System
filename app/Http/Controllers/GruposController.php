@@ -117,6 +117,7 @@ class GruposController extends Controller
             'precio_mensualidad_pronto_pago'    => 'nullable',
             'precio_mensualidad'                => 'nullable',
             'precio_inscripcion'                => 'nullable',
+            'clave'                => 'required',
         ];
 
         $especialidad = Especialidad::findOrFail($request->input('id_especialidad'));
@@ -208,6 +209,7 @@ class GruposController extends Controller
             'precio_mensualidad_pronto_pago'   => 'nullable',
             'precio_mensualidad'               => 'nullable',
             'precio_inscripcion'                => 'nullable',
+            'clave'     =>'required'
         ];
 
         $especialidad = Especialidad::findOrFail($request->input('id_especialidad'));
