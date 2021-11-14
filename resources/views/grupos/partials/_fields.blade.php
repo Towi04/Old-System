@@ -79,7 +79,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 {!! Form::label('fecha_inicio', 'Fecha inicio:*'); !!}
-                {!! Form::date('fecha_inicio', null, ['class' => 'form-control', 'placeholder' => 'Escribe la fecha de inicio','required' => true,'min'=>\Carbon\Carbon::today()->subMonths(6)->format('Y-m-d'), 'max'=>\Carbon\Carbon::today()->addMonths(6)->format('Y-m-d') ]); !!}
+                {!! Form::date('fecha_inicio', null, ['class' => 'form-control', 'placeholder' => 'Escribe la fecha de inicio','required' => true,'min'=>\Carbon\Carbon::today()->subMonths(24)->format('Y-m-d'), 'max'=>\Carbon\Carbon::today()->addMonths(24)->format('Y-m-d') ]); !!}
             </div>
         </div>
         
