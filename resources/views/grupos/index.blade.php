@@ -76,7 +76,7 @@
         var dt = dom.table.DataTable({
             processing: true,
             serverSide: true,
-            dom: "<'row'<'col-6 d-flex align-items-center' l><'col-6'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
+            dom: "<'row'<'col-6 d-flex align-items-center' lB><'col-6'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
             ajax: {
                 url: "{{ route('grupos.datatables') }}",
                 method:'POST',
@@ -91,6 +91,7 @@
                 },
             },
             pageLength: 10,
+            lengthMenu: [[10,50,100,-1],['10','50','100','Todos']],
             responsive: true,
             buttons: [{
                 extend: 'excel',
