@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use PDF;
 use App\Models\Grupo;
 use App\Models\Alumno;
+use App\Models\Materia;
+use App\Models\GrupoDia;
 use App\Models\AlumnoGrupo;
 use App\Models\Especialidad;
 use App\Models\GrupoMateria;
-use App\Models\Materia;
-use App\Models\GrupoDia;
-use App\Services\PagoInscripcionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use App\Services\PagoInscripcionService;
 use Yajra\DataTables\Facades\DataTables;
 use Symfony\Component\HttpFoundation\Response as HTTPMessages;
 
@@ -87,7 +90,7 @@ class GruposController extends Controller
         return view('grupos.create',[
             'grupo'         => new Grupo,
             'especialidades'  => Especialidad::query()
-                
+
                 ->pluck('nombre','id')
                 ->sort()
                 ->prepend('Selecciona una especialidad',''),
@@ -149,7 +152,7 @@ class GruposController extends Controller
             $grupo_dia->save();
 
         }
-        
+
 
         return redirect()->route('grupos.index')->with([
             'message' => 'Se agregó el grupo con éxito',
@@ -242,7 +245,7 @@ class GruposController extends Controller
             $grupo_dia->save();
 
         }
-        
+
 
         return redirect()->route('grupos.index')->with([
             'message' => 'Se actualizó el grupo con éxito'
@@ -524,4 +527,29 @@ class GruposController extends Controller
         return view('grupos.cronograma',compact('grupo'));
     }
 
+    public function lista_asistencia(Grupo $grupo)
+    {
+        $grupo->load(['alumnos','especialidad']);
+        $sucursal = optional(session('sucursal'));
+
+        # GENERACION DE SEMANAS
+        $now = now();
+        $semanas = [];
+        foreach (range(0,11) as $semana) {
+            $semanas[] = $now->copy()->addWeek($semana)->week;
+        }
+
+        $dias_semana = ['L','M','M','J','V','S','D'];
+
+        PDF::setOptions(['isPhpEnabled' => true]);
+
+        $pdf = PDF::loadView('grupos.lista_asistencia',[
+            'grupo'         => $grupo,
+            'sucursal'      => $sucursal,
+            'semanas'       => $semanas,
+            'dias_semana'   => $dias_semana
+        ]);
+
+        return $pdf->stream('lista_asistencia.pdf');
+    }
 }
