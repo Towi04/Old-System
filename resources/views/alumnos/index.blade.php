@@ -32,6 +32,12 @@
 <div class="row widget-list">
     <div class="widget-holder widget-full-height widget-flex col-lg-12">
         <div class="widget-body">
+            <div class="form-check">
+              <label class="form-check-label">
+                <input type="checkbox" class="form-check-input" name="" id="alumnos_no_grupos" value="" >
+                    Mostrar alumnos sin grupos
+              </label>
+            </div>
             <div class="table-responsive mt-3">
                 <table id="tb-alumnos" class="table table-padded  table-striped table-hover">
                     <thead>
@@ -44,6 +50,7 @@
                             <th>Fecha Nac.</th>
                             <th>Telefono</th>
                             <th>Email</th>
+                            <th>Grupos</th>
                             {{-- <th>Descripcion</th>
                             <th class="text-center">Acciones</th> --}}
                             <th class="text-center">Acciones</th>
@@ -76,6 +83,7 @@
                 method:'POST',
                 data: function (d) {
                     d.id_sucursal = "{{ optional(session('sucursal'))->id }}"
+                    d.alumnos_no_grupos = $('#alumnos_no_grupos').is(':checked')
                 },
                 beforeSend: function(xhr,type) {
                     if (!type.crossDomain) {
@@ -98,6 +106,7 @@
                 { data: 'fecha_nacimiento',class: 'text-nowrap'},
                 { data: 'telefono',name: 'nombre_alumno',class: 'text-nowrap'},
                 { data: 'email', name: 'email',class: 'text-nowrap'},
+                { data: 'no_grupos', name: 'no_grupos',class: 'text-nowrap', orderable: false, searchable: false},
                 { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
             ],
             language: {
@@ -184,6 +193,11 @@
                 });
             })
         })
+
+
+        $('#alumnos_no_grupos').click(function(){
+            dt.ajax.reload(null, false);
+        });
     })
 </script>
 @endsection

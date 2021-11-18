@@ -162,8 +162,7 @@ return [
             'description'   => 'Permite editar una especialidad'
         ],
         [
-            'name'          => 'eliminar_especialidad
-            ',
+            'name'          => 'eliminar_especialidad',
             'display_name'  => 'Eliminar especialidad',
             'description'   => 'Permite eliminar una especialidad'
         ],

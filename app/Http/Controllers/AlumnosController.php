@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Symfony\Component\HttpFoundation\Response as HTTPMessages;
 
@@ -35,6 +36,10 @@ class AlumnosController extends Controller
             ->where('status',config('alumnos.status.Alumno'))
             ->when($request->input('id_sucursal'),function($q,$id_sucursal){
                 $q->where('id_sucursal',$id_sucursal);
+            })->when($request->input('alumnos_no_grupos'),function($q,$alumnos_no_grupos){
+                if($alumnos_no_grupos == 'true'){
+                    $q->whereRaw(DB::raw('id not in (Select id_alumno from alumnos_grupos)'));
+                }
             });
 
         return DataTables::eloquent($query)
@@ -43,6 +48,9 @@ class AlumnosController extends Controller
             })
             ->addColumn('fecha_nacimiento',function($model){
                 return optional($model->fecha_nacimiento)->format('d/m/Y');
+            })
+            ->addColumn('no_grupos',function($model){
+                return $model->grupos->count();
             })
             ->addColumn('buttons', 'alumnos.datatables._buttons')
 

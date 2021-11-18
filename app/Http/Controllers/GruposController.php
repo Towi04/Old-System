@@ -55,6 +55,9 @@ class GruposController extends Controller
                 }
                 return $horario;
             })
+            ->addColumn('no_alumnos', function($model){
+                return $model->alumnos->count();
+            })
             ->addColumn('buttons', 'grupos.datatables._buttons')
             ->rawColumns(['buttons','infantil','days'])
             ->make(true);
