@@ -39,39 +39,67 @@
             </div>
         </div>
     </div>
+
     <div class="row">
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-            <div class="element-box">
-                <h5 class="element-header">
-                    Pagos pendientes
-                </h5>
-                <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                        Selecciona el grupo:
-                        {!! Form::select('id_grupo', [], null, ['id'=>'select_grupo','class'=>'form-control']) !!}
+        <div class="col-12 col-sm-6">
+            <div class="element-wrapper">
+                <div class="element-box">
+                <div class="os-tabs-w">
+                    <div class="os-tabs-controls">
+                    <ul class="nav nav-tabs smaller">
+                        <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#tab-pagos-pendientes">Pagos Pendientes</a>
+                        </li>
+                        @can('registrar_pago_manual')
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#tab-pago-manual">Pago Manual</a>
+                            </li>
+                        @endcan
+                    </ul>
                     </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                        <span class="float-right"> Total pendiente: $ <span class="total_pendiente"></span></span>
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                        <table class="table" id="tb-pagos" width="100%" style="clear:both">
-                            <thead>
-                                <tr>
-                                    <th>Concepto</th>
-                                    <th>Monto</th>
-                                    <th>Saldo</th>
-                                    <th>Fecha Limite</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                        </table>
+
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab-pagos-pendientes">
+                            <div class="row">
+                                <div class="col-12">
+                                    {!! Form::label('id_grupo', 'Selecciona el grupo: ', ['class' => 'control-label']) !!}
+                                    {!! Form::select('id_grupo', [], null, ['id'=>'select_grupo','class'=>'custom-select custom-select-sm','style' => 'width:100%;']) !!}
+                                </div>
+                                <div class="col-12">
+                                    <span class="float-right"> Total pendiente: $ <span class="total_pendiente"></span></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <table class="table" id="tb-pagos" style="clear:both;width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>Concepto</th>
+                                                <th>Monto</th>
+                                                <th>Saldo</th>
+                                                <th>Fecha Limite</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        @can('registrar_pago_manual')
+                            <div class="tab-pane" id="tab-pago-manual">
+                                <p class="form-desc m-0 border-0">En esta sección puedes dar de alta un pago manual. Primero debes seleccionar un alumno</p>
+                                <button class="btn btn-primary btn-sm" id="btn-crear-pago" disabled>Registrar Pago</button>
+                            </div>
+                        @endcan
+
                     </div>
                 </div>
-
+                </div>
             </div>
-
         </div>
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+
+        <div class="col-12 col-sm-6">
             <div class="element-box">
                 <h5 class="element-header">
                     Recibir abono
@@ -82,7 +110,7 @@
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                             <div class="form-group">
                                 {!! Form::label('monto','Monto:') !!}
-                                {!! Form::number('monto', null, ['class' => 'form-control','placeholder' => 'Ingresa el monto','required' => true,'autocomplete' => 'off','form-selector' => '','step' => '0.01','disabled' => true,'min' => 0.01]) !!}
+                                {!! Form::number('monto', null, ['class' => 'form-control form-control-sm','placeholder' => 'Ingresa el monto','required' => true,'autocomplete' => 'off','form-selector' => '','step' => '0.01','disabled' => true,'min' => 0.01]) !!}
                             </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
@@ -108,7 +136,6 @@
         </div>
     </div>
 
-
     <div class="modal inmodal fade animated" id="modal-ticket" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content animated bounceInRight">
@@ -127,6 +154,70 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal fade animated" id="modal-pago-manual" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Pago manual <small>(*) Campos Requeridos</small></h5>
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">
+                            &times;</span><span class="sr-only">Close</span>
+                        </button>
+                    </div>
+
+                    {!! Form::open(['id' => 'form-pago-manual','route' => 'punto_de_venta.pago_manual']) !!}
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('concepto', 'Concepto:*', ['class' => 'form-label']) !!}
+                                    {!! Form::text('concepto',null, [ 'class' => 'form-control form-control-sm','title' => 'Escribe el concepto','placeholder' => 'Escribe aqui el concepto','autocomplete' => 'off','required' => true]) !!}
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('monto', 'Monto:*', ['class' => 'form-label']) !!}
+                                    {!! Form::number('monto',null, [ 'class' => 'form-control form-control-sm','title' => 'Escribe el monto','placeholder' => 'Escribe aqui el monto','autocomplete' => 'off','required' => true,'step' =>'0.01']) !!}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('folio', 'Folio:*', ['class' => 'form-label']) !!}
+                                    {!! Form::number('folio',null, [ 'class' => 'form-control form-control-sm','title' => 'Escribe el monto','placeholder' => 'Escribe el foli asignado','autocomplete' => 'off','required' => true]) !!}
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-sm-6">
+                                {!! Form::label('forma_pago','Forma Pago:') !!}
+                                {!! Form::select('forma_pago', [
+                                        'Efectivo'              => 'Efectivo',
+                                        'Tarjate de debito'     => 'Tarjate de debito',
+                                        'Tarjate de crédito'    => 'Tarjate de crédito',
+                                        'Transferencia'         => 'Transferencia'
+                                    ],null, ['forma_pago_manual','class' => 'form-control form-control-sm','form-selector'=> '','required' => true]) !!}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                {!! Form::label('id_grupo', 'Seleccionar a un grupo:*', ['class' => 'form-label']) !!}
+                                {!! Form::select('id_grupo', [], null, ['id' => 'select2_id_grupo_pago', 'class' => 'custom-select custom-select-sm','required' => true]) !!}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                    {!! Form::close() !!}
                 </div>
             </div>
         </div>
@@ -151,10 +242,14 @@
                 select_preregistro: $("#id_preregistro"),
                 tb_pagos: $("#tb-pagos"),
                 form_abonos: $("#form-recibir-abono"),
-
                 tikets:{
                     contenido_ticket:$("#contenido-ticket"),
                     modal: $("#modal-ticket"),
+                },
+                pago_manual:{
+                    btn_crear_pago: $("#btn-crear-pago"),
+                    modal_pago_manual: $("#modal-pago-manual"),
+                    form_pago_manual: $("#form-pago-manual"),
                 }
             };
 
@@ -315,14 +410,21 @@
                 grupos = e.params.data.grupos;
                 $('#select_grupo').empty();
 
-                $.each(grupos, function (index, grupo) { 
-                    $('#select_grupo').append(`<option value="${grupo.id}" > ${grupo.nombre_compuesto} </option>`);
+                const $select2_grupos_pagos = dom.pago_manual.form_pago_manual.find('#select2_id_grupo_pago');
+                $select2_grupos_pagos.empty();
+
+                $.each(grupos, function (index, grupo) {
+                    const opcion = `<option value="${grupo.id}" > ${grupo.nombre_compuesto} </option>`;
+
+                    $('#select_grupo').append(opcion);
+                    $select2_grupos_pagos.append(opcion)
                 });
 
                 dt_pagos.draw();
-
                 disableForm( !$(this).val());
                 dom.select_preregistro.val(null).trigger('change');
+
+                dom.pago_manual.btn_crear_pago.attr('disabled',!$(this).val())
             });
 
             dom.select_preregistro.on('select2:select', function (e) {
@@ -349,20 +451,17 @@
                     toastr.error('Error', 'Debes seleccionar primero un alumno o preregistro');
                 }
 
-                
+
 
                 let formData = new FormData(this);
                 formData.append('id_grupo',$('#select_grupo').val());
                 if(id_alumno){
                     formData.append('id_alumno',id_alumno);
-                } 
+                }
 
                 if(id_preregistro){
                     formData.append('id_preregistro',id_preregistro);
-                } 
-                
-                
-
+                }
 
                 $.ajax({
                     url: $(this).attr('action'),
@@ -377,11 +476,11 @@
 
                         dt_pagos.ajax.reload(function(){
                             dom.form_abonos[0].reset();
-                            
+
                             setTimeout(function(){
                                 wait.modal('hide');
                             }, 200);
-                            
+
 
                             dom.tikets.modal.modal('show');
                             dom.tikets.contenido_ticket.html();
@@ -400,6 +499,51 @@
                 });
             });
 
+            @can('registrar_pago_manual')
+                const m_pagos_manuales = (function(pago_manual){
+                    pago_manual.btn_crear_pago.click(function(e){
+                        pago_manual.form_pago_manual[0].reset();
+                        pago_manual.modal_pago_manual.modal('show');
+                    })
+
+                    pago_manual.form_pago_manual.submit(function(e){
+                        e.preventDefault();
+
+                        pago_manual.modal_pago_manual.modal('hide');
+
+                        const formData = new FormData(this);
+
+                        formData.append('id_alumno',dom.select_alumno.val());
+
+                        $.ajax({
+                            url: $(this).attr('action'),
+                            type: 'POST',
+                            contentType: false,
+                            processData: false,
+                            data: formData
+                        }).done(function(response){
+                            if(response.success) {
+                                dt_pagos.ajax.reload(function(){
+                                    setTimeout(function(){
+                                        wait.modal('hide');
+                                    }, 200);
+
+                                    toastr.success('Exito', response.message || '');
+                                },false);
+                            }else {
+                                setTimeout(() => {
+                                    wait.modal('hide');
+                                }, 250);
+                            }
+                        }).fail(function(error){
+                            setTimeout(() => {
+                                wait.modal('hide');
+                                toastr.error('Error', 'Ocurrio un error inesperado');
+                            }, 250);
+                        });
+                    })
+                })(dom.pago_manual);
+            @endcan
         });
     </script>
 @endsection

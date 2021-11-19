@@ -20,7 +20,6 @@ class PuntoDeVentaController extends Controller
     public function recibir_abonos(Request $request)
     {
         $this->validate($request,[
-            // 'id_alumno'     => 'required',
             'monto'         => 'required|numeric|min:0.01|not_in:0',
             'forma_pago'    => 'required',
         ]);
@@ -49,14 +48,9 @@ class PuntoDeVentaController extends Controller
 
             $venta_fiscal = ($request->input('forma_pago','') != 'Efectivo') ? true : $alumno->solicitud_factura;
         }
-        
-
-        // dd(($venta_fiscal)?$folio_fiscal + 1 : null);
 
         try {
             DB::beginTransaction();
-
-           
 
             $pago = Pago::create([
                 'folio'         => $folio + 1,
@@ -74,37 +68,37 @@ class PuntoDeVentaController extends Controller
                 foreach ($pagos_alumno as $pa) {
                     if ($monto > 0) {
                         $saldo_alumno = abs( ($pa->saldo == 0) ? $pa->monto : $pa->saldo );
-    
+
                         if($monto > $saldo_alumno){
                             $monto = $monto - $saldo_alumno;
-    
+
                             $pa->update([
                                 'saldo'     => 0,
                                 'status'    => config('pagos.status.Pagado'),
                             ]);
-    
+
                             $pago->abonos()->create([
                                 'id_sucursal'       => $id_sucursal,
                                 'id_alumno_pago'    => $pa->id,
                                 'monto'             => $saldo_alumno,
                                 'venta_fiscal'      => $venta_fiscal,
                             ]);
-    
+
                         }else{
                             $nuevo_saldo =  $saldo_alumno - $monto;
-    
+
                             $pa->update([
                                 'saldo'     => $nuevo_saldo,
                                 'status'    => ($nuevo_saldo == 0)?config('pagos.status.Pagado') : config('pagos.status.Pendiente'),
                             ]);
-    
+
                             $pago->abonos()->create([
                                 'id_sucursal'       => $id_sucursal,
                                 'id_alumno_pago'    => $pa->id,
                                 'monto'             => $monto,
                                 'venta_fiscal'      => $venta_fiscal,
                             ]);
-    
+
                             $monto = 0;
                         }
                     }
@@ -123,7 +117,6 @@ class PuntoDeVentaController extends Controller
                     'venta_fiscal'      => $venta_fiscal,
                 ]);
             }
-            
 
             DB::commit();
 
@@ -144,10 +137,86 @@ class PuntoDeVentaController extends Controller
             ]);
         }
 
-
-
-
         return redirect()->back();
+    }
+
+    public function pago_manual(Request $request)
+    {
+        $request->validate([
+            'id_alumno'     => 'required',
+            'id_grupo'      => 'required',
+            'monto'         => 'required',
+            'concepto'      => 'required',
+            'folio'         => 'required',
+            'forma_pago'    => 'required',
+        ]);
+
+        $id_sucursal = optional(session('sucursal'))->id;
+        $id_recibio = auth()->id();
+        $fecha_pago = now();
+
+        try {
+            DB::beginTransaction();
+
+            $alumno = Alumno::findOrFail($request->input('id_alumno'));
+
+            # FOLIO Y VENTA FISCAL 😁
+            $folio_fiscal = Pago::query()->select('folio_fiscal')->where('id_sucursal', $id_sucursal)->max('folio_fiscal') ?? 0;
+            $venta_fiscal = ($request->input('forma_pago','') != 'Efectivo') ? true : $alumno->solicitud_factura;
+
+            # CREO EL ABONO DEL ALUMNO 😊
+            $pago_alumno = $alumno->pagos()->create([
+                'id_grupo'      => $request->input('id_grupo'),
+                'concepto'      => $request->input('concepto'),
+                'monto'         => $request->input('monto'),
+                'fecha_limite'  => $fecha_pago,
+                'status'        => config('pagos.status.Pagado'),
+            ]);
+
+            # CREO EL PAGO DEL ALUMNO 😏
+            $pago = Pago::create([
+                'folio'         => $request->input('folio'),
+                'folio_fiscal'  => ($venta_fiscal)?$folio_fiscal + 1 : null,
+                'id_sucursal'   => $id_sucursal,
+                'id_alumno'     => $alumno->id,
+                'monto'         => $request->input('monto'),
+                'fecha'         => $fecha_pago,
+                'id_recibio'    => $id_recibio,
+            ]);
+
+            # GENERO EL ABONO 🙄
+            $pago->abonos()->create([
+                'id_sucursal'       => $id_sucursal,
+                'id_alumno_pago'    => $pago_alumno->id,
+                'monto'             => $request->input('monto'),
+                'venta_fiscal'      => $venta_fiscal,
+            ]);
+
+            # TERMINO TRANSACCION 😥
+            DB::commit();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Abono Registrado correctamente',
+                    'data'    => [
+                        'pago' => $pago
+                    ]
+                ]);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            throw ValidationException::withMessages([
+                "error" => 'Error al guardar en base de datos' . $th->getMessage(),
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message'   => 'Pago Registrado correctamente',
+        ]);
+
     }
 
     public function ticket($id)

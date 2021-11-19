@@ -176,11 +176,16 @@ Route::middleware(['auth','sucursal'])->group(function () {
     ]);
 
 
-    # NOTE RUTAS PUNTO DE DE VENTA
+    # NOTE RUTAS PUNTO DE DE VENTA ALUMNOS
 
-    Route::post('punto_de_venta/recibir_abonos',[ PuntoDeVentaController::class,'recibir_abonos'])->name('punto_de_venta.recibir_abonos');
-    Route::get('punto_de_venta/ticket/{id}',[ PuntoDeVentaController::class,'ticket'])->name('punto_de_venta.ticket');
+    Route::prefix('punto_de_venta')->name('punto_de_venta.')->group(function () {
+        Route::post('pago_manual',[ PuntoDeVentaController::class,'pago_manual'])->name('pago_manual');
+        Route::post('recibir_abonos',[ PuntoDeVentaController::class,'recibir_abonos'])->name('recibir_abonos');
+        Route::get('ticket/{id}',[ PuntoDeVentaController::class,'ticket'])->name('ticket');
+    });
+
     Route::resource('punto_de_venta', PuntoDeVentaController::class)->only('index');
+
 
     # NOTE RUTAS PUNTO DE DE VENTA
     Route::post('punto_de_venta_productos/actualizar_informacion_partida',[ PuntoDeVentaProductosController::class,'actualizar_informacion_partida'])->name('punto_de_venta_productos.actualizar_informacion_partida');

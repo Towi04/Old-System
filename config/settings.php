@@ -297,7 +297,11 @@ return [
             'display_name'  => 'Cancelar asesorias',
             'description'   => 'Permite cancelar una asesoria'
         ],
-
+        [
+            'name'          => 'registrar_pago_manual',
+            'display_name'  => 'Registrar pago manual',
+            'description'   => 'Permite registrar un pago de forma manual'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)
