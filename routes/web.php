@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CuentasBancariasController;
 use App\Http\Controllers\Admin\EspecialidadesController;
+use App\Http\Controllers\Admin\MostrarHorariosProfesoresController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
@@ -11,7 +12,10 @@ use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ProductosController;
 use App\Http\Controllers\Admin\SucursalesController;
+use App\Http\Controllers\AgendarAsesoriaController;
 use App\Http\Controllers\AlumnosController;
+use App\Http\Controllers\Asesorias\CalendarioProfesorController;
+use App\Http\Controllers\Asesorias\HorariosProfesoresController;
 use App\Http\Controllers\GruposController;
 use App\Http\Controllers\MateriasController;
 use App\Http\Controllers\PreRegistrosController;
@@ -111,10 +115,12 @@ Route::middleware(['auth','sucursal'])->group(function () {
         Route::delete('compras/{id}', [ ComprasController::class,'destroy'])->name('compras.destroy');
         Route::get('compras/{id_producto}/edit', [ ComprasController::class,'edit'])->name('compras.edit');
         Route::put('compras/update/{id}', [ ComprasController::class,'update'])->name('compras.update');
-        // Route::resource('compras', ComprasController::class)->parameters([
-        //     'compras' => 'compra',
-        // ])->except('show');
 
+        # NOTE: MOSTRAR HORARIOS DE PROFESORES
+        Route::prefix('horarios-profesores')->name('horarios-profesores.')->group(function () {
+            Route::get('/', [MostrarHorariosProfesoresController::class,'index'])->name('index');
+            Route::post('datatables', [MostrarHorariosProfesoresController::class,'datatables'])->name('datatables');
+        });
     });
 
     #RUTAS PRE-REGISTRO ALUMNOS
@@ -205,5 +211,33 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::get('asistencias',[ AsistenciasController::class,'index'])->name('asistencias.index');
     Route::post('asistencias/registrar_asistencia',[ AsistenciasController::class,'registrar_asistencia'])->name('asistencias.registrar_asistencia');
     Route::post('asistencias/eliminar_asistencia',[ AsistenciasController::class,'eliminar_asistencia'])->name('asistencias.eliminar_asistencia');
+
+    # NOTE: ASESORIAS PROFESORES
+    Route::prefix('asesorias')->name('asesorias.')->group(function () {
+        Route::prefix('horarios-profesores')->name('horarios-profesores.')->group(function () {
+            Route::post('datatables',[HorariosProfesoresController::class,'datatables'])->name('datatables');
+        });
+        Route::resource('horarios-profesores', HorariosProfesoresController::class)->parameters([
+            'horarios-profesores' => 'horarioProfesor'
+        ]);
+
+        Route::prefix('calendario-profesor')->name('calendario-profesor.')->group(function(){
+            Route::get('/',[CalendarioProfesorController::class,'index'])->name('index');
+            Route::post('traer-asesorias', [CalendarioProfesorController::class,'traer_asesorias'])->name('traer-asesorias');
+            Route::post('status-asesoria', [CalendarioProfesorController::class,'status_asesoria'])->name('status-asesoria');
+        });
+
+    });
+
+    # NOTE: AGENDAR UNA ASESORIA CON UN PROFESOR
+    Route::prefix('agendar-asesoria')->name('agendar-asesoria.')->group(function(){
+        Route::get('/',[AgendarAsesoriaController::class,'index'])->name('index');
+        Route::post('guardar-asesoria',[AgendarAsesoriaController::class,'guardar_asesoria'])->name('guardar-asesoria');
+        Route::put('actualizar-asesoria/{asesoria}',[AgendarAsesoriaController::class,'actualizar_asesoria'])->name('actualizar-asesoria');
+        Route::delete('eliminar-asesoria/{asesoria}',[AgendarAsesoriaController::class,'eliminar_asesoria'])->name('eliminar-asesoria');
+        Route::post('traer-asesorias', [AgendarAsesoriaController::class,'traer_asesorias'])->name('traer-asesorias');
+        Route::post('status-asesoria', [AgendarAsesoriaController::class,'status_asesoria'])->name('status-asesoria');
+        Route::post('horarios-profesor', [AgendarAsesoriaController::class,'horarios_profesor'])->name('horarios-profesor');
+    });
 
 });

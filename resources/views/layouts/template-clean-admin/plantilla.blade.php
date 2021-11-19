@@ -16,7 +16,7 @@
     <link href="{{ asset('template-clean-admin/bower_components/bootstrap-daterangepicker/daterangepicker.css') }}" rel="stylesheet">
     <link href="{{ asset('template-clean-admin/bower_components/dropzone/dist/dropzone.css') }}" rel="stylesheet">
     <link href="{{ asset('css/plugins/dataTables/datatables.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('template-clean-admin/bower_components/fullcalendar/dist/fullcalendar.min.css') }}" rel="stylesheet">
+
     <link href="{{ asset('template-clean-admin/bower_components/perfect-scrollbar/css/perfect-scrollbar.min.css') }}" rel="stylesheet">
     <link href="{{ asset('template-clean-admin/bower_components/slick-carousel/slick/slick.css')}}" rel="stylesheet">
     <link href="{{ asset('template-clean-admin/css/main.css?version=4.3.0') }}" rel="stylesheet">
@@ -241,6 +241,15 @@
                   <li>
                     <a href="{{ route('profile.index') }}"><i class="os-icon os-icon-user-male-circle2"></i><span>Mi cuenta</span></a>
                   </li>
+                  @can('impartir_asesorias')
+                    <li>
+                        <a href="{{ route('asesorias.horarios-profesores.index') }}"><i class="os-icon os-icon-clock"></i><span>Mis Horarios</span></a>
+                    </li>
+
+                    <li>
+                        <a href="{{ route('asesorias.calendario-profesor.index') }}"><i class="os-icon os-icon-calendar"></i><span>Mi Calendario</span></a>
+                    </li>
+                  @endcan
                   <li>
                     <a  href="{{ route('logout') }}"  onclick="event.preventDefault();
                     document.getElementById('logout-form').submit();"><i class="os-icon os-icon-signs-11"></i><span>Cerrar Sesión</span></a>
@@ -598,8 +607,6 @@
     <script src="{{ asset('template-clean-admin/bower_components/editable-table/mindmup-editabletable.js') }}"></script>
     <script src="{{ asset('js/plugins/dataTables/datatables.min.js') }}"></script>
     <script src="{{ asset('js/plugins/dataTables/dataTables.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('template-clean-admin/bower_components/fullcalendar/dist/fullcalendar.min.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.0/locale-all.js"></script>
     <script src="{{ asset('template-clean-admin/bower_components/tether/dist/js/tether.min.js') }}"></script>
     <script src="{{ asset('template-clean-admin/bower_components/slick-carousel/slick/slick.min.js') }}"></script>
     <script src="{{ asset('template-clean-admin/bower_components/perfect-scrollbar/js/perfect-scrollbar.jquery.min.js') }}"></script>
