@@ -259,6 +259,48 @@ return [
             'display_name'  => 'Registrar asistencias',
             'description'   => 'Permite registrar asistencias de los alumnos'
         ],
+
+        # ASESORIAS
+        [
+            'name'          => 'impartir_asesorias',
+            'display_name'  => 'Impartir asesorias',
+            'description'   => 'Permite Impartir asesorias'
+        ],
+
+        [
+            'name'          => 'ver_horarios_profesores',
+            'display_name'  => 'Ver horario de profesores',
+            'description'   => 'Permite mostrar los horarios de profesores'
+        ],
+
+        [
+            'name'          => 'entrar_calendario',
+            'display_name'  => 'Entrar al calendario',
+            'description'   => 'Permite entrar al calendario'
+        ],
+
+        [
+            'name'          => 'agendar_asesoria',
+            'display_name'  => 'Agendar asesoria',
+            'description'   => 'Permite agendar una asesoria'
+        ],
+
+        [
+            'name'          => 'editar_asesoria',
+            'display_name'  => 'Editar Asesorias',
+            'description'   => 'Permite editar una asesoria'
+        ],
+
+        [
+            'name'          => 'cancelar_asesorias',
+            'display_name'  => 'Cancelar asesorias',
+            'description'   => 'Permite cancelar una asesoria'
+        ],
+        [
+            'name'          => 'registrar_pago_manual',
+            'display_name'  => 'Registrar pago manual',
+            'description'   => 'Permite registrar un pago de forma manual'
+        ],
         [
             'name'          => 'finalizar_grupo',
             'display_name'  => 'Finalizar grupo',

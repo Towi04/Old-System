@@ -56,6 +56,17 @@
             data-placement="top"
             title="Cronograma">
         </a>
+
+        <a  href="{{ route("grupos.lista-asistencia",$id) }}"
+            class="btn btn-dark btn-sm text-white fas fa-file-pdf"
+            target="_blank"
+            rel="noopener"
+            data-toggle="tooltip"
+            data-placement="top"
+            title="Lista">
+        </a>
+
+
     @endcan
 
     @can('finalizar_grupo')

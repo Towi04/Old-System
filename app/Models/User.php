@@ -41,6 +41,15 @@ class User extends Authenticatable
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'fullname',
+    ];
+
+    /**
      * The attributes that should be cast to native types.
      *
      * @var array
@@ -77,7 +86,7 @@ class User extends Authenticatable
         return $roles->pluck('display_name')->implode(',');
     }
 
-   
+
 
     public function sucursales()
     {
@@ -103,5 +112,10 @@ class User extends Authenticatable
     public function registros()
     {
         return $this->hasMany(Alumno::class, 'id_asesor_educativo', 'id');
+    }
+
+    public function horarios()
+    {
+        return $this->hasMany(HorarioProfesor::class, 'id_profesor', 'id');
     }
 }

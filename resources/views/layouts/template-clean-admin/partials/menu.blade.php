@@ -72,6 +72,12 @@
                                 <a href="{{ route('admin.productos.index') }}">Productos</a>
                             </li>
                         @endcan
+                        @can(['ver_horarios_profesores'])
+                        <li>
+                            <a href="{{ route('admin.horarios-profesores.index') }}">Horarios Profesores</a>
+                        </li>
+                        @endcan
+
                     </ul>
                 </div>
             </div>
@@ -219,6 +225,16 @@
             </div>
         </div>
     </li>
+
+    @can('entrar_calendario')
+        <li class="">
+            <a href="{{ route('agendar-asesoria.index') }}">
+                <div class="icon-w">
+                <div class="os-icon os-icon-calendar"></div>
+                </div>
+                <span>Calendario asesorias</span></a>
+        </li>
+    @endcan
 
     <li class="sub-header d-none d-sm-none d-md-none d-lg-block d-xl-block">
         <span>Opciones</span>
