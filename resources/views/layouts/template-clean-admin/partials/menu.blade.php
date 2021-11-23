@@ -162,7 +162,7 @@
                 <span>Grupos</span></a>
         </li>
     @endcan
-    @can('listar_grupos')
+    @can('ingresar_punto_venta')
         <li class="">
             <a href="{{ route('punto_de_venta.index') }}">
                 <div class="icon-w">
