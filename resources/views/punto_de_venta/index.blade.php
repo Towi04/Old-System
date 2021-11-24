@@ -175,8 +175,37 @@
                         <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
+                                    {!! Form::label('fecha', 'Fecha:*', ['class' => 'form-label']) !!}
+                                    {!! Form::date('fecha',null ,[ 'class' => 'form-control form-control-sm','autocomplete' => 'off','required' => true]) !!}
+                                </div>
+                            </div> 
+
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
                                     {!! Form::label('concepto', 'Concepto:*', ['class' => 'form-label']) !!}
-                                    {!! Form::text('concepto',null, [ 'class' => 'form-control form-control-sm','title' => 'Escribe el concepto','placeholder' => 'Escribe aqui el concepto','autocomplete' => 'off','required' => true]) !!}
+                                    {!! Form::select('concepto',[
+                                        ''=>'Selecciona la forma de pago',
+                                        'Inscripción'=>'Inscripción',
+                                        'Colegiatura'=>'Colegiatura',
+                                        ],null ,[ 'class' => 'form-control form-control-sm','title' => 'Escribe el concepto','autocomplete' => 'off','required' => true]) !!}
+                                </div>
+                            </div> 
+
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('forma', 'Tipo:*', ['class' => 'form-label']) !!}
+                                    {!! Form::select('forma',[
+                                        ''=>'Selecciona la forma de pago',
+                                        'Mes'=>'Mensual',
+                                        'Semana'=>'Semanal',
+                                    ],null, [ 'class' => 'form-control form-control-sm','title' => 'Escribe el concepto','autocomplete' => 'off','required' => true]) !!}
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('no_pago', 'No Mes/Semana:*', ['class' => 'form-label']) !!}
+                                    {!! Form::text('no_pago',null, [ 'class' => 'form-control form-control-sm','title' => 'Escribe el número de mes o semana','placeholder' => 'Escribe aqui el no de pago','autocomplete' => 'off','required' => true]) !!}
                                 </div>
                             </div>
 

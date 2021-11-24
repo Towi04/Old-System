@@ -149,11 +149,14 @@ class PuntoDeVentaController extends Controller
             'concepto'      => 'required',
             'folio'         => 'required',
             'forma_pago'    => 'required',
+            'fecha'         => 'required',
+            'no_pago'       => 'required',
+            'forma'         => 'required',
         ]);
 
         $id_sucursal = optional(session('sucursal'))->id;
         $id_recibio = auth()->id();
-        $fecha_pago = now();
+        $fecha_pago = $request->fecha;
 
         try {
             DB::beginTransaction();
@@ -164,10 +167,10 @@ class PuntoDeVentaController extends Controller
             $folio_fiscal = Pago::query()->select('folio_fiscal')->where('id_sucursal', $id_sucursal)->max('folio_fiscal') ?? 0;
             $venta_fiscal = ($request->input('forma_pago','') != 'Efectivo') ? true : $alumno->solicitud_factura;
 
-            # CREO EL ABONO DEL ALUMNO 😊
+            # CREO EL ABONO DEL ALUMNO 😊 
             $pago_alumno = $alumno->pagos()->create([
                 'id_grupo'      => $request->input('id_grupo'),
-                'concepto'      => $request->input('concepto'),
+                'concepto'      => $request->input('concepto').' '.$request->input('forma').' '.$request->input('no_pago'),
                 'monto'         => $request->input('monto'),
                 'fecha_limite'  => $fecha_pago,
                 'status'        => config('pagos.status.Pagado'),
@@ -184,7 +187,7 @@ class PuntoDeVentaController extends Controller
                 'id_recibio'    => $id_recibio,
             ]);
 
-            # GENERO EL ABONO 🙄
+            # GENERO EL ABONO 🙄 
             $pago->abonos()->create([
                 'id_sucursal'       => $id_sucursal,
                 'id_alumno_pago'    => $pago_alumno->id,
