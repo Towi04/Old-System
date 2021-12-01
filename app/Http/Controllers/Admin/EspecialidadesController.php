@@ -11,11 +11,6 @@ use Symfony\Component\HttpFoundation\Response as HTTPMessages;
 
 class EspecialidadesController extends Controller
 {
-/**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-    */
     public function index()
     {
         abort_unless(Auth::user()->can('listar_especialidades'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
@@ -52,11 +47,6 @@ class EspecialidadesController extends Controller
         return view('admin.especialidades.show',compact('especialidad'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         abort_unless(Auth::user()->can('crear_especialidad'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
@@ -66,12 +56,6 @@ class EspecialidadesController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $rules = [
@@ -97,12 +81,6 @@ class EspecialidadesController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Especialidad  $especialidad
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Especialidad $especialidad)
     {
         abort_unless(Auth::user()->can('editar_especialidad'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
@@ -112,13 +90,6 @@ class EspecialidadesController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Especialidad  $especialidad
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Especialidad $especialidad)
     {
         $rules = [
@@ -145,12 +116,6 @@ class EspecialidadesController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Especialidad  $especialidad
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Especialidad $especialidad, Request $request)
     {
         $especialidad->delete();
@@ -167,17 +132,19 @@ class EspecialidadesController extends Controller
         ]);
     }
 
-    public function cronograma($id){
+    public function cronograma($id)
+    {
         $especialidad = Especialidad::find($id);
-
+        $especialidad->load('grupos_activos');
         $sucursal = optional(session('sucursal'));
 
-        $grupos = $especialidad->grupos->load('materias')->where('status','Activo');
+        # 👉 OBTENGO A TRAVES DE LA RELACION LOS GRUPOS ACTIVOS Y PREGARGO SUS MATERIAS
+        $grupos = $especialidad->grupos_activos->load('materias');
 
         // Se obtiene la fecha de inicio mas antigua para saber de que semena se va a comenzar
         $fecha_inicio = $grupos->min('fecha_inicio');
 
-        // Se obtiene la fecha de inico mas reciente para calcular hasta que semana se va a mostrar en el calendario. 
+        // Se obtiene la fecha de inico mas reciente para calcular hasta que semana se va a mostrar en el calendario.
         $fecha_reciente_inicio = $grupos->max('fecha_inicio');
 
         // Se obtiene el numero de semanas del grupo
@@ -187,9 +154,8 @@ class EspecialidadesController extends Controller
 
         // Se obtiene el total de semanas que se van a dibujar en la tabla
         $dif_semanas = $fecha_inicio->diffInWeeks($fecha_reciente_inicio->addWeeks($max_semanas));
-        
+
 
         return view('admin.especialidades.cronograma', compact('grupos','dif_semanas','especialidad','fecha_inicio'));
-
     }
 }

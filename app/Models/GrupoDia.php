@@ -11,5 +11,10 @@ class GrupoDia extends Model
 
     protected $table = 'grupos_dias';
 
-    
+
+
+    public function getDisplayNameAttribute($value)
+    {
+        return ucfirst($this->dia) . ' H ' . $this->hora_inicio . ' - ' . $this->hora_final;
+    }
 }

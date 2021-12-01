@@ -12,5 +12,12 @@ return [
     ],
     'duracion' => [
         'cuatrimestre' => 4
-    ]
+    ],
+    'status' => [
+        'values' => [
+            'Activo'        => 'Activo',
+            'Programado'    => 'Programado',
+            'Finalizado'    => 'Finalizado',
+        ],
+    ],
 ];

@@ -58,17 +58,17 @@
                         <thead>
                             <tr>
                                 <th class="bg-primary text-white ">Materia</th>
-                                @php 
+                                @php
                                     $fecha_in = $fecha_inicio->copy();
                                 @endphp
-                                
+
                                     @for($i =1; $i <=$dif_semanas; $i++ )
                                         <th class="bg-primary text-white"> <a data-toggle="tooltip" title="{{$fecha_inicio->format('d-m-Y')}} - {{$fecha_inicio->endOfWeek()->format('d-m-Y')}}" >{{$fecha_inicio->weekOfYear}}</a></th>
-                                        @php 
+                                        @php
                                             $fecha_inicio->addDay();
                                         @endphp
                                     @endfor
-    
+
                             </tr>
                         </thead>
                         <tbody>
@@ -81,7 +81,7 @@
                                 @foreach($grupo->materias as $materia)
                                 <tr>
                                     <td class="bg-primary text-white">
-                                        {{$materia->nombre}} <br> Grupo: {{$grupo->id}} 
+                                        {{$materia->nombre}} <br> Grupo: {{$grupo->clave}}
                                     </td>
                                     @php
                                         $contador_columnas = 1;
@@ -113,20 +113,20 @@
                                                 $contador_columnas ++;
                                             @endphp
                                     @endfor
-    
+
                                     @if($contador_columnas < $dif_semanas +1)
                                         @for($i =1; $i <=$dif_semanas +1 -  $contador_columnas; $i++ )
                                             <td> - </td>
                                         @endfor
                                     @endif
-    
+
                                 </tr>
                                 @endforeach
                             @endforeach
                         </tbody>
                     </table>
                 </div>
-              
+
             </div>
         </div>
     </div>

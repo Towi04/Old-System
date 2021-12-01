@@ -54,6 +54,8 @@ class Pago extends Model
             $alumno->nombres = '';
             $alumno->apellido_paterno = '';
             $alumno->apellido_materno = '';
+            $alumno->numero_control = '';
+            $alumno->nuevo_numero_control ='';
         });
     }
 

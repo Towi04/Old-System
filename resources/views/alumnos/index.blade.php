@@ -43,6 +43,7 @@
                     <thead>
                         <tr>
                             <th># Control</th>
+                            <th># Control (Ref)</th>
                             <th>Nombre</th>
                             <th></th>
                             <th></th>
@@ -99,6 +100,7 @@
             }],
             columns: [
                 { data: 'nuevo_numero_control', name: 'nuevo_numero_control',class: 'text-nowrap'},
+                { data: 'numero_control', name: 'numero_control',class: 'text-nowrap'},
                 { data: 'nombre_alumno', name: 'nombre_alumno',class: 'text-nowrap'},
                 { data: 'nombres', name: 'nombres',class: 'text-nowrap',visible:false},
                 { data: 'apellido_paterno', name: 'apellido_paterno',class: 'text-nowrap',visible:false},

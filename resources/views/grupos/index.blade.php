@@ -4,7 +4,6 @@
     Grupos
 @endsection
 
-
 @section('breadcrumb')
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
@@ -17,53 +16,53 @@
 @endsection
 
 @section('contenido')
-<div class="row justify-content-start px-4">
-    <div>
-        @can('crear_grupo')
-            <a class="mb-3" href={{ route('grupos.create') }}>
-                <button class="btn btn-success btn-sm" type="button">
-                    <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar
-                </button>
-            </a>
-        @endcan
-    </div>
-</div>
 
-<div class="row widget-list">
-    <div class="widget-holder widget-full-height widget-flex col-lg-12">
-        <div class="widget-body">
-            <div class="form-group">
-              <label for="">Status</label>
-              <select class="form-control col-6" name="" id="status_grupo">
-                <option>Activo</option>
-                <option>Programado</option>
-                <option>Finalizado</option>
-              </select>
-            </div>
-            <div class="table-responsive mt-3">
-                <table id="tb-grupos" class="table table-padded  table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Clave</th>
-                            <th>Especialidad</th>
-                            <th>Horario</th>
-                            <th>Dias</th>
-                            <th>Tipo</th>
-                            <th>No Alumnos</th>
-                            <th>Fecha Inicio</th>
-                            <th>Status</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+    <div class="row align-items-center justify-content-sm-center justify-content-md-start">
+        <div class="col-auto">
+            @can('crear_grupo')
+                <a class="" href={{ route('grupos.create') }}>
+                    <button class="btn btn-success btn-sm" type="button">
+                        <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar
+                    </button>
+                </a>
+            @endcan
+        </div>
+
+        <div class="col-auto">
+            <div class="form-inline">
+                <label for="status_grupo">
+                    <span class="mr-2">Status:</span>
+                    {!! Form::select('grupo', ['' => 'Todos'] + config('grupos.status.values',[]) , config('grupos.status.values.Activo'), ['id' => 'status_grupo','class' => 'custom-select custom-select-sm']) !!}
+                </label>
             </div>
         </div>
-    </div>
-</div>
 
+    </div>
+
+    <div class="row">
+       <div class="col-12">
+           <div class="table-responsive mt-3">
+               <table id="tb-grupos" class="table table-padded  table-striped table-hover">
+                   <thead>
+                       <tr>
+                           <th>#</th>
+                           <th>Clave</th>
+                           <th>Especialidad</th>
+                           <th>Horario</th>
+                           <th>Dias</th>
+                           <th>Tipo</th>
+                           <th>No Alumnos</th>
+                           <th>Fecha Inicio</th>
+                           <th>Status</th>
+                           <th class="text-center">Acciones</th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                   </tbody>
+               </table>
+           </div>
+       </div>
+    </div>
 
 @endsection
 

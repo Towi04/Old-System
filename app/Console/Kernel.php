@@ -5,6 +5,7 @@ namespace App\Console;
 use App\Console\Commands\GenerarFoliosAlumnos;
 use App\Console\Commands\GenerarPagoMensual;
 use App\Console\Commands\GenerarPagoSemanal;
+use App\Console\Commands\RevisarStatusGrupos;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -19,6 +20,7 @@ class Kernel extends ConsoleKernel
         GenerarPagoMensual::class,
         GenerarPagoSemanal::class,
         GenerarFoliosAlumnos::class,
+        RevisarStatusGrupos::class,
     ];
 
     /**
@@ -31,6 +33,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('forma-pago:mensual')->monthlyOn(1, '00:00');
         $schedule->command('forma-pago:semanal')->weeklyOn(1, '00:00');
+        $schedule->command('revisar-status:grupos')->dailyAt('00:15');
     }
 
     /**

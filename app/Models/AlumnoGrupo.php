@@ -22,9 +22,11 @@ class AlumnoGrupo extends Pivot
     public function alumno()
     {
         return $this->belongsTo(Alumno::class,'id_alumno','id')->withDefault([
-            'nombres'           => '',
-            'apellido_paterno'  => '',
-            'apellido_materno'  => ''
+            'nombres'               => '',
+            'apellido_paterno'      => '',
+            'apellido_materno'      => '',
+            'numero_control'        => '',
+            'nuevo_numero_control'  => '',
         ]);
     }
 

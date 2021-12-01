@@ -25,10 +25,16 @@ class Venta extends Model
         return $this->hasMany(PartidaVenta::class, 'id_venta', 'id');
     }
 
-  
+
     public function alumno()
     {
-        return $this->belongsTo(Alumno::class, 'id_alumno', 'id');
+        return $this->belongsTo(Alumno::class, 'id_alumno', 'id')->withDefault([
+            'nombres'               => '',
+            'apellido_paterno'      => '',
+            'apellido_materno'      => '',
+            'numero_control'        => '',
+            'nuevo_numero_control'  => '',
+        ]);
     }
 
     public function sucursal()
@@ -41,5 +47,5 @@ class Venta extends Model
         return $this->belongsTo(User::class, 'id_recibio', 'id');
     }
 
-    
+
 }

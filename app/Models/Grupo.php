@@ -45,7 +45,7 @@ class Grupo extends Model
         'dias_corto',
         'horario_corto',
         'nombre_compuesto',
-        
+
     ];
 
     /**
@@ -65,9 +65,10 @@ class Grupo extends Model
         'precio_mensualidad',
         'precio_inscripcion',
         'clave',
+        'status',
     ];
 
-   
+
 
     public function especialidad()
     {

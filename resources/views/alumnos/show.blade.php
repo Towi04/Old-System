@@ -120,7 +120,7 @@
                             {{-- <div class="post-media" style="background-image: url(img/portfolio1.jpg)"></div> --}}
                             <div class="post-content">
                               <h6 class="post-title">
-                                Grupo: {{$grupo->id}} - {{$grupo->especialidad->nombre}}
+                                Grupo: {{$grupo->clave}} - {{$grupo->especialidad->nombre}}
                               </h6>
                               <div class="post-text">
                                 Fecha inicio: {{$grupo->fecha_inicio->format('d-m-Y')}}<br>
@@ -140,8 +140,8 @@
                             </div>
                           </div>
 
-                        
-                            
+
+
                         @endforeach
                     </div>
                 </div>
@@ -208,7 +208,7 @@
                                                     <i class="fas fa-check text-success   "></i>
                                                 </td>
                                                 <td>
-                                                    {{$asistencia->fecha->format('l d \d\e F \d\e\l Y \a \l\a\s H:i')}} 
+                                                    {{$asistencia->fecha->format('l d \d\e F \d\e\l Y \a \l\a\s H:i')}}
                                                 </td>
                                             </tr>
                                         @endforeach

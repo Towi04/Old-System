@@ -27,9 +27,21 @@
                 </h6>
                 <table class="table table-bordered">
                     <tr>
+                        <td class="bg-primary text-white"><b>Clave Grupo</b></td>
+                        <td>
+                            {{ $grupo->clave }}
+                        </td>
+                    </tr>
+                    <tr>
                         <td class="bg-primary text-white"><b>Especialidad</b></td>
                         <td>
                             {{ $grupo->especialidad->nombre }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="bg-primary text-white"><b>Fecha Inicio</b></td>
+                        <td>
+                            {{ $grupo->fecha_inicio_format }}
                         </td>
                     </tr>
                     <tr>
@@ -41,7 +53,7 @@
                     <tr>
                         <td class="bg-primary text-white"><b>Dias</b></td>
                         <td>
-                            {{ $grupo->dias }}
+                            {!! $grupo->days->pluck('display_name')->implode('<br>') !!}
                         </td>
                     </tr>
                     <tr>
@@ -56,6 +68,25 @@
                             <button id="btn-asignar-materia" class="btn btn-success btn-sm" type="button">
                                 <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Asignar materia
                             </button>
+
+                            @can('consultar_grupo')
+                                <a  href="{{ route("grupos.cronograma",$grupo->id) }}"
+                                    class="btn btn-secondary btn-sm text-white"
+                                    data-placement="top"
+                                    title="Cronograma">
+                                    <i class="fas fa-clock"></i> Cronograma
+                                </a>
+
+                                <a  href="{{ route("grupos.lista-asistencia",$grupo->id) }}"
+                                    class="btn btn-dark btn-sm text-white "
+                                    target="_blank"
+                                    rel="noopener"
+                                    data-toggle="tooltip"
+                                    data-placement="top"
+                                    title="Lista">
+                                    <i class="fas fa-file-pdf"></i> Lista Asistencia
+                                </a>
+                            @endcan
                         </td>
                     </tr>
                 </table>

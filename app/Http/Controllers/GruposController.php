@@ -12,57 +12,45 @@ use App\Models\Especialidad;
 use App\Models\GrupoMateria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 use App\Services\PagoInscripcionService;
+use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 use Symfony\Component\HttpFoundation\Response as HTTPMessages;
 
 class GruposController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-    */
     public function index()
     {
-        // abort_unless(Auth::user()->can('listar_grupos'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
-
         return view('grupos.index');
     }
 
     public function datatables(Request $request)
     {
         $query = Grupo::with('days')
-            ->when($request->input('id_sucursal'),function($q,$id_sucursal){
-                $q->where('id_sucursal',$id_sucursal);
+            ->when($request->input('id_sucursal'), function ($q, $id_sucursal) {
+                $q->where('id_sucursal', $id_sucursal);
             })
-            ->when($request->input('status'),function($q,$status){
-                $q->where('status',$status);
+            ->when($request->input('status'), function ($q, $status) {
+                $q->where('status', $status);
             })
-            ->with('especialidad');
+            ->with('especialidad','days','alumnos');
 
         return DataTables::eloquent($query)
-            ->editColumn('fecha_inicio',function($model){
+            ->editColumn('fecha_inicio', function ($model) {
                 return optional($model->fecha_inicio)->format('d/m/Y');
             })
-            ->editColumn('infantil',function($model){
-                $tipo_grupo = ($model->infantil)? 'Infantil':'Adulto';
+            ->editColumn('infantil', function ($model) {
+                $tipo_grupo = ($model->infantil) ? 'Infantil' : 'Adulto';
                 return "<a class='badge badge-primary text-white'>{$tipo_grupo}</a>";
             })
-            ->addColumn('days', function($model){
-                $horario = '';
-                foreach($model->days as $day){
-                    $horario .= ucfirst($day->dia).' H '.$day->hora_inicio.' - '.$day->hora_final.'<br>';
-                }
-                return $horario;
+            ->addColumn('days', function ($model) {
+                return $model->days->pluck('display_name')->implode('<br>');
             })
-            ->addColumn('no_alumnos', function($model){
+            ->addColumn('no_alumnos', function ($model) {
                 return $model->alumnos->count();
             })
             ->addColumn('buttons', 'grupos.datatables._buttons')
-            ->rawColumns(['buttons','infantil','days'])
+            ->rawColumns(['buttons', 'infantil', 'days'])
             ->make(true);
     }
 
@@ -70,65 +58,59 @@ class GruposController extends Controller
     {
         abort_unless(Auth::user()->can('consultar_grupo'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
-        return view('grupos.show',compact('grupo'));
+        return view('grupos.show', compact('grupo'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         abort_unless(Auth::user()->can('crear_grupo'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
-        $sucursal = optional(session('sucursal'));
         $dias_semana = [
-            'lunes'=>'Lunes',
-            'martes'=>'Martes',
-            'miercoles'=>'Miércoles',
-            'jueves'=>'Jueves',
-            'viernes'=>'Viernes',
-            'sabado'=>'Sábado',
-            'domingo'=>'Domingo',
+            'lunes'     => 'Lunes',
+            'martes'    => 'Martes',
+            'miercoles' => 'Miércoles',
+            'jueves'    => 'Jueves',
+            'viernes'   => 'Viernes',
+            'sabado'    => 'Sábado',
+            'domingo'   => 'Domingo',
         ];
 
-        return view('grupos.create',[
+        return view('grupos.create', [
             'grupo'         => new Grupo,
             'especialidades'  => Especialidad::query()
 
-                ->pluck('nombre','id')
+                ->pluck('nombre', 'id')
                 ->sort()
-                ->prepend('Selecciona una especialidad',''),
-            'dias_semana'=>$dias_semana
+                ->prepend('Selecciona una especialidad', ''),
+            'dias_semana' => $dias_semana
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $rules = [
             'id_sucursal'                       => 'required',
             'id_especialidad'                   => 'required',
             'horario'                           => 'required',
-            'dia'                              => 'required',
+            'dia'                               => 'required',
             'infantil'                          => 'required',
             'fecha_inicio'                      => 'required',
             'precio_semanal'                    => 'nullable',
             'precio_mensualidad_pronto_pago'    => 'nullable',
             'precio_mensualidad'                => 'nullable',
             'precio_inscripcion'                => 'nullable',
-            'clave'                => 'required',
+            'clave'                             => 'required',
+            'status'                            => 'required',
         ];
 
         $especialidad = Especialidad::findOrFail($request->input('id_especialidad'));
 
-        $materias = Materia::query()->where('id_especialidad',$request->input('id_especialidad'))->pluck('id');
+        $materias = Materia::query()->where('id_especialidad', $request->input('id_especialidad'))->pluck('id');
+
+        # 👉 VERIFICACION DEL STATUS DEL GRUPO
+        $status = Carbon::parse($request->input('fecha_inicio'))->lt(now())
+            ? config('grupos.status.values.Activo')
+            : config('grupos.status.values.Programado');
 
         $request->request->add([
             'id_sucursal'                       => optional(session('sucursal'))->id,
@@ -137,6 +119,7 @@ class GruposController extends Controller
             'precio_mensualidad_pronto_pago'    => $especialidad->precio_mensualidad_pronto_pago,
             'precio_mensualidad'                => $especialidad->precio_mensualidad,
             'precio_inscripcion'                => $especialidad->precio_inscripcion,
+            'status'                            => $status
         ]);
 
         $data = $request->validate($rules);
@@ -149,77 +132,64 @@ class GruposController extends Controller
         ]);
 
         // CREACION DE HORAS Y DIAS
-
-        foreach($request->dia as $dia){
+        foreach ($request->dia as $dia) {
             $grupo_dia = new GrupoDia();
-            $grupo_dia ->id_grupo = $grupo->id;
-            $grupo_dia -> dia = $dia;
-            $grupo_dia ->hora_inicio = $request['inicio_'.$dia];
-            $grupo_dia ->hora_final = $request['fin_'.$dia];
+            $grupo_dia->id_grupo = $grupo->id;
+            $grupo_dia->dia = $dia;
+            $grupo_dia->hora_inicio = $request['inicio_' . $dia];
+            $grupo_dia->hora_final = $request['fin_' . $dia];
             $grupo_dia->save();
-
         }
-
 
         return redirect()->route('grupos.index')->with([
             'message' => 'Se agregó el grupo con éxito',
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Grupo  $grupo
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Grupo $grupo)
     {
         abort_unless(Auth::user()->can('editar_grupo'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
-        $sucursal = optional(session('sucursal'));
-
         $dias_semana = [
-            'lunes'=>'Lunes',
-            'martes'=>'Martes',
-            'miercoles'=>'Miércoles',
-            'jueves'=>'Jueves',
-            'viernes'=>'Viernes',
-            'sabado'=>'Sábado',
-            'domingo'=>'Domingo',
+            'lunes'     => 'Lunes',
+            'martes'    => 'Martes',
+            'miercoles' => 'Miércoles',
+            'jueves'    => 'Jueves',
+            'viernes'   => 'Viernes',
+            'sabado'    => 'Sábado',
+            'domingo'   => 'Domingo',
         ];
 
         return view('grupos.edit', [
             'grupo'             => $grupo,
-            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'especialidades'    => Especialidad::query()->pluck('nombre', 'id')->sort()->prepend('Selecciona una especialidad', ''),
             'dias_semana' => $dias_semana,
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Grupo  $grupo
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Grupo $grupo)
     {
         $rules = [
             'id_sucursal'                       => 'required',
             'id_especialidad'                   => 'required',
             'horario'                           => 'required',
-            // 'dias'                              => 'required',
             'infantil'                          => 'required',
             'fecha_inicio'                      => 'required',
             'precio_semanal'                    => 'nullable',
-            'precio_mensualidad_pronto_pago'   => 'nullable',
-            'precio_mensualidad'               => 'nullable',
+            'precio_mensualidad_pronto_pago'    => 'nullable',
+            'precio_mensualidad'                => 'nullable',
             'precio_inscripcion'                => 'nullable',
-            'clave'     =>'required'
+            'clave'                             => 'required',
+            'status'                            => 'required'
         ];
 
         $especialidad = Especialidad::findOrFail($request->input('id_especialidad'));
-        $materias = Materia::query()->where('id_especialidad',$request->input('id_especialidad'))->pluck('id');
+        $materias = Materia::query()->where('id_especialidad', $request->input('id_especialidad'))->pluck('id');
+
+        # 👉 VERIFICACION DEL STATUS DEL GRUPO
+        $status = Carbon::parse($request->input('fecha_inicio'))->lt(now())
+            ? config('grupos.status.values.Activo')
+            : config('grupos.status.values.Programado');
 
         $request->request->add([
             'id_sucursal'                       => optional(session('sucursal'))->id,
@@ -228,6 +198,7 @@ class GruposController extends Controller
             'precio_mensualidad_pronto_pago'    => $especialidad->precio_mensualidad_pronto_pago,
             'precio_mensualidad'                => $especialidad->precio_mensualidad,
             'precio_inscripcion'                => $especialidad->precio_inscripcion,
+            'status'                            => $status
         ]);
 
         $data = $this->validate($request, $rules);
@@ -244,14 +215,13 @@ class GruposController extends Controller
         // CREACION DE HORAS Y DIAS
         $grupo->days()->delete();
 
-        foreach($request->dia as $dia){
+        foreach ($request->dia as $dia) {
             $grupo_dia = new GrupoDia();
-            $grupo_dia ->id_grupo = $grupo->id;
-            $grupo_dia -> dia = $dia;
-            $grupo_dia ->hora_inicio = $request['inicio_'.$dia];
-            $grupo_dia ->hora_final = $request['fin_'.$dia];
+            $grupo_dia->id_grupo = $grupo->id;
+            $grupo_dia->dia = $dia;
+            $grupo_dia->hora_inicio = $request['inicio_' . $dia];
+            $grupo_dia->hora_final = $request['fin_' . $dia];
             $grupo_dia->save();
-
         }
 
 
@@ -260,12 +230,6 @@ class GruposController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Grupo  $grupo
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Grupo $grupo, Request $request)
     {
         $grupo->delete();
@@ -285,11 +249,11 @@ class GruposController extends Controller
     public function traer_grupos_select2(Request $request)
     {
         $results = Grupo::query()
-            ->when($request->input('id_sucursal'),function($q,$sucursal){
-                $q->where('id_sucursal',$sucursal);
+            ->when($request->input('id_sucursal'), function ($q, $sucursal) {
+                $q->where('id_sucursal', $sucursal);
             })
-            ->when($request->input('id_especialidad'),function($q,$especialidad){
-                $q->where('id_especialidad',$especialidad);
+            ->when($request->input('id_especialidad'), function ($q, $especialidad) {
+                $q->where('id_especialidad', $especialidad);
             })
             ->orderBy('fecha_inicio', 'asc')
             ->get();
@@ -310,7 +274,9 @@ class GruposController extends Controller
     {
         abort_unless(Auth::user()->can('crear_grupo'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
-        return view('grupos.asignar_materias',compact('grupo'));
+        $grupo->load(['days','especialidad']);
+
+        return view('grupos.asignar_materias', compact('grupo'));
     }
 
     public function guardar_materias(Grupo $grupo, Request $request)
@@ -340,7 +306,7 @@ class GruposController extends Controller
         $grupo_materia[$request->name] = $request->value;
         $grupo_materia->save();
 
-        $grupo_materia->load(['materia','profesor']);
+        $grupo_materia->load(['materia', 'profesor']);
 
         return response()->json([
             'grupo_materia' => $grupo_materia
@@ -366,12 +332,12 @@ class GruposController extends Controller
     public function datatables_materias(Request $request)
     {
         $query = GrupoMateria::query()
-            ->when($request->input('id_grupo'),function($q,$grupo){
-                $q->where('id_grupo',$grupo);
-            })->with(['materia','profesor']);
+            ->when($request->input('id_grupo'), function ($q, $grupo) {
+                $q->where('id_grupo', $grupo);
+            })->with(['materia', 'profesor']);
 
         return DataTables::eloquent($query)
-            ->addColumn('nombre_materia',function($model){
+            ->addColumn('nombre_materia', function ($model) {
                 $route = route('grupos.actualizar_materias_xeditable');
 
                 return " <a  class='editable_id_materia editable'
@@ -384,7 +350,7 @@ class GruposController extends Controller
                     {$model->materia->nombre}
                 </a>";
             })
-            ->addColumn('nombre_profesor',function($model){
+            ->addColumn('nombre_profesor', function ($model) {
                 $route = route('grupos.actualizar_materias_xeditable');
                 return "
                 <a  class='editable_id_profesor editable'
@@ -394,10 +360,10 @@ class GruposController extends Controller
                     data-url='{$route}'
                     data-value='{$model->id_profesor}'
                     data-title='Selecciona un profesor'>
-                    {$model->profesor->full_name }
+                    {$model->profesor->full_name}
                 </a>";
             })
-            ->editColumn('horas_semana',function($model){
+            ->editColumn('horas_semana', function ($model) {
                 $route = route('grupos.actualizar_materias_xeditable');
 
                 return "<a class='editable_horas_semana editable'
@@ -409,7 +375,7 @@ class GruposController extends Controller
                     data-placeholder='Horas por semana'> {$model->horas_semana} </a>";
             })
             ->addColumn('buttons', 'grupos.datatables._buttons_materias')
-            ->rawColumns(['nombre_materia','nombre_profesor','horas_semana','buttons'])
+            ->rawColumns(['nombre_materia', 'nombre_profesor', 'horas_semana', 'buttons'])
             ->make(true);
     }
 
@@ -419,7 +385,9 @@ class GruposController extends Controller
     {
         abort_unless(Auth::user()->can('asignar_alumnos'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
-        return view('grupos.asignar_alumnos',compact('grupo'));
+        $grupo->load(['days','especialidad','alumnos']);
+
+        return view('grupos.asignar_alumnos', compact('grupo'));
     }
 
     public function guardar_alumnos(Grupo $grupo, Request $request, PagoInscripcionService $pis)
@@ -439,13 +407,13 @@ class GruposController extends Controller
         $pis->setAlumno($alumno);
 
         switch ($alumno->forma_pago) {
-            case config('alumnos.forma_pago.mensual','mensual'):
+            case config('alumnos.forma_pago.mensual', 'mensual'):
                 $pis->mensualPorGrupo($grupo);
-            break;
+                break;
 
-            case config('alumnos.forma_pago.semanal','semanal'):
+            case config('alumnos.forma_pago.semanal', 'semanal'):
                 $pis->semanalPorGrupo($grupo);
-            break;
+                break;
         }
 
         return response()->json([
@@ -479,8 +447,8 @@ class GruposController extends Controller
         $alumno = $alumno_grupo->alumno;
 
         $alumno->pagos()
-            ->where('id_grupo',$alumno_grupo->id_grupo)
-            ->where('status',config('pagos.status.Pendiente'))
+            ->where('id_grupo', $alumno_grupo->id_grupo)
+            ->where('status', config('pagos.status.Pendiente'))
             ->delete();
 
         $alumno_grupo->delete();
@@ -492,13 +460,13 @@ class GruposController extends Controller
 
     public function datatables_alumnos(Request $request)
     {
-        $query = AlumnoGrupo::query()
-            ->when($request->input('id_grupo'),function($q,$grupo){
-                $q->where('id_grupo',$grupo);
+        $query = AlumnoGrupo::query()->select('alumnos_grupos.*')
+            ->when($request->input('id_grupo'), function ($q, $grupo) {
+                $q->where('id_grupo', $grupo);
             })->with(['alumno']);
 
         return DataTables::eloquent($query)
-            ->addColumn('nombre_alumno',function($model){
+            ->addColumn('nombre_alumno', function ($model) {
                 $route = route('grupos.actualizar_alumnos_xeditable');
 
                 return "
@@ -509,22 +477,23 @@ class GruposController extends Controller
                     data-url='{$route}'
                     data-value='{$model->id_alumno}'
                     data-title='Selecciona un alumno'>
-                    {$model->alumno->full_name }
+                    {$model->alumno->full_name}
                 </a>";
             })
             ->addColumn('buttons', 'grupos.datatables._buttons_alumnos')
-            ->rawColumns(['nombre_alumno','buttons'])
+            ->rawColumns(['nombre_alumno', 'buttons'])
             ->make(true);
     }
 
     //traer info para ver inscripcion en
-    public function traer_info(Request $request){
+    public function traer_info(Request $request)
+    {
         $grupo = Grupo::with('especialidad')->find($request->id_grupo);
         $alumno = Alumno::find($request->id_alumno);
 
         return response()->json([
-            'grupo'=> $grupo,
-            'alumno'=>$alumno
+            'grupo' => $grupo,
+            'alumno' => $alumno
         ]);
     }
 
@@ -532,7 +501,7 @@ class GruposController extends Controller
     {
         abort_unless(Auth::user()->can('consultar_grupo'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
-        return view('grupos.cronograma',compact('grupo'));
+        return view('grupos.cronograma', compact('grupo'));
     }
 
     public function finalizar_grupo(Request $request)
@@ -542,27 +511,27 @@ class GruposController extends Controller
         $grupo->save();
 
         return response()->json([
-            'grupo'=>$grupo
+            'grupo' => $grupo
         ]);
     }
 
     public function lista_asistencia(Grupo $grupo)
     {
-        $grupo->load(['alumnos','especialidad']);
+        $grupo->load(['alumnos', 'especialidad']);
         $sucursal = optional(session('sucursal'));
 
         # GENERACION DE SEMANAS
         $now = now();
         $semanas = [];
-        foreach (range(0,11) as $semana) {
+        foreach (range(0, 11) as $semana) {
             $semanas[] = $now->copy()->addWeek($semana)->week;
         }
 
-        $dias_semana = ['L','M','M','J','V','S','D'];
+        $dias_semana = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 
         PDF::setOptions(['isPhpEnabled' => true]);
 
-        $pdf = PDF::loadView('grupos.lista_asistencia',[
+        $pdf = PDF::loadView('grupos.lista_asistencia', [
             'grupo'         => $grupo,
             'sucursal'      => $sucursal,
             'semanas'       => $semanas,

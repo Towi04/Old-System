@@ -31,14 +31,14 @@ class Especialidad extends Model
         'precio_semanal',
     ];
 
-
-    /**
-     * Get all of the grupos for the Especialidad
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function grupos()
     {
         return $this->hasMany(Grupo::class, 'id_especialidad', 'id');
+    }
+
+    public function grupos_activos()
+    {
+        return $this->hasMany(Grupo::class,'id_especialidad', 'id')
+            ->where('status',config('grupos.status.values.Activo'));
     }
 }

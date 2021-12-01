@@ -64,7 +64,7 @@
                         Grupo
                     </h2>
                     <h6 class="up-sub-header">
-                        Folio: {{ $grupo->id }}
+                        Folio: {{ $grupo->clave }}
                     </h6>
                 </div>
                 <svg class="decor" width="842px" height="219px" viewBox="0 0 842 219"
@@ -225,13 +225,13 @@
                                 <thead>
                                     <tr>
                                         <th>Materia</th>
-                                        @php 
+                                        @php
                                             $fecha_inicio = $grupo->fecha_inicio->startOfWeek();
                                         @endphp
                                         @foreach($grupo->materias as $materia)
                                             @for($i =1; $i <=$materia->semanas; $i++ )
                                                 <th> <a data-toggle="tooltip" title="{{$fecha_inicio->format('d-m-Y')}} - {{$fecha_inicio->endOfWeek()->format('d-m-Y')}}" >{{$fecha_inicio->weekOfYear}}</a></th>
-                                                @php 
+                                                @php
                                                     $fecha_inicio->addDay();
                                                 @endphp
                                             @endfor
@@ -245,7 +245,7 @@
                                                 {{$materia->nombre}}
                                             </td>
                                             {{-- Materias antes --}}
-                                            
+
                                             @for($i =1; $i <=$grupo->materias->where('orden','<',$materia->orden)->sum('semanas'); $i++ )
                                                 <td> - </td>
                                             @endfor
@@ -262,7 +262,7 @@
                                 </tbody>
                             </table>
                           </div>
-                       
+
                       </div>
                     </div>
                   </div>
@@ -385,7 +385,7 @@
 
 
 
-        
+
         });
     </script>
 @endsection

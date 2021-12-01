@@ -339,7 +339,8 @@ class AlumnosController extends Controller
             ->where(function($q) use($term){
                 $q->where('nombres', 'like', "%{$term}%")
                 ->orWhere('apellido_paterno', 'like', "%{$term}%")
-                ->orWhere('apellido_materno', 'like', "%{$term}%");
+                ->orWhere('apellido_materno', 'like', "%{$term}%")
+                ->orWhere('nuevo_numero_control', 'like', "%{$term}%");
             })
             ->count();
 

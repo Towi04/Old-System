@@ -135,6 +135,7 @@
 
                 $('.foto').prop('src',alumno.url_foto);
                 $('#numero_control').html(alumno.nuevo_numero_control);
+                $('#numero_control_ref').html(alumno.numero_control);
                 $('#nombre').html(alumno.fullname);
                 $('.email').html(alumno.email);
                 $('.celular').html(alumno.edad);
