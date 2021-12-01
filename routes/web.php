@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbonosController;
 use App\Http\Controllers\Admin\CuentasBancariasController;
 use App\Http\Controllers\Admin\EspecialidadesController;
 use App\Http\Controllers\Admin\MostrarHorariosProfesoresController;
@@ -246,6 +247,13 @@ Route::middleware(['auth','sucursal'])->group(function () {
         Route::post('traer-asesorias', [AgendarAsesoriaController::class,'traer_asesorias'])->name('traer-asesorias');
         Route::post('status-asesoria', [AgendarAsesoriaController::class,'status_asesoria'])->name('status-asesoria');
         Route::post('horarios-profesor', [AgendarAsesoriaController::class,'horarios_profesor'])->name('horarios-profesor');
+    });
+
+    # NOTE:ABONOS
+    Route::prefix('abonos')->name('abonos.')->group(function(){
+        Route::post('actualizar_informacion_xeditable', [AbonosController::class,'actualizar_informacion_xeditable'])->name('actualizar_informacion_xeditable');
+        Route::post('actualizar_pago_xeditable', [AbonosController::class,'actualizar_pago_xeditable'])->name('actualizar_pago_xeditable');
+        Route::post('actualizar_alumno_pago_xeditable', [AbonosController::class,'actualizar_alumno_pago_xeditable'])->name('actualizar_alumno_pago_xeditable');
     });
 
 });

@@ -44,7 +44,6 @@
                 font-size: 12pt;
             }
         }
-
     </style>
 
     <div class="row ">
@@ -186,24 +185,73 @@
                                     <tr class="gradeX" id="abono-{{ $abono->id }}">
                                         @if( $abono->pago->folio_fiscal )
                                             <td class="text-primary text-center">
-                                            {{ $abono->pago->folio_fiscal }}
+                                                <a class='editable_pagos_folio_fiscal editable'
+                                                    data-type='text'
+                                                    data-name='folio_fiscal'
+                                                    data-pk='{{ $abono->pago->id }}'
+                                                    data-url='{{ route('abonos.actualizar_pago_xeditable') }}'
+                                                    data-value='{{$abono->pago->folio_fiscal }}'>
+                                                    {{ $abono->pago->folio_fiscal }}
+                                                </a>
                                             </td>
-                                        @else 
+                                        @else
                                             <td class="text-danger text-center">
-                                                {{ $abono->pago->folio }}
+                                                <a class='editable_pagos_folio editable'
+                                                    data-type='text'
+                                                    data-name='folio'
+                                                    data-pk='{{ $abono->pago->id }}'
+                                                    data-url='{{ route('abonos.actualizar_pago_xeditable') }}'
+                                                    data-value='{{$abono->pago->folio }}'>
+                                                    {{ $abono->pago->folio }}
+                                                </a>
                                             </td>
                                         @endif
-                                        
-                                        <td nowrap>{{ $abono->pago->fecha->format('d-m-Y H:i') }}</td>
+
                                         <td>
-                                            {{ $abono->pago->alumno->fullname }}
+                                            <a class="editable_abonos_fecha editable"
+                                                data-name="fecha"
+                                                data-type="date"
+                                                data-value="{{ $abono->pago->fecha->format('Y-m-d') }}"
+                                                data-pk="{{ $abono->pago->id }}"
+                                                data-url="{{ route('abonos.actualizar_pago_xeditable') }}">
+                                                {{ $abono->pago->fecha->format('d-m-Y') }}
+                                            </a>
                                         </td>
+
                                         <td>
-                                            {{ $abono->alumno_pago->concepto }}
+                                            <a class='editable_abonos_id_alumno editable'
+                                                data-type='select2'
+                                                data-pk='{{ $abono->id }}'
+                                                data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
+                                                data-value='{{ $abono->pago->id_alumno }}'
+                                                data-name='id_alumno'
+                                                >
+                                                {{ $abono->pago->alumno->fullname }}
+                                            </a>
+                                        </td>
+
+                                        <td>
+                                            <a class='editable_alumnos_pagos_concepto editable'
+                                                data-type='text'
+                                                data-name='concepto'
+                                                data-pk='{{ $abono->alumno_pago->id }}'
+                                                data-url='{{ route('abonos.actualizar_alumno_pago_xeditable') }}'
+                                                data-value='{{ $abono->alumno_pago->concepto }}'
+                                                >
+                                                {{ $abono->alumno_pago->concepto }}
+                                            </a>
                                         </td>
 
                                         <td class="text-right text-nowrap" style="cursor:pointer">
-                                            $ {{ number_format($abono->monto, '2', '.', ',') }}
+                                            <a class='editable_abonos_monto editable'
+                                                data-type='number'
+                                                data-step="0.01"
+                                                data-name='monto'
+                                                data-pk='{{ $abono->id }}'
+                                                data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
+                                                data-value='{{ $abono->monto }}'>
+                                                $ {{ number_format($abono->monto, '2', '.', ',') }}
+                                            </a>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -229,16 +277,13 @@
         </div>
 
         <div class="col-lg-3 mb-3 no_print">
-            {{-- <button onclick="window.print();" class="btn btn-block btn-secondary mb-3">
-                <i class="fas fa-print"></i> Imprimir
-            </button> --}}
             <div class="col-sm-12 col-xxxl-12 p-1">
                 <a class="element-box el-tablo" href="#">
                   <div class="label mb-2">
                     Total
                   </div>
                   <div class="value">
-                    $ {{ number_format($abonos->sum('monto'), 2, '.', ',') }}
+                    $ <span id="span_abonos_monto">{{ number_format($abonos->sum('monto'), 2, '.', ',') }}</span>
                   </div>
                 </a>
             </div>
@@ -250,7 +295,7 @@
                             No fiscales
                         </div>
                         <div class="value">
-                            $ {{ number_format($abonos->where('venta_fiscal',0)->sum('monto'), 2, '.', ',') }}
+                            $ <span id="span-monto-abono-no-fiscal">{{ number_format($abonos->where('venta_fiscal',0)->sum('monto'), 2, '.', ',') }}</span>
                         </div>
                         </a>
                     </div>
@@ -260,7 +305,7 @@
                             Fiscales
                         </div>
                         <div class="value">
-                            $ {{ number_format($abonos->where('venta_fiscal',1)->sum('monto'), 2, '.', ',') }}
+                            $ <span id="span-monto-abono-fiscal" >{{ number_format($abonos->where('venta_fiscal',1)->sum('monto'), 2, '.', ',') }}</span>
                         </div>
                         </a>
                     </div>
@@ -272,7 +317,7 @@
                         <div class="value">
                             @if($abonos->sum('monto') > 0)
                             {{ number_format( $abonos->where('venta_fiscal',1)->sum('monto') / $abonos->sum('monto') *100, 2, '.', ',') }} %
-                            @else 
+                            @else
                             NO SE HAN REGISTRADO VENTAS
                             @endif
                         </div>
@@ -280,7 +325,7 @@
                     </div>
                     <button id="convertir_fiscales" class="btn btn-primary btn-block ">Convertir ventas no fiscales a fiscales</button>
                 @endif
-                
+
             @endcan
         </div>
     </div>
@@ -307,98 +352,230 @@
 @endsection
 
 @section('scripts')
+    <link rel="stylesheet" href="{{ asset('plugins/xeditable/css/bootstrap-editable.css') }}">
+    <script src="{{ asset('plugins/xeditable/js/bootstrap-editable.min.js') }}"></script>
+    <script src="{{ asset('template-clean-admin/bower_components/select2/dist/js/i18n/es.js') }}"></script>
+
     <script type="text/javascript">
-        $.fn.datepicker.dates['es'] = {
-            days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
-            daysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
-            daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"],
-            months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
-            monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
-            today: "Hoy",
-            clear: "Borrar"
-        };
+        $(function(){
 
-        $('#tabla_abonos').DataTable({
-            responsive: true,
-            "lengthMenu": [ [-1, 25, 50 ], ["Todos", 25, 50] ],
-            buttons: [
-                {extend: 'excel', title: 'Ventas'},
-            ],
-            "language": {
-                "lengthMenu": "Mostrar _MENU_ registros por pagina",
-                "zeroRecords": "No se encontro ningún registro",
-            "info": "Mostrando del _START_ al _END_ de _TOTAL_ registros. (Página _PAGE_ de _PAGES_)",
-                "infoEmpty": "No hay registros disponibles",
-                "infoFiltered": "(Filtrado de un total de _MAX_ registros)",
-                "search": "Buscar:",
-                "paginate": {
-                    first:      "Primera",
-                    last:       "Última",
-                    previous: '<i class="fas fa-chevron-left"></i>',
-                    next: '<i class="fas fa-chevron-right"></i>'
+            const Helpers = {
+                number_format: function(number,decimals){
+                    return parseFloat(number).toFixed(decimals).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString()
                 },
-            "loadingRecords": "Cargando...",
-                "processing":     "Procesando...",
-            },
-            "dom": "<'row'  <'toolbar col-sm-6 col-xs-3 text-left no_print' B> <'col-sm-6 col-xs-9 no_print'f>>" +
-            "<'row'<'col-sm-12 table-responsive'tr>>" +
-            "<'row'<'col-sm-12 col-lg-12 col-xs-12 no_print'p>>",
-            buttons: [
-            {
-                "extend": 'excelHtml5',
-                "text":'Excel <i class="fas fa-file-excel"></i>',
-                'title': 'Reporte de ventas',
-                "className": 'btn btn-primary',
-            }],
-            order: [[0,'desc']]
+            };
 
-        });
+            const CONFIG_DATEPICKER = {
+                days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+                daysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+                daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+                months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+                monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+                today: "Hoy",
+                monthsTitle: "Meses",
+                clear: "Borrar",
+                weekStart: 1,
+            }
 
-        $('#datepicker').datepicker({
-            language: 'es',
-            format: 'dd-mm-yyyy',
-            ignoreReadonly: false,
-            todayHighlight: true,
-            todayBtn: true
-        });
+            $.fn.datepicker.dates['es'] = CONFIG_DATEPICKER     //👉 DATEPICKER
+            $.fn.bdatepicker.dates['es'] = CONFIG_DATEPICKER    //👉 XEDITABLE DATEPICKER
 
-        $('#datepicker').on('changeDate', function() {
-            window.location = "{{route('reportes.reporte-ventas.index')}}?tipo={{$tipo}}&fecha="+$('#datepicker').datepicker('getFormattedDate')+"&forma_pago={{@$_GET['forma_pago']}}"
-        });
+            $('#tabla_abonos').DataTable({
+                responsive: true,
+                "lengthMenu": [ [-1, 25, 50 ], ["Todos", 25, 50] ],
+                buttons: [
+                    {extend: 'excel', title: 'Ventas'},
+                ],
+                "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontro ningún registro",
+                "info": "Mostrando del _START_ al _END_ de _TOTAL_ registros. (Página _PAGE_ de _PAGES_)",
+                    "infoEmpty": "No hay registros disponibles",
+                    "infoFiltered": "(Filtrado de un total de _MAX_ registros)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        first:      "Primera",
+                        last:       "Última",
+                        previous: '<i class="fas fa-chevron-left"></i>',
+                        next: '<i class="fas fa-chevron-right"></i>'
+                    },
+                "loadingRecords": "Cargando...",
+                    "processing":     "Procesando...",
+                },
+                "dom": "<'row'  <'toolbar col-sm-6 col-xs-3 text-left no_print' B> <'col-sm-6 col-xs-9 no_print'f>>" +
+                "<'row'<'col-sm-12 table-responsive'tr>>" +
+                "<'row'<'col-sm-12 col-lg-12 col-xs-12 no_print'p>>",
+                buttons: [
+                {
+                    "extend": 'excelHtml5',
+                    "text":'Excel <i class="fas fa-file-excel"></i>',
+                    'title': 'Reporte de ventas',
+                    "className": 'btn btn-primary',
+                }],
+                order: [[0,'desc']]
 
-        $('#convertir_fiscales').click(function(){
-                swal({
-                    title: "¿Estas seguro de convertir las ventas no fiscales a fiscales en este periodo?",
-                    text:'Esta acción no podrá deshacerse',
-                    type: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#1bc51c",
-                    cancelButtonColor: "#CDCDCD",
-                    confirmButtonText: "Si",
-                    cancelButtonText: "Cancelar",
-                    showLoaderOnConfirm: false,
-                }).then(function(result) {
-                    if (!result.value) {
-                        return;
-                    }
-                    // wait.modal('show');
+            });
 
-                    $.ajax({
-                        url: "{{route('reportes.reporte-ventas.convertir_ventas_fiscales')}}",
-                        type: 'POST',
-                        data: {
-                            tipo: "{{$tipo}}"
-                        },
-                        success: function (response){
-                            //  wait.modal('hide');
-                            
-                            location.reload();
-                        },
-                        fail:function(error){
-                            toastr.error('Error', 'Ocurrio un error inesperado');
+            $('#datepicker').datepicker({
+                language: 'es',
+                format: 'dd-mm-yyyy',
+                ignoreReadonly: false,
+                todayHighlight: true,
+                todayBtn: true
+            });
+
+            $('#datepicker').on('changeDate', function() {
+                window.location = "{{route('reportes.reporte-ventas.index')}}?tipo={{$tipo}}&fecha="+$('#datepicker').datepicker('getFormattedDate')+"&forma_pago={{@$_GET['forma_pago']}}"
+            });
+
+            $('#convertir_fiscales').click(function(){
+                    swal({
+                        title: "¿Estas seguro de convertir las ventas no fiscales a fiscales en este periodo?",
+                        text:'Esta acción no podrá deshacerse',
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#1bc51c",
+                        cancelButtonColor: "#CDCDCD",
+                        confirmButtonText: "Si",
+                        cancelButtonText: "Cancelar",
+                        showLoaderOnConfirm: false,
+                    }).then(function(result) {
+                        if (!result.value) {
+                            return;
                         }
-                    });
-                })
-        });
+                        // wait.modal('show');
+
+                        $.ajax({
+                            url: "{{route('reportes.reporte-ventas.convertir_ventas_fiscales')}}",
+                            type: 'POST',
+                            data: {
+                                tipo: "{{$tipo}}"
+                            },
+                            success: function (response){
+                                //  wait.modal('hide');
+
+                                location.reload();
+                            },
+                            fail:function(error){
+                                toastr.error('Error', 'Ocurrio un error inesperado');
+                            }
+                        });
+                    })
+            });
+
+            // 👉 XEDITABLES
+            $('.editable').on('shown', function(e, editable) {
+                $('.editable-submit').html('<i class="fas fa-check fa-1x"></i>');
+                $('.editable-cancel').html('<i class="fas fa-times"></i>');
+            });
+
+            $('.editable_alumnos_pagos_concepto').editable({
+                emptytext: 'Vacio',
+                onblur: 'ignore',
+            });
+
+            $('.editable_abonos_monto').editable({
+                emptytext: 'Vacio',
+                onblur: 'ignore',
+            });
+
+            $('.editable_pagos_folio_fiscal').editable({
+                emptytext: 'Vacio',
+                onblur: 'ignore',
+            });
+
+            $('.editable_pagos_folio').editable({
+                emptytext: 'Vacio',
+                onblur: 'ignore',
+            });
+
+            $('.editable_abonos_monto').on('save',function(e,params) {
+                // 👉 ACTUALIZACION DEL MONTO DE LOS ABONOS
+                $.ajax({
+                    url: "{{ route('reportes.reporte-ventas.index') }}",
+                    type: 'GET',
+                    cache: false,
+                    data: {
+                        tipo:"{{ request('tipo','dia') }}",
+                        fecha:"{{ request('fecha') }}"
+                    },
+                    success: function (response){
+                        $("#span_abonos_monto").html(Helpers.number_format(response.monto_abonos,2));
+                        $("#span-monto-abono-fiscal").html(Helpers.number_format(response.monto_abono_fiscal,2))
+                        $("#span-monto-abono-no-fiscal").html(Helpers.number_format(response.monto_abono_no_fiscal,2))
+                    },
+                    fail:function(error){
+                        toastr.error('Error', 'Ocurrio un error inesperado');
+                    }
+                });
+            });
+
+            $('.editable_abonos_id_alumno').editable({
+                select2: {
+                    placeholder: 'Selecciona un alumno',
+                    allowClear: true,
+                    minimumInputLength: 3,
+                    ajax: {
+                        method: 'POST',
+                        url: '{{ route("alumnos.traer_alumnos_select2") }}',
+                        dataType: 'json',
+                        cache: false,
+                        delay:250,
+                        data:function (params) {
+                            return {
+                                _token: '{{ csrf_token() }}',
+                                term: params.term,
+                                page: params.page || 1,
+                                id_sucursal: "{{ optional(session('sucursal'))->id }}",
+                                status:'Alumno'
+                            }
+                        },
+                        beforeSend:function(xhr,type){
+                            xhr.setRequestHeader('X-CSRF-Token',$('meta[name="csrf-token"]').attr('content'))
+                        },
+                        processResults: function (data, page) {
+                            return data;
+                        }
+                    },
+                    templateResult: function(option){
+                        if (option.loading) {
+                            return option.text;
+                        }
+
+                        if(!option.numero_control || !option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                            return option.text
+                        }
+
+                        return `No. Control: ${option.numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                    },
+                    templateSelection: function(option){
+                        if(!option.numero_control ||  !option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                            return option.text
+                        }
+
+                        return `No. Control: ${option.numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                    },
+                },
+                display: function(value, sourceData,response) {
+                    if(sourceData){
+                        $(this).text(sourceData.alumno);
+                    }
+                },
+                mode:'inline',
+                emptytext: 'Vacio',
+                tpl: '<select style="width:100%;z-index: 289;">',
+            })
+
+            $('.editable_abonos_fecha').editable({
+                format: 'yyyy-mm-dd',
+                viewformat: 'dd-mm-yyyy',
+                emptytext: 'Vacio',
+                datepicker: {
+                    weekStart: 1,
+                    orientation: 'bottom left',
+                    language: 'es',
+                }
+            });
+        })
     </script>
 @endsection

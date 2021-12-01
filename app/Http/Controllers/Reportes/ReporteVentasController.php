@@ -22,7 +22,7 @@ class ReporteVentasController extends Controller
         } else {
             $tipo = 'dia';
         }
-        
+
         $sucursal = optional(session('sucursal'));
 
         if ($tipo == 'dia') {
@@ -38,7 +38,7 @@ class ReporteVentasController extends Controller
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDay();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDay();
 
-            
+
             $abonos = Abono::query()
                 ->where('id_sucursal','=',$sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
@@ -85,6 +85,7 @@ class ReporteVentasController extends Controller
             $fecha_antes = new Date($fecha_antes);
             $fecha_despues = new Date($fecha_despues);
         }
+
         if ($tipo == 'anual') {
             if (isset($request->fecha)) {
                 $fecha = Carbon::createFromFormat('d-m-Y', $request->fecha);
@@ -111,6 +112,15 @@ class ReporteVentasController extends Controller
         }
 
         $abonos =  $abonos->with(['pago.alumno','alumno_pago'])->get();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'monto_abonos'          => $abonos->sum('monto'),
+                'monto_abono_fiscal'    => $abonos->where('venta_fiscal',1)->sum('monto'),
+                'monto_abono_no_fiscal' => $abonos->where('venta_fiscal',0)->sum('monto'),
+            ]);
+        }
+
 
         return view('reportes.reporte_ventas.index',compact('abonos', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo'));
     }
@@ -188,7 +198,7 @@ class ReporteVentasController extends Controller
         } else {
             $tipo = 'dia';
         }
-        
+
         $sucursal = optional(session('sucursal'));
 
         if ($tipo == 'dia') {
@@ -204,7 +214,7 @@ class ReporteVentasController extends Controller
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDay();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDay();
 
-            
+
             $alumnos = Alumno::with('asesor_educativo')
                 ->where('id_sucursal','=',$sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
@@ -270,7 +280,7 @@ class ReporteVentasController extends Controller
             $fecha_despues = new Date($fecha_despues);
         }
 
-        // dd($alumnos->get());        
+        // dd($alumnos->get());
 
         $asesores =  User::whereHas('registros', function($q) use($alumnos){
             return $q->whereIn('id', $alumnos->pluck('id'));
@@ -282,7 +292,7 @@ class ReporteVentasController extends Controller
 
         // dd($alumnos);
 
-       
+
 
         return view('reportes.reporte_ventas.asesores',compact('alumnos', 'fecha', 'fecha_antes', 'fecha_despues','asesores','tipo'));
     }
@@ -342,16 +352,16 @@ class ReporteVentasController extends Controller
         // dd($pagos);
         // SE COMIENZA CON LA CONVERSION
 
-        $porcentaje_fiscal_real = $pagos->whereNotNull('folio_fiscal')->sum('monto') / $pagos->sum('monto') * 100; 
+        $porcentaje_fiscal_real = $pagos->whereNotNull('folio_fiscal')->sum('monto') / $pagos->sum('monto') * 100;
 
         // dd($porcentaje_fiscal_real);
         if($porcentaje_fiscal_real <= $porcentaje_esperado){
             foreach($pagos->whereNull('folio_fiscal') as $pago){
-           
+
                 $max_folio_fiscal = Pago::where('id_sucursal','=', $sucursal->id)->max('folio_fiscal');
-    
+
                 $max_folio_fiscal = $max_folio_fiscal + 1;
-    
+
                 $pago->update(['folio_fiscal'=>$max_folio_fiscal]);
                 // Abono::where('id_pago','=',$pago->id)->update(['venta_fiscal'=>1]);
                 $pago->abonos()->update(['venta_fiscal'=>1]);
@@ -372,18 +382,18 @@ class ReporteVentasController extends Controller
 
                 // dd($pas);
 
-                $porcentaje_fiscal_real = $pas->whereNotNull('folio_fiscal')->sum('monto') / $pas->sum('monto') * 100; 
-                
+                $porcentaje_fiscal_real = $pas->whereNotNull('folio_fiscal')->sum('monto') / $pas->sum('monto') * 100;
+
                 if($porcentaje_fiscal_real >= $porcentaje_esperado){
                     break;
                 }
             }
         }
 
-        
+
 
         return response()->json([
-            
+
         ]);
         // Session::flash('message','Se ajustaron las ventas no fiscales a fiscales de acuerdo al porcentaje correctamente');
         // return redirect()->back();
@@ -397,7 +407,7 @@ class ReporteVentasController extends Controller
         } else {
             $tipo = 'dia';
         }
-        
+
         $sucursal = optional(session('sucursal'));
 
         if ($tipo == 'dia') {
@@ -413,7 +423,7 @@ class ReporteVentasController extends Controller
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDay();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDay();
 
-            
+
             $ventas = Venta::query()->where('status','=','Cerrada')
                 ->where('id_sucursal','=',$sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
