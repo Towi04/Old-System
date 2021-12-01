@@ -474,11 +474,6 @@
                 onblur: 'ignore',
             });
 
-            $('.editable_abonos_monto').editable({
-                emptytext: 'Vacio',
-                onblur: 'ignore',
-            });
-
             $('.editable_pagos_folio_fiscal').editable({
                 emptytext: 'Vacio',
                 onblur: 'ignore',
@@ -487,6 +482,15 @@
             $('.editable_pagos_folio').editable({
                 emptytext: 'Vacio',
                 onblur: 'ignore',
+            });
+
+            $('.editable_abonos_monto').editable({
+                emptytext: 'Vacio',
+                onblur: 'ignore',
+                display: function(value) {
+                    let format = Helpers.number_format(value,2);
+                    $(this).text("$ "+ format);
+                }
             });
 
             $('.editable_abonos_monto').on('save',function(e,params) {

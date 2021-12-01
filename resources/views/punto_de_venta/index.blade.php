@@ -176,9 +176,9 @@
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     {!! Form::label('fecha', 'Fecha:*', ['class' => 'form-label']) !!}
-                                    {!! Form::date('fecha',null ,[ 'class' => 'form-control form-control-sm','autocomplete' => 'off','required' => true]) !!}
+                                    {!! Form::text('fecha',null ,['id' => 'fecha','class' => 'form-control form-control-sm','autocomplete' => 'off','required' => true]) !!}
                                 </div>
-                            </div> 
+                            </div>
 
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
@@ -189,7 +189,7 @@
                                         'Colegiatura'=>'Colegiatura',
                                         ],null ,[ 'class' => 'form-control form-control-sm','title' => 'Escribe el concepto','autocomplete' => 'off','required' => true]) !!}
                                 </div>
-                            </div> 
+                            </div>
 
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
@@ -266,6 +266,20 @@
 
             Helpers = new Helpers();
 
+            const CONFIG_DATEPICKER = {
+                days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+                daysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+                daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+                months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+                monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+                today: "Hoy",
+                monthsTitle: "Meses",
+                clear: "Borrar",
+                weekStart: 1,
+            }
+
+            $.fn.datepicker.dates['es'] = CONFIG_DATEPICKER  //👉 DATEPICKE
+
             const dom = {
                 select_alumno: $("#id_alumno"),
                 select_preregistro: $("#id_preregistro"),
@@ -279,6 +293,7 @@
                     btn_crear_pago: $("#btn-crear-pago"),
                     modal_pago_manual: $("#modal-pago-manual"),
                     form_pago_manual: $("#form-pago-manual"),
+                    fecha: $("#fecha"),
                 }
             };
 
@@ -571,6 +586,14 @@
                             }, 250);
                         });
                     })
+
+                    pago_manual.fecha.datepicker({
+                        language: 'es',
+                        format: 'dd-mm-yyyy',
+                        ignoreReadonly: false,
+                        todayHighlight: true,
+                        todayBtn: true
+                    });
                 })(dom.pago_manual);
             @endcan
         });
