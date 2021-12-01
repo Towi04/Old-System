@@ -332,18 +332,18 @@
                         return option.text;
                     }
 
-                    if(!option.numero_control || !option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                    if(!option.nuevo_numero_control || !option.nombres || !option.apellido_paterno || !option.apellido_materno){
                         return option.text
                     }
 
-                    return `No. Control: ${option.numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                    return `No. Control: ${option.nuevo_numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
                 },
                 templateSelection:function(option){
-                    if(!option.numero_control ||  !option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                    if(!option.nuevo_numero_control ||  !option.nombres || !option.apellido_paterno || !option.apellido_materno){
                         return option.text
                     }
 
-                    return `No. Control: ${option.numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                    return `No. Control: ${option.nuevo_numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
                 }
             });
 

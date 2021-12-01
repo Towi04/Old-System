@@ -14,7 +14,7 @@
    Centro Nacional de Computación de México S.C.<br>
     Domicilio fiscal: Andador Gongora No. 104 Colonia Centro. CP 38000<br>
     RFC CNC050207D21 - TEL (461) 613-01-01<BR> Celaya, Guanajuato. <br><br>
-        
+
     <b>Sucursal:</b> {{ $pago->sucursal->nombre }} <br>
     Domicilio sucursal: {{$pago->sucursal->direccion}}, {{$pago->sucursal->municipio}}, {{$pago->sucursal->estado}}
 </p>
@@ -22,13 +22,13 @@
 
    <p style="line-height : .5cm; text-align:center">
        Fecha {{ $pago->fecha->format('d-m-Y') }}<br>
-       Hora {{ $pago->fecha->format('H:i:s') }} 
+       Hora {{ $pago->fecha->format('H:i:s') }}
        <hr>
 
        Folio: {{ $pago->folio }}<br>
        Recibio: {{ $pago->recibio->fullname }}<br><br>
        Alumno: {{ $pago->alumno->fullname }}<br>
-       No Control: {{ $pago->alumno->numero_control }}<br>
+       No Control: {{ $pago->alumno->nuevo_numero_control }}<br>
 
    </p>
    <hr>
@@ -48,13 +48,13 @@
                 <tr>
                     <td colspan="2" style="padding-top:35px;border-top:2px solid black; text-align:right"><b>Total: $ {{ number_format($pago->abonos->sum('monto'),2,'.',',') }}</td>
                 </tr>
-            @else 
+            @else
                 <tr>
                     <td>A CUENTA</td>
                     <td style="text-align: right">$ {{ number_format($pago->monto,2,'.',',') }}</td>
                 </tr>
             @endif
-           
+
         </table>
 
 <br>

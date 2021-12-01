@@ -13,18 +13,11 @@ use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
-use Symfony\Component\HttpFoundation\Response as HTTPMessages;
 
 class PreRegistrosController extends Controller
 {
-     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        // abort_unless(Auth::user()->canAny(['realizar_pre_registro','convertir_pre_registro_alumno']), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
         return view('alumnos.pre_registro.index');
     }
 
@@ -64,20 +57,11 @@ class PreRegistrosController extends Controller
 
     public function show(Alumno $alumno)
     {
-        #abort_unless(Auth::user()->can('consultar_alumno'), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
-
         return view('alumnos.pre_registro.show',compact('alumno'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create(FacturacionService $facturacionService)
     {
-        $sucursal = optional(session('sucursal'));
-
         return view('alumnos.pre_registro.create',[
             'alumno'            => new Alumno,
             'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
@@ -85,12 +69,6 @@ class PreRegistrosController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $rules = [
@@ -174,17 +152,8 @@ class PreRegistrosController extends Controller
         ]);
     }
 
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Alumno  $alumno
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Alumno $alumno,FacturacionService $facturacionService)
     {
-        $sucursal = optional(session('sucursal'));
-
         return view('alumnos.pre_registro.edit', [
             'alumno'            => $alumno,
             'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
@@ -193,19 +162,12 @@ class PreRegistrosController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Alumno  $alumno
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Alumno $alumno)
     {
         $rules = [
             'id_sucursal'           => 'required',
             'como_supiste_nosotros' => 'nullable',
-            'numero_control'        => 'nullable',
+            'nuevo_numero_control'  => 'nullable',
             'foto'                  => 'nullable',
             'nombres'               => 'required',
             'apellido_paterno'      => 'required',
@@ -285,13 +247,6 @@ class PreRegistrosController extends Controller
         ]);
     }
 
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Alumno  $alumno
-     * @return \Illuminate\Http\Response
-     */
     public function formulario_inscripcion(Alumno $alumno,FacturacionService $facturacionService)
     {
         $sucursal = optional(session('sucursal'));
@@ -304,19 +259,12 @@ class PreRegistrosController extends Controller
         ]);
     }
 
-     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Alumno  $alumno
-     * @return \Illuminate\Http\Response
-     */
     public function inscribir(Request $request, $id,PagoInscripcionService $pis)
     {
         $rules = [
             'id_sucursal'           => 'required',
             'como_supiste_nosotros' => 'nullable',
-            'numero_control'        => 'required',
+            'nuevo_numero_control'  => 'required',
             'foto'                  => 'nullable',
             'nombres'               => 'required',
             'apellido_paterno'      => 'required',
@@ -359,16 +307,11 @@ class PreRegistrosController extends Controller
 
         $alumno = Alumno::find($id);
 
-        $max_alumno = Alumno::query()
-            ->where('status',config('alumnos.status.Alumno'))
-            ->where('id_sucursal', $sucursal->id)
-            ->max('numero_control') ?? 0;
-
         $request->request->add([
-            'id_sucursal'         => $sucursal->id,
-            'solicitud_factura'   => $request->has('solicitud_factura'),
-            'status'              => config('alumnos.status.Alumno'),
-            'numero_control'      => $max_alumno + 1,
+            'id_sucursal'           => $sucursal->id,
+            'solicitud_factura'     => $request->has('solicitud_factura'),
+            'status'                => config('alumnos.status.Alumno'),
+            'nuevo_numero_control'  => generar_folio_alumno($sucursal->id),
         ]);
 
         $data = $this->validate($request, $rules);
@@ -420,13 +363,6 @@ class PreRegistrosController extends Controller
         ]);
     }
 
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Alumno  $alumno
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Alumno $alumno, Request $request)
     {
         $alumno->delete();

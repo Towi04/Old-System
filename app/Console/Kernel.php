@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\GenerarFoliosAlumnos;
 use App\Console\Commands\GenerarPagoMensual;
 use App\Console\Commands\GenerarPagoSemanal;
 use Illuminate\Console\Scheduling\Schedule;
@@ -17,6 +18,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         GenerarPagoMensual::class,
         GenerarPagoSemanal::class,
+        GenerarFoliosAlumnos::class,
     ];
 
     /**

@@ -8,6 +8,17 @@
                 <input type="file" id="input-file-now" class="dropify" name="foto" value="{{ @$alumno->foto }}" @if ($alumno->foto) data-default-file="{{ url('archivo/alumnos_foto/'.$alumno->id.'/'. $alumno->foto) }}" @endif />
             </div>
         </div>
+
+        @if($alumno->exists)
+            <div class="col-12">
+                <div class="form-group">
+                    {!! Form::label('numero_control', 'Numero Control:', []) !!}
+                    {!! Form::number('numero_control', null, ['class' => 'form-control', 'placeholder' => 'Escribe el numero de control','required'=> true,'autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']); !!}
+                    <div class="help-block form-text text-muted form-control-feedback">Referencia del n° control del alumno</div>
+                </div>
+            </div>
+        @endif
+
         <div class="col-md-4">
             <div class="form-group">
                 {!! Form::label('nombres', 'Nombres:*'); !!}
@@ -189,6 +200,7 @@
                 {!! Form::textarea('objetivo_inscripcion', null, ['class' => 'form-control','required'=> true,'rows'=> 3,'placeholder' => 'Escribe las observaciones','autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']) !!}
             </div>
         </div>
+
         <div class="col-md-12">
             <div class="form-group">
                 {!! Form::label('enfermedad_cronica', 'Enfermidad Cronica:'); !!}
@@ -196,7 +208,7 @@
             </div>
         </div>
 @endcan
-        
+
         <div class="col-md-12">
             {!! Form::label('solicitud_factura', 'Solicitud Factura*'); !!} &nbsp;
             <label>

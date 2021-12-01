@@ -14,7 +14,7 @@
    Centro Nacional de Computación de México S.C.<br>
     Domicilio fiscal: Andador Gongora No. 104 Colonia Centro. CP 38000<br>
     RFC CNC050207D21 - TEL (461) 613-01-01<BR> Celaya, Guanajuato. <br><br>
-        
+
     <b>Sucursal:</b> {{ $venta->sucursal->nombre }} <br>
     Domicilio sucursal: {{$venta->sucursal->direccion}}, {{$venta->sucursal->municipio}}, {{$venta->sucursal->estado}}
 </p>
@@ -22,13 +22,13 @@
 
    <p style="line-height : .5cm; text-align:center">
        Fecha {{ $venta->fecha->format('d-m-Y') }}<br>
-       Hora {{ $venta->fecha->format('H:i:s') }} 
+       Hora {{ $venta->fecha->format('H:i:s') }}
        <hr>
 
        Folio: {{ $venta->folio }}<br>
        Recibio: {{ optional($venta->recibio)->fullname }}<br><br>
        Alumno: {{ optional($venta->alumno)->fullname }}<br>
-       No Control: {{ $venta->alumno->numero_control }}<br>
+       No Control: {{ $venta->alumno->nuevo_numero_control }}<br>
 
    </p>
    <hr>
@@ -45,7 +45,7 @@
                     <th style="text-align: right">P.U.</th>
                     <th style="text-align: right">Total</th>
                 </tr>
-                
+
             </thead>
             @foreach ($venta->partidas as $partida)
                 <tr>

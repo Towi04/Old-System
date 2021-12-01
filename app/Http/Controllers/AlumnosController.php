@@ -20,11 +20,6 @@ use Symfony\Component\HttpFoundation\Response as HTTPMessages;
 
 class AlumnosController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         return view('alumnos.index');
@@ -66,11 +61,6 @@ class AlumnosController extends Controller
         return view('alumnos.show',compact('alumno'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create(FacturacionService $facturacionService)
     {
         $sucursal = optional(session('sucursal'));
@@ -83,18 +73,12 @@ class AlumnosController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request, PagoInscripcionService $pis)
     {
         $rules = [
             'id_sucursal'           => 'required',
             'como_supiste_nosotros' => 'nullable',
-            'numero_control'        => 'required',
+            'nuevo_numero_control'  => 'required',
             'foto'                  => 'nullable',
             'nombres'               => 'required',
             'apellido_paterno'      => 'nullable',
@@ -137,16 +121,11 @@ class AlumnosController extends Controller
 
         $sucursal = optional(session('sucursal'));
 
-        $max_alumno = Alumno::query()
-            ->where('status',config('alumnos.status.Alumno'))
-            ->where('id_sucursal', $sucursal->id)
-            ->max('numero_control') ?? 0;
-
         $request->request->add([
-            'id_sucursal'         => $sucursal->id,
-            'numero_control'      => $max_alumno + 1,
-            'solicitud_factura'   => $request->has('solicitud_factura'),
-            'status'              => config('alumnos.status.Alumno'),
+            'id_sucursal'           => $sucursal->id,
+            'nuevo_numero_control'  => generar_folio_alumno($sucursal->id),
+            'solicitud_factura'     => $request->has('solicitud_factura'),
+            'status'                => config('alumnos.status.Alumno'),
         ]);
 
         $data = $request->validate($rules);
@@ -197,12 +176,6 @@ class AlumnosController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Alumno  $alumno
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Alumno $alumno,FacturacionService $facturacionService)
     {
         abort_unless(Auth::user()->canany(['editar_alumno','editar_datos_fiscales']), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
@@ -217,18 +190,12 @@ class AlumnosController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Alumno  $alumno
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Alumno $alumno)
     {
         if(Auth::user()->can('editar_alumno')){
             $rules = [
                 'id_sucursal'           => 'required',
+                'numero_control'        => 'required',
                 'foto'                  => 'nullable',
                 'nombres'               => 'required',
                 'apellido_paterno'      => 'nullable',
@@ -253,7 +220,7 @@ class AlumnosController extends Controller
                 'enfermedad_cronica'    => 'nullable',
                 'solicitud_factura'     => 'nullable',
                 'id_asesor_educativo'   => 'nullable',
-    
+
                 # DATOS DE FACTURACION
                 'razon_social'          => 'required_if:solicitud_factura,1',
                 'rfc'                   => 'required_if:solicitud_factura,1',
@@ -262,7 +229,7 @@ class AlumnosController extends Controller
                 'telefono_general'      => 'nullable',
                 'correo_general'        => 'nullable',
                 'domicilio_fiscal'      => 'nullable',
-    
+
                 'observaciones'         => 'nullable',
                 'forma_pago'            => 'required',
             ];
@@ -279,8 +246,7 @@ class AlumnosController extends Controller
                 'domicilio_fiscal'      => 'nullable',
             ];
         }
-        
-       
+
         $request->request->add([
             'id_sucursal'         => optional(session('sucursal'))->id,
             'solicitud_factura'   => $request->has('solicitud_factura'),
@@ -319,12 +285,6 @@ class AlumnosController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Alumno  $alumno
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Alumno $alumno, Request $request)
     {
         $alumno->grupos()->detach();
@@ -362,7 +322,7 @@ class AlumnosController extends Controller
                 $q->where('nombres', 'like', "%{$term}%")
                 ->orWhere('apellido_paterno', 'like', "%{$term}%")
                 ->orWhere('apellido_materno', 'like', "%{$term}%")
-                ->orWhere('numero_control', 'like', "%{$term}%");
+                ->orWhere('nuevo_numero_control', 'like', "%{$term}%");
             })
             ->orderBy('nombres', 'asc')
             ->skip($offset)
@@ -470,12 +430,6 @@ class AlumnosController extends Controller
             ->make(true);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Alumno  $alumno
-     * @return \Illuminate\Http\Response
-     */
     public function formulario_inscribir_otro_grupo(Alumno $alumno)
     {
         $sucursal = optional(session('sucursal'));

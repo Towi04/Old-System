@@ -163,7 +163,7 @@
                         $('.total_venta').html(
                             Helpers.number_format(response.total_venta || 0,2)
                         );
-                        
+
                         if(response.total_venta > 0){
                             disableForm(false);
                         }else{
@@ -217,7 +217,7 @@
                         emptytext: 'Vacio',
                         onblur: 'ignore',
                         validate: function(value) {
-                            
+
 
                             if(value<=0) {
                                 return 'Ingresa un numero mayor a 0';
@@ -263,18 +263,18 @@
                         return option.text;
                     }
 
-                    if(!option.numero_control || !option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                    if(!option.nuevo_numero_control || !option.nombres || !option.apellido_paterno || !option.apellido_materno){
                         return option.text
                     }
 
-                    return `No. Control: ${option.numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                    return `No. Control: ${option.nuevo_numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
                 },
                 templateSelection:function(option){
-                    if(!option.numero_control ||  !option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                    if(!option.nuevo_numero_control ||  !option.nombres || !option.apellido_paterno || !option.apellido_materno){
                         return option.text
                     }
 
-                    return `No. Control: ${option.numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                    return `No. Control: ${option.nuevo_numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
                 }
             });
 
@@ -335,7 +335,7 @@
                         id_venta: {{$venta->id}},
                     },
                 }).done(function(response){
-                    
+
                         dt_partidas.ajax.reload(null,false);
                         dom.select_productos.val(null).trigger('change');
                         setTimeout(() => {
@@ -347,7 +347,7 @@
                         toastr.error('Error', 'Ocurrio un error inesperado');
                     }, 250);
                 });
-                
+
             });
 
 
@@ -363,7 +363,7 @@
                     toastr.error('Error', 'Debes seleccionar primero un alumno');
                 }
 
-                
+
 
                 let formData = new FormData(this);
                 formData.append('id_alumno',id_alumno);
@@ -377,7 +377,7 @@
                     data: formData
                 }).done(function(response){
 
-                        
+
                         const venta = response.venta;
                         const route = "{{ url('punto_de_venta_productos/ticket/_ventaid') }}".replace('_ventaid',venta.id);
 
@@ -385,17 +385,17 @@
 
                         dt_partidas.ajax.reload(function(){
                             dom.form_abonos[0].reset();
-                            
+
                             setTimeout(function(){
                                 wait.modal('hide');
                             }, 200);
-                            
+
 
                             dom.tikets.modal.modal('show');
                             dom.tikets.contenido_ticket.html();
                             dom.tikets.contenido_ticket.html(`<iframe scrolling='auto' type='text/html' scroll='auto' src='${route}' width='100%' height='450px' align='center'></iframe>`);
                         },false);
-                    
+
                 }).fail(function(error){
                     setTimeout(() => {
                         wait.modal('hide');

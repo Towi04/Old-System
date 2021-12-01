@@ -26,5 +26,6 @@ return [
     'status' => [
         'Pre-Registro'  => 'Pre-Registro',
         'Alumno'        => 'Alumno'
-    ]
+    ],
+    'control_folio' => 10000,
 ];

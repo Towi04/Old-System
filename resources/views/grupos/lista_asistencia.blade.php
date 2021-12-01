@@ -136,7 +136,7 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td class="text-nowrap">{{ $alumno->fullname }}</td>
-                            <td class="text-nowrap">{{ $alumno->numero_control }}</td>
+                            <td class="text-nowrap">{{ $alumno->nuevo_numero_control }}</td>
                             <td class="text-nowrap">{{ $alumno->telefono }}</td>
                             @foreach ($semanas as $semana)
                                 @foreach ($dias_semana as $item)

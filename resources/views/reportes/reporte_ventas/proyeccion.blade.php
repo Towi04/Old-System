@@ -59,7 +59,7 @@
         </div>
     </div>
     </div>
-    
+
 </div>
 
 
@@ -95,7 +95,7 @@
                 title: 'Alumnos'
             }],
             columns: [
-                { data: 'numero_control', name: 'numero_control',class: 'text-nowrap text-center'},
+                { data: 'nuevo_numero_control', name: 'nuevo_numero_control',class: 'text-nowrap text-center'},
                 { data: 'nombre_alumno', name: 'nombre_alumno',class: 'text-nowrap'},
                 { data: 'nombres', name: 'nombres',class: 'text-nowrap',visible:false},
                 { data: 'apellido_paterno', name: 'apellido_paterno',class: 'text-nowrap',visible:false},

@@ -50,13 +50,13 @@
                         <button class="btn btn-danger " id="eliminar_asistencia" style="display:none">Eliminar asistencia</button>
                         @include('alumnos.partials._info_alumno_resumen')
                     </div>
-                    
+
                 </div>
 
             </div>
 
         </div>
-        
+
     </div>
 
 
@@ -77,10 +77,10 @@
 
             const dom = {
                 select_alumno: $("#id_alumno"),
-                
+
             };
 
-            
+
             dom.select_alumno.select2({
                 language: "es",
                 placeholder:'Selecciona un alumnno',
@@ -111,36 +111,36 @@
                         return option.text;
                     }
 
-                    if(!option.numero_control || !option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                    if(!option.nuevo_numero_control || !option.nombres || !option.apellido_paterno || !option.apellido_materno){
                         return option.text
                     }
 
-                    return `No. Control: ${option.numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                    return `No. Control: ${option.nuevo_numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
                 },
                 templateSelection:function(option){
-                    if(!option.numero_control ||  !option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                    if(!option.nuevo_numero_control ||  !option.nombres || !option.apellido_paterno || !option.apellido_materno){
                         return option.text
                     }
 
-                    return `No. Control: ${option.numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                    return `No. Control: ${option.nuevo_numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
                 }
             });
 
 
             dom.select_alumno.on('select2:select', function (e) {
-                
+
                 alumno = e.params.data;
 
                 grupos = alumno.grupos;
-                
+
                 $('.foto').prop('src',alumno.url_foto);
-                $('#numero_control').html(alumno.numero_control);
+                $('#numero_control').html(alumno.nuevo_numero_control);
                 $('#nombre').html(alumno.fullname);
                 $('.email').html(alumno.email);
                 $('.celular').html(alumno.edad);
                 $('.email').html(alumno.domicilio);
 
-                $.each(grupos, function (index, grupo) { 
+                $.each(grupos, function (index, grupo) {
                      txt = '';
                      txt +=`${grupo.id} ${grupo.especialidad.nombre}<br>`;
                      txt +=`${grupo.horario} <br><hr>`;
@@ -156,13 +156,13 @@
                     },
                     "json"
                 );
-               
+
 
 
 
             });
 
-           
+
             $('#eliminar_asistencia').click(function(){
                 numero_control = $('#numero_control').html();
                 nombre = $('#nombre').html();
@@ -192,7 +192,7 @@
                         id: $('#input_asistencia').val(),
                     },
                     success: function (response){
-                        
+
                             setTimeout(() => {wait.modal('hide'); }, 250);
                             toastr.success('Éxito', 'Se borró con éxito la asistencia');
                             $('.foto').prop('src',"{{url('archivo/alumnos_foto/no/no')}}");
@@ -216,7 +216,7 @@
             })
             });
 
-            
+
 
         });
     </script>
