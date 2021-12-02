@@ -45,3 +45,15 @@
         </div>
     </div>
 </fieldset>
+
+<fieldset class="form-group">
+    <legend><span>Asignar coordinadores</span></legend>
+    <div class="row">
+        <div class="col-12">
+            <div class="form-group">
+                {!! Form::label('id_usuario[]','Coordinadores:', []) !!}
+                {!! Form::select('id_usuario[]', [], null, ['id' => 'select2_cordinador','class' => 'form-control w-100','title' => 'Selecciona un coordinador','multiple' => 'multiple']) !!}
+            </div>
+        </div>
+    </div>
+</fieldset>

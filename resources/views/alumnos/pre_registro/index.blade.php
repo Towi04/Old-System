@@ -17,25 +17,24 @@
 @endsection
 
 @section('contenido')
-<div class="row justify-content-start px-4">
-    <div>
-        @can('realizar_pre_registro')
-            <a class="mb-3" href={{ route('pre-registro-alumnos.create') }}>
-                <button class="btn btn-success btn-sm" type="button">
-                    <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar Pre-registro
-                </button>
-            </a>
-        @endcan
-    </div>
-</div>
+    <main class="p-2 bg-white">
+        <section class="row justify-content-start px-4">
+            <div>
+                @can('realizar_pre_registro')
+                    <a class="mb-3" href={{ route('pre-registro-alumnos.create') }}>
+                        <button class="btn btn-success btn-sm" type="button">
+                            <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar Pre-registro
+                        </button>
+                    </a>
+                @endcan
+            </div>
+        </section>
 
-<div class="row widget-list">
-    <div class="widget-holder widget-full-height widget-flex col-lg-12">
-        <div class="widget-body">
-            <div class="mt-3">
-                <table id="tb-alumnos" class="table table-padded  table-striped table-hover">
+        <section class="row">
+            <div class="col-12">
+                <table id="tb-alumnos" class="table table-bordered w-100">
                     <thead>
-                        <tr>
+                        <tr class="bg-primary text-white">
                             <th>Asesor</th>
                             <th>F. Registro</th>
                             <th></th>
@@ -58,10 +57,8 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
-</div>
-
+        </section>
+    </main>
 
 @endsection
 
@@ -75,7 +72,7 @@
         var dt = dom.table.DataTable({
             processing: true,
             serverSide: true,
-            dom: "<'row'<'col-6 d-flex align-items-center' l><'col-6'f>><'row'<'col-12 table-responsive'tr>><'row'<'col-5'i><'col-7'p>>",
+            dom: "<'row'<'col-12 col-sm-6 align-items-center' l><'col-12 col-sm-1 justify-content-center'B> <'col-12 col-sm-5 'f>><'row'<'col-12 table-responsive'tr>><'row'<'col-12 col-sm-7'i><'col-12 col-sm-5 d-flex align-self-end justify-content-center justify-content-sm-end'p>>",
             ajax: {
                 url: "{{ route('pre-registro-alumnos.datatables') }}",
                 method:'POST',
@@ -93,7 +90,10 @@
             responsive: true,
             buttons: [{
                 extend: 'excel',
-                title: 'Pre-registro Alumnos'
+                title: 'Pre-registro Alumnos',
+                text:'Excel <i class="fas fa-file-excel"></i>',
+                className: 'btn btn-primary btn-sm',
+                extend: 'excel',
             }],
             columns: [
                 { data: 'nombre_asesor', name: 'nombre_asesor',class: 'text-nowrap'},

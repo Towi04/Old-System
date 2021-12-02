@@ -41,4 +41,11 @@ class Especialidad extends Model
         return $this->hasMany(Grupo::class,'id_especialidad', 'id')
             ->where('status',config('grupos.status.values.Activo'));
     }
+
+    public function cordinadores()
+    {
+        return $this->belongsToMany(User::class, 'especialidades_users', 'id_especialidad', 'id_usuario')
+            ->withPivot('id_usuario')
+            ->using(EspecialidadUser::class);
+    }
 }

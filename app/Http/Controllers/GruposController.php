@@ -26,12 +26,19 @@ class GruposController extends Controller
 
     public function datatables(Request $request)
     {
+        $user = auth()->user();
+        $puede_ver_todos_grupos = $user->can('ver_todos_grupos');
+        $especialidades = $user->especialidades->pluck('id');
+
         $query = Grupo::with('days')
             ->when($request->input('id_sucursal'), function ($q, $id_sucursal) {
                 $q->where('id_sucursal', $id_sucursal);
             })
             ->when($request->input('status'), function ($q, $status) {
                 $q->where('status', $status);
+            })
+            ->when(!$puede_ver_todos_grupos,function($q)use($especialidades){
+                $q->whereIn('id_especialidad',$especialidades);
             })
             ->with('especialidad','days','alumnos');
 

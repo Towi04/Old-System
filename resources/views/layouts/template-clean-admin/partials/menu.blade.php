@@ -84,76 +84,66 @@
         </li>
     @endcanany
 
-
     @canany(['consultar_preregistros_alumnos','realizar_pre_registro','convertir_pre_registro_alumno'])
-    <li class="">
-        <a href="{{ route('pre-registro-alumnos.index') }}">
-            <div class="icon-w">
-                <div class="fa fa-bookmark"></div>
-            </div>
-            <span>Pre-Registro Alumnos</span></a>
-    </li>
+        <li class="">
+            <a href="{{ route('pre-registro-alumnos.index') }}">
+                <div class="icon-w">
+                    <div class="fa fa-bookmark"></div>
+                </div>
+                <span>Pre-Registro Alumnos</span></a>
+        </li>
     @endcanany
 
-
     @can('listar_alumnos')
-    <li class="">
-        <a href="{{ route('alumnos.index') }}">
-            <div class="icon-w">
-            <div class="fa fa-user"></div>
-            </div>
-            <span>Alumnos</span></a>
-    </li>
+        <li class="">
+            <a href="{{ route('alumnos.index') }}">
+                <div class="icon-w">
+                <div class="fa fa-user"></div>
+                </div>
+                <span>Alumnos</span></a>
+        </li>
     @endcan
+
     @can('registrar_asistencias')
-    <li class="">
-        <a href="{{ route('asistencias.index') }}">
-            <div class="icon-w">
-            <div class="fas fa-check"></div>
-            </div>
-            <span>Registrar asistencias</span></a>
-    </li>
-@endcan
+        <li class="">
+            <a href="{{ route('asistencias.index') }}">
+                <div class="icon-w">
+                <div class="fas fa-check"></div>
+                </div>
+                <span>Registrar asistencias</span></a>
+        </li>
+    @endcan
 
     @can('listar_materias')
-    <li class="selected has-sub-menu">
-        <a href="#">
-            <div class="icon-w">
-                <div class="fa fa-cogs"></div>
-            </div>
-            <span>Especialidades</span>
-        </a>
-        <div class="sub-menu-w">
-            <div class="sub-menu-header d-none d-sm-none d-md-none d-lg-block d-xl-block">
-                Especialidades
-            </div>
-            <div class="sub-menu-i">
-                <ul class="sub-menu">
-                    @php
-                        $especialidades = \App\Models\Especialidad::get();
-                    @endphp
-                    @foreach($especialidades as $especialidad)
-                        <li>
-                            <a href="{{ route('materias.index', $especialidad->id) }}">{{$especialidad->nombre}}</a>
-                        </li>
-                    @endforeach
-
-                </ul>
-            </div>
-        </div>
-    </li>
-
-
-        {{-- <li class="">
-            <a href="{{ route('materias.index') }}">
+        <li class="selected has-sub-menu">
+            <a href="#">
                 <div class="icon-w">
-                <div class="fa fa-book"></div>
+                    <div class="fa fa-cogs"></div>
                 </div>
-                <span>Materias</span></a>
-        </li> --}}
+                <span>Especialidades</span>
+            </a>
+            <div class="sub-menu-w">
+                <div class="sub-menu-header d-none d-sm-none d-md-none d-lg-block d-xl-block">
+                    Especialidades
+                </div>
+                <div class="sub-menu-i">
+                    <ul class="sub-menu">
+                        @php
+                            $especialidades = \App\Models\Especialidad::get();
+                        @endphp
+                        @foreach($especialidades as $especialidad)
+                            <li>
+                                <a href="{{ route('materias.index', $especialidad->id) }}">{{$especialidad->nombre}}</a>
+                            </li>
+                        @endforeach
+
+                    </ul>
+                </div>
+            </div>
+        </li>
     @endcan
 
-    @can('listar_grupos')
+    @canany(['listar_grupos','ver_todos_grupos'])
         <li class="">
             <a href="{{ route('grupos.index') }}">
                 <div class="icon-w">
@@ -161,7 +151,8 @@
                 </div>
                 <span>Grupos</span></a>
         </li>
-    @endcan
+    @endcanany
+
     @can('ingresar_punto_venta')
         <li class="">
             <a href="{{ route('punto_de_venta.index') }}">
@@ -171,6 +162,7 @@
                 <span>Punto de venta</span></a>
         </li>
     @endcan
+
     @can('punto_de_venta_productos')
         <li class="">
             <a href="{{ route('punto_de_venta_productos.index') }}">
@@ -180,8 +172,6 @@
                 <span>Venta de productos</span></a>
         </li>
     @endcan
-
-
 
     <li class="selected has-sub-menu">
         <a href="#">

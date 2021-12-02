@@ -73,8 +73,12 @@ class EspecialidadesController extends Controller
         ]);
 
         $data = $request->validate($rules);
+        $especialidad = Especialidad::create($data);
 
-        Especialidad::create($data);
+        # 👉 AGREGAR CORDINADORES
+        if($request->has('id_usuario')){
+            $especialidad->cordinadores()->attach($request->input('id_usuario'));
+        }
 
         return redirect()->route('admin.especialidades.index')->with([
             'message' => 'Se agregó la especialidad con éxito',
@@ -108,8 +112,10 @@ class EspecialidadesController extends Controller
 
         $data = $this->validate($request, $rules);
         $especialidad->fill($data);
-
         $especialidad->save();
+
+        # 👉 ACTUALIZAR COORDINADORES
+        $especialidad->cordinadores()->sync($request->input('id_usuario'));
 
         return redirect()->route('admin.especialidades.index')->with([
             'message' => 'Se actualizó la especialidad con éxito'

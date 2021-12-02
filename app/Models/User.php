@@ -104,11 +104,6 @@ class User extends Authenticatable
         return $sucursales->pluck('nombre')->implode(',');
     }
 
-    /**
-     * Get all of the alumnos for the User
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function registros()
     {
         return $this->hasMany(Alumno::class, 'id_asesor_educativo', 'id');
@@ -117,5 +112,12 @@ class User extends Authenticatable
     public function horarios()
     {
         return $this->hasMany(HorarioProfesor::class, 'id_profesor', 'id');
+    }
+
+    public function especialidades()
+    {
+        return $this->belongsToMany(Especialidad::class, 'especialidades_users', 'id_usuario', 'id_especialidad')
+            ->withPivot('id_especialidad')
+            ->using(EspecialidadUser::class);
     }
 }

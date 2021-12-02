@@ -17,42 +17,40 @@
 @endsection
 
 @section('contenido')
-<div class="row justify-content-start px-4">
-    <div>
-        @can('crear_especialidad')
-            <a class="mb-3" href={{ route('admin.especialidades.create') }}>
-                <button class="btn btn-success btn-sm" type="button">
-                    <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar
-                </button>
-            </a>
-        @endcan
-    </div>
-</div>
-
-<div class="row widget-list">
-    <div class="widget-holder widget-full-height widget-flex col-lg-12">
-        <div class="widget-body">
-            <div class="table-responsive mt-3">
-                <table id="tb-especialidades" class="table table-padded  table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Nombre</th>
-                            <th>Descripcion</th>
-                            <th>inscripcion</th>
-                            <th>Mensualidad</th>
-                            <th>Pronto Pago</th>
-                            <th>Pago semanal</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
+<main class="p-2 bg-white">
+    <section class="row justify-content-start px-4">
+        <div>
+            @can('crear_especialidad')
+                <a class="mb-3" href={{ route('admin.especialidades.create') }}>
+                    <button class="btn btn-success btn-sm" type="button">
+                        <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar
+                    </button>
+                </a>
+            @endcan
         </div>
-    </div>
-</div>
+    </section>
+
+    <section class="row ">
+      <div class="col-12">
+          <table id="tb-especialidades" class="table table-bordered w-100">
+              <thead class="bg-primary text-white">
+                  <tr>
+                      <th>#</th>
+                      <th>Nombre</th>
+                      <th>Descripcion</th>
+                      <th>inscripcion</th>
+                      <th>Mensualidad</th>
+                      <th>Pronto Pago</th>
+                      <th>Pago semanal</th>
+                      <th class="text-center">Acciones</th>
+                  </tr>
+              </thead>
+              <tbody>
+              </tbody>
+          </table>
+      </div>
+    </section>
+</main>
 
 
 @endsection
@@ -67,7 +65,7 @@
         var dt = dom.table.DataTable({
             processing: true,
             serverSide: true,
-            dom: "<'row'<'col-6 d-flex align-items-center' l><'col-6'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
+            dom: "<'row'<'col-12 col-sm-6 align-items-center' l><'col-12 col-sm-1 justify-content-center'B> <'col-12 col-sm-5 'f>><'row'<'col-12 table-responsive'tr>><'row'<'col-12 col-sm-7'i><'col-12 col-sm-5 d-flex align-self-end justify-content-center justify-content-sm-end'p>>",
             ajax: {
                 url: "{{ route('admin.especialidades.datatables') }}",
                 method:'POST',
@@ -84,7 +82,9 @@
             responsive: true,
             buttons: [{
                 extend: 'excel',
-                title: 'Especialidades'
+                title: 'Especialidades',
+                text:'Excel <i class="fas fa-file-excel"></i>',
+                className: 'btn btn-primary btn-sm',
             }],
             columns: [
                 { data: 'id', name: 'id',class: 'text-nowrap'},

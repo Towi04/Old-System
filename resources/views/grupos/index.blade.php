@@ -16,53 +16,52 @@
 @endsection
 
 @section('contenido')
-
-    <div class="row align-items-center justify-content-sm-center justify-content-md-start">
-        <div class="col-auto">
-            @can('crear_grupo')
-                <a class="" href={{ route('grupos.create') }}>
-                    <button class="btn btn-success btn-sm" type="button">
-                        <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar
-                    </button>
-                </a>
-            @endcan
-        </div>
-
-        <div class="col-auto">
-            <div class="form-inline">
-                <label for="status_grupo">
-                    <span class="mr-2">Status:</span>
-                    {!! Form::select('grupo', ['' => 'Todos'] + config('grupos.status.values',[]) , config('grupos.status.values.Activo'), ['id' => 'status_grupo','class' => 'custom-select custom-select-sm']) !!}
-                </label>
+    <main class="p-2 bg-white">
+        <section class="row align-items-center justify-content-sm-center justify-content-md-start">
+            <div class="col-auto">
+                @can('crear_grupo')
+                    <a class="" href={{ route('grupos.create') }}>
+                        <button class="btn btn-success btn-sm" type="button">
+                            <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Agregar
+                        </button>
+                    </a>
+                @endcan
             </div>
-        </div>
 
-    </div>
+            <div class="col-auto">
+                <div class="form-inline">
+                    <label for="status_grupo">
+                        <span class="mr-2">Status:</span>
+                        {!! Form::select('grupo', ['' => 'Todos'] + config('grupos.status.values',[]) , config('grupos.status.values.Activo'), ['id' => 'status_grupo','class' => 'custom-select custom-select-sm']) !!}
+                    </label>
+                </div>
+            </div>
 
-    <div class="row">
-       <div class="col-12">
-           <div class="table-responsive mt-3">
-               <table id="tb-grupos" class="table table-padded  table-striped table-hover">
-                   <thead>
-                       <tr>
-                           <th>#</th>
-                           <th>Clave</th>
-                           <th>Especialidad</th>
-                           <th>Horario</th>
-                           <th>Dias</th>
-                           <th>Tipo</th>
-                           <th>No Alumnos</th>
-                           <th>Fecha Inicio</th>
-                           <th>Status</th>
-                           <th class="text-center">Acciones</th>
-                       </tr>
-                   </thead>
-                   <tbody>
-                   </tbody>
-               </table>
+        </section>
+
+        <section class="row">
+           <div class="col-12">
+                <table id="tb-grupos" class="table table-bordered w-100" >
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th>#</th>
+                            <th>Clave</th>
+                            <th>Especialidad</th>
+                            <th>Horario</th>
+                            <th>Dias</th>
+                            <th>Tipo</th>
+                            <th>No Alumnos</th>
+                            <th>Fecha Inicio</th>
+                            <th>Status</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
            </div>
-       </div>
-    </div>
+        </section>
+    </main>
 
 @endsection
 
@@ -76,7 +75,7 @@
         var dt = dom.table.DataTable({
             processing: true,
             serverSide: true,
-            dom: "<'row'<'col-6 d-flex align-items-center' lB><'col-6'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
+            dom: "<'row'<'col-12 col-sm-6 align-items-center' l><'col-12 col-sm-1 justify-content-center'B> <'col-12 col-sm-5 'f>><'row'<'col-12 table-responsive'tr>><'row'<'col-12 col-sm-7'i><'col-12 col-sm-5 d-flex align-self-end justify-content-center justify-content-sm-end'p>>",
             ajax: {
                 url: "{{ route('grupos.datatables') }}",
                 method:'POST',
@@ -94,8 +93,10 @@
             lengthMenu: [[10,50,100,-1],['10','50','100','Todos']],
             responsive: true,
             buttons: [{
+                title: 'Grupos',
                 extend: 'excel',
-                title: 'Grupos'
+                text:'Excel <i class="fas fa-file-excel"></i>',
+                className: 'btn btn-primary btn-sm',
             }],
             columns: [
                 { data: 'id', name: 'id',class: 'text-nowrap'},

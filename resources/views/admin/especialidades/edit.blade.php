@@ -41,9 +41,67 @@
 
 
 @section('scripts')
+    <script src="{{ asset('template-clean-admin/bower_components/select2/dist/js/i18n/es.js') }}"></script>
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(function(){
+            const dom = {
+                select2_cordinador: $("#select2_cordinador")
+            }
 
-        });
+            dom.select2_cordinador.select2({
+                language: "es",
+                placeholder:'Selecciona un profesor',
+                ajax: {
+                    method: 'POST',
+                    data:
+                    function (params) {
+                        return {
+                            term: params.term,
+                            page: params.page || 1,
+                            _token: '{{ csrf_token() }}'
+                        }
+                    },
+                    url: '{{ route("admin.usuarios.traer_usuarios_select2") }}',
+                    dataType: 'json',
+                    cache: false,
+                    delay:250,
+                    beforeSend:function(xhr,type){
+                        xhr.setRequestHeader('X-CSRF-Token',$('meta[name="csrf-token"]').attr('content'))
+                    }
+                },
+                escapeMarkup: function (markup) { return markup; },
+                minimumInputLength: 3,
+                templateResult: function(option){
+                    if (option.loading) {
+                        return option.text;
+                    }
+
+                    if(!option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                        return option.text
+                    }
+
+                    return `${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                },
+                templateSelection:function(option){
+                    if(!option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                        return option.text
+                    }
+
+                    return `${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                }
+            });
+
+            @if($especialidad->cordinadores()->exists())
+                dom.select2_cordinador.empty();
+
+                @foreach ($especialidad->cordinadores as $cordinador)
+                    dom.select2_cordinador.append(
+                        new Option("{{ $cordinador->full_name }}", "{{ $cordinador->id }}", true,true)
+                    );
+                @endforeach
+
+                dom.select2_cordinador.trigger('change')
+            @endif
+        })
     </script>
 @endsection

@@ -331,7 +331,11 @@ return [
             'display_name'  => 'Ver reporte de asesores',
             'description'   => 'Permite ver el la asesores'
         ],
-
+        [
+            'name'          => 'ver_todos_grupos',
+            'display_name'  => 'Ver todos los grupos',
+            'description'   => 'Permite ver todos los grupos'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)
