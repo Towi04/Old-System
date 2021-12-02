@@ -63,6 +63,33 @@
         </section>
     </main>
 
+    <div class="onboarding-modal modal fade" id="modal-opciones-lista" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                    </button>
+
+                    <h5 class="modal-title">¿Como quieres imprimir la lista?</h5>
+                </div>
+
+                {!! Form::open(['id' => 'form-opciones-lista']) !!}
+                    <div class="modal-body">
+                        <div class="form-group">
+                            {!! Form::label('opciones', 'Selecciona la opcion', []) !!}
+                            {!! Form::select('opciones', ['si'=> 'Con Telefono','no' => 'Sin Telefono'], null, ['class' => 'form-control form-control-sm w-100' , 'title' => 'Opciones','required' => true ]) !!}
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Imprimir</button>
+                    </div>
+                {!! Form::close() !!}
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('scripts')
@@ -70,6 +97,10 @@
     $(function() {
         const dom = {
             table: $('#tb-grupos'),
+            opciones_lista:{
+                modal: $("#modal-opciones-lista"),
+                form: $("#form-opciones-lista"),
+            }
         };
 
         var dt = dom.table.DataTable({
@@ -229,6 +260,29 @@
                     }
                 });
             })
+        })
+
+        dom.table.on('click',"a[data-action='opciones-lista']",function(event){
+            event.preventDefault();
+            dom.opciones_lista.modal.data('url',$(this).attr('href'));
+            dom.opciones_lista.modal.modal('show');
+        })
+
+        dom.opciones_lista.form.submit(function(event){
+            event.preventDefault();
+
+            const data = {
+                url: dom.opciones_lista.modal.data('url'),
+                mostrar_telefono: dom.opciones_lista.form[0].opciones.value,
+                generar_url: function(){
+                    return this.url+"?mostrar-telefono=" + this.mostrar_telefono
+                }
+            }
+
+            dom.opciones_lista.modal.modal('hide');
+            dom.opciones_lista.form[0].reset();
+
+            window.open(data.generar_url(), "_blank");
         })
 
         $('#status_grupo').change(function(){

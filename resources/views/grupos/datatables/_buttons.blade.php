@@ -63,6 +63,7 @@
             rel="noopener"
             data-toggle="tooltip"
             data-placement="top"
+            data-action="opciones-lista"
             title="Lista">
         </a>
 

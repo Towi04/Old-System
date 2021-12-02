@@ -45,13 +45,5 @@
 
 @section('scripts')
     <script type="text/javascript">
-        $(document).ready(function () {
-            $('#input_password').keyup(function(){
-                if($(this).val()!='')
-                $('#div_enviar_datos').show();
-                else
-                $('#div_enviar_datos').hide();
-            });
-        });
     </script>
 @endsection

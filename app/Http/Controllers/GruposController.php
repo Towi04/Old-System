@@ -522,7 +522,7 @@ class GruposController extends Controller
         ]);
     }
 
-    public function lista_asistencia(Grupo $grupo)
+    public function lista_asistencia(Grupo $grupo,Request $request)
     {
         $grupo->load(['alumnos', 'especialidad']);
         $sucursal = optional(session('sucursal'));
@@ -538,11 +538,17 @@ class GruposController extends Controller
 
         PDF::setOptions(['isPhpEnabled' => true]);
 
+        $mostrar_telefono = $request->has('mostrar-telefono')
+            && $request->filled('mostrar-telefono')
+            && $request->input('mostrar-telefono') == 'si';
+
+
         $pdf = PDF::loadView('grupos.lista_asistencia', [
-            'grupo'         => $grupo,
-            'sucursal'      => $sucursal,
-            'semanas'       => $semanas,
-            'dias_semana'   => $dias_semana
+            'grupo'             => $grupo,
+            'sucursal'          => $sucursal,
+            'semanas'           => $semanas,
+            'dias_semana'       => $dias_semana,
+            'mostrar_telefono'  => $mostrar_telefono
         ]);
 
         return $pdf->stream('lista_asistencia.pdf');

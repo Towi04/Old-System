@@ -109,6 +109,13 @@
                 error: 'Ups, ha ocurrido un error inesperado'
             }
         });
+
+        $('#input_password').keyup(function(){
+            if($(this).val()!='')
+            $('#div_enviar_datos').show();
+            else
+            $('#div_enviar_datos').hide();
+        });
     });
 </script>
 

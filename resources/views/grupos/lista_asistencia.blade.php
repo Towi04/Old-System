@@ -4,14 +4,11 @@
     <title>Lista de asistencia</title>
     <meta charset="utf-8">
     <meta content="ie=edge" http-equiv="x-ua-compatible">
-    <meta content="Aldo Aranza" name="author">
-    <meta content="Reporte Alerta de pagos" name="description">
+    <meta content="{{ config('settings.company.autor') }}" name="author">
+    <meta content="Lista de asistencia" name="description">
     <meta content="width=device-width, initial-scale=1" name="viewport">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="{{asset('img/logo.png')}}" rel="shortcut icon">
     <link href="apple-touch-icon.png" rel="apple-touch-icon">
-    <link href="{{public_path('template-kineticpro-horizontal/assets/css/style.css')}}" rel="stylesheet" type="text/css">
-    <script src="https://kit.fontawesome.com/1f556c46ab.js" crossorigin="anonymous"></script>
     <style>
         @page {
             margin: 0cm 0cm;
@@ -24,6 +21,20 @@
             font-family: "Gill Sans, sans-serif" !important;
             font-size: 10pt;
             background-color: white
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        /*👉 ESTILOS BOOSTRAP  */
+        .row {
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+            margin-right: -15px;
+            margin-left: -15px;
         }
 
         .page-break {
@@ -52,6 +63,32 @@
             padding: 0px !important;
         }
 
+        .table {
+            width: 100%;
+            max-width: 100%;
+            margin-bottom: 1rem;
+            background-color: transparent;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            vertical-align: top;
+            border-top: 1px solid #636e72;
+        }
+
+        .table thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #636e72;
+        }
+
+        .table tbody + tbody {
+            border-top: 2px solid #636e72;
+        }
+
+        .table .table {
+            background-color: #fff;
+        }
        .table thead > tr > th{
            margin: 0;
            padding: 0.10rem;
@@ -77,20 +114,52 @@
         .titulo-principal{
             font-size: 1.2rem;
         }
+
+        .font-weight-bold {
+            font-weight: 700 !important;
+        }
+
+        .text-dark {
+            color: #343a40 !important;
+        }
+
+        .text-uppercase {
+            text-transform: uppercase !important;
+        }
+
+        .text-primary {
+            color: #182948 !important;
+        }
+
+        .text-white {
+            color: #fff !important;
+        }
+
+        .text-right {
+            text-align: right !important;
+        }
+
+        .text-nowrap {
+            white-space: nowrap !important;
+        }
+
+        .bg-primary {
+            background-color: #182948 !important;
+        }
+
     </style>
     </head>
     <body>
         <div class="header">
             <div class="row pt-2 d-flex">
                 <div class="col-12 text-center">
-                    <span class="text-uppercase titulo-principal text-primary">Centro integral tecnologico de estudios de méxico</span> <br>
+                    <span class="text-uppercase titulo-principal text-primary">GRUPO EDUCATIVO CNCM</span> <br>
                     <span class="text-dark">{{ $sucursal->direccion }} , {{ $sucursal->municipio }} {{ $sucursal->estado }} </span> <br>
                     <span class="text-dark">Lista de asistencia</span>
                 </div>
             </div>
         </div>
         <div class="footer">
-            {{-- <img src="{{ imgToBase64(public_path('img/pie_cotizacion.png')) }}" alt="" width="100%"> --}}
         </div>
 
         <main style="overflow:hidden">
@@ -119,11 +188,13 @@
                             <th class="text-center text-dark" colspan="{{ count($dias_semana) }}" >{{ $semana }}</th>
                         @endforeach
                     </tr>
-                    <tr class="bg-primary">
+                    <tr class="bg-primary text-white">
                         <th>N°</th>
                         <th>Nombre</th>
                         <th class="text-nowrap">N° Ctrl</th>
-                        <th>Tel</th>
+                        @if($mostrar_telefono)
+                            <th>Tel</th>
+                        @endif
                         @foreach ($semanas as $semana)
                             @foreach ($dias_semana as $dia)
                                 <th>{{ $dia }}</th>
@@ -137,7 +208,9 @@
                             <td>{{ $loop->iteration }}</td>
                             <td class="text-nowrap">{{ $alumno->fullname }}</td>
                             <td class="text-nowrap">{{ $alumno->nuevo_numero_control }}</td>
-                            <td class="text-nowrap">{{ $alumno->telefono }}</td>
+                            @if($mostrar_telefono)
+                                <td class="text-nowrap">{{ $alumno->telefono }}</td>
+                            @endif
                             @foreach ($semanas as $semana)
                                 @foreach ($dias_semana as $item)
                                     <td></td>
@@ -151,15 +224,14 @@
             <div>
                 <span class="text-dark">Observaciones:</span> <span style="display: inline-block; border-bottom: 1px solid ;width:90%;"></span>
             </div>
-            <div>
-                <span style="display: inline-block; border-bottom: 1px solid ;width:99%;"></span>
+            <div style="margin-top: 0.4rem;">
+                ________________________________________________________________________________________________________________________________________________________________________________________________________________
             </div>
-            <div>
-                <span style="display: inline-block; border-bottom: 1px solid ;width:99%;"></span>
+            <div style="margin-top: 0.4rem;">
+                ________________________________________________________________________________________________________________________________________________________________________________________________________________
             </div>
-        </main>
 
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script src="{{asset('template-'.config('sitio.template').'/js/main.js?version=4.3.0')}}"></script>
+
+        </main>
 </body>
 </html>

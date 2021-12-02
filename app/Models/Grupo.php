@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Grupo extends Model
 {
-    use HasFactory,FormAccessible;
+    use HasFactory, FormAccessible;
 
     /**
      * The table associated with the model.
@@ -68,11 +68,9 @@ class Grupo extends Model
         'status',
     ];
 
-
-
     public function especialidad()
     {
-        return $this->belongsTo(Especialidad::class,'id_especialidad','id')->withDefault([
+        return $this->belongsTo(Especialidad::class, 'id_especialidad', 'id')->withDefault([
             'nombre'        => '',
             'descripcion'   => '',
         ]);
@@ -80,28 +78,27 @@ class Grupo extends Model
 
     public function sucursal()
     {
-        return $this->belongsTo(Sucursal::class,'id_sucursal','id')->withDefault();
+        return $this->belongsTo(Sucursal::class, 'id_sucursal', 'id')->withDefault();
     }
 
     public function materias()
     {
         return $this->belongsToMany(Materia::class, 'grupos_materias', 'id_grupo', 'id_materia')
-            ->withPivot('id','id_profesor','horas_semana')->using(GrupoMateria::class);
+            ->withPivot('id', 'id_profesor', 'horas_semana')->using(GrupoMateria::class);
     }
 
     public function alumnos()
     {
         return $this->belongsToMany(Alumno::class, 'alumnos_grupos', 'id_grupo', 'id_alumno')
-            ->withPivot('id','id_alumno')->using(AlumnoGrupo::class);
+            ->withPivot('id', 'id_alumno')->using(AlumnoGrupo::class);
     }
 
 
     public function getTipoGrupoAttribute()
     {
-        $tipo_grupo = ($this->infantil)? 'Infantil':'Adulto';
+        $tipo_grupo = ($this->infantil) ? 'Infantil' : 'Adulto';
 
         return $tipo_grupo;
-
     }
 
     public function getFechaInicioFormatAttribute()
@@ -111,60 +108,53 @@ class Grupo extends Model
         }
 
         return Carbon::parse($this->fecha_inicio)->format('Y-m-d');
-
     }
 
-     # NOTE: Form Model Accessors (Laravel Collective) https://laravelcollective.com/docs/5.4/html
+    # NOTE: Form Model Accessors (Laravel Collective) https://laravelcollective.com/docs/5.4/html
 
-     public function formFechaInicioAttribute($value)
-     {
-         if (empty($value)) {
-             return null;
-         }
+    public function formFechaInicioAttribute($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
 
-         return Carbon::parse($value)->format('Y-m-d');
-     }
+        return Carbon::parse($value)->format('Y-m-d');
+    }
 
-     public function getNombreAttribute(){
-         return '('.$this->id.') '.$this->especialidad.' H:'.$this->horario.' FI:'.$this->fecha_inicio->format('d-m-Y');
-     }
+    public function getNombreAttribute()
+    {
+        return '(' . $this->clave . ') ' . $this->especialidad . ' H:' . $this->horario . ' FI:' . $this->fecha_inicio->format('d-m-Y');
+    }
 
-     /**
-      * Get all of the dias for the Grupo
-      *
-      * @return \Illuminate\Database\Eloquent\Relations\HasMany
-      */
-     public function days()
-     {
-         return $this->hasMany(GrupoDia::class, 'id_grupo', 'id');
-     }
+    public function days()
+    {
+        return $this->hasMany(GrupoDia::class, 'id_grupo', 'id');
+    }
 
-     public function getDiasCortoAttribute(){
-         $horario = '';
-        foreach($this->days as $day){
-            $horario .= ucfirst(substr($day->dia,0,2)).' H '.$day->hora_inicio.' - '.$day->hora_final.' | ';
+    public function getDiasCortoAttribute()
+    {
+        $horario = '';
+        foreach ($this->days as $day) {
+            $horario .= ucfirst(substr($day->dia, 0, 2)) . ' H ' . $day->hora_inicio . ' - ' . $day->hora_final . ' | ';
         }
 
         return $horario;
-
-     }
-     public function getHorarioCortoAttribute(){
-        $horario = '';
-       foreach($this->days as $day){
-           $horario .= ucfirst(substr($day->dia,0,2)).' '.$day->hora_inicio.' - '.$day->hora_final.' <br> ';
-       }
-
-       return $horario;
-
     }
 
-    public function getNombreCompuestoAttribute(){
+    public function getHorarioCortoAttribute()
+    {
         $horario = '';
-       foreach($this->days as $day){
-           $horario .= ucfirst(substr($day->dia,0,2)).' '.$day->hora_inicio.' - '.$day->hora_final.' <br> ';
-       }
+        foreach ($this->days as $day) {
+            $horario .= ucfirst(substr($day->dia, 0, 2)) . ' ' . $day->hora_inicio . ' - ' . $day->hora_final . ' <br> ';
+        }
 
-       return $this->id .' | '.$this->especialidad->nombre .' | '. $horario;
+        return $horario;
+    }
 
+    public function getNombreCompuestoAttribute()
+    {
+        $horario = $this->days->pluck('display_name')->implode('<br>');
+
+        return $this->clave . ' | ' . $this->especialidad->nombre . ' | ' . $horario;
     }
 }

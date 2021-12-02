@@ -316,6 +316,11 @@
             $("#seccion_otro_grado_estudios").toggle(isOtrosSelected);
             $("#otro_grado_estudios").attr('required',isOtrosSelected)
         });
+
+        $("#id_asesor_educativo").change(function(e){
+            const $element = $(this);
+            element.attr('required',$element.val() == ''? false:true);
+        });
     });
 </script>
 
