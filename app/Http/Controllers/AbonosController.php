@@ -69,6 +69,17 @@ class AbonosController extends Controller
         }
     }
 
+    public function actualizar_alumno_pago_xeditable(Request $request)
+    {
+        $alumno_pago = AlumnoPago::findOrFail($request->pk);
+        $alumno_pago[$request->name] = $request->value;
+        $alumno_pago->save();
+
+        return response()->json([
+            'alumno_pago' => $alumno_pago
+        ]);
+    }
+
     public function actualizar_pago_xeditable(Request $request)
     {
         $pago = Pago::findOrFail($request->pk);
