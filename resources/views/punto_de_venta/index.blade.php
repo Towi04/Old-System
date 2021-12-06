@@ -347,6 +347,16 @@
                 }
             });
 
+            @if($alumno_huella)
+                var data = {
+                    id: {{$alumno_huella->id}},
+                    text: '{{$alumno_huella->nuevo_numero_control}} | Nombre: {{$alumno_huella->fullname}}'
+                };
+
+                var newOption = new Option(data.text, data.id, false, false);
+                dom.select_alumno.append(newOption).trigger('change');
+            @endif
+
             dom.select_preregistro.select2({
                 language: "es",
                 placeholder:'Selecciona un pre registro',

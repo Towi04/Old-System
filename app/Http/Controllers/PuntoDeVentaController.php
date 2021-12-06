@@ -12,9 +12,15 @@ use Jenssegers\Date\Date;
 
 class PuntoDeVentaController extends Controller
 {
-    public function index()
-    {
-        return view('punto_de_venta.index');
+    public function index(Request $request)
+    {   
+        $alumno_huella = null;
+        if(isset($request->id)){
+            $alumno_huella = Alumno::find($request->id);
+        }
+        // dd($alumno_huella);
+
+        return view('punto_de_venta.index', compact('alumno_huella'));
     }
 
     public function recibir_abonos(Request $request)

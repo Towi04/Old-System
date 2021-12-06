@@ -30,14 +30,20 @@ use App\Http\Controllers\AsistenciasController;
 #NOTE: CONFIGURACION DE RUTAS
 Auth::routes(['register'=> false]);
 
+Route::prefix('archivo')->name('ver_archivo')->group(function () {
+    Route::get('{modulo}/{id}/{archivo}', [HomeController::class,'ver_archivo']);
+    Route::get('{modulo}/{id}/', [HomeController::class,'ver_archivo']);
+});
+
+
 Route::middleware(['auth','sucursal'])->group(function () {
     # NOTE: RUTAS GENERALES
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
-    Route::prefix('archivo')->name('ver_archivo')->group(function () {
-        Route::get('{modulo}/{id}/{archivo}', [HomeController::class,'ver_archivo']);
-        Route::get('{modulo}/{id}/', [HomeController::class,'ver_archivo']);
-    });
+    // Route::prefix('archivo')->name('ver_archivo')->group(function () {
+    //     Route::get('{modulo}/{id}/{archivo}', [HomeController::class,'ver_archivo']);
+    //     Route::get('{modulo}/{id}/', [HomeController::class,'ver_archivo']);
+    // });
 
     Route::prefix('perfil')->name('profile.')->group(function () {
         Route::get('/',[ProfileController::class,'index'])->name('index');
