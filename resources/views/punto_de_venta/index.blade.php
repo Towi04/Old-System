@@ -355,6 +355,16 @@
 
                 var newOption = new Option(data.text, data.id, false, false);
                 dom.select_alumno.append(newOption).trigger('change');
+                
+                $.post("{{route('punto_de_venta.traer_grupos')}}", {id:{{$alumno_huella->id}} },
+                    function (grupos) {
+                        traer_grupos(grupos);
+                    },
+                    "json"
+                );
+
+                
+
             @endif
 
             dom.select_preregistro.select2({
@@ -462,6 +472,10 @@
             dom.select_alumno.on('select2:select', function (e) {
 
                 grupos = e.params.data.grupos;
+                traer_grupos(grupos);
+            });
+
+            function traer_grupos(grupos){
                 $('#select_grupo').empty();
 
                 const $select2_grupos_pagos = dom.pago_manual.form_pago_manual.find('#select2_id_grupo_pago');
@@ -475,11 +489,11 @@
                 });
 
                 dt_pagos.draw();
-                disableForm( !$(this).val());
+                disableForm( !dom.select_alumno.val());
                 dom.select_preregistro.val(null).trigger('change');
 
-                dom.pago_manual.btn_crear_pago.attr('disabled',!$(this).val())
-            });
+                dom.pago_manual.btn_crear_pago.attr('disabled',!dom.select_alumno.val())
+            }
 
             dom.select_preregistro.on('select2:select', function (e) {
 

@@ -191,6 +191,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
         Route::post('pago_manual',[ PuntoDeVentaController::class,'pago_manual'])->name('pago_manual');
         Route::post('recibir_abonos',[ PuntoDeVentaController::class,'recibir_abonos'])->name('recibir_abonos');
         Route::get('ticket/{id}',[ PuntoDeVentaController::class,'ticket'])->name('ticket');
+        Route::post('traer_grupos',[ PuntoDeVentaController::class,'traer_grupos'])->name('traer_grupos');
     });
 
     Route::resource('punto_de_venta', PuntoDeVentaController::class)->only('index');
@@ -203,6 +204,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::post('punto_de_venta_productos/recibir_abonos',[ PuntoDeVentaProductosController::class,'recibir_abonos'])->name('punto_de_venta_productos.recibir_abonos');
     Route::post('punto_de_venta_productos/datatables_partidas',[ PuntoDeVentaProductosController::class,'datatables_partidas'])->name('punto_de_venta_productos.datatables_partidas');
     Route::post('punto_de_venta_productos/cerrar_venta',[ PuntoDeVentaProductosController::class,'cerrar_venta'])->name('punto_de_venta_productos.cerrar_venta');
+    
     Route::get('punto_de_venta_productos/ticket/{id}',[ PuntoDeVentaProductosController::class,'ticket'])->name('punto_de_venta_productos.ticket');
     Route::resource('punto_de_venta_productos', PuntoDeVentaProductosController::class)->only('index');
 

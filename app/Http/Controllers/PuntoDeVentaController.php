@@ -236,4 +236,12 @@ class PuntoDeVentaController extends Controller
 
         return view('punto_de_venta.ticket',compact('pago'));
     }
+
+    public function traer_grupos(Request $request){
+
+        $grupos = Alumno::find($request->id)->grupos;
+
+        return response()->json($grupos);
+
+    }
 }
