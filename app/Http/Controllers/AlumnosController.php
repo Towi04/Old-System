@@ -272,7 +272,12 @@ class AlumnosController extends Controller
             }
 
             $path = storage_path() . "/app/alumnos_foto/{$alumno->id}/";
+            // resize the image to a width of 300 and constrain aspect ratio (auto height)
+            $image->resize(780, null, function ($constraint) {
+                $constraint->aspectRatio();
+            });
             $image->save($path . $nombre_foto);
+            
 
             $alumno->foto = $nombre_foto;
             $alumno->save();
