@@ -181,17 +181,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($abonos as $abono)
-                                    <tr class="gradeX" id="abono-{{ $abono->id }}">
-                                        @if( $abono->pago->folio_fiscal )
+                                @foreach ($pagos as $pago)
+                                    <tr class="gradeX" id="abono-{{ $pago->id }}">
+                                        @if( $pago->folio_fiscal )
                                             <td class="text-primary text-center">
                                                 <a class='editable_pagos_folio_fiscal editable'
                                                     data-type='text'
                                                     data-name='folio_fiscal'
-                                                    data-pk='{{ $abono->pago->id }}'
+                                                    data-pk='{{ $pago->id }}'
                                                     data-url='{{ route('abonos.actualizar_pago_xeditable') }}'
-                                                    data-value='{{$abono->pago->folio_fiscal }}'>
-                                                    {{ $abono->pago->folio_fiscal }}
+                                                    data-value='{{$pago->folio_fiscal }}'>
+                                                    {{ $pago->folio_fiscal }}
                                                 </a>
                                             </td>
                                         @else
@@ -199,10 +199,10 @@
                                                 <a class='editable_pagos_folio editable'
                                                     data-type='text'
                                                     data-name='folio'
-                                                    data-pk='{{ $abono->pago->id }}'
+                                                    data-pk='{{ $pago->id }}'
                                                     data-url='{{ route('abonos.actualizar_pago_xeditable') }}'
-                                                    data-value='{{$abono->pago->folio }}'>
-                                                    {{ $abono->pago->folio }}
+                                                    data-value='{{$pago->folio }}'>
+                                                    {{ $pago->folio }}
                                                 </a>
                                             </td>
                                         @endif
@@ -211,35 +211,38 @@
                                             <a class="editable_abonos_fecha editable"
                                                 data-name="fecha"
                                                 data-type="date"
-                                                data-value="{{ $abono->pago->fecha->format('Y-m-d') }}"
-                                                data-pk="{{ $abono->pago->id }}"
+                                                data-value="{{ $pago->fecha->format('Y-m-d') }}"
+                                                data-pk="{{ $pago->id }}"
                                                 data-url="{{ route('abonos.actualizar_pago_xeditable') }}">
-                                                {{ $abono->pago->fecha->format('d-m-Y') }}
+                                                {{ $pago->fecha->format('d-m-Y') }}
                                             </a>
                                         </td>
 
                                         <td>
                                             <a class='editable_abonos_id_alumno editable'
                                                 data-type='select2'
-                                                data-pk='{{ $abono->id }}'
+                                                data-pk='{{ $pago->id }}'
                                                 data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
-                                                data-value='{{ $abono->pago->id_alumno }}'
+                                                data-value='{{ $pago->id_alumno }}'
                                                 data-name='id_alumno'
                                                 >
-                                                {{ $abono->pago->alumno->fullname }}
+                                                {{ $pago->alumno->fullname }}
                                             </a>
                                         </td>
 
                                         <td>
-                                            <a class='editable_alumnos_pagos_concepto editable'
-                                                data-type='text'
-                                                data-name='concepto'
-                                                data-pk='{{ $abono->alumno_pago->id }}'
-                                                data-url='{{ route('abonos.actualizar_alumno_pago_xeditable') }}'
-                                                data-value='{{ $abono->alumno_pago->concepto }}'
-                                                >
-                                                {{ $abono->alumno_pago->concepto }}
-                                            </a>
+                                            @foreach ($pago->abonos as $abono)
+                                                <a class='editable_alumnos_pagos_concepto editable'
+                                                    data-type='text'
+                                                    data-name='concepto'
+                                                    data-pk='{{ $abono->alumno_pago->id }}'
+                                                    data-url='{{ route('abonos.actualizar_alumno_pago_xeditable') }}'
+                                                    data-value='{{ $abono->alumno_pago->concepto }}'
+                                                    >
+                                                    {{ $abono->alumno_pago->concepto }}
+                                                </a>
+                                            @endforeach
+                                            
                                         </td>
 
                                         <td class="text-right text-nowrap" style="cursor:pointer">
@@ -247,10 +250,10 @@
                                                 data-type='number'
                                                 data-step="0.01"
                                                 data-name='monto'
-                                                data-pk='{{ $abono->id }}'
+                                                data-pk='{{ $pago->id }}'
                                                 data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
-                                                data-value='{{ $abono->monto }}'>
-                                                $ {{ number_format($abono->monto, '2', '.', ',') }}
+                                                data-value='{{ $pago->monto }}'>
+                                                $ {{ number_format($pago->monto, '2', '.', ',') }}
                                             </a>
                                         </td>
                                     </tr>
@@ -262,7 +265,7 @@
                         <table class="table table-bordered mt-3 float-right print_only" style="width:50%;">
                             <tr>
                                 <td style="font-size: 1rem;">Total: </td>
-                                <td class="text-right"><b style="font-size: 1rem;"> ${{ number_format($abonos->sum('monto'), 2, '.', ',') }}</b>
+                                <td class="text-right"><b style="font-size: 1rem;"> ${{ number_format($pagos->sum('monto'), 2, '.', ',') }}</b>
                                 </td>
                             </tr>
                             <tr>
@@ -283,7 +286,7 @@
                     Total
                   </div>
                   <div class="value">
-                    $ <span id="span_abonos_monto">{{ number_format($abonos->sum('monto'), 2, '.', ',') }}</span>
+                    $ <span id="span_abonos_monto">{{ number_format($pagos->sum('monto'), 2, '.', ',') }}</span>
                   </div>
                 </a>
             </div>
@@ -295,7 +298,7 @@
                             No fiscales
                         </div>
                         <div class="value">
-                            $ <span id="span-monto-abono-no-fiscal">{{ number_format($abonos->where('venta_fiscal',0)->sum('monto'), 2, '.', ',') }}</span>
+                            $ <span id="span-monto-abono-no-fiscal">{{ number_format($pagos->where('venta_fiscal',0)->sum('monto'), 2, '.', ',') }}</span>
                         </div>
                         </a>
                     </div>
@@ -305,7 +308,7 @@
                             Fiscales
                         </div>
                         <div class="value">
-                            $ <span id="span-monto-abono-fiscal" >{{ number_format($abonos->where('venta_fiscal',1)->sum('monto'), 2, '.', ',') }}</span>
+                            $ <span id="span-monto-abono-fiscal" >{{ number_format($pagos->where('venta_fiscal',1)->sum('monto'), 2, '.', ',') }}</span>
                         </div>
                         </a>
                     </div>
@@ -315,8 +318,8 @@
                             % de fiscales
                         </div>
                         <div class="value">
-                            @if($abonos->sum('monto') > 0)
-                            {{ number_format( $abonos->where('venta_fiscal',1)->sum('monto') / $abonos->sum('monto') *100, 2, '.', ',') }} %
+                            @if($pagos->sum('monto') > 0)
+                            {{ number_format( $pagos->where('venta_fiscal',1)->sum('monto') / $pagos->sum('monto') *100, 2, '.', ',') }} %
                             @else
                             NO SE HAN REGISTRADO VENTAS
                             @endif

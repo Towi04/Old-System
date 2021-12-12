@@ -39,7 +39,7 @@ class ReporteVentasController extends Controller
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDay();
 
 
-            $abonos = Abono::query()
+            $pagos = Pago::query()
                 ->where('id_sucursal','=',$sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
@@ -58,7 +58,7 @@ class ReporteVentasController extends Controller
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subMonth();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addMonth();
 
-            $abonos = Abono::query()
+            $pagos = Pago::query()
                 ->where('id_sucursal','=',$sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
@@ -77,7 +77,7 @@ class ReporteVentasController extends Controller
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDays(7);
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDays(7);
 
-            $abonos = Abono::query()
+            $pagos = Pago::query()
                 ->where('id_sucursal','=',$sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
@@ -96,7 +96,7 @@ class ReporteVentasController extends Controller
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subYear();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addYear();
 
-            $abonos = Abono::query()
+            $abonos = Pago::query()
                 ->where('id_sucursal','=',$sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
@@ -108,21 +108,26 @@ class ReporteVentasController extends Controller
         // dd(Configuracion::where('nombre','=','mostrar_solo_fiscales')->first()->valor);
 
         if(Configuracion::where('nombre','=','mostrar_solo_fiscales')->first()->valor == 'Si'){
-           $abonos =  $abonos->where('venta_fiscal','=',1);
+           $pagos =  $pagos->whereHas('abonos', function($q){
+              return $q->where('venta_fiscal','=',1);
+           });
         }
 
-        $abonos =  $abonos->with(['pago.alumno','alumno_pago'])->get();
+        $pagos =  $pagos->with(['alumno','abonos.alumno_pago'])->get();
 
         if ($request->ajax()) {
             return response()->json([
-                'monto_abonos'          => $abonos->sum('monto'),
-                'monto_abono_fiscal'    => $abonos->where('venta_fiscal',1)->sum('monto'),
-                'monto_abono_no_fiscal' => $abonos->where('venta_fiscal',0)->sum('monto'),
+                'monto_abonos'          => $pagos->sum('monto'),
+                'monto_abono_fiscal'    => $pagos->whereHas('abonos', function($q){
+                    return $q->where('venta_fiscal','=',1);
+                 })->sum('monto'),
+                'monto_abono_no_fiscal' => $pagos->whereHas('abonos', function($q){
+                    return $q->where('venta_fiscal','=',0);
+                 })->sum('monto'),
             ]);
         }
 
-
-        return view('reportes.reporte_ventas.index',compact('abonos', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo'));
+        return view('reportes.reporte_ventas.index',compact('pagos', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo'));
     }
 
     public function vencimientos()

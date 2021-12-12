@@ -3,20 +3,24 @@
        .no_print{
            display: none;
        }
+
+       p{
+           font-size:9pt !important;
+       }
    }
 
 </style>
 
-<p style="text-align: center">
-   <a class="no_print" onclick="window.print()"><i class="fas fa-arrow-left " style="margin-bottom:10px;cursor: pointer;"></i> Imprimir</a><br>
-
-   <img src="{{ asset('img/logo.png') }}" width="120px"><br><br>
-   Centro Nacional de Computación de México S.C.<br>
+<p style="text-align: center" style="line-height:5px">
+    <a class="no_print" onclick="window.print()">
+        <i class="fas fa-arrow-left " style="margin-bottom:10px;cursor: pointer;"></i> Imprimir
+    </a><br>
+    <img src="{{ asset('img/logo.png') }}" width="120px"><br>
+    Centro Nacional de Computación de México S.C.<br>
     Domicilio fiscal: Andador Gongora No. 104 Colonia Centro. CP 38000<br>
     RFC CNC050207D21 - TEL (461) 613-01-01<BR> Celaya, Guanajuato. <br><br>
 
     <b>Sucursal:</b> {{ $pago->sucursal->nombre }} <br>
-    Domicilio sucursal: {{$pago->sucursal->direccion}}, {{$pago->sucursal->municipio}}, {{$pago->sucursal->estado}}
 </p>
 <div class="content" >
 
@@ -24,9 +28,10 @@
        Fecha {{ $pago->fecha->format('d-m-Y') }}<br>
        Hora {{ $pago->fecha->format('H:i:s') }}
        <hr>
-
+    </p>
+    <p  style="line-height : .5cm; text-align:center">
        Folio: {{ $pago->folio }}<br>
-       Recibio: {{ $pago->recibio->fullname }}<br><br>
+       Recibio: {{ $pago->recibio->fullname }}<br>
        Alumno: {{ $pago->alumno->fullname }}<br>
        No Control: {{ $pago->alumno->nuevo_numero_control }}<br>
 
