@@ -96,7 +96,7 @@ class ReporteVentasController extends Controller
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subYear();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addYear();
 
-            $abonos = Pago::query()
+            $pagos = Pago::query()
                 ->where('id_sucursal','=',$sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
