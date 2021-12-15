@@ -68,7 +68,7 @@ class AlumnosController extends Controller
         return view('alumnos.create',[
             'alumno'            => new Alumno,
             'asesores'          => User::query()->get()->pluck('fullname','id')->sort()->prepend('CNCM',''),
-            'especialidades'    => Especialidad::query()->where('id_sucursal',$sucursal->id)->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
             'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
         ]);
     }
@@ -184,7 +184,7 @@ class AlumnosController extends Controller
 
         return view('alumnos.edit', [
             'alumno'            => $alumno,
-            'especialidades'    => Especialidad::query()->where('id_sucursal',$sucursal->id)->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
             'asesores'          => User::query()->get()->pluck('fullname','id')->sort()->prepend('CNCM',''),
             'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
         ]);
