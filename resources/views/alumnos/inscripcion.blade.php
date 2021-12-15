@@ -72,7 +72,7 @@
                         dom.grupo.empty().append('<option value="">Selecciona un grupo</option>');
 
                         $.each(grupos, function (index, option) {
-                            dom.grupo.append(`<option value="${option.id}">${option.id} | ${option.fecha_inicio_format} | ${option.dias_corto} | ${option.tipo_grupo}</option>`);
+                            dom.grupo.append(`<option value="${option.id}">${option.clave} | ${option.fecha_inicio_format} | ${option.dias_corto} | ${option.tipo_grupo}</option>`);
                         });
 
                     },
