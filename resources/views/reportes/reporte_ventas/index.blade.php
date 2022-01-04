@@ -193,6 +193,15 @@
                                                     data-value='{{$pago->folio_fiscal }}'>
                                                     {{ $pago->folio_fiscal }}
                                                 </a>
+
+                                                <div class="mt-1">
+                                                    @can('eliminar_movimiento_reporte_ventas')
+                                                        <button class="btn btn-sm btn-danger"
+                                                            data-url="{{ route('reportes.reporte-ventas.eliminar-pago',$pago) }}"
+                                                            data-action="eliminar"><i class="fas fa-trash"></i>
+                                                        </button>
+                                                    @endcan
+                                                </div>
                                             </td>
                                         @else
                                             <td class="text-danger text-center">
@@ -204,6 +213,14 @@
                                                     data-value='{{$pago->folio }}'>
                                                     {{ $pago->folio }}
                                                 </a>
+                                                <div class="mt-1">
+                                                    @can('eliminar_movimiento_reporte_ventas')
+                                                        <button class="btn btn-sm btn-danger"
+                                                            data-url="{{ route('reportes.reporte-ventas.eliminar-pago',$pago) }}"
+                                                            data-action="eliminar"><i class="fas fa-trash"></i>
+                                                        </button>
+                                                    @endcan
+                                                </div>
                                             </td>
                                         @endif
 
@@ -242,7 +259,7 @@
                                                     {{ $abono->alumno_pago->concepto }}
                                                 </a>
                                             @endforeach
-                                            
+
                                         </td>
 
                                         <td class="text-right text-nowrap" style="cursor:pointer">
@@ -366,6 +383,28 @@
                 number_format: function(number,decimals){
                     return parseFloat(number).toFixed(decimals).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString()
                 },
+                formTokenDelete:function(){
+                    const token = document.head.querySelector('meta[name="csrf-token"]');
+
+                    const form = $('<form>', { 'method': 'POST' });
+
+                    const inputToken = $('<input>', {
+                        'type': 'hidden',
+                        'name': '_token',
+                        'value': token.content
+                    });
+
+                    const inputDelete = $('<input>', {
+                        'type': 'hidden',
+                        'name': '_method',
+                        'value': 'DELETE'
+                    });
+
+                    form.append(inputToken);
+                    form.append(inputDelete);
+
+                    return form;
+                },
             };
 
             const CONFIG_DATEPICKER = {
@@ -382,6 +421,36 @@
 
             $.fn.datepicker.dates['es'] = CONFIG_DATEPICKER     //👉 DATEPICKER
             $.fn.bdatepicker.dates['es'] = CONFIG_DATEPICKER    //👉 XEDITABLE DATEPICKER
+
+            $('#tabla_abonos').on('click','button[data-action="eliminar"]',function(e){
+                const $button = $(this);
+
+
+                swal({
+                    title: "Deseas eliminar este registro",
+                    text:'Esta acción no podrá deshacerse',
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#ff3333",
+                    cancelButtonColor: "#CDCDCD",
+                    confirmButtonText: "Si",
+                    cancelButtonText: "Cancelar",
+                    showLoaderOnConfirm: false,
+                }).then(function(result) {
+                    if (!result.value) {
+                        return;
+                    }
+
+                    wait.modal('show');
+
+                    const form = Helpers.formTokenDelete();
+
+                    form.attr('action',$button.data('url'));
+
+                    form.appendTo('body').submit();
+
+                })
+            });
 
             $('#tabla_abonos').DataTable({
                 responsive: true,
@@ -418,6 +487,7 @@
                 order: [[0,'desc']]
 
             });
+
 
             $('#datepicker').datepicker({
                 language: 'es',

@@ -336,6 +336,11 @@ return [
             'display_name'  => 'Ver todos los grupos',
             'description'   => 'Permite ver todos los grupos'
         ],
+        [
+            'name'          => 'eliminar_movimiento_reporte_ventas',
+            'display_name'  => 'Eliminar Movimiento reporte ventas',
+            'description'   => 'Permite eliminar un movimiento del reporte de ventas'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

@@ -204,14 +204,18 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::post('punto_de_venta_productos/recibir_abonos',[ PuntoDeVentaProductosController::class,'recibir_abonos'])->name('punto_de_venta_productos.recibir_abonos');
     Route::post('punto_de_venta_productos/datatables_partidas',[ PuntoDeVentaProductosController::class,'datatables_partidas'])->name('punto_de_venta_productos.datatables_partidas');
     Route::post('punto_de_venta_productos/cerrar_venta',[ PuntoDeVentaProductosController::class,'cerrar_venta'])->name('punto_de_venta_productos.cerrar_venta');
-    
+
     Route::get('punto_de_venta_productos/ticket/{id}',[ PuntoDeVentaProductosController::class,'ticket'])->name('punto_de_venta_productos.ticket');
     Route::resource('punto_de_venta_productos', PuntoDeVentaProductosController::class)->only('index');
 
 
 
     Route::prefix('reportes')->name('reportes.')->group(function () {
-        Route::get('reporte-ventas',[ReporteVentasController::class,'index'])->name('reporte-ventas.index');
+        Route::prefix('reporte-ventas')->name('reporte-ventas.')->group(function () {
+            Route::get('/',[ReporteVentasController::class,'index'])->name('index');
+            Route::delete('eliminar-pago/{pago}',[ReporteVentasController::class,'eliminar_pago'])->name('eliminar-pago');
+        });
+
         Route::get('reporte-ventas-productos',[ReporteVentasController::class,'index_productos'])->name('reporte-ventas.index_productos');
         Route::get('vencimientos',[ReporteVentasController::class,'vencimientos'])->name('reporte-ventas.vencimientos');
         Route::post('datatables_vencimientos',[ReporteVentasController::class,'datatables_vencimientos'])->name('reporte-ventas.datatables_vencimientos');

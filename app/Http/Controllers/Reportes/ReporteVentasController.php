@@ -1,17 +1,18 @@
 <?php
 namespace App\Http\Controllers\Reportes;
 
+use App\Models\Pago;
+use App\Models\User;
+use App\Models\Abono;
+use App\Models\Venta;
+use App\Models\Alumno;
 use Jenssegers\Date\Date;
 use Illuminate\Http\Request;
+use App\Models\Configuracion;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
-use App\Models\Abono;
-use App\Models\Pago;
-use App\Models\Alumno;
-use App\Models\User;
-use App\Models\Venta;
-use App\Models\Configuracion;
 
 class ReporteVentasController extends Controller
 {
@@ -505,4 +506,43 @@ class ReporteVentasController extends Controller
         return view('reportes.reporte_ventas.index_productos',compact('ventas', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo'));
     }
 
+
+    public function eliminar_pago(Request $request,Pago $pago)
+    {
+        DB::beginTransaction();
+
+        try {
+            $pago->load('abonos.alumno_pago');
+
+            $pago->abonos->each(function($abono){
+                $alumno_pago = $abono->alumno_pago;
+                $alumno_pago->saldo = $alumno_pago->saldo + $abono->monto;
+                $alumno_pago->save();
+                $abono->delete();
+            });
+
+            $pago->delete();
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()
+                ->back()
+                ->with([
+                    'error' => 'Hubo un error al eliminar el pago: ',
+                ]);
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'message' => 'Pago eliminado correctamente',
+                'success' => true,
+            ]);
+        }
+
+
+        return redirect()->back()->with([
+            'message' => 'Pago eliminado correctamente',
+        ]);
+    }
 }
