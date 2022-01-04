@@ -13,7 +13,7 @@ use Jenssegers\Date\Date;
 class PuntoDeVentaController extends Controller
 {
     public function index(Request $request)
-    {   
+    {
         $alumno_huella = null;
         if(isset($request->id)){
             $alumno_huella = Alumno::find($request->id);
@@ -173,7 +173,7 @@ class PuntoDeVentaController extends Controller
             $folio_fiscal = Pago::query()->select('folio_fiscal')->where('id_sucursal', $id_sucursal)->max('folio_fiscal') ?? 0;
             $venta_fiscal = ($request->input('forma_pago','') != 'Efectivo') ? true : $alumno->solicitud_factura;
 
-            # CREO EL ABONO DEL ALUMNO 😊 
+            # CREO EL ABONO DEL ALUMNO 😊
             $pago_alumno = $alumno->pagos()->create([
                 'id_grupo'      => $request->input('id_grupo'),
                 'concepto'      => $request->input('concepto').' '.$request->input('forma').' '.$request->input('no_pago'),
@@ -193,7 +193,7 @@ class PuntoDeVentaController extends Controller
                 'id_recibio'    => $id_recibio,
             ]);
 
-            # GENERO EL ABONO 🙄 
+            # GENERO EL ABONO 🙄
             $pago->abonos()->create([
                 'id_sucursal'       => $id_sucursal,
                 'id_alumno_pago'    => $pago_alumno->id,
@@ -231,10 +231,11 @@ class PuntoDeVentaController extends Controller
     public function ticket($id)
     {
         $pago = Pago::findOrFail($id);
+        $sucursal = optional(session('sucursal'));
 
         $pago->load(['abonos.alumno_pago','abonos.pago','alumno','sucursal']);
 
-        return view('punto_de_venta.ticket',compact('pago'));
+        return view('punto_de_venta.ticket',compact('pago','sucursal'));
     }
 
     public function traer_grupos(Request $request){
