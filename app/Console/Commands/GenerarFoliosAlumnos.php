@@ -39,7 +39,7 @@ class GenerarFoliosAlumnos extends Command
      */
     public function handle()
     {
-        $sucursales = Sucursal::toBase()->select('id')->pluck('id');
+        $sucursales = Sucursal::where('id','=','3')->toBase()->select('id')->pluck('id');
         $folio_alumno_inicial = config('alumnos.control_folio');
         $incremento_folio = 1;
 
