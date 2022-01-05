@@ -3,18 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Grupo;
 use App\Models\Alumno;
 use App\Models\AlumnoPago;
+use Illuminate\Support\Str;
 use App\Models\Especialidad;
-use App\Models\Grupo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Services\FacturacionService;
-use App\Services\PagoInscripcionService;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use App\Services\PagoInscripcionService;
 use Yajra\DataTables\Facades\DataTables;
 use Symfony\Component\HttpFoundation\Response as HTTPMessages;
 
@@ -277,7 +278,7 @@ class AlumnosController extends Controller
                 $constraint->aspectRatio();
             });
             $image->save($path . $nombre_foto);
-            
+
 
             $alumno->foto = $nombre_foto;
             $alumno->save();
@@ -324,10 +325,8 @@ class AlumnosController extends Controller
                 $q->where('status','=',$status);
             })
             ->where(function($q) use($term){
-                $q->where('nombres', 'like', "%{$term}%")
-                ->orWhere('apellido_paterno', 'like', "%{$term}%")
-                ->orWhere('apellido_materno', 'like', "%{$term}%")
-                ->orWhere('nuevo_numero_control', 'like', "%{$term}%");
+                $q->whereRaw("CONCAT(`nombres`,`apellido_paterno`,`apellido_materno`) LIKE REPLACE(?, ' ','')",["%{$term}%"])
+                ->orWhereRaw("`nuevo_numero_control` LIKE REPLACE(?, ' ','')",["%{$term}%"]);
             })
             ->orderBy('nombres', 'asc')
             ->skip($offset)
@@ -342,10 +341,8 @@ class AlumnosController extends Controller
                 $q->where('status',$status);
             })
             ->where(function($q) use($term){
-                $q->where('nombres', 'like', "%{$term}%")
-                ->orWhere('apellido_paterno', 'like', "%{$term}%")
-                ->orWhere('apellido_materno', 'like', "%{$term}%")
-                ->orWhere('nuevo_numero_control', 'like', "%{$term}%");
+                $q->whereRaw("CONCAT(`nombres`,`apellido_paterno`,`apellido_materno`) LIKE REPLACE(?, ' ','')",["%{$term}%"])
+                ->orWhereRaw("`nuevo_numero_control` LIKE REPLACE(?, ' ','')",["%{$term}%"]);
             })
             ->count();
 
@@ -356,7 +353,8 @@ class AlumnosController extends Controller
             return response()->json([
                 'results'       => $results,
                 'pagination'    => [
-                    'more' => $morePages
+                    'more' => $morePages,
+                    'temr' => $term
                 ]
             ]);
         }
