@@ -317,7 +317,7 @@ class AlumnosController extends Controller
         $resultCount = 10;
         $offset = ($page - 1) * $resultCount;
 
-        $results = Alumno::with('grupos.especialidad')
+        $results = Alumno::with('grupos.especialidad')->select(['id', 'nombres','apellido_paterno','apellido_materno','nuevo_numero_control'])
             ->when($request->input('id_sucursal'),function($q,$sucursal){
                 $q->where('id_sucursal',$sucursal);
             })
@@ -333,7 +333,7 @@ class AlumnosController extends Controller
             ->take($resultCount)
             ->get();
 
-        $count = Alumno::query()
+        $count = Alumno::query()->select('id')
             ->when($request->input('id_sucursal'),function($q,$id_sucursal){
                 $q->where('id_sucursal',$id_sucursal);
             })
@@ -348,6 +348,8 @@ class AlumnosController extends Controller
 
         $endCount = $offset + $resultCount;
         $morePages = $count > $endCount;
+
+        // dd($results);
 
         if ($request->ajax()) {
             return response()->json([
