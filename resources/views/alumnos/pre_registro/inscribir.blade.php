@@ -37,6 +37,7 @@
         </div>
     </div>
 
+   @include('alumnos.pre_registro.modals.inscripcion')
 @endsection
 
 
@@ -49,6 +50,9 @@
             especialidad: $("#id_especialidad"),
             grupo: $('#id_grupo'),
             form_inscribir: $('#form-inscribir'),
+
+            modal_inscripcion: $("#modal-inscripcion"),
+            form_inscripcion: $("#form-inscripcion"),
         }
 
         dom.especialidad.change(function(e){
@@ -87,7 +91,6 @@
 
 
         $('#inscribir').click(function(){
-            console.log(dom.grupo.val())
 
              if(dom.grupo.val() != '' && $('input[name=forma_pago]:checked').val() !== undefined){
 
@@ -98,28 +101,15 @@
                         alumno = result.alumno;
                         saldo = alumno.saldo;
                         inscripcion = inscripcion - saldo;
+
                         if(saldo > 0){
                             txt = "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". El alumno ya tiene un apartado por "+saldo+" por lo que solo tienes que solicitar la inscripción de $ "+inscripcion+" que quedará registrada como pagada en la ficha del alumno.";
                         }else{
                             txt = "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". Tienes que solicitar la inscripción de $ "+inscripcion+" que quedará registrada como pagada en la ficha del alumno.";
                         }
-                        swal({
-                                title:txt,
-                                text: '',
-                                type: "success",
-                                showCancelButton: true,
-                                confirmButtonColor: "#1ee60b",
-                                cancelButtonColor: "#999999",
-                                confirmButtonText: "Sí, inscribir",
-                                cancelButtonText: "Cancelar",
-                                showLoaderOnConfirm: true,
-                            }).then((result) => {
-                                if (result.value) {
-                                        dom.form_inscribir.submit();
-                                }
-                            })
 
-
+                        dom.modal_inscripcion.find('#inscripcion-detalle').text(txt);
+                        dom.modal_inscripcion.modal('show');
                     },
                     "json"
                 );
@@ -127,22 +117,42 @@
             }else{
 
                 swal({
-                                title: "Tienes que seleccionar Grupo y forma de pago",
-                                text: '',
-                                type: "error",
-                                showCancelButton: true,
-                                confirmButtonColor: "#DD6B55",
-                                cancelButtonColor: "#999999",
-                                cancelButtonText: "Cerrar",
-                                showLoaderOnConfirm: true,
-                            }).then((result) => {
-
-                            })
-
+                    title: "Tienes que seleccionar Grupo y forma de pago",
+                    text: '',
+                    type: "error",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    cancelButtonColor: "#999999",
+                    cancelButtonText: "Cerrar",
+                })
             }
 
 
         });
+
+        dom.form_inscripcion.submit(function(e){
+            e.preventDefault();
+
+            const inputFolio = $('<input>', {
+                'type': 'hidden',
+                'name': 'folio',
+                'value': $("#folio").val(),
+            });
+
+            const inputFormaPago = $('<input>', {
+                'type': 'hidden',
+                'name': 'tipo_pago',
+                'value': $("#tipo_pago").val(),
+            });
+
+            dom.modal_inscripcion.modal('hide');
+            wait.modal('show');
+
+            dom.form_inscribir.append(inputFolio);
+            dom.form_inscribir.append(inputFormaPago);
+            dom.form_inscribir.submit();
+
+        })
     });
 
 </script>

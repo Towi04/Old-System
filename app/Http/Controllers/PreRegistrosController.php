@@ -346,6 +346,7 @@ class PreRegistrosController extends Controller
 
             $grupo_inscripcion = Grupo::findOrFail($request->input('id_grupo'));
 
+            $pis->setRequest($request);
             $pis->setAlumno($alumno);
 
             switch ($request->input('forma_pago')) {
