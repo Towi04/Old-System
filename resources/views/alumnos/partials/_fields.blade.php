@@ -10,13 +10,15 @@
         </div>
 
         @if($alumno->exists)
-            <div class="col-12">
-                <div class="form-group">
-                    {!! Form::label('numero_control', 'Numero Control:', []) !!}
-                    {!! Form::number('numero_control', null, ['class' => 'form-control', 'placeholder' => 'Escribe el numero de control','required'=> true,'autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']); !!}
-                    <div class="help-block form-text text-muted form-control-feedback">Referencia del n° control del alumno</div>
+            @if($alumno->status == 'Alumno')
+                <div class="col-12">
+                    <div class="form-group">
+                        {!! Form::label('numero_control', 'Numero Control:', []) !!}
+                        {!! Form::number('numero_control', null, ['class' => 'form-control', 'placeholder' => 'Escribe el numero de control','required'=> true,'autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']); !!}
+                        <div class="help-block form-text text-muted form-control-feedback">Referencia del n° control del alumno</div>
+                    </div>
                 </div>
-            </div>
+            @endif
         @endif
 
         <div class="col-md-4">

@@ -20,12 +20,12 @@
                     <fieldset class="form-group">
                         <legend><span>Forma de pago</span></legend>
                         <div class="row">
-                            <div class="col-12 col-sm-6">
+                            {{-- <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     {!! Form::label('folio', 'Folio:*', ['class' => 'form-label']) !!}
                                     {!! Form::number('folio',null, [ 'class' => 'form-control form-control-sm','title' => 'Escribe el monto','placeholder' => 'Escribe el foli asignado','autocomplete' => 'off','required' => true]) !!}
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <div class="col-12 col-sm-6">
                                 {!! Form::label('tipo_pago','Tipo pago:*') !!}

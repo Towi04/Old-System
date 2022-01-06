@@ -124,12 +124,14 @@ class PagoInscripcionService
         if (!empty($this->request)) {
 
             # FOLIO Y VENTA FISCAL 😁
+            # DETECTAR SI ES FISCAL O NO FISCAL:
+            $venta_fiscal = ($this->request->input('tipo_pago', '') != 'Efectivo') ? true : $this->alumno->solicitud_factura;
             $folio_fiscal = Pago::query()->select('folio_fiscal')->where('id_sucursal', $this->request->input('id_sucursal'))->max('folio_fiscal') ?? 0;
-            $venta_fiscal = ($this->request->input('forma_pago', '') != 'Efectivo') ? true : $this->alumno->solicitud_factura;
-
+            $folio = Pago::query()->select('folio')->where('id_sucursal', $this->request->input('id_sucursal'))->max('folio') + 1 ?? 0;
+            // dd($this->request->input('tipo_pago', ''));
             # CREO EL PAGO DEL ALUMNO 😏
             $pago = Pago::create([
-                'folio'         => $this->request->input('folio'),
+                'folio'         => $folio,
                 'folio_fiscal'  => ($venta_fiscal) ? $folio_fiscal + 1 : null,
                 'id_sucursal'   => $this->request->input('id_sucursal'),
                 'id_alumno'     => $this->alumno->id,
