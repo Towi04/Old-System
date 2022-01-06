@@ -153,7 +153,7 @@ class PuntoDeVentaController extends Controller
             'id_grupo'      => 'required',
             'monto'         => 'required',
             'concepto'      => 'required',
-            'folio'         => 'required',
+            // 'folio'         => 'required',
             'forma_pago'    => 'required',
             'fecha'         => 'required',
             'no_pago'       => 'required',
@@ -164,6 +164,8 @@ class PuntoDeVentaController extends Controller
         $id_recibio = auth()->id();
         $fecha_pago = $request->fecha;
 
+        
+
         try {
             DB::beginTransaction();
 
@@ -172,6 +174,9 @@ class PuntoDeVentaController extends Controller
             # FOLIO Y VENTA FISCAL 😁
             $folio_fiscal = Pago::query()->select('folio_fiscal')->where('id_sucursal', $id_sucursal)->max('folio_fiscal') ?? 0;
             $venta_fiscal = ($request->input('forma_pago','') != 'Efectivo') ? true : $alumno->solicitud_factura;
+            $folio = Pago::query()->select('folio')->where('id_sucursal', $id_sucursal)->max('folio') + 1 ?? 0;
+
+
 
             # CREO EL ABONO DEL ALUMNO 😊
             $pago_alumno = $alumno->pagos()->create([
@@ -184,7 +189,7 @@ class PuntoDeVentaController extends Controller
 
             # CREO EL PAGO DEL ALUMNO 😏
             $pago = Pago::create([
-                'folio'         => $request->input('folio'),
+                'folio'         => $folio,
                 'folio_fiscal'  => ($venta_fiscal)?$folio_fiscal + 1 : null,
                 'id_sucursal'   => $id_sucursal,
                 'id_alumno'     => $alumno->id,
@@ -215,9 +220,9 @@ class PuntoDeVentaController extends Controller
             }
         } catch (\Throwable $th) {
             DB::rollBack();
-
+            dd($th);
             throw ValidationException::withMessages([
-                "error" => 'Error al guardar en base de datos' . $th->getMessage(),
+                "error" => 'Error al guardar en base de datos: ' . $th->getMessage(),
             ]);
         }
 
