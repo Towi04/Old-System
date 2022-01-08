@@ -1,7 +1,7 @@
 @extends('layouts.template-'.config('settings.template').'.plantilla')
 
 @section('titulo')
-    Reporte de ventas {{ date('Y') }}
+    Reporte de ventas de productos {{ date('Y') }}
 @endsection
 
 @section('breadcrumb')
