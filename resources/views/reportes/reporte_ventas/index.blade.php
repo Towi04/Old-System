@@ -175,6 +175,7 @@
                                 <tr>
                                     <th>Folio</th>
                                     <th>Fecha Abono</th>
+                                    <th>No. Control</th>
                                     <th>Alumno</th>
                                     <th>Concepto</th>
                                     <th>Recibido por</th>
@@ -202,6 +203,13 @@
                                                             data-action="eliminar"><i class="fas fa-trash"></i>
                                                         </button>
                                                     @endcan
+                                                    <button type="button"
+                                                        data-action="imprimir"
+                                                        data-url="{{ route('punto_de_venta.ticket',$pago) }}"
+                                                        class="btn btn-sm btn-primary"
+                                                        title="Imprimir"  >
+                                                        <i class="fas fa-print"></i>
+                                                    </button>
                                                 </div>
                                             </td>
                                         @else
@@ -217,10 +225,18 @@
                                                 <div class="mt-1">
                                                     @can('eliminar_movimiento_reporte_ventas')
                                                         <button class="btn btn-sm btn-danger"
+                                                            type="button"
                                                             data-url="{{ route('reportes.reporte-ventas.eliminar-pago',$pago) }}"
                                                             data-action="eliminar"><i class="fas fa-trash"></i>
                                                         </button>
                                                     @endcan
+                                                    <button type="button"
+                                                        data-action="imprimir"
+                                                        data-url="{{ route('punto_de_venta.ticket',$pago) }}"
+                                                        class="btn btn-sm btn-primary"
+                                                        title="Imprimir"  >
+                                                        <i class="fas fa-print"></i>
+                                                    </button>
                                                 </div>
                                             </td>
                                         @endif
@@ -235,6 +251,10 @@
                                                 {{ $pago->fecha->format('d-m-Y h:i a') }}
                                             </a>
 
+                                        </td>
+
+                                        <td>
+                                            {{ $pago->alumno->nuevo_numero_control }}
                                         </td>
 
                                         <td>
@@ -374,6 +394,29 @@
             </div>
         </div>
     </div>
+
+    <div class="modal inmodal fade animated" id="modal-ticket" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Ticket</h4>
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">
+                            &times;</span><span class="sr-only">Close</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div id="contenido-ticket"></div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
@@ -424,6 +467,13 @@
                 weekStart: 1,
             }
 
+            const dom = {
+                tikets:{
+                    contenido_ticket:$("#contenido-ticket"),
+                    modal: $("#modal-ticket"),
+                },
+            };
+
             $.fn.datepicker.dates['es'] = CONFIG_DATEPICKER     //👉 DATEPICKER
             $.fn.bdatepicker.dates['es'] = CONFIG_DATEPICKER    //👉 XEDITABLE DATEPICKER
 
@@ -455,6 +505,15 @@
                     form.appendTo('body').submit();
 
                 })
+            });
+
+            $('#tabla_abonos').on('click','button[data-action="imprimir"]',function(e){
+                const $button = $(this);
+                const route = $button.data('url');
+
+                dom.tikets.modal.modal('show');
+                dom.tikets.contenido_ticket.html();
+                dom.tikets.contenido_ticket.html(`<iframe scrolling='auto' type='text/html' scroll='auto' src='${route}' width='100%' height='450px' align='center'></iframe>`);
             });
 
             $('#tabla_abonos').DataTable({
