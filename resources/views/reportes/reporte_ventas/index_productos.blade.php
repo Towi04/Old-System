@@ -50,13 +50,13 @@
     <div class="row ">
         <div class="col-lg-12 no_print">
             <div class="btn-group ">
-                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'dia']) }}"
+                <a href="{{ route('reportes.reporte-ventas.index_productos',['tipo' => 'dia']) }}"
                     class="btn @if ($tipo=='dia' ) btn-primary  text-white @else btn-white @endif">Día</a>
-                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'semanal']) }}"
+                <a href="{{ route('reportes.reporte-ventas.index_productos',['tipo' => 'semanal']) }}"
                     class="btn  @if ($tipo=='semanal' ) btn-primary  text-white @else btn-white @endif">Semanal</a>
-                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'mes']) }}"
+                <a href="{{ route('reportes.reporte-ventas.index_productos',['tipo' => 'mes']) }}"
                     class="btn  @if ($tipo=='mes' ) btn-primary  text-white @else btn-white @endif">Mensual</a>
-                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'anual']) }}"
+                <a href="{{ route('reportes.reporte-ventas.index_productos',['tipo' => 'anual']) }}"
                     class="btn  @if ($tipo=='anual' ) btn-primary  text-white @else btn-white @endif">Anual</a>
             </div>
         </div>
@@ -69,7 +69,7 @@
 
                         @if (request('tipo','dia') == 'dia')
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'dia','fecha'=>$fecha_antes->format('d-m-Y') ]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.index_productos',['tipo' => 'dia','fecha'=>$fecha_antes->format('d-m-Y') ]) }}"
                                     data-toggle="tooltip" data-title="{{ $fecha_antes->format('d \d\e F  \d\e\l  Y') }}"
                                     data-placement="top" class="btn btn-primary btn-sm text-white no_print"><i
                                         class="fas fa-arrow-alt-circle-left fa-2x"></i></a>
@@ -82,7 +82,7 @@
                                 </center>
                             </div>
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo'=>'dia','fecha' => $fecha_despues->format('d-m-Y') ]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.index_productos',['tipo'=>'dia','fecha' => $fecha_despues->format('d-m-Y') ]) }}"
                                     data-toggle="tooltip" data-title="{{ $fecha_despues->format('d \d\e F \d\e\l Y') }}"
                                     data-placement="top" class="btn btn-primary btn-sm text-white no_print"><i
                                         class="fas fa-arrow-alt-circle-right fa-2x"></i></a>
@@ -90,7 +90,7 @@
                         @endif
                         @if (request('tipo','dia') == 'mes')
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo'=>'mes','fecha'=> $fecha_antes->format('d-m-Y') ]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.index_productos',['tipo'=>'mes','fecha'=> $fecha_antes->format('d-m-Y') ]) }}"
                                     data-toggle="tooltip"
                                     data-title="{{ $fecha_antes->format('d \d\e F  \d\e\l  Y') }}"
                                     data-placement="top"
@@ -106,7 +106,7 @@
                                 </center>
                             </div>
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'mes','fecha' => $fecha_despues->format('d-m-Y') ]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.index_productos',['tipo' => 'mes','fecha' => $fecha_despues->format('d-m-Y') ]) }}"
                                     data-toggle="tooltip" data-title="{{ $fecha_despues->format('d \d\e F \d\e\l Y') }}"
                                     data-placement="top" class="btn btn-primary btn-sm text-white no_print"><i
                                         class="fas fa-arrow-alt-circle-right fa-2x"></i></a>
@@ -115,7 +115,7 @@
 
                         @if (request('tipo','dia') == 'semanal')
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'semanal','fecha' => $fecha_antes->startOfWeek()->format('d-m-Y') ]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.index_productos',['tipo' => 'semanal','fecha' => $fecha_antes->startOfWeek()->format('d-m-Y') ]) }}"
                                     data-toggle="tooltip"
                                     data-title="{{ $fecha_antes->format('d \d\e F  \d\e\l  Y') }}"
                                     data-placement="top"
@@ -132,7 +132,7 @@
                                 </center>
                             </div>
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo'=> 'semanal','fecha'=>$fecha_despues->startOfWeek()->format('d-m-Y')]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.index_productos',['tipo'=> 'semanal','fecha'=>$fecha_despues->startOfWeek()->format('d-m-Y')]) }}"
                                     data-toggle="tooltip" data-title="{{ $fecha_despues->format('d \d\e F \d\e\l Y') }}"
                                     data-placement="top" class="btn btn-primary btn-sm text-white no_print"><i
                                         class="fas fa-arrow-alt-circle-right fa-2x"></i></a>
@@ -141,7 +141,7 @@
 
                         @if (request('tipo','dia') == 'anual')
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'anual','fecha'=> $fecha_antes->format('d-m-Y'), ]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.index_productos',['tipo' => 'anual','fecha'=> $fecha_antes->format('d-m-Y'), ]) }}"
                                     data-toggle="tooltip"
                                     data-title="{{ $fecha_antes->format('Y') }}"
                                     data-placement="top"
@@ -160,7 +160,7 @@
                                 </center>
                             </div>
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
-                                <a href="{{ route('reportes.reporte-ventas.index',['tipo'=>'anual','fecha'=> $fecha_despues->format('d-m-Y') ]) }}"
+                                <a href="{{ route('reportes.reporte-ventas.index_productos',['tipo'=>'anual','fecha'=> $fecha_despues->format('d-m-Y') ]) }}"
                                     data-toggle="tooltip" data-title="{{ $fecha_despues->format(' Y') }}"
                                     data-placement="top" class="btn btn-primary btn-sm text-white no_print"><i
                                         class="fas fa-arrow-alt-circle-right fa-2x"></i></a>
@@ -361,7 +361,7 @@
         });
 
         $('#datepicker').on('changeDate', function() {
-            window.location = "{{route('reportes.reporte-ventas.index')}}?tipo={{$tipo}}&fecha="+$('#datepicker').datepicker('getFormattedDate')+"&forma_pago={{@$_GET['forma_pago']}}"
+            window.location = "{{route('reportes.reporte-ventas.index_productos')}}?tipo={{$tipo}}&fecha="+$('#datepicker').datepicker('getFormattedDate')+"&forma_pago={{@$_GET['forma_pago']}}"
         });
 
         $('#convertir_fiscales').click(function(){
