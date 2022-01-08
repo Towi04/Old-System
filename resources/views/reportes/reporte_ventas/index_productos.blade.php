@@ -186,7 +186,7 @@
                                     <tr class="gradeX" id="venta-{{ $venta->id }}">
                                         
                                             <td class="text-danger text-center">
-                                                {{ $venta->id }}
+                                                {{ $venta->folio }}
                                             </td>
 
                                         

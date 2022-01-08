@@ -432,7 +432,7 @@ class ReporteVentasController extends Controller
 
             $ventas = Venta::query()->where('status','=','Cerrada')
                 ->where('id_sucursal','=',$sucursal->id)
-                ->whereBetween('created_at', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
+                ->whereBetween('fecha', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
             $fecha_antes = new Date($fecha_antes);
@@ -451,7 +451,7 @@ class ReporteVentasController extends Controller
 
             $ventas = Venta::query()->where('status','=','Cerrada')
                 ->where('id_sucursal','=',$sucursal->id)
-                ->whereBetween('created_at', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
+                ->whereBetween('fecha', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
             $fecha_antes = new Date($fecha_antes);
@@ -470,7 +470,7 @@ class ReporteVentasController extends Controller
 
             $ventas = Venta::query()->where('status','=','Cerrada')
                 ->where('id_sucursal','=',$sucursal->id)
-                ->whereBetween('created_at', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
+                ->whereBetween('fecha', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
             $fecha_antes = new Date($fecha_antes);
@@ -488,7 +488,7 @@ class ReporteVentasController extends Controller
 
             $ventas = Venta::query()->where('status','=','Cerrada')
                 ->where('id_sucursal','=',$sucursal->id)
-                ->whereBetween('created_at', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
+                ->whereBetween('fecha', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
             $fecha_antes = new Date($fecha_antes);
