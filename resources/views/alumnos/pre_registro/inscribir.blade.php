@@ -27,7 +27,7 @@
                         Llena el formulario
                     </h5>
 
-                    @include('alumnos.partials._fields')
+                    @include('alumnos.pre_registro.partials._fields_inscripcion')
 
                     <div class="form-buttons-w text-right">
                         <button id="inscribir" class="btn btn-success" type="button" ><i class="fa fa-plus"></i> Inscribir</button>
