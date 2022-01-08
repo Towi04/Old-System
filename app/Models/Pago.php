@@ -40,6 +40,15 @@ class Pago extends Model
      */
     protected $dates = ['created_at', 'updated_at', 'fecha'];
 
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'format_fecha',
+    ];
+
 
     public function sucursal()
     {
@@ -71,5 +80,14 @@ class Pago extends Model
     public function abonos()
     {
         return $this->hasMany(Abono::class,'id_pago','id');
+    }
+
+    public function getFormatFechaAttribute($value)
+    {
+        if(empty($this->fecha)){
+            return '';
+        }
+
+        return $this->fecha->format('d-m-Y h:i a');
     }
 }

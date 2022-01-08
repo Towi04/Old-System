@@ -177,6 +177,7 @@
                                     <th>Fecha Abono</th>
                                     <th>Alumno</th>
                                     <th>Concepto</th>
+                                    <th>Recibido por</th>
                                     <th>Total</th>
                                 </tr>
                             </thead>
@@ -224,15 +225,16 @@
                                             </td>
                                         @endif
 
-                                        <td>
+                                        <td class="text-nowrap">
                                             <a class="editable_abonos_fecha editable"
                                                 data-name="fecha"
                                                 data-type="date"
                                                 data-value="{{ $pago->fecha->format('Y-m-d') }}"
                                                 data-pk="{{ $pago->id }}"
                                                 data-url="{{ route('abonos.actualizar_pago_xeditable') }}">
-                                                {{ $pago->fecha->format('d-m-Y') }}
+                                                {{ $pago->fecha->format('d-m-Y h:i a') }}
                                             </a>
+
                                         </td>
 
                                         <td>
@@ -260,6 +262,9 @@
                                                 </a>
                                             @endforeach
 
+                                        </td>
+                                        <td>
+                                            {{ $pago->recibio->full_name }}
                                         </td>
 
                                         <td class="text-right text-nowrap" style="cursor:pointer">
@@ -298,7 +303,7 @@
 
         <div class="col-lg-3 mb-3 no_print">
             <div class="col-sm-12 col-xxxl-12 p-1">
-                <a class="element-box el-tablo" href="#">
+                <a class="element-box el-tablo p-3" href="#">
                   <div class="label mb-2">
                     Total
                   </div>
@@ -651,7 +656,12 @@
                     weekStart: 1,
                     orientation: 'bottom left',
                     language: 'es',
-                }
+                },
+                display: function(value, sourceData,response) {
+                    if(sourceData && sourceData.hasOwnProperty('pago')){
+                        $(this).text(sourceData.pago.format_fecha);
+                    }
+                },
             });
         })
     </script>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Abono;
 use App\Models\Pago;
 use App\Models\Alumno;
+use App\Models\AlumnoPago;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -68,8 +69,7 @@ class PuntoDeVentaController extends Controller
                 'id_recibio'    => $id_recibio,
             ]);
 
-            // dd($pagos_alumno);
-            // Si es alumno se cobran sus pagos
+            # 👉 SI ES ALUMNO SE COBRAN SUS PAGOS
             if(isset($request->id_alumno)){
                 foreach ($pagos_alumno as $pa) {
                     if ($monto > 0) {
@@ -111,14 +111,24 @@ class PuntoDeVentaController extends Controller
                 }
 
             }
-            // Si es prergistro se abona el monto a su saldo
             else{
+                # 👉 SI ES PREREGISTRO SE ABONA EL MONTO A SU SALDO
                 $alumno->saldo = $monto;
                 $alumno->save();
 
+                 # 👉 SE GENERA EL CONCEPTO
+                 $alumno_pago = AlumnoPago::create([
+                    'id_alumno'     => $alumno->id,
+                    'concepto'      => 'Apartado',
+                    'monto'         => $monto,
+                    'fecha_limite'  => now(),
+                    'status'        => config('pagos.status.Pagado'),
+                ]);
+
+                 # 👉 SE GENERA EL PAGO
                 $pago->abonos()->create([
                     'id_sucursal'       => $id_sucursal,
-                    'id_alumno_pago'    => null,
+                    'id_alumno_pago'    => $alumno_pago->id,
                     'monto'             => $monto,
                     'venta_fiscal'      => $venta_fiscal,
                 ]);
@@ -164,7 +174,7 @@ class PuntoDeVentaController extends Controller
         $id_recibio = auth()->id();
         $fecha_pago = $request->fecha;
 
-        
+
 
         try {
             DB::beginTransaction();

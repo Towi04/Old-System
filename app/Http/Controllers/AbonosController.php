@@ -83,7 +83,18 @@ class AbonosController extends Controller
     public function actualizar_pago_xeditable(Request $request)
     {
         $pago = Pago::findOrFail($request->pk);
-        $pago[$request->name] = $request->value;
+
+        switch ($request->name) {
+            case 'fecha':
+                $hour = now()->format('h:i a');
+                $fecha = "{$request->value} {$hour}";
+                $pago[$request->name] = $fecha;
+            break;
+            default:
+                $pago[$request->name] = $request->value;
+            break;
+        }
+
         $pago->save();
 
         return response()->json([

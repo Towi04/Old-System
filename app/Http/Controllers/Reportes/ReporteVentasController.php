@@ -114,7 +114,7 @@ class ReporteVentasController extends Controller
            });
         }
 
-        $pagos =  $pagos->with(['alumno','abonos.alumno_pago'])->get();
+        $pagos =  $pagos->with(['alumno','abonos.alumno_pago','recibio'])->get();
 
         if ($request->ajax()) {
             return response()->json([
