@@ -28,7 +28,9 @@ class Venta extends Model
 
     public function alumno()
     {
-        return $this->belongsTo(Alumno::class, 'id_alumno', 'id')->withDefault([
+        return $this->belongsTo(Alumno::class, 'id_alumno', 'id')
+        ->withTrashed()
+        ->withDefault([
             'nombres'               => '',
             'apellido_paterno'      => '',
             'apellido_materno'      => '',

@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Collective\Html\Eloquent\FormAccessible;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Alumno extends Model
 {
-    use HasFactory, FormAccessible;
+    use HasFactory, FormAccessible, SoftDeletes;
 
     /**
      * The table associated with the model.

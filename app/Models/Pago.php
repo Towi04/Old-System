@@ -59,7 +59,7 @@ class Pago extends Model
 
     public function alumno()
     {
-        return $this->belongsTo(Alumno::class, 'id_alumno', 'id')->withDefault(function ($alumno) {
+        return $this->belongsTo(Alumno::class, 'id_alumno', 'id')->withTrashed()->withDefault(function ($alumno) {
             $alumno->nombres = '';
             $alumno->apellido_paterno = '';
             $alumno->apellido_materno = '';
