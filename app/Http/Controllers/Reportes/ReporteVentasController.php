@@ -1,9 +1,9 @@
 <?php
+
 namespace App\Http\Controllers\Reportes;
 
 use App\Models\Pago;
 use App\Models\User;
-use App\Models\Abono;
 use App\Models\Venta;
 use App\Models\Alumno;
 use Jenssegers\Date\Date;
@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
+use PDF;
 
 class ReporteVentasController extends Controller
 {
@@ -41,7 +42,7 @@ class ReporteVentasController extends Controller
 
 
             $pagos = Pago::query()
-                ->where('id_sucursal','=',$sucursal->id)
+                ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
@@ -60,7 +61,7 @@ class ReporteVentasController extends Controller
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addMonth();
 
             $pagos = Pago::query()
-                ->where('id_sucursal','=',$sucursal->id)
+                ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
@@ -79,7 +80,7 @@ class ReporteVentasController extends Controller
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDays(7);
 
             $pagos = Pago::query()
-                ->where('id_sucursal','=',$sucursal->id)
+                ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
@@ -98,7 +99,7 @@ class ReporteVentasController extends Controller
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addYear();
 
             $pagos = Pago::query()
-                ->where('id_sucursal','=',$sucursal->id)
+                ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
@@ -106,65 +107,194 @@ class ReporteVentasController extends Controller
             $fecha_despues = new Date($fecha_despues);
         }
 
-        // dd(Configuracion::where('nombre','=','mostrar_solo_fiscales')->first()->valor);
-
-        if(Configuracion::where('nombre','=','mostrar_solo_fiscales')->first()->valor == 'Si'){
-           $pagos =  $pagos->whereHas('abonos', function($q){
-              return $q->where('venta_fiscal','=',1);
-           });
+        if (Configuracion::where('nombre', '=', 'mostrar_solo_fiscales')->first()->valor == 'Si') {
+            $pagos =  $pagos->whereHas('abonos', function ($q) {
+                return $q->where('venta_fiscal', '=', 1);
+            });
         }
 
-        $pagos =  $pagos->with(['alumno','abonos.alumno_pago','recibio'])->get();
+        $pagos =  $pagos->with(['alumno', 'abonos.alumno_pago', 'recibio'])->get();
 
         if ($request->ajax()) {
             return response()->json([
                 'monto_abonos'          => $pagos->sum('monto'),
-                'monto_abono_fiscal'    => $pagos->whereHas('abonos', function($q){
-                    return $q->where('venta_fiscal','=',1);
-                 })->sum('monto'),
-                'monto_abono_no_fiscal' => $pagos->whereHas('abonos', function($q){
-                    return $q->where('venta_fiscal','=',0);
-                 })->sum('monto'),
+                'monto_abono_fiscal'    => $pagos->whereHas('abonos', function ($q) {
+                    return $q->where('venta_fiscal', '=', 1);
+                })->sum('monto'),
+                'monto_abono_no_fiscal' => $pagos->whereHas('abonos', function ($q) {
+                    return $q->where('venta_fiscal', '=', 0);
+                })->sum('monto'),
             ]);
         }
 
-        return view('reportes.reporte_ventas.index',compact('pagos', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo'));
+        return view('reportes.reporte_ventas.index', compact('pagos', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo'));
+    }
+
+    public function corte_caja(Request $request)
+    {
+        if ($request->has('tipo')) {
+            $tipo = $request->input('tipo');
+        } else {
+            $tipo = 'dia';
+        }
+
+        $sucursal = optional(session('sucursal'));
+
+        if ($tipo == 'dia') {
+            $tipo = 'dia';
+
+            if (isset($request->fecha)) {
+                $fecha = Carbon::createFromFormat('d-m-Y', $request->input('fecha'));
+            } else {
+                $fecha = Carbon::today();
+            }
+
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDay();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDay();
+
+
+            $pagos = Pago::query()
+                ->where('id_sucursal', '=', $sucursal->id)
+                ->whereBetween('created_at', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
+                ->orderBy('created_at', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'mes') {
+            if (isset($request->fecha)) {
+                $fecha = Carbon::createFromFormat('d-m-Y', $request->fecha);
+            } else {
+                $fecha = Carbon::today();
+            }
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subMonth();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addMonth();
+
+            $pagos = Pago::query()
+                ->where('id_sucursal', '=', $sucursal->id)
+                ->whereBetween('created_at', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
+                ->orderBy('created_at', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'semanal') {
+            if (isset($request->fecha)) {
+                $fecha = Carbon::createFromFormat('d-m-Y', $request->fecha);
+            } else {
+                $fecha = Carbon::today();
+            }
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDays(7);
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDays(7);
+
+            $pagos = Pago::query()
+                ->where('id_sucursal', '=', $sucursal->id)
+                ->whereBetween('created_at', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
+                ->orderBy('created_at', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'anual') {
+            if (isset($request->fecha)) {
+                $fecha = Carbon::createFromFormat('d-m-Y', $request->fecha);
+            } else {
+                $fecha = Carbon::today();
+            }
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subYear();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addYear();
+
+            $pagos = Pago::query()
+                ->where('id_sucursal', '=', $sucursal->id)
+                ->whereBetween('created_at', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
+                ->orderBy('created_at', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if (Configuracion::where('nombre', '=', 'mostrar_solo_fiscales')->first()->valor == 'Si') {
+            $pagos =  $pagos->whereHas('abonos', function ($q) {
+                return $q->where('venta_fiscal', '=', 1);
+            });
+        }
+
+        $pagos =  $pagos->with(['alumno', 'abonos.alumno_pago', 'recibio'])->get();
+
+
+        PDF::setOptions(['isPhpEnabled' => true]);
+
+        $lista_titulos = [
+            'dia'       => $fecha->format('d \d\e F \d\e\l Y'),
+            'mes'       => $fecha->format('F \d\e\l Y'),
+            'semanal'   => $fecha->startOfWeek()->format('d \d\e F \d\e\l Y') . 'al' . $fecha->endOfWeek()->format('d \d\e F \d\e\l Y'),
+            'anual'     => $fecha->format('Y')
+        ];
+
+        $titulo = $lista_titulos[$request->input('tipo')?? 'dia'];
+
+        $pdf = PDF::loadView('reportes.reporte_ventas.corte_caja', [
+            'pagos'     => $pagos,
+            'titulo'    => $titulo,
+            'autor'     => auth()->user()->full_name
+        ]);
+
+        return $pdf->stream('corte_caja.pdf');
+
+        // if ($request->ajax()) {
+        //     return response()->json([
+        //         'monto_abonos'          => $pagos->sum('monto'),
+        //         'monto_abono_fiscal'    => $pagos->whereHas('abonos', function ($q) {
+        //             return $q->where('venta_fiscal', '=', 1);
+        //         })->sum('monto'),
+        //         'monto_abono_no_fiscal' => $pagos->whereHas('abonos', function ($q) {
+        //             return $q->where('venta_fiscal', '=', 0);
+        //         })->sum('monto'),
+        //     ]);
+        // }
     }
 
     public function vencimientos()
     {
-       return view('reportes.reporte_ventas.vencimientos');
+        return view('reportes.reporte_ventas.vencimientos');
     }
 
     public function datatables_vencimientos(Request $request)
     {
         $query = Alumno::with(['pagos'])
-            ->where('status',config('alumnos.status.Alumno'))
-            ->when($request->input('id_sucursal'),function($q,$id_sucursal){
-                $q->where('id_sucursal',$id_sucursal);
-            })->whereHas('pagos', function($q){
-                return $q->where('status','=','pendiente')->where('fecha_limite','<',date('Y-m-d'));
+            ->where('status', config('alumnos.status.Alumno'))
+            ->when($request->input('id_sucursal'), function ($q, $id_sucursal) {
+                $q->where('id_sucursal', $id_sucursal);
+            })->whereHas('pagos', function ($q) {
+                return $q->where('status', '=', 'pendiente')->where('fecha_limite', '<', date('Y-m-d'));
             });
 
         return DataTables::eloquent($query)
-            ->addColumn('nombre_alumno',function($model){
-                return "<a href=".route('alumnos.show', $model->id).">{$model->nombres} {$model->apellido_paterno} {$model->apellido_materno}</a>";
+            ->addColumn('nombre_alumno', function ($model) {
+                return "<a href=" . route('alumnos.show', $model->id) . ">{$model->nombres} {$model->apellido_paterno} {$model->apellido_materno}</a>";
             })
-            ->editColumn('pagos_vencidos',function($model){
+            ->editColumn('pagos_vencidos', function ($model) {
                 return $model->pagos_vencidos->count();
             })
-            ->editColumn('monto_vencido',function($model){
-                return "$ ". number_format($model->monto_vencido,2,'.',',');
+            ->editColumn('monto_vencido', function ($model) {
+                return "$ " . number_format($model->monto_vencido, 2, '.', ',');
             })
             // ->addColumn('buttons', 'alumnos.datatables._buttons')
 
-            ->rawColumns(['buttons','nombre_alumno'])
+            ->rawColumns(['buttons', 'nombre_alumno'])
             ->make(true);
     }
 
     public function proyeccion()
     {
-       return view('reportes.reporte_ventas.proyeccion');
+        return view('reportes.reporte_ventas.proyeccion');
     }
 
     public function datatables_proyeccion(Request $request)
@@ -173,26 +303,26 @@ class ReporteVentasController extends Controller
         $fin_de_mes = $today->endOfMonth();
 
         $query = Alumno::with(['pagos'])
-            ->where('status',config('alumnos.status.Alumno'))
-            ->when($request->input('id_sucursal'),function($q,$id_sucursal){
-                $q->where('id_sucursal',$id_sucursal);
-            })->whereHas('pagos', function($q) use($fin_de_mes){
-                return $q->where('status','=','pendiente')->where('fecha_limite','<',$fin_de_mes->format('Y-m-d'));
+            ->where('status', config('alumnos.status.Alumno'))
+            ->when($request->input('id_sucursal'), function ($q, $id_sucursal) {
+                $q->where('id_sucursal', $id_sucursal);
+            })->whereHas('pagos', function ($q) use ($fin_de_mes) {
+                return $q->where('status', '=', 'pendiente')->where('fecha_limite', '<', $fin_de_mes->format('Y-m-d'));
             });
 
         return DataTables::eloquent($query)
-            ->addColumn('nombre_alumno',function($model){
-                return "<a href=".route('alumnos.show', $model->id).">{$model->nombres} {$model->apellido_paterno} {$model->apellido_materno}</a>";
+            ->addColumn('nombre_alumno', function ($model) {
+                return "<a href=" . route('alumnos.show', $model->id) . ">{$model->nombres} {$model->apellido_paterno} {$model->apellido_materno}</a>";
             })
-            ->editColumn('pagos_por_cobrar',function($model){
+            ->editColumn('pagos_por_cobrar', function ($model) {
                 return $model->pagos_por_cobrar->count();
             })
-            ->editColumn('monto_por_cobrar',function($model){
-                return "$ ". number_format($model->monto_por_cobrar,2,'.',',');
+            ->editColumn('monto_por_cobrar', function ($model) {
+                return "$ " . number_format($model->monto_por_cobrar, 2, '.', ',');
             })
             // ->addColumn('buttons', 'alumnos.datatables._buttons')
 
-            ->rawColumns(['buttons','nombre_alumno'])
+            ->rawColumns(['buttons', 'nombre_alumno'])
             ->make(true);
     }
 
@@ -222,7 +352,7 @@ class ReporteVentasController extends Controller
 
 
             $alumnos = Alumno::with('asesor_educativo')
-                ->where('id_sucursal','=',$sucursal->id)
+                ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
@@ -241,7 +371,7 @@ class ReporteVentasController extends Controller
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addMonth();
 
             $alumnos = Alumno::with('asesor_educativo')
-                ->where('id_sucursal','=',$sucursal->id)
+                ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
@@ -260,7 +390,7 @@ class ReporteVentasController extends Controller
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDays(7);
 
             $alumnos = Alumno::with('asesor_educativo')
-                ->where('id_sucursal','=',$sucursal->id)
+                ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
@@ -278,7 +408,7 @@ class ReporteVentasController extends Controller
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addYear();
 
             $alumnos = Alumno::with('asesor_educativo')
-                ->where('id_sucursal','=',$sucursal->id)
+                ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
@@ -288,11 +418,11 @@ class ReporteVentasController extends Controller
 
         // dd($alumnos->get());
 
-        $asesores =  User::whereHas('registros', function($q) use($alumnos){
+        $asesores =  User::whereHas('registros', function ($q) use ($alumnos) {
             return $q->whereIn('id', $alumnos->pluck('id'));
         })->get();
 
-        $alumnos = $alumnos->get()->groupBy(function($alumno){
+        $alumnos = $alumnos->get()->groupBy(function ($alumno) {
             return $alumno->asesor_educativo->id;
         });
 
@@ -300,10 +430,11 @@ class ReporteVentasController extends Controller
 
 
 
-        return view('reportes.reporte_ventas.asesores',compact('alumnos', 'fecha', 'fecha_antes', 'fecha_despues','asesores','tipo'));
+        return view('reportes.reporte_ventas.asesores', compact('alumnos', 'fecha', 'fecha_antes', 'fecha_despues', 'asesores', 'tipo'));
     }
 
-    public function convertir_ventas_fiscales(Request $request){
+    public function convertir_ventas_fiscales(Request $request)
+    {
         $tipo = $request->tipo;
 
         $sucursal = optional(session('sucursal'));
@@ -319,7 +450,7 @@ class ReporteVentasController extends Controller
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addMonth();
 
             $pagos = Pago::query()
-                ->where('id_sucursal','=',$sucursal->id)
+                ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('fecha', [$fecha->copy()->startOfMonth()->format('Y-m-d H:i:s'), $fecha->copy()->endOfMonth()->format('Y-m-d H:i:s')])
                 ->orderBy('folio', 'asc')->get();
 
@@ -338,7 +469,7 @@ class ReporteVentasController extends Controller
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDays(7);
 
             $pagos = Pago::query()
-                ->where('id_sucursal','=',$sucursal->id)
+                ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('created_at', [$fecha->copy()->startOfWeek()->format('Y-m-d H:i:s'), $fecha->copy()->endOfWeek()->format('Y-m-d H:i:s')])
                 ->orderBy('folio', 'asc')->get();
 
@@ -346,11 +477,11 @@ class ReporteVentasController extends Controller
             $fecha_despues = new Date($fecha_despues);
         }
 
-        $porcentaje_configuracion = Configuracion::where('nombre','=','porcentaje_fiscal')->first();
+        $porcentaje_configuracion = Configuracion::where('nombre', '=', 'porcentaje_fiscal')->first();
 
         // SI NO ESTA CONFIGURADO EL PORCENTAJE FISCAL
-        if(!$porcentaje_configuracion){
-            Session::flash('error','Se debe configurar un porcentaje en la configuración global de la plataforma');
+        if (!$porcentaje_configuracion) {
+            Session::flash('error', 'Se debe configurar un porcentaje en la configuración global de la plataforma');
             return redirect()->back();
         }
 
@@ -361,36 +492,36 @@ class ReporteVentasController extends Controller
         $porcentaje_fiscal_real = $pagos->whereNotNull('folio_fiscal')->sum('monto') / $pagos->sum('monto') * 100;
 
         // dd($porcentaje_fiscal_real);
-        if($porcentaje_fiscal_real <= $porcentaje_esperado){
-            foreach($pagos->whereNull('folio_fiscal') as $pago){
+        if ($porcentaje_fiscal_real <= $porcentaje_esperado) {
+            foreach ($pagos->whereNull('folio_fiscal') as $pago) {
 
-                $max_folio_fiscal = Pago::where('id_sucursal','=', $sucursal->id)->max('folio_fiscal');
+                $max_folio_fiscal = Pago::where('id_sucursal', '=', $sucursal->id)->max('folio_fiscal');
 
                 $max_folio_fiscal = $max_folio_fiscal + 1;
 
-                $pago->update(['folio_fiscal'=>$max_folio_fiscal]);
+                $pago->update(['folio_fiscal' => $max_folio_fiscal]);
                 // Abono::where('id_pago','=',$pago->id)->update(['venta_fiscal'=>1]);
-                $pago->abonos()->update(['venta_fiscal'=>1]);
+                $pago->abonos()->update(['venta_fiscal' => 1]);
                 // break;
                 if ($tipo == 'mes') {
-                $pas = Pago::query()
-                ->where('id_sucursal','=',$sucursal->id)
-                ->whereBetween('fecha', [$fecha->copy()->startOfMonth()->format('Y-m-d H:i:s'), $fecha->copy()->endOfMonth()->format('Y-m-d H:i:s')])
-                ->orderBy('folio', 'asc')->get();
+                    $pas = Pago::query()
+                        ->where('id_sucursal', '=', $sucursal->id)
+                        ->whereBetween('fecha', [$fecha->copy()->startOfMonth()->format('Y-m-d H:i:s'), $fecha->copy()->endOfMonth()->format('Y-m-d H:i:s')])
+                        ->orderBy('folio', 'asc')->get();
                 }
 
                 if ($tipo == 'semanal') {
                     $pas = Pago::query()
-                    ->where('id_sucursal','=',$sucursal->id)
-                    ->whereBetween('created_at', [$fecha->copy()->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
-                    ->orderBy('folio', 'asc')->get();
+                        ->where('id_sucursal', '=', $sucursal->id)
+                        ->whereBetween('created_at', [$fecha->copy()->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
+                        ->orderBy('folio', 'asc')->get();
                 }
 
                 // dd($pas);
 
                 $porcentaje_fiscal_real = $pas->whereNotNull('folio_fiscal')->sum('monto') / $pas->sum('monto') * 100;
 
-                if($porcentaje_fiscal_real >= $porcentaje_esperado){
+                if ($porcentaje_fiscal_real >= $porcentaje_esperado) {
                     break;
                 }
             }
@@ -398,9 +529,7 @@ class ReporteVentasController extends Controller
 
 
 
-        return response()->json([
-
-        ]);
+        return response()->json([]);
         // Session::flash('message','Se ajustaron las ventas no fiscales a fiscales de acuerdo al porcentaje correctamente');
         // return redirect()->back();
 
@@ -430,8 +559,8 @@ class ReporteVentasController extends Controller
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDay();
 
 
-            $ventas = Venta::query()->where('status','=','Cerrada')
-                ->where('id_sucursal','=',$sucursal->id)
+            $ventas = Venta::query()->where('status', '=', 'Cerrada')
+                ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('fecha', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
@@ -449,8 +578,8 @@ class ReporteVentasController extends Controller
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subMonth();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addMonth();
 
-            $ventas = Venta::query()->where('status','=','Cerrada')
-                ->where('id_sucursal','=',$sucursal->id)
+            $ventas = Venta::query()->where('status', '=', 'Cerrada')
+                ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('fecha', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
@@ -468,8 +597,8 @@ class ReporteVentasController extends Controller
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDays(7);
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDays(7);
 
-            $ventas = Venta::query()->where('status','=','Cerrada')
-                ->where('id_sucursal','=',$sucursal->id)
+            $ventas = Venta::query()->where('status', '=', 'Cerrada')
+                ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('fecha', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
@@ -486,8 +615,8 @@ class ReporteVentasController extends Controller
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subYear();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addYear();
 
-            $ventas = Venta::query()->where('status','=','Cerrada')
-                ->where('id_sucursal','=',$sucursal->id)
+            $ventas = Venta::query()->where('status', '=', 'Cerrada')
+                ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('fecha', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
@@ -503,18 +632,18 @@ class ReporteVentasController extends Controller
 
         $ventas =  $ventas->get();
 
-        return view('reportes.reporte_ventas.index_productos',compact('ventas', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo'));
+        return view('reportes.reporte_ventas.index_productos', compact('ventas', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo'));
     }
 
 
-    public function eliminar_pago(Request $request,Pago $pago)
+    public function eliminar_pago(Request $request, Pago $pago)
     {
         DB::beginTransaction();
 
         try {
             $pago->load('abonos.alumno_pago');
 
-            $pago->abonos->each(function($abono){
+            $pago->abonos->each(function ($abono) {
                 $alumno_pago = $abono->alumno_pago;
                 $alumno_pago->saldo = $alumno_pago->saldo + $abono->monto;
                 $alumno_pago->save();

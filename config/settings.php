@@ -341,6 +341,11 @@ return [
             'display_name'  => 'Eliminar Movimiento reporte ventas',
             'description'   => 'Permite eliminar un movimiento del reporte de ventas'
         ],
+        [
+            'name'          => 'generar_corte_caja',
+            'display_name'  => 'Generar Corte de caja',
+            'description'   => 'Permite generar el corte de caja'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

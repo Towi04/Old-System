@@ -322,6 +322,19 @@
         </div>
 
         <div class="col-lg-3 mb-3 no_print">
+
+            @can('generar_corte_caja')
+                <div class="row pb-2">
+                    <div class="col-12">
+                        <a class="btn btn-block btn-primary"
+                            target="_blank"
+                            href="{{ route('reportes.reporte-ventas.corte-caja',['tipo' => request('tipo','dia'),'fecha'=> request('fecha')]) }}">
+                            <i class="fas fa-pdf"></i> Corte de caja
+                        </a>
+                    </div>
+                </div>
+            @endcan
+
             <div class="col-sm-12 col-xxxl-12 p-1">
                 <a class="element-box el-tablo p-3" href="#">
                   <div class="label mb-2">
