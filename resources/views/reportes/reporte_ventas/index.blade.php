@@ -248,7 +248,8 @@
                                                 data-value="{{ $pago->fecha->format('Y-m-d') }}"
                                                 data-pk="{{ $pago->id }}"
                                                 data-url="{{ route('abonos.actualizar_pago_xeditable') }}">
-                                                {{ $pago->fecha->format('d-m-Y h:i a') }}
+                                                {{ $pago->fecha->format('d-m-Y') }}<br>
+                                                {{ $pago->fecha->format('h:i a') }}
                                             </a>
 
                                         </td>
