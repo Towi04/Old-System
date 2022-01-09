@@ -46,6 +46,7 @@
                             <th></th>
                             <th></th>
 
+                            <th>Apartado</th>
                             <th>Telefono</th>
                             <th>Email</th>
                             <th>Observaciones</th>
@@ -106,6 +107,7 @@
                 { data: 'apellido_paterno', name: 'apellido_paterno',class: 'text-nowrap',visible:false},
                 { data: 'apellido_materno', name: 'apellido_materno',class: 'text-nowrap',visible:false},
 
+                { data: 'saldo',name: 'saldo',class: 'text-nowrap'},
                 { data: 'telefono',name: 'nombre_alumno',class: 'text-nowrap'},
                 { data: 'celular', name: 'celular',class: 'text-nowrap'},
                 { data: 'observaciones', name:'observaciones',class: ''},

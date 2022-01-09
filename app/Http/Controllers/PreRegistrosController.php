@@ -48,6 +48,9 @@ class PreRegistrosController extends Controller
             ->addColumn('fecha_nacimiento',function($model){
                 return optional($model->fecha_nacimiento)->format('d/m/Y');
             })
+            ->addColumn('saldo',function($model){
+                return "$ {$model->saldo}";
+            })
             ->addColumn('buttons', 'alumnos.pre_registro.datatables._buttons')
             ->editColumn('created_at', function($model){
                 return optional($model->created_at)->format('d/m/Y');
