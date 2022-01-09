@@ -19,12 +19,13 @@
             <img class="logo-corporativo" src="{{ imgToBase64(public_path('img/logo.png')) }}" width="100px">
             <h1 class="text-uppercase titulo-principal text-primary">CORTE DE CAJA</h1>
             <h3 class="text-uppercase text-center text-primary">{{ $titulo }}</h3>
-            <p class="text-uppercase text-center text-primary"> <span class="font-weight-bold">Impreso por:</span> {{ $autor }}</p>
+            <p class="text-uppercase text-center text-primary"> <span class="font-weight-bold">Impreso por:</span> {{ $autor }}<br><br><small>el {{date('d-m-Y H:i a')}}</small></p>
+
         </div>
     </div>
 </header>
 
-<main class="contenido">
+<main class="contenido" >
     <table class="table table-bordered">
         <thead>
             <tr>
