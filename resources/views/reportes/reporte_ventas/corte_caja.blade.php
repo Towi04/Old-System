@@ -29,8 +29,8 @@
         <thead>
             <tr>
                 <th>Folio</th>
-                <th>No control</th>
                 <th>Fecha Abono</th>
+                <th>No control</th>
                 <th>Alumno</th>
                 <th>Concepto</th>
                 <th>Recibido por</th>
@@ -66,6 +66,14 @@
                     </td>
                 </tr>
             @endforeach
+            <tr class="gradeX" >
+                    <td colspan="6" class="text-primary text-right text-white bg-primary">
+                        TOTAL: 
+                    </td>
+                    <td class="text-nowrap text-right">
+                        ${{ number_format($pagos->sum('monto'),2,'.',',') }}
+                    </td>
+                </tr>
         </tbody>
     </table>
 </main>
