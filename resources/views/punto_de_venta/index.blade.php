@@ -215,7 +215,7 @@
                                     {!! Form::number('monto',null, [ 'class' => 'form-control form-control-sm','title' => 'Escribe el monto','placeholder' => 'Escribe aqui el monto','autocomplete' => 'off','required' => true,'step' =>'0.01']) !!}
                                 </div>
                             </div>
-                        
+
                             {{-- <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     {!! Form::label('folio', 'Folio:*', ['class' => 'form-label']) !!}
@@ -354,7 +354,7 @@
 
                 var newOption = new Option(data.text, data.id, false, false);
                 dom.select_alumno.append(newOption).trigger('change');
-                
+
                 $.post("{{route('punto_de_venta.traer_grupos')}}", {id:{{$alumno_huella->id}} },
                     function (grupos) {
                         traer_grupos(grupos);
@@ -362,7 +362,7 @@
                     "json"
                 );
 
-                
+
 
             @endif
 
@@ -615,7 +615,8 @@
                         format: 'dd-mm-yyyy',
                         ignoreReadonly: false,
                         todayHighlight: true,
-                        todayBtn: true
+                        todayBtn: true,
+                        autoclose: true,
                     });
                 })(dom.pago_manual);
             @endcan

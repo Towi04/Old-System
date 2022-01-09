@@ -24,7 +24,7 @@
             <div class="element-box">
                 {!! Form::model($alumno, ['route' => ['alumnos.update', $alumno], 'method' => 'PUT', 'accept-charset' => 'UTF-8', 'enctype' => 'multipart/form-data','onsubmit' => "wait.modal('show')"]) !!}
                     <h5 class="form-header">
-                        Llena el formulario
+                        Llena el formulario <small>(*) Campos Requeridos</small>
                     </h5>
 
                     @include('alumnos.partials._fields')

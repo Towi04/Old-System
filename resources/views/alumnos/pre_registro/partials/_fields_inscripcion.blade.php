@@ -48,7 +48,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 {!! Form::label('fecha_nacimiento', 'Fecha nacimiento:*'); !!}
-                {!! Form::date('fecha_nacimiento', null, ['class' => 'form-control', 'placeholder' => 'Escribe la fecha de nacimiento','required' => true]); !!}
+                {!! Form::text('fecha_nacimiento', null, ['class' => 'form-control', 'placeholder' => 'Escribe la fecha de nacimiento','autocomplete' => 'off','required' => true]); !!}
             </div>
         </div>
     </div>
@@ -164,7 +164,7 @@
         <div class="col-md-12" id="seccion_grupo" >
             <div class="form-group">
                 {!! Form::label('id_grupo', 'Grupo'); !!}
-                {!! Form::select('id_grupo',[],null, ['class' => 'form-control','style' => 'width:100%',]) !!}
+                {!! Form::select('id_grupo',[],null, ['class' => 'form-control','style' => 'width:100%','required' => true]) !!}
             </div>
         </div>
 
@@ -212,7 +212,7 @@
 @endcan
 
         <div class="col-md-12">
-            {!! Form::label('solicitud_factura', 'Solicitud Factura*'); !!} &nbsp;
+            {!! Form::label('solicitud_factura', 'Solicitud Factura:'); !!} &nbsp;
             <label>
                 {!! Form::checkbox('solicitud_factura', 1, null, ['class' => 'i-checks']) !!}
             </label>

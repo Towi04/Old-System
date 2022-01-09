@@ -20,21 +20,14 @@
                     <fieldset class="form-group">
                         <legend><span>Forma de pago</span></legend>
                         <div class="row">
-                            {{-- <div class="col-12 col-sm-6">
-                                <div class="form-group">
-                                    {!! Form::label('folio', 'Folio:*', ['class' => 'form-label']) !!}
-                                    {!! Form::number('folio',null, [ 'class' => 'form-control form-control-sm','title' => 'Escribe el monto','placeholder' => 'Escribe el foli asignado','autocomplete' => 'off','required' => true]) !!}
-                                </div>
-                            </div> --}}
-
-                            <div class="col-12 col-sm-6">
+                            <div class="col-12">
                                 {!! Form::label('tipo_pago','Tipo pago:*') !!}
                                 {!! Form::select('tipo_pago', [
-                                        'Efectivo'              => 'Efectivo',
-                                        'Tarjate de debito'     => 'Tarjate de debito',
-                                        'Tarjate de crédito'    => 'Tarjate de crédito',
-                                        'Transferencia'         => 'Transferencia'
-                                    ],null, ['class' => 'form-control form-control-sm','form-selector'=> '','placeholder' =>'Selecciona una forma de pago' ,'required' => true]) !!}
+                                    'Efectivo'              => 'Efectivo',
+                                    'Tarjate de debito'     => 'Tarjate de debito',
+                                    'Tarjate de crédito'    => 'Tarjate de crédito',
+                                    'Transferencia'         => 'Transferencia'
+                                ],null, ['class' => 'form-control form-control-sm','form-selector'=> '','placeholder' =>'Selecciona una forma de pago' ,'required' => true]) !!}
                             </div>
                         </div>
                     </fieldset>

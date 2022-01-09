@@ -38,6 +38,7 @@
     </div>
 
    @include('alumnos.pre_registro.modals.inscripcion')
+   @include('alumnos.pre_registro.modals.ticket')
 @endsection
 
 
@@ -46,14 +47,43 @@
 <script type="text/javascript">
     $(document).ready(function() {
 
-        const dom = {
+        var dom = {
             especialidad: $("#id_especialidad"),
             grupo: $('#id_grupo'),
             form_inscribir: $('#form-inscribir'),
 
             modal_inscripcion: $("#modal-inscripcion"),
             form_inscripcion: $("#form-inscripcion"),
+            btn_inscribir: $("#inscribir"),
+
+            tikets:{
+                contenido_ticket:$("#contenido-ticket"),
+                modal: $("#modal-ticket"),
+            },
         }
+
+        var CONFIG_DATEPICKER = {
+            days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+            daysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+            daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+            months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+            monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+            today: "Hoy",
+            monthsTitle: "Meses",
+            clear: "Borrar",
+            weekStart: 1,
+        }
+
+        $.fn.datepicker.dates['es'] = CONFIG_DATEPICKER  //👉 DATEPICKER
+
+        dom.form_inscribir.find('[name="fecha_nacimiento"]').datepicker({
+            language: 'es',
+            format: 'dd-mm-yyyy',
+            ignoreReadonly: false,
+            todayHighlight: true,
+            todayBtn: true,
+            autoclose: true,
+        });
 
         dom.especialidad.change(function(e){
             if(!e.target.value){
@@ -89,8 +119,7 @@
 
         dom.especialidad.trigger('change')
 
-
-        $('#inscribir').click(function(){
+        dom.btn_inscribir.click(function(){
 
              if(dom.grupo.val() != '' && $('input[name=forma_pago]:checked').val() !== undefined){
 
@@ -133,26 +162,52 @@
         dom.form_inscripcion.submit(function(e){
             e.preventDefault();
 
-            const inputFolio = $('<input>', {
-                'type': 'hidden',
-                'name': 'folio',
-                'value': $("#folio").val(),
-            });
-
-            const inputFormaPago = $('<input>', {
-                'type': 'hidden',
-                'name': 'tipo_pago',
-                'value': $("#tipo_pago").val(),
-            });
-
             dom.modal_inscripcion.modal('hide');
             wait.modal('show');
 
-            dom.form_inscribir.append(inputFolio);
-            dom.form_inscribir.append(inputFormaPago);
-            dom.form_inscribir.submit();
 
-        })
+            var formData = new FormData(dom.form_inscribir[0]);
+            formData.append('tipo_pago',$("#tipo_pago").val());
+
+            $.ajax({
+                url: dom.form_inscribir.attr('action'),
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (response){
+                    setTimeout(() => {
+                        wait.modal('hide');
+
+                        var pago = response.pago;
+
+                        if(pago) {
+                            var route = "{{ route('punto_de_venta.ticket','_pago') }}".replace('_pago',pago.id);
+
+                            dom.tikets.modal.data('redirect',response.redirect)
+                            dom.tikets.modal.modal('show');
+                            dom.tikets.contenido_ticket.html();
+                            dom.tikets.contenido_ticket.html(`<iframe scrolling='auto' type='text/html' scroll='auto' src='${route}' width='100%' height='450px' align='center'></iframe>`);
+                        }else{
+                            window.location.href = response.redirect;
+                        }
+
+                    }, 250);
+                },
+                error:function(error){
+                    setTimeout(() => {
+                        wait.modal('hide');
+                        toastr.error('Error', 'Ocurrio un error inesperado');
+                    }, 250);
+                }
+            });
+        });
+
+       dom.tikets.modal.on("hidden.bs.modal", function () {
+            var redirect = dom.tikets.modal.data('redirect');
+            window.location.href = redirect;
+        });
+
     });
 
 </script>

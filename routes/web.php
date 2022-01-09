@@ -213,6 +213,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::prefix('reportes')->name('reportes.')->group(function () {
         Route::prefix('reporte-ventas')->name('reporte-ventas.')->group(function () {
             Route::get('/',[ReporteVentasController::class,'index'])->name('index');
+            Route::get('corte-caja',[ReporteVentasController::class,'corte_caja'])->name('corte-caja');
             Route::delete('eliminar-pago/{pago}',[ReporteVentasController::class,'eliminar_pago'])->name('eliminar-pago');
         });
 
