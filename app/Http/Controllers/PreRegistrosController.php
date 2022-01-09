@@ -6,6 +6,7 @@ use App\Models\Grupo;
 use App\Models\Alumno;
 use App\Models\User;
 use App\Models\Especialidad;
+use App\Models\Pago;
 use Illuminate\Http\Request;
 use App\Services\FacturacionService;
 use App\Services\PagoInscripcionService;
@@ -249,7 +250,12 @@ class PreRegistrosController extends Controller
 
     public function formulario_inscripcion(Alumno $alumno,FacturacionService $facturacionService)
     {
-        $sucursal = optional(session('sucursal'));
+        if($alumno->status == config('alumnos.status.Alumno')) {
+            return redirect()
+            ->route('pre-registro-alumnos.index')
+            ->with(['error' => 'El alumno ya ha sido inscrito']);
+        }
+
 
         return view('alumnos.pre_registro.inscribir', [
             'alumno'            => $alumno,
@@ -357,6 +363,15 @@ class PreRegistrosController extends Controller
                     $pis->semanalPorGrupo($grupo_inscripcion);
                 break;
             }
+        }
+
+        if($request->ajax()) {
+            return response()->json([
+                'success'   => true,
+                'message'   => 'El alumno se inscribio con éxito',
+                'redirect'  => route('alumnos.show',$alumno),
+                'pago'      => $request->has('id_grupo') ? Pago::first()->where('id_alumno',$alumno->id)->latest()->first() : ''
+            ]);
         }
 
         return redirect()->route('pre-registro-alumnos.index')->with([

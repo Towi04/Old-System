@@ -6,16 +6,15 @@ use App\Models\User;
 use App\Models\Grupo;
 use App\Models\Alumno;
 use App\Models\AlumnoPago;
-use Illuminate\Support\Str;
 use App\Models\Especialidad;
+use App\Services\FacturacionService;
+use App\Services\PagoInscripcionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Services\FacturacionService;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
-use App\Services\PagoInscripcionService;
 use Yajra\DataTables\Facades\DataTables;
 use Symfony\Component\HttpFoundation\Response as HTTPMessages;
 
@@ -29,48 +28,45 @@ class AlumnosController extends Controller
     public function datatables(Request $request)
     {
         $query = Alumno::query()
-            ->where('status',config('alumnos.status.Alumno'))
-            ->when($request->input('id_sucursal'),function($q,$id_sucursal){
-                $q->where('id_sucursal',$id_sucursal);
-            })->when($request->input('alumnos_no_grupos'),function($q,$alumnos_no_grupos){
-                if($alumnos_no_grupos == 'true'){
+            ->where('status', config('alumnos.status.Alumno'))
+            ->when($request->input('id_sucursal'), function ($q, $id_sucursal) {
+                $q->where('id_sucursal', $id_sucursal);
+            })->when($request->input('alumnos_no_grupos'), function ($q, $alumnos_no_grupos) {
+                if ($alumnos_no_grupos == 'true') {
                     $q->whereRaw(DB::raw('id not in (Select id_alumno from alumnos_grupos)'));
                 }
             });
 
         return DataTables::eloquent($query)
-            ->addColumn('nombre_alumno',function($model){
-                return "<a href=".route('alumnos.show', $model->id).">{$model->nombres} {$model->apellido_paterno} {$model->apellido_materno}</a>";
+            ->addColumn('nombre_alumno', function ($model) {
+                return "<a href=" . route('alumnos.show', $model->id) . ">{$model->nombres} {$model->apellido_paterno} {$model->apellido_materno}</a>";
             })
-            ->addColumn('fecha_nacimiento',function($model){
+            ->addColumn('fecha_nacimiento', function ($model) {
                 return optional($model->fecha_nacimiento)->format('d/m/Y');
             })
-            ->addColumn('no_grupos',function($model){
+            ->addColumn('no_grupos', function ($model) {
                 return $model->grupos->count();
             })
             ->addColumn('buttons', 'alumnos.datatables._buttons')
 
-            ->rawColumns(['buttons','nombre_alumno'])
+            ->rawColumns(['buttons', 'nombre_alumno'])
             ->make(true);
     }
 
     public function show(Alumno $alumno)
     {
-        $alumno->load(['especialidad','ventas.partidas.producto']);
+        $alumno->load(['especialidad', 'ventas.partidas.producto']);
 
-
-        return view('alumnos.show',compact('alumno'));
+        return view('alumnos.show', compact('alumno'));
     }
 
     public function create(FacturacionService $facturacionService)
     {
-        $sucursal = optional(session('sucursal'));
-
-        return view('alumnos.create',[
+        return view('alumnos.create', [
             'alumno'            => new Alumno,
-            'asesores'          => User::query()->get()->pluck('fullname','id')->sort()->prepend('CNCM',''),
-            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
-            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
+            'asesores'          => User::query()->get()->pluck('fullname', 'id')->sort()->prepend('CNCM', ''),
+            'especialidades'    => Especialidad::query()->pluck('nombre', 'id')->sort()->prepend('Selecciona una especialidad', ''),
+            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi', '')
         ]);
     }
 
@@ -162,13 +158,13 @@ class AlumnosController extends Controller
             $pis->setAlumno($alumno);
 
             switch ($request->input('forma_pago')) {
-                case config('alumnos.forma_pago.mensual','mensual'):
+                case config('alumnos.forma_pago.mensual', 'mensual'):
                     $pis->mensualPorGrupo($grupo_inscripcion);
-                break;
+                    break;
 
-                case config('alumnos.forma_pago.semanal','semanal'):
+                case config('alumnos.forma_pago.semanal', 'semanal'):
                     $pis->semanalPorGrupo($grupo_inscripcion);
-                break;
+                    break;
             }
         }
 
@@ -177,23 +173,21 @@ class AlumnosController extends Controller
         ]);
     }
 
-    public function edit(Alumno $alumno,FacturacionService $facturacionService)
+    public function edit(Alumno $alumno, FacturacionService $facturacionService)
     {
-        abort_unless(Auth::user()->canany(['editar_alumno','editar_datos_fiscales']), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
-
-        $sucursal = optional(session('sucursal'));
+        abort_unless(Auth::user()->canany(['editar_alumno', 'editar_datos_fiscales']), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
         return view('alumnos.edit', [
             'alumno'            => $alumno,
-            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
-            'asesores'          => User::query()->get()->pluck('fullname','id')->sort()->prepend('CNCM',''),
-            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
+            'especialidades'    => Especialidad::query()->pluck('nombre', 'id')->sort()->prepend('Selecciona una especialidad', ''),
+            'asesores'          => User::query()->get()->pluck('fullname', 'id')->sort()->prepend('CNCM', ''),
+            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi', '')
         ]);
     }
 
     public function update(Request $request, Alumno $alumno)
     {
-        if(Auth::user()->can('editar_alumno')){
+        if (Auth::user()->can('editar_alumno')) {
             $rules = [
                 'id_sucursal'           => 'required',
                 'numero_control'        => 'required',
@@ -234,7 +228,7 @@ class AlumnosController extends Controller
                 'observaciones'         => 'nullable',
                 'forma_pago'            => 'required',
             ];
-        }else{
+        } else {
             $rules = [
                 # DATOS DE FACTURACION
                 'solicitud_factura'      => 'nullable',
@@ -294,7 +288,7 @@ class AlumnosController extends Controller
     public function destroy(Alumno $alumno, Request $request)
     {
         $alumno->grupos()->detach();
-        $alumno->pagos()->where('status',config('pagos.status.Pendiente'))->delete();
+        $alumno->pagos()->where('status', config('pagos.status.Pendiente'))->delete();
         $alumno->delete();
 
         if ($request->ajax()) {
@@ -317,16 +311,16 @@ class AlumnosController extends Controller
         $resultCount = 10;
         $offset = ($page - 1) * $resultCount;
 
-        $results = Alumno::with('grupos.especialidad')->select(['id', 'nombres','apellido_paterno','apellido_materno','nuevo_numero_control'])
-            ->when($request->input('id_sucursal'),function($q,$sucursal){
-                $q->where('id_sucursal',$sucursal);
+        $results = Alumno::with('grupos.especialidad')->select(['id', 'nombres', 'apellido_paterno', 'apellido_materno', 'nuevo_numero_control'])
+            ->when($request->input('id_sucursal'), function ($q, $sucursal) {
+                $q->where('id_sucursal', $sucursal);
             })
-            ->when($request->input('status'),function($q,$status){
-                $q->where('status','=',$status);
+            ->when($request->input('status'), function ($q, $status) {
+                $q->where('status', '=', $status);
             })
-            ->where(function($q) use($term){
-                $q->whereRaw("CONCAT(`nombres`,`apellido_paterno`,`apellido_materno`) LIKE REPLACE(?, ' ','')",["%{$term}%"])
-                ->orWhereRaw("`nuevo_numero_control` LIKE REPLACE(?, ' ','')",["%{$term}%"]);
+            ->where(function ($q) use ($term) {
+                $q->whereRaw("CONCAT(`nombres`,`apellido_paterno`,`apellido_materno`) LIKE REPLACE(?, ' ','')", ["%{$term}%"])
+                    ->orWhereRaw("`nuevo_numero_control` LIKE REPLACE(?, ' ','')", ["%{$term}%"]);
             })
             ->orderBy('nombres', 'asc')
             ->skip($offset)
@@ -334,15 +328,15 @@ class AlumnosController extends Controller
             ->get();
 
         $count = Alumno::query()->select('id')
-            ->when($request->input('id_sucursal'),function($q,$id_sucursal){
-                $q->where('id_sucursal',$id_sucursal);
+            ->when($request->input('id_sucursal'), function ($q, $id_sucursal) {
+                $q->where('id_sucursal', $id_sucursal);
             })
-            ->when($request->input('status'),function($q,$status){
-                $q->where('status',$status);
+            ->when($request->input('status'), function ($q, $status) {
+                $q->where('status', $status);
             })
-            ->where(function($q) use($term){
-                $q->whereRaw("CONCAT(`nombres`,`apellido_paterno`,`apellido_materno`) LIKE REPLACE(?, ' ','')",["%{$term}%"])
-                ->orWhereRaw("`nuevo_numero_control` LIKE REPLACE(?, ' ','')",["%{$term}%"]);
+            ->where(function ($q) use ($term) {
+                $q->whereRaw("CONCAT(`nombres`,`apellido_paterno`,`apellido_materno`) LIKE REPLACE(?, ' ','')", ["%{$term}%"])
+                    ->orWhereRaw("`nuevo_numero_control` LIKE REPLACE(?, ' ','')", ["%{$term}%"]);
             })
             ->count();
 
@@ -368,19 +362,19 @@ class AlumnosController extends Controller
     {
 
         $query = AlumnoPago::query()
-            ->when($request->input('id_alumno'),function($q,$id_alumno){
-                $q->where('id_alumno',$id_alumno);
+            ->when($request->input('id_alumno'), function ($q, $id_alumno) {
+                $q->where('id_alumno', $id_alumno);
             })
-            ->when($request->input('status'),function($q,$status){
-                $q->where('status',$status);
+            ->when($request->input('status'), function ($q, $status) {
+                $q->where('status', $status);
             })
-            ->when($request->input('id_grupo'),function($q,$id_grupo){
-                $q->where('id_grupo',$id_grupo);
+            ->when($request->input('id_grupo'), function ($q, $id_grupo) {
+                $q->where('id_grupo', $id_grupo);
             });
 
         return DataTables::eloquent($query)
             ->addIndexColumn()
-            ->editColumn('fecha_limite',function($model){
+            ->editColumn('fecha_limite', function ($model) {
                 return optional($model->fecha_limite)->format('d/m/Y');
             })
             ->rawColumns([])
@@ -389,42 +383,42 @@ class AlumnosController extends Controller
 
     public function datatables_pagos_pendientes(Request $request)
     {
-        if(isset($request->id_alumno)){
+        if (isset($request->id_alumno)) {
             $query = AlumnoPago::query()
-                ->when($request->input('id_alumno'),function($q,$id_alumno){
-                    $q->where('id_alumno',$id_alumno);
+                ->when($request->input('id_alumno'), function ($q, $id_alumno) {
+                    $q->where('id_alumno', $id_alumno);
                 })
-                ->when($request->input('status'),function($q,$status){
-                    $q->where('status',$status);
-                })->when($request->input('id_grupo'),function($q,$id_grupo){
-                    $q->where('id_grupo',$id_grupo);
+                ->when($request->input('status'), function ($q, $status) {
+                    $q->where('status', $status);
+                })->when($request->input('id_grupo'), function ($q, $id_grupo) {
+                    $q->where('id_grupo', $id_grupo);
                 });
 
             $total_pendiente = AlumnoPago::query()
-                ->when($request->input('id_alumno'),function($q,$id_alumno){
-                    $q->where('id_alumno',$id_alumno);
+                ->when($request->input('id_alumno'), function ($q, $id_alumno) {
+                    $q->where('id_alumno', $id_alumno);
                 })
-                ->when($request->input('status'),function($q,$status){
-                    $q->where('status',$status);
-                })->when($request->input('id_grupo'),function($q,$id_grupo){
-                    $q->where('id_grupo',$id_grupo);
+                ->when($request->input('status'), function ($q, $status) {
+                    $q->where('status', $status);
+                })->when($request->input('id_grupo'), function ($q, $id_grupo) {
+                    $q->where('id_grupo', $id_grupo);
                 })->sum('saldo');
-        }else{
-            $query = AlumnoPago::where('id_alumno','xxxxxxxxx');
+        } else {
+            $query = AlumnoPago::where('id_alumno', 'xxxxxxxxx');
             $total_pendiente = 0;
         }
 
         return DataTables::eloquent($query)
-            ->editColumn('fecha_limite',function($model){
+            ->editColumn('fecha_limite', function ($model) {
                 return optional($model->fecha_limite)->format('d/m/Y');
             })
-            ->editColumn('monto',function($model){
-                return number_format($model->monto,2,'.',',');
+            ->editColumn('monto', function ($model) {
+                return number_format($model->monto, 2, '.', ',');
             })
-            ->editColumn('saldo',function($model){
-                return number_format($model->saldo,2,'.',',');
+            ->editColumn('saldo', function ($model) {
+                return number_format($model->saldo, 2, '.', ',');
             })
-            ->editColumn('status',function($model){
+            ->editColumn('status', function ($model) {
                 return "<span class='badge badge-danger text-white'>{$model->status}</span>";
             })
 
@@ -438,18 +432,14 @@ class AlumnosController extends Controller
 
     public function formulario_inscribir_otro_grupo(Alumno $alumno)
     {
-        $sucursal = optional(session('sucursal'));
-
         return view('alumnos.inscripcion', [
             'alumno'            => $alumno,
-            'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
+            'especialidades'    => Especialidad::query()->pluck('nombre', 'id')->sort()->prepend('Selecciona una especialidad', ''),
         ]);
     }
 
-    public function inscribir_a_otro_grupo(Request $request, $id,PagoInscripcionService $pis){
-
-        $sucursal = optional(session('sucursal'));
-
+    public function inscribir_a_otro_grupo(Request $request, $id, PagoInscripcionService $pis)
+    {
         $alumno = Alumno::find($id);
 
         if ($request->has('id_grupo')) {
@@ -460,16 +450,16 @@ class AlumnosController extends Controller
             $pis->setAlumno($alumno);
 
             switch ($request->input('forma_pago')) {
-                case config('alumnos.forma_pago.mensual','mensual'):
+                case config('alumnos.forma_pago.mensual', 'mensual'):
                     $pis->mensualPorGrupo($grupo_inscripcion);
-                break;
-                case config('alumnos.forma_pago.semanal','semanal'):
+                    break;
+                case config('alumnos.forma_pago.semanal', 'semanal'):
                     $pis->semanalPorGrupo($grupo_inscripcion);
-                break;
+                    break;
             }
         }
 
-        Session::flash('message','Se inscribio al alumno con éxito');
+        Session::flash('message', 'Se inscribio al alumno con éxito');
         return redirect()->route('alumnos.show', $alumno->id);
     }
 }
