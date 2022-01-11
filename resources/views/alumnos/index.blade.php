@@ -95,13 +95,17 @@
                 },
                 pageLength: 10,
                 responsive: true,
-                buttons: [{
-                    extend: 'excel',
-                    text:'Excel <i class="fas fa-file-excel"></i>',
-                    className: 'btn btn-primary btn-sm',
-                    extend: 'excel',
-                    title: 'Alumnos'
-                }],
+                buttons: [
+                    @can('descargar_excel_bd')
+                    {
+                        extend: 'excel',
+                        text:'Excel <i class="fas fa-file-excel"></i>',
+                        className: 'btn btn-primary btn-sm',
+                        extend: 'excel',
+                        title: 'Alumnos'
+                    }
+                    @endcan
+                ],
                 columns: [
                     { data: 'nuevo_numero_control', name: 'nuevo_numero_control',class: 'text-nowrap'},
                     { data: 'numero_control', name: 'numero_control',class: 'text-nowrap'},

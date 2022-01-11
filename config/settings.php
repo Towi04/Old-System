@@ -351,6 +351,11 @@ return [
             'display_name'  => 'Ocultar ventas no fiscales',
             'description'   => 'Permite mostrar/ocultar ventas no fiscales'
         ],
+        [
+            'name'          => 'descargar_excel_bd',
+            'display_name'  => 'Descargar exceles de bases de datos',
+            'description'   => 'Permite descargar informacion de bases de datos'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

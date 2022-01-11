@@ -80,12 +80,16 @@
             },
             pageLength: 10,
             responsive: true,
-            buttons: [{
-                extend: 'excel',
-                title: 'Especialidades',
-                text:'Excel <i class="fas fa-file-excel"></i>',
-                className: 'btn btn-primary btn-sm',
-            }],
+            buttons: [
+                @can('descargar_excel_bd')
+                {
+                    extend: 'excel',
+                    title: 'Especialidades',
+                    text:'Excel <i class="fas fa-file-excel"></i>',
+                    className: 'btn btn-primary btn-sm',
+                }
+                @endcan
+            ],
             columns: [
                 { data: 'id', name: 'id',class: 'text-nowrap'},
                 { data: 'nombre', name: 'nombre',class: 'text-nowrap'},

@@ -123,12 +123,16 @@
             pageLength: 10,
             lengthMenu: [[10,50,100,-1],['10','50','100','Todos']],
             responsive: true,
-            buttons: [{
-                title: 'Grupos',
-                extend: 'excel',
-                text:'Excel <i class="fas fa-file-excel"></i>',
-                className: 'btn btn-primary btn-sm',
-            }],
+            buttons: [
+                @can('descargar_excel_bd')
+                {
+                    title: 'Grupos',
+                    extend: 'excel',
+                    text:'Excel <i class="fas fa-file-excel"></i>',
+                    className: 'btn btn-primary btn-sm',
+                }
+                @endcan
+            ],
             columns: [
                 { data: 'id', name: 'id',class: 'text-nowrap'},
                 { data: 'clave', name: 'clave',class: 'text-nowrap'},
@@ -164,40 +168,40 @@
                 $('.finalizar_grupo').on('click',function(){
                     id= $(this).data('id')
                     swal({
-                title: "¿Estas seguro de FINALIZAR el grupo?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#ff3333",
-                cancelButtonColor: "#CDCDCD",
-                confirmButtonText: "Si, finalizar",
-                cancelButtonText: "Cancelar",
-                showLoaderOnConfirm: false,
-            }).then(function(result) {
-                if (!result.value) {
-                    return;
-                }
+                        title: "¿Estas seguro de FINALIZAR el grupo?",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#ff3333",
+                        cancelButtonColor: "#CDCDCD",
+                        confirmButtonText: "Si, finalizar",
+                        cancelButtonText: "Cancelar",
+                        showLoaderOnConfirm: false,
+                    }).then(function(result) {
+                        if (!result.value) {
+                            return;
+                        }
 
-                wait.modal('show');
+                        wait.modal('show');
 
-                $.ajax({
-                    url: "{{route('grupos.finalizar_grupo')}}",
-                    type: 'POST',
-                    cache: false,
-                    data: {
-                        _token: $("meta[name='csrf-token']").attr("content"),
-                        id:id
-                    },
-                    success: function (response){
-                        dt.ajax.reload( function(e){
-                            wait.modal('hide');
-                            toastr.success('Éxito', 'Se borró con éxito el registro');
-                        }, false )
-                    },
-                    fail:function(error){
-                        toastr.error('Error', 'Ocurrio un error inesperado');
-                    }
-                });
-            })
+                        $.ajax({
+                            url: "{{route('grupos.finalizar_grupo')}}",
+                            type: 'POST',
+                            cache: false,
+                            data: {
+                                _token: $("meta[name='csrf-token']").attr("content"),
+                                id:id
+                            },
+                            success: function (response){
+                                dt.ajax.reload( function(e){
+                                    wait.modal('hide');
+                                    toastr.success('Éxito', 'Se borró con éxito el registro');
+                                }, false )
+                            },
+                            fail:function(error){
+                                toastr.error('Error', 'Ocurrio un error inesperado');
+                            }
+                        });
+                    })
                 })
             },
         });

@@ -539,14 +539,14 @@
 
             $('#tabla_abonos').DataTable({
                 responsive: true,
-                "lengthMenu": [ [-1, 25, 50 ], ["Todos", 25, 50] ],
+                lengthMenu: [ [-1, 25, 50 ], ["Todos", 25, 50] ],
                 buttons: [
                     {extend: 'excel', title: 'Ventas'},
                 ],
-                "language": {
+                language: {
                     "lengthMenu": "Mostrar _MENU_ registros por pagina",
                     "zeroRecords": "No se encontro ningún registro",
-                "info": "Mostrando del _START_ al _END_ de _TOTAL_ registros. (Página _PAGE_ de _PAGES_)",
+                    "info": "Mostrando del _START_ al _END_ de _TOTAL_ registros. (Página _PAGE_ de _PAGES_)",
                     "infoEmpty": "No hay registros disponibles",
                     "infoFiltered": "(Filtrado de un total de _MAX_ registros)",
                     "search": "Buscar:",
@@ -556,23 +556,24 @@
                         previous: '<i class="fas fa-chevron-left"></i>',
                         next: '<i class="fas fa-chevron-right"></i>'
                     },
-                "loadingRecords": "Cargando...",
+                    "loadingRecords": "Cargando...",
                     "processing":     "Procesando...",
                 },
                 "dom": "<'row'  <'toolbar col-sm-6 col-xs-3 text-left no_print' B> <'col-sm-6 col-xs-9 no_print'f>>" +
                 "<'row'<'col-sm-12 table-responsive'tr>>" +
                 "<'row'<'col-sm-12 col-lg-12 col-xs-12 no_print'p>>",
                 buttons: [
-                {
-                    "extend": 'excelHtml5',
-                    "text":'Excel <i class="fas fa-file-excel"></i>',
-                    'title': 'Reporte de ventas',
-                    "className": 'btn btn-primary',
-                }],
+                    @can('descargar_excel_bd')
+                    {
+                        "extend": 'excelHtml5',
+                        "text":'Excel <i class="fas fa-file-excel"></i>',
+                        'title': 'Reporte de ventas',
+                        "className": 'btn btn-primary',
+                    }
+                    @endcan
+                ],
                 order: [[0,'desc']]
-
             });
-
 
             $('#datepicker').datepicker({
                 language: 'es',
