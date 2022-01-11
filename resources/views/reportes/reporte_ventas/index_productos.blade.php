@@ -184,12 +184,12 @@
                             <tbody>
                                 @foreach ($ventas as $venta)
                                     <tr class="gradeX" id="venta-{{ $venta->id }}">
-                                        
+
                                             <td class="text-danger text-center">
                                                 {{ $venta->folio }}
                                             </td>
 
-                                        
+
                                         <td nowrap>{{ optional($venta->fecha)->format('d-m-Y H:i') }}</td>
                                         <td>
                                             {{ optional($venta->alumno)->fullname }}
@@ -270,7 +270,7 @@
                         <div class="value">
                             @if($ventas->sum('monto') > 0)
                             {{ number_format( $ventas->where('venta_fiscal',1)->sum('monto') / $ventas->sum('monto') *100, 2, '.', ',') }} %
-                            @else 
+                            @else
                             NO SE HAN REGISTRADO VENTAS
                             @endif
                         </div>
@@ -278,7 +278,7 @@
                     </div>
                     <button id="convertir_fiscales" class="btn btn-primary btn-block ">Convertir ventas no fiscales a fiscales</button>
                 @endif
-                
+
             @endcan
         </div>
     </div>
@@ -318,14 +318,14 @@
 
         $('#tabla_ventas').DataTable({
             responsive: true,
-            "lengthMenu": [ [-1, 25, 50 ], ["Todos", 25, 50] ],
+            lengthMenu: [ [-1, 25, 50 ], ["Todos", 25, 50] ],
             buttons: [
                 {extend: 'excel', title: 'Ventas'},
             ],
-            "language": {
+            language: {
                 "lengthMenu": "Mostrar _MENU_ registros por pagina",
                 "zeroRecords": "No se encontro ningún registro",
-            "info": "Mostrando del _START_ al _END_ de _TOTAL_ registros. (Página _PAGE_ de _PAGES_)",
+                "info": "Mostrando del _START_ al _END_ de _TOTAL_ registros. (Página _PAGE_ de _PAGES_)",
                 "infoEmpty": "No hay registros disponibles",
                 "infoFiltered": "(Filtrado de un total de _MAX_ registros)",
                 "search": "Buscar:",
@@ -335,21 +335,23 @@
                     previous: '<i class="fas fa-chevron-left"></i>',
                     next: '<i class="fas fa-chevron-right"></i>'
                 },
-            "loadingRecords": "Cargando...",
+                "loadingRecords": "Cargando...",
                 "processing":     "Procesando...",
             },
             "dom": "<'row'  <'toolbar col-sm-6 col-xs-3 text-left no_print' B> <'col-sm-6 col-xs-9 no_print'f>>" +
             "<'row'<'col-sm-12 table-responsive'tr>>" +
             "<'row'<'col-sm-12 col-lg-12 col-xs-12 no_print'p>>",
             buttons: [
-            {
-                "extend": 'excelHtml5',
-                "text":'Excel <i class="fas fa-file-excel"></i>',
-                'title': 'Reporte de ventas',
-                "className": 'btn btn-primary',
-            }],
-            order: [[0,'desc']]
-
+                @can('descargar_excel_bd')
+                {
+                    "extend": 'excelHtml5',
+                    "text":'Excel <i class="fas fa-file-excel"></i>',
+                    'title': 'Reporte de ventas',
+                    "className": 'btn btn-primary',
+                }
+                @endcan
+            ],
+            order: [[0,'desc']],
         });
 
         $('#datepicker').datepicker({
@@ -365,38 +367,37 @@
         });
 
         $('#convertir_fiscales').click(function(){
-                swal({
-                    title: "¿Estas seguro de convertir las ventas no fiscales a fiscales en este periodo?",
-                    text:'Esta acción no podrá deshacerse',
-                    type: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#1bc51c",
-                    cancelButtonColor: "#CDCDCD",
-                    confirmButtonText: "Si",
-                    cancelButtonText: "Cancelar",
-                    showLoaderOnConfirm: false,
-                }).then(function(result) {
-                    if (!result.value) {
-                        return;
-                    }
-                    // wait.modal('show');
+            swal({
+                title: "¿Estas seguro de convertir las ventas no fiscales a fiscales en este periodo?",
+                text:'Esta acción no podrá deshacerse',
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1bc51c",
+                cancelButtonColor: "#CDCDCD",
+                confirmButtonText: "Si",
+                cancelButtonText: "Cancelar",
+                showLoaderOnConfirm: false,
+            }).then(function(result) {
+                if (!result.value) {
+                    return;
+                }
 
-                    $.ajax({
-                        url: "{{route('reportes.reporte-ventas.convertir_ventas_fiscales')}}",
-                        type: 'POST',
-                        data: {
-                            tipo: "{{$tipo}}"
-                        },
-                        success: function (response){
-                            //  wait.modal('hide');
-                            
-                            location.reload();
-                        },
-                        fail:function(error){
-                            toastr.error('Error', 'Ocurrio un error inesperado');
-                        }
-                    });
-                })
+                $.ajax({
+                    url: "{{route('reportes.reporte-ventas.convertir_ventas_fiscales')}}",
+                    type: 'POST',
+                    data: {
+                        tipo: "{{$tipo}}"
+                    },
+                    success: function (response){
+                        //  wait.modal('hide');
+
+                        location.reload();
+                    },
+                    fail:function(error){
+                        toastr.error('Error', 'Ocurrio un error inesperado');
+                    }
+                });
+            })
         });
     </script>
 @endsection

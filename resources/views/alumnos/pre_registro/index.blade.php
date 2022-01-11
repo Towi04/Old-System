@@ -87,13 +87,17 @@
             },
             pageLength: 10,
             responsive: true,
-            buttons: [{
-                extend: 'excel',
-                title: 'Pre-registro Alumnos',
-                text:'Excel <i class="fas fa-file-excel"></i>',
-                className: 'btn btn-primary btn-sm',
-                extend: 'excel',
-            }],
+            buttons: [
+                @can('descargar_excel_bd')
+                {
+                    extend: 'excel',
+                    title: 'Pre-registro Alumnos',
+                    text:'Excel <i class="fas fa-file-excel"></i>',
+                    className: 'btn btn-primary btn-sm',
+                    extend: 'excel',
+                }
+                @endcan
+            ],
             columns: [
                 { data: 'buttons', name: 'buttons', orderable: false, searchable: false },
                 { data: 'nombre_asesor', name: 'nombre_asesor',class: 'text-nowrap'},

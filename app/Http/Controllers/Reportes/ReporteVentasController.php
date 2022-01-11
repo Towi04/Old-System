@@ -19,13 +19,11 @@ class ReporteVentasController extends Controller
 {
     public function index(Request $request)
     {
-        if ($request->has('tipo')) {
-            $tipo = $request->input('tipo');
-        } else {
-            $tipo = 'dia';
-        }
+        $tipo = $request->input('tipo') ?? 'dia';
 
         $sucursal = optional(session('sucursal'));
+
+        $mostrar_solo_fiscales = optional(Configuracion::where('nombre', '=', 'mostrar_solo_fiscales')->first())->valor == 'Si';
 
         if ($tipo == 'dia') {
             $tipo = 'dia';
@@ -45,6 +43,7 @@ class ReporteVentasController extends Controller
                 ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('created_at', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
+
 
             $fecha_antes = new Date($fecha_antes);
             $fecha_despues = new Date($fecha_despues);
@@ -107,7 +106,7 @@ class ReporteVentasController extends Controller
             $fecha_despues = new Date($fecha_despues);
         }
 
-        if (Configuracion::where('nombre', '=', 'mostrar_solo_fiscales')->first()->valor == 'Si') {
+        if ($mostrar_solo_fiscales) {
             $pagos =  $pagos->whereHas('abonos', function ($q) {
                 return $q->where('venta_fiscal', '=', 1);
             });
@@ -127,7 +126,7 @@ class ReporteVentasController extends Controller
             ]);
         }
 
-        return view('reportes.reporte_ventas.index', compact('pagos', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo'));
+        return view('reportes.reporte_ventas.index', compact('pagos', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo','mostrar_solo_fiscales'));
     }
 
     public function corte_caja(Request $request)
@@ -325,7 +324,6 @@ class ReporteVentasController extends Controller
             ->rawColumns(['buttons', 'nombre_alumno'])
             ->make(true);
     }
-
 
     public function asesores(Request $request)
     {
@@ -624,12 +622,6 @@ class ReporteVentasController extends Controller
             $fecha_despues = new Date($fecha_despues);
         }
 
-        // dd(Configuracion::where('nombre','=','mostrar_solo_fiscales')->first()->valor);
-
-        // if(Configuracion::where('nombre','=','mostrar_solo_fiscales')->first()->valor == 'Si'){
-        //    $abonos =  $abonos->where('venta_fiscal','=',1);
-        // }
-
         $ventas =  $ventas->get();
 
         return view('reportes.reporte_ventas.index_productos', compact('ventas', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo'));
@@ -673,5 +665,17 @@ class ReporteVentasController extends Controller
         return redirect()->back()->with([
             'message' => 'Pago eliminado correctamente',
         ]);
+    }
+
+    public function ocultar_ventas_no_fiscales()
+    {
+        $config = Configuracion::query()->where('nombre','mostrar_solo_fiscales')->first();
+
+        if(!empty($config)){
+            $config->valor = ($config->valor == 'No' || empty($config->valor)) ? 'Si': 'No';
+            $config->save();
+        }
+
+        return redirect()->back();
     }
 }
