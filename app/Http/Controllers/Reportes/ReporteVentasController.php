@@ -19,13 +19,11 @@ class ReporteVentasController extends Controller
 {
     public function index(Request $request)
     {
-        if ($request->has('tipo')) {
-            $tipo = $request->input('tipo');
-        } else {
-            $tipo = 'dia';
-        }
+        $tipo = $request->input('tipo') ?? 'dia';
 
         $sucursal = optional(session('sucursal'));
+
+        $mostrar_solo_fiscales = optional(Configuracion::where('nombre', '=', 'mostrar_solo_fiscales')->first())->valor == 'Si';
 
         if ($tipo == 'dia') {
             $tipo = 'dia';
@@ -108,7 +106,7 @@ class ReporteVentasController extends Controller
             $fecha_despues = new Date($fecha_despues);
         }
 
-        if (Configuracion::where('nombre', '=', 'mostrar_solo_fiscales')->first()->valor == 'Si') {
+        if ($mostrar_solo_fiscales) {
             $pagos =  $pagos->whereHas('abonos', function ($q) {
                 return $q->where('venta_fiscal', '=', 1);
             });
@@ -128,7 +126,7 @@ class ReporteVentasController extends Controller
             ]);
         }
 
-        return view('reportes.reporte_ventas.index', compact('pagos', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo'));
+        return view('reportes.reporte_ventas.index', compact('pagos', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo','mostrar_solo_fiscales'));
     }
 
     public function corte_caja(Request $request)
@@ -326,7 +324,6 @@ class ReporteVentasController extends Controller
             ->rawColumns(['buttons', 'nombre_alumno'])
             ->make(true);
     }
-
 
     public function asesores(Request $request)
     {
@@ -624,12 +621,6 @@ class ReporteVentasController extends Controller
             $fecha_antes = new Date($fecha_antes);
             $fecha_despues = new Date($fecha_despues);
         }
-
-        // dd(Configuracion::where('nombre','=','mostrar_solo_fiscales')->first()->valor);
-
-        // if(Configuracion::where('nombre','=','mostrar_solo_fiscales')->first()->valor == 'Si'){
-        //    $abonos =  $abonos->where('venta_fiscal','=',1);
-        // }
 
         $ventas =  $ventas->get();
 

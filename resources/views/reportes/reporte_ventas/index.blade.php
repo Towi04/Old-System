@@ -171,153 +171,269 @@
                         @endif
                     </div>
                 </div>
+
                 <div class="ibox-content mt-2">
 
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover" id="tabla_abonos">
-                            <thead>
-                                <tr>
-                                    <th>Folio</th>
-                                    <th>Fecha Abono</th>
-                                    <th>No. Control</th>
-                                    <th>Alumno</th>
-                                    <th>Concepto</th>
-                                    <th>Recibido por</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($pagos as $pago)
-                                    <tr class="gradeX" id="abono-{{ $pago->id }}">
-                                        @if( $pago->folio_fiscal )
-                                            <td class="text-primary text-center">
-                                                <a class='editable_pagos_folio_fiscal editable'
-                                                    data-type='text'
-                                                    data-name='folio_fiscal'
-                                                    data-pk='{{ $pago->id }}'
-                                                    data-url='{{ route('abonos.actualizar_pago_xeditable') }}'
-                                                    data-value='{{$pago->folio_fiscal }}'>
-                                                    {{ $pago->folio_fiscal }}
-                                                </a>
+                    <div class="element-wrapper">
+                        <div class="os-tabs-w">
+                            <div class="os-tabs-controls m-1">
+                                <ul class="nav nav-tabs smaller border-0">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="tab" href="#tab-ventas-fiscales">Fiscales</a>
+                                    </li>
 
-                                                <div class="mt-1">
-                                                    @can('eliminar_movimiento_reporte_ventas')
-                                                        <button class="btn btn-sm btn-danger"
-                                                            data-url="{{ route('reportes.reporte-ventas.eliminar-pago',$pago) }}"
-                                                            data-action="eliminar"><i class="fas fa-trash"></i>
-                                                        </button>
-                                                    @endcan
-                                                    <button type="button"
-                                                        data-action="imprimir"
-                                                        data-url="{{ route('punto_de_venta.ticket',$pago) }}"
-                                                        class="btn btn-sm btn-primary"
-                                                        title="Imprimir"  >
-                                                        <i class="fas fa-print"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        @else
-                                            <td class="text-danger text-center">
-                                                <a class='editable_pagos_folio editable'
-                                                    data-type='text'
-                                                    data-name='folio'
-                                                    data-pk='{{ $pago->id }}'
-                                                    data-url='{{ route('abonos.actualizar_pago_xeditable') }}'
-                                                    data-value='{{$pago->folio }}'>
-                                                    {{ $pago->folio }}
-                                                </a>
-                                                <div class="mt-1">
-                                                    @can('eliminar_movimiento_reporte_ventas')
-                                                        <button class="btn btn-sm btn-danger"
-                                                            type="button"
-                                                            data-url="{{ route('reportes.reporte-ventas.eliminar-pago',$pago) }}"
-                                                            data-action="eliminar"><i class="fas fa-trash"></i>
-                                                        </button>
-                                                    @endcan
-                                                    <button type="button"
-                                                        data-action="imprimir"
-                                                        data-url="{{ route('punto_de_venta.ticket',$pago) }}"
-                                                        class="btn btn-sm btn-primary"
-                                                        title="Imprimir"  >
-                                                        <i class="fas fa-print"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        @endif
+                                    @if(!$mostrar_solo_fiscales)
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-toggle="tab" href="#tab-ventas-no-fiscales">No Fiscales</a>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </div>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="tab-ventas-fiscales">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover tb-pagos" id="tabla_abonos">
+                                            <thead>
+                                                <tr>
+                                                    <th>Folio</th>
+                                                    <th>Fecha Abono</th>
+                                                    <th>No. Control</th>
+                                                    <th>Alumno</th>
+                                                    <th>Concepto</th>
+                                                    <th>Recibido por</th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($pagos->filter(function($pago){ return !empty($pago->folio_fiscal); }) as $pago)
+                                                    <tr id="abono-{{ $pago->id }}">
+                                                        <td class="text-primary text-center">
+                                                            <a class='editable_pagos_folio_fiscal editable'
+                                                                data-type='text'
+                                                                data-name='folio_fiscal'
+                                                                data-pk='{{ $pago->id }}'
+                                                                data-url='{{ route('abonos.actualizar_pago_xeditable') }}'
+                                                                data-value='{{$pago->folio_fiscal }}'>
+                                                                {{ $pago->folio_fiscal }}
+                                                            </a>
 
-                                        <td class="text-nowrap">
-                                            <a class="editable_abonos_fecha editable"
-                                                data-name="fecha"
-                                                data-type="date"
-                                                data-value="{{ $pago->fecha->format('Y-m-d') }}"
-                                                data-pk="{{ $pago->id }}"
-                                                data-url="{{ route('abonos.actualizar_pago_xeditable') }}">
-                                                {{ $pago->fecha->format('d-m-Y h:i a') }}
-                                            </a>
+                                                            <div class="btn-group mt-1">
+                                                                @can('eliminar_movimiento_reporte_ventas')
+                                                                    <button class="btn btn-sm btn-danger"
+                                                                        data-url="{{ route('reportes.reporte-ventas.eliminar-pago',$pago) }}"
+                                                                        data-action="eliminar"><i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                @endcan
+                                                                <button type="button"
+                                                                    data-action="imprimir"
+                                                                    data-url="{{ route('punto_de_venta.ticket',$pago) }}"
+                                                                    class="btn btn-sm btn-primary"
+                                                                    title="Imprimir"  >
+                                                                    <i class="fas fa-print"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
 
-                                        </td>
+                                                        <td class="text-nowrap">
+                                                            <a class="editable_abonos_fecha editable"
+                                                                data-name="fecha"
+                                                                data-type="date"
+                                                                data-value="{{ $pago->fecha->format('Y-m-d') }}"
+                                                                data-pk="{{ $pago->id }}"
+                                                                data-url="{{ route('abonos.actualizar_pago_xeditable') }}">
+                                                                {{ $pago->fecha->format('d-m-Y h:i a') }}
+                                                            </a>
 
-                                        <td>
-                                            {{ $pago->alumno->nuevo_numero_control }}
-                                        </td>
+                                                        </td>
 
-                                        <td>
-                                            <a class='editable_abonos_id_alumno editable'
-                                                data-type='select2'
-                                                data-pk='{{ $pago->id }}'
-                                                data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
-                                                data-value='{{ $pago->id_alumno }}'
-                                                data-name='id_alumno'
-                                                >
-                                                {{ $pago->alumno->fullname }}
-                                            </a>
-                                        </td>
+                                                        <td>
+                                                            {{ $pago->alumno->nuevo_numero_control }}
+                                                        </td>
 
-                                        <td>
-                                            @foreach ($pago->abonos as $abono)
-                                                <a class='editable_alumnos_pagos_concepto editable'
-                                                    data-type='text'
-                                                    data-name='concepto'
-                                                    data-pk='{{ $abono->alumno_pago->id }}'
-                                                    data-url='{{ route('abonos.actualizar_alumno_pago_xeditable') }}'
-                                                    data-value='{{ $abono->alumno_pago->concepto }}'
-                                                    >
-                                                    {{ $abono->alumno_pago->concepto }}
-                                                </a>
-                                            @endforeach
+                                                        <td>
+                                                            <a class='editable_abonos_id_alumno editable'
+                                                                data-type='select2'
+                                                                data-pk='{{ $pago->id }}'
+                                                                data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
+                                                                data-value='{{ $pago->id_alumno }}'
+                                                                data-name='id_alumno'
+                                                                >
+                                                                {{ $pago->alumno->fullname }}
+                                                            </a>
+                                                        </td>
 
-                                        </td>
-                                        <td>
-                                            {{ $pago->recibio->full_name }}
-                                        </td>
+                                                        <td>
+                                                            @foreach ($pago->abonos as $abono)
+                                                                <a class='editable_alumnos_pagos_concepto editable'
+                                                                    data-type='text'
+                                                                    data-name='concepto'
+                                                                    data-pk='{{ $abono->alumno_pago->id }}'
+                                                                    data-url='{{ route('abonos.actualizar_alumno_pago_xeditable') }}'
+                                                                    data-value='{{ $abono->alumno_pago->concepto }}'
+                                                                    >
+                                                                    {{ $abono->alumno_pago->concepto }}
+                                                                </a>
+                                                            @endforeach
 
-                                        <td class="text-right text-nowrap" style="cursor:pointer">
-                                            <a class='editable_abonos_monto editable'
-                                                data-type='number'
-                                                data-step="0.01"
-                                                data-name='monto'
-                                                data-pk='{{ $pago->id }}'
-                                                data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
-                                                data-value='{{ $pago->monto }}'>
-                                                $ {{ number_format($pago->monto, '2', '.', ',') }}
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
+                                                        </td>
 
-                        </table>
+                                                        <td>
+                                                            {{ $pago->recibio->full_name }}
+                                                        </td>
 
-                        <table class="table table-bordered mt-3 float-right print_only" style="width:50%;">
-                            <tr>
-                                <td style="font-size: 1rem;">Total: </td>
-                                <td class="text-right"><b style="font-size: 1rem;"> ${{ number_format($pagos->sum('monto'), 2, '.', ',') }}</b>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" class="bg-primary"></td>
-                            </tr>
-                        </table>
+                                                        <td class="text-right text-nowrap" style="cursor:pointer">
+                                                            <a class='editable_abonos_monto editable'
+                                                                data-type='number'
+                                                                data-step="0.01"
+                                                                data-name='monto'
+                                                                data-pk='{{ $pago->id }}'
+                                                                data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
+                                                                data-value='{{ $pago->monto }}'>
+                                                                $ {{ number_format($pago->monto, '2', '.', ',') }}
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+
+                                        </table>
+
+                                        <table class="table table-bordered mt-3 float-right print_only" style="width:50%;">
+                                            <tr>
+                                                <td style="font-size: 1rem;">Total: </td>
+                                                <td class="text-right"><b style="font-size: 1rem;"> ${{ number_format($pagos->sum('monto'), 2, '.', ',') }}</b>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" class="bg-primary"></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                @if(!$mostrar_solo_fiscales)
+                                    <div class="tab-pane" id="tab-ventas-no-fiscales">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover tb-pagos" id="tb-no-fiscales">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Folio</th>
+                                                        <th>Fecha Abono</th>
+                                                        <th>No. Control</th>
+                                                        <th>Alumno</th>
+                                                        <th>Concepto</th>
+                                                        <th>Recibido por</th>
+                                                        <th>Total</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($pagos->filter(function($pago){ return empty($pago->folio_fiscal); }) as $pago)
+                                                        <tr id="abono-{{ $pago->id }}">
+                                                            <td class="text-danger text-center">
+                                                                <a class='editable_pagos_folio editable'
+                                                                    data-type='text'
+                                                                    data-name='folio'
+                                                                    data-pk='{{ $pago->id }}'
+                                                                    data-url='{{ route('abonos.actualizar_pago_xeditable') }}'
+                                                                    data-value='{{$pago->folio }}'>
+                                                                    {{ $pago->folio }}
+                                                                </a>
+                                                                <div class="mt-1 btn-group">
+                                                                    @can('eliminar_movimiento_reporte_ventas')
+                                                                        <button class="btn btn-sm btn-danger"
+                                                                            type="button"
+                                                                            data-url="{{ route('reportes.reporte-ventas.eliminar-pago',$pago) }}"
+                                                                            data-action="eliminar"><i class="fas fa-trash"></i>
+                                                                        </button>
+                                                                    @endcan
+                                                                    <button type="button"
+                                                                        data-action="imprimir"
+                                                                        data-url="{{ route('punto_de_venta.ticket',$pago) }}"
+                                                                        class="btn btn-sm btn-primary"
+                                                                        title="Imprimir"  >
+                                                                        <i class="fas fa-print"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+
+                                                            <td class="text-nowrap">
+                                                                <a class="editable_abonos_fecha editable"
+                                                                    data-name="fecha"
+                                                                    data-type="date"
+                                                                    data-value="{{ $pago->fecha->format('Y-m-d') }}"
+                                                                    data-pk="{{ $pago->id }}"
+                                                                    data-url="{{ route('abonos.actualizar_pago_xeditable') }}">
+                                                                    {{ $pago->fecha->format('d-m-Y h:i a') }}
+                                                                </a>
+
+                                                            </td>
+
+                                                            <td>
+                                                                {{ $pago->alumno->nuevo_numero_control }}
+                                                            </td>
+
+                                                            <td>
+                                                                <a class='editable_abonos_id_alumno editable'
+                                                                    data-type='select2'
+                                                                    data-pk='{{ $pago->id }}'
+                                                                    data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
+                                                                    data-value='{{ $pago->id_alumno }}'
+                                                                    data-name='id_alumno'
+                                                                    >
+                                                                    {{ $pago->alumno->fullname }}
+                                                                </a>
+                                                            </td>
+
+                                                            <td>
+                                                                @foreach ($pago->abonos as $abono)
+                                                                    <a class='editable_alumnos_pagos_concepto editable'
+                                                                        data-type='text'
+                                                                        data-name='concepto'
+                                                                        data-pk='{{ $abono->alumno_pago->id }}'
+                                                                        data-url='{{ route('abonos.actualizar_alumno_pago_xeditable') }}'
+                                                                        data-value='{{ $abono->alumno_pago->concepto }}'
+                                                                        >
+                                                                        {{ $abono->alumno_pago->concepto }}
+                                                                    </a>
+                                                                @endforeach
+
+                                                            </td>
+                                                            <td>
+                                                                {{ $pago->recibio->full_name }}
+                                                            </td>
+
+                                                            <td class="text-right text-nowrap" style="cursor:pointer">
+                                                                <a class='editable_abonos_monto editable'
+                                                                    data-type='number'
+                                                                    data-step="0.01"
+                                                                    data-name='monto'
+                                                                    data-pk='{{ $pago->id }}'
+                                                                    data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
+                                                                    data-value='{{ $pago->monto }}'>
+                                                                    $ {{ number_format($pago->monto, '2', '.', ',') }}
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+
+                                            </table>
+
+                                            <table class="table table-bordered mt-3 float-right print_only" style="width:50%;">
+                                                <tr>
+                                                    <td style="font-size: 1rem;">Total: </td>
+                                                    <td class="text-right"><b style="font-size: 1rem;"> ${{ number_format($pagos->sum('monto'), 2, '.', ',') }}</b>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2" class="bg-primary"></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -349,22 +465,26 @@
                   </div>
                 </a>
             </div>
+
             @can('convertir_no_fiscales_a_fiscales')
                 @if($tipo == 'semanal' || $tipo == 'mes' )
-                    <div class="col-sm-12 col-xxxl-12 p-1">
-                        <a class="element-box el-tablo" href="#">
-                        <div class="label mb-2">
-                            No fiscales
+                    @if(!$mostrar_solo_fiscales)
+                        <div class="col-sm-12 col-xxxl-12 p-1">
+                            <a class="element-box el-tablo p-3" href="#">
+                                <div class="label mb-2">
+                                    No fiscales
+                                </div>
+                                <div class="value">
+                                    $ <span id="span-monto-abono-no-fiscal">{{ number_format($pagos->filter(function($pago){
+                                        return empty($pago->folio_fiscal);
+                                    })->sum('monto'), 2, '.', ',') }}</span>
+                                </div>
+                            </a>
                         </div>
-                        <div class="value">
-                            $ <span id="span-monto-abono-no-fiscal">{{ number_format($pagos->filter(function($pago){
-                                return empty($pago->folio_fiscal);
-                            })->sum('monto'), 2, '.', ',') }}</span>
-                        </div>
-                        </a>
-                    </div>
+                    @endif
+
                     <div class="col-sm-12 col-xxxl-12 p-1">
-                        <a class="element-box el-tablo" href="#">
+                        <a class="element-box el-tablo p-3" href="#">
                         <div class="label mb-2">
                             Fiscales
                         </div>
@@ -375,21 +495,25 @@
                         </div>
                         </a>
                     </div>
+
                     <div class="col-sm-12 col-xxxl-12 p-1">
-                        <a class="element-box el-tablo" href="#">
-                        <div class="label mb-2">
-                            % de fiscales
-                        </div>
-                        <div class="value">
-                            @if($pagos->sum('monto') > 0)
-                            {{ number_format( $pagos->where('venta_fiscal',1)->sum('monto') / $pagos->sum('monto') *100, 2, '.', ',') }} %
-                            @else
-                            NO SE HAN REGISTRADO VENTAS
-                            @endif
-                        </div>
+                        <a class="element-box el-tablo p-3" href="#">
+                            <div class="label mb-2">
+                                % de fiscales
+                            </div>
+                            <div class="value">
+                                @if($pagos->sum('monto') > 0)
+                                {{ number_format( $pagos->where('venta_fiscal',1)->sum('monto') / $pagos->sum('monto') *100, 2, '.', ',') }} %
+                                @else
+                                NO SE HAN REGISTRADO VENTAS
+                                @endif
+                            </div>
                         </a>
                     </div>
-                    <button id="convertir_fiscales" class="btn btn-primary btn-block ">Convertir ventas no fiscales a fiscales</button>
+
+                    @if(!$mostrar_solo_fiscales)
+                        <button id="convertir_fiscales" class="btn btn-primary btn-block ">Convertir ventas no fiscales a fiscales</button>
+                    @endif
                 @endif
 
             @endcan
@@ -498,7 +622,7 @@
             $.fn.datepicker.dates['es'] = CONFIG_DATEPICKER     //👉 DATEPICKER
             $.fn.bdatepicker.dates['es'] = CONFIG_DATEPICKER    //👉 XEDITABLE DATEPICKER
 
-            $('#tabla_abonos').on('click','button[data-action="eliminar"]',function(e){
+            $('.tab-content').on('click','button[data-action="eliminar"]',function(e){
                 const $button = $(this);
 
 
@@ -528,7 +652,7 @@
                 })
             });
 
-            $('#tabla_abonos').on('click','button[data-action="imprimir"]',function(e){
+            $('.tab-content').on('click','button[data-action="imprimir"]',function(e){
                 const $button = $(this);
                 const route = $button.data('url');
 
@@ -537,7 +661,7 @@
                 dom.tikets.contenido_ticket.html(`<iframe scrolling='auto' type='text/html' scroll='auto' src='${route}' width='100%' height='450px' align='center'></iframe>`);
             });
 
-            $('#tabla_abonos').DataTable({
+            $('.tb-pagos').DataTable({
                 responsive: true,
                 lengthMenu: [ [-1, 25, 50 ], ["Todos", 25, 50] ],
                 buttons: [
