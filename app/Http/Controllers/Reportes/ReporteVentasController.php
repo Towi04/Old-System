@@ -674,4 +674,16 @@ class ReporteVentasController extends Controller
             'message' => 'Pago eliminado correctamente',
         ]);
     }
+
+    public function ocultar_ventas_no_fiscales()
+    {
+        $config = Configuracion::query()->where('nombre','mostrar_solo_fiscales')->first();
+
+        if(!empty($config)){
+            $config->valor = ($config->valor == 'No' || empty($config->valor)) ? 'Si': 'No';
+            $config->save();
+        }
+
+        return redirect()->back();
+    }
 }

@@ -57,7 +57,11 @@
                     class="btn  @if ($tipo=='mes' ) btn-primary  text-white @else btn-white @endif">Mensual</a>
                 <a href="{{ route('reportes.reporte-ventas.index',['tipo' => 'anual']) }}"
                     class="btn  @if ($tipo=='anual' ) btn-primary  text-white @else btn-white @endif">Anual</a>
+                @can('ocultar_ventas_no_fiscales')
+                    <a href="{{ route('reportes.reporte-ventas.ocultar-ventas-no-fiscales') }}" class="btn btn-primary" onclick="wait.modal('show')" ></a>
+                @endcan
             </div>
+
         </div>
     </div>
     <div class="row mt-2">
