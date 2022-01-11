@@ -46,6 +46,7 @@ class ReporteVentasController extends Controller
                 ->whereBetween('created_at', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
                 ->orderBy('created_at', 'desc');
 
+
             $fecha_antes = new Date($fecha_antes);
             $fecha_despues = new Date($fecha_despues);
         }

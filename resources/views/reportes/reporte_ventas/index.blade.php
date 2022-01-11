@@ -357,7 +357,9 @@
                             No fiscales
                         </div>
                         <div class="value">
-                            $ <span id="span-monto-abono-no-fiscal">{{ number_format($pagos->where('venta_fiscal',0)->sum('monto'), 2, '.', ',') }}</span>
+                            $ <span id="span-monto-abono-no-fiscal">{{ number_format($pagos->filter(function($pago){
+                                return empty($pago->folio_fiscal);
+                            })->sum('monto'), 2, '.', ',') }}</span>
                         </div>
                         </a>
                     </div>
@@ -367,7 +369,9 @@
                             Fiscales
                         </div>
                         <div class="value">
-                            $ <span id="span-monto-abono-fiscal" >{{ number_format($pagos->where('venta_fiscal',1)->sum('monto'), 2, '.', ',') }}</span>
+                            $ <span id="span-monto-abono-fiscal" >{{ number_format($pagos->filter(function($pago){
+                                return !empty($pago->folio_fiscal);
+                            })->sum('monto'), 2, '.', ',') }}</span>
                         </div>
                         </a>
                     </div>
