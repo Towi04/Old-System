@@ -503,7 +503,9 @@
                             </div>
                             <div class="value">
                                 @if($pagos->sum('monto') > 0)
-                                {{ number_format( $pagos->where('venta_fiscal',1)->sum('monto') / $pagos->sum('monto') *100, 2, '.', ',') }} %
+                                {{ number_format( $pagos->filter(function($pago){
+                                    return !empty($pago->folio_fiscal);
+                                })->sum('monto') / $pagos->sum('monto') *100, 2, '.', ',') }} %
                                 @else
                                 NO SE HAN REGISTRADO VENTAS
                                 @endif
