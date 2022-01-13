@@ -356,6 +356,11 @@ return [
             'display_name'  => 'Descargar exceles de bases de datos',
             'description'   => 'Permite descargar informacion de bases de datos'
         ],
+        [
+            'name'          => 'asignar_apoyos_especiales',
+            'display_name'  => 'Asignar apoyos especiales',
+            'description'   => 'Permite asignar apoyos especiales a los alumnos'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)
