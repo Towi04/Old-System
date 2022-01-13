@@ -19,6 +19,8 @@ class ReporteVentasController extends Controller
 {
     public function index(Request $request)
     {
+        \Carbon\Carbon::setWeekStartsAt(Carbon::SUNDAY);
+        \Carbon\Carbon::setWeekEndsAt(Carbon::SATURDAY);
         $tipo = $request->input('tipo') ?? 'dia';
 
         $sucursal = optional(session('sucursal'));
@@ -131,6 +133,9 @@ class ReporteVentasController extends Controller
 
     public function corte_caja(Request $request)
     {
+        \Carbon\Carbon::setWeekStartsAt(Carbon::SUNDAY);
+        \Carbon\Carbon::setWeekEndsAt(Carbon::SATURDAY);
+
         if ($request->has('tipo')) {
             $tipo = $request->input('tipo');
         } else {
@@ -327,6 +332,9 @@ class ReporteVentasController extends Controller
 
     public function asesores(Request $request)
     {
+        \Carbon\Carbon::setWeekStartsAt(Carbon::SUNDAY);
+        \Carbon\Carbon::setWeekEndsAt(Carbon::SATURDAY);
+
         if ($request->has('tipo')) {
             $tipo = $request->input('tipo');
         } else {
@@ -535,6 +543,9 @@ class ReporteVentasController extends Controller
 
     public function index_productos(Request $request)
     {
+        \Carbon\Carbon::setWeekStartsAt(Carbon::SUNDAY);
+        \Carbon\Carbon::setWeekEndsAt(Carbon::SATURDAY);
+        
         if ($request->has('tipo')) {
             $tipo = $request->input('tipo');
         } else {
