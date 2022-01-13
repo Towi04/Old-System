@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\ProductosController;
 use App\Http\Controllers\Admin\SucursalesController;
 use App\Http\Controllers\AgendarAsesoriaController;
 use App\Http\Controllers\AlumnosController;
+use App\Http\Controllers\ApoyosEspecialesController;
 use App\Http\Controllers\Asesorias\CalendarioProfesorController;
 use App\Http\Controllers\Asesorias\HorariosProfesoresController;
 use App\Http\Controllers\GruposController;
@@ -149,6 +150,15 @@ Route::middleware(['auth','sucursal'])->group(function () {
 
     Route::resource('alumnos', AlumnosController::class)->parameters([
         'alumnos' => 'alumno'
+    ]);
+
+    # NOTE: 👉 APOYOS ESPECIALES
+    Route::prefix('apoyos-especiales')->name('apoyos-especiales.')->group(function () {
+        Route::post('datatables', [ ApoyosEspecialesController::class,'datatables'])->name('datatables');
+    });
+
+    Route::resource('apoyos-especiales', ApoyosEspecialesController::class)->except(['index', 'show','create'])->parameters([
+        'apoyos-especiales' => 'apoyoEspecial'
     ]);
 
     # NOTE: RUTAS MATERIAS

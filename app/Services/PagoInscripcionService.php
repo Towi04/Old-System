@@ -113,10 +113,12 @@ class PagoInscripcionService
 
     private function inscripcion(Grupo $grupo)
     {
+        $precio_inscripcion = $this->request->input('precio_inscripcion') ?? $grupo->precio_inscripcion ?? 0;
+
         $pago_alumno = $this->alumno->pagos()->create([
             'id_grupo'      => $grupo->id,
             'concepto'      => config('alumnos.concepto.inscripcion') . ' del ' . $grupo->fecha_inicio->year,
-            'monto'         => $grupo->precio_inscripcion ?? 0,
+            'monto'         => $precio_inscripcion,
             'fecha_limite'  => $grupo->fecha_inicio,
             'status'        => config('pagos.status.Pagado'),
         ]);
@@ -128,14 +130,14 @@ class PagoInscripcionService
             $venta_fiscal = ($this->request->input('tipo_pago', '') != 'Efectivo') ? true : $this->alumno->solicitud_factura;
             $folio_fiscal = Pago::query()->select('folio_fiscal')->where('id_sucursal', $this->request->input('id_sucursal'))->max('folio_fiscal') ?? 0;
             $folio = Pago::query()->select('folio')->where('id_sucursal', $this->request->input('id_sucursal'))->max('folio') + 1 ?? 0;
-            // dd($this->request->input('tipo_pago', ''));
+
             # CREO EL PAGO DEL ALUMNO 😏
             $pago = Pago::create([
                 'folio'         => $folio,
                 'folio_fiscal'  => ($venta_fiscal) ? $folio_fiscal + 1 : null,
                 'id_sucursal'   => $this->request->input('id_sucursal'),
                 'id_alumno'     => $this->alumno->id,
-                'monto'         => $grupo->precio_inscripcion ?? 0,
+                'monto'         => $precio_inscripcion,
                 'fecha'         => now(),
                 'id_recibio'    => auth()->id(),
             ]);
@@ -144,7 +146,7 @@ class PagoInscripcionService
             $pago->abonos()->create([
                 'id_sucursal'       => $this->request->input('id_sucursal'),
                 'id_alumno_pago'    => $pago_alumno->id,
-                'monto'             => $grupo->precio_inscripcion ?? 0,
+                'monto'             => $precio_inscripcion,
                 'venta_fiscal'      => $venta_fiscal,
             ]);
         }

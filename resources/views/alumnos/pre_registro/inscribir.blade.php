@@ -56,6 +56,8 @@
             form_inscripcion: $("#form-inscripcion"),
             btn_inscribir: $("#inscribir"),
 
+            ckb_apoyo_especial: $('#ckb-apoyo-especial'),
+
             tikets:{
                 contenido_ticket:$("#contenido-ticket"),
                 modal: $("#modal-ticket"),
@@ -121,7 +123,9 @@
 
         dom.btn_inscribir.click(function(){
 
-             if(dom.grupo.val() != '' && $('input[name=forma_pago]:checked').val() !== undefined){
+            const forma_pago = $('input[name=forma_pago]:checked').val();
+
+             if(dom.grupo.val() != '' && forma_pago !== undefined){
 
                 $.post("{{route('grupos.traer_info')}}", {id_alumno:{{$alumno->id}}, id_grupo: dom.grupo.val(), forma_pago: $('input[name=forma_pago]:checked').val() },
                     function (result) {
@@ -134,10 +138,11 @@
                         if(saldo > 0){
                             txt = "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". El alumno ya tiene un apartado por "+saldo+" por lo que solo tienes que solicitar la inscripción de $ "+inscripcion+" que quedará registrada como pagada en la ficha del alumno.";
                         }else{
-                            txt = "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". Tienes que solicitar la inscripción de $ "+inscripcion+" que quedará registrada como pagada en la ficha del alumno.";
+                            txt = "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". Tienes que solicitar la inscripción de $ "+inscripcion+" que quedará registrada como pagada en la ficha del alumno."
                         }
 
                         dom.modal_inscripcion.find('#inscripcion-detalle').text(txt);
+                        dom.modal_inscripcion.find('#precio_inscripcion').val(inscripcion);
                         dom.modal_inscripcion.modal('show');
                     },
                     "json"
@@ -165,9 +170,9 @@
             dom.modal_inscripcion.modal('hide');
             wait.modal('show');
 
-
             var formData = new FormData(dom.form_inscribir[0]);
             formData.append('tipo_pago',$("#tipo_pago").val());
+            formData.append('precio_inscripcion',$("#precio_inscripcion").val());
 
             $.ajax({
                 url: dom.form_inscribir.attr('action'),
@@ -203,11 +208,15 @@
             });
         });
 
-       dom.tikets.modal.on("hidden.bs.modal", function () {
+        dom.tikets.modal.on("hidden.bs.modal", function () {
             var redirect = dom.tikets.modal.data('redirect');
             window.location.href = redirect;
         });
 
+        dom.ckb_apoyo_especial.change(function(e){
+            $("#apoyo-especial").toggle(e.target.checked);
+            $("[data-apoyo]").attr('required',e.target.checked)
+        })
     });
 
 </script>

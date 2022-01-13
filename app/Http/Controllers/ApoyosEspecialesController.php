@@ -1,0 +1,101 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\ApoyoEspecial;
+use Carbon\Carbon;
+use Yajra\DataTables\Facades\DataTables;
+
+class ApoyosEspecialesController extends Controller
+{
+    public function datatables(Request $request)
+    {
+        $query = ApoyoEspecial::query()
+            ->when($request->input('id_sucursal'), function ($q, $id_sucursal) {
+                $q->where('id_sucursal', $id_sucursal);
+            })
+            ->when($request->input('id_grupo'), function ($q, $id_grupo) {
+                $q->where('id_grupo', $id_grupo);
+            })
+            ->when($request->input('id_alumno'), function ($q, $id_alumno) {
+                $q->where('id_alumno', $id_alumno);
+            });
+
+        return DataTables::eloquent($query)
+            ->addIndexColumn()
+            ->editColumn('fecha_final',function($model){
+                return optional($model->fecha_final)->format('d/m/Y');
+            })
+            ->addColumn('buttons', 'apoyos_especiales.datatables._buttons')
+            ->rawColumns(['buttons'])
+            ->make(true);
+    }
+
+    public function store(Request $request)
+    {
+        $rules = [
+            'id_sucursal'       => 'required',
+            'id_grupo'          => 'required',
+            'id_alumno'         => 'required',
+            'fecha_final'       => 'required',
+            'precio'            => 'required',
+        ];
+
+        $request->merge([
+            'id_sucursal'   => optional(session('sucursal'))->id,
+            'fecha_final'   => Carbon::parse($request->input('fecha_final')),
+        ]);
+
+        $data = $request->validate($rules);
+
+        $existe_apoyo_especial = ApoyoEspecial::toBase()
+            ->where('id_alumno', $request->input('id_alumno'))
+            ->where('id_grupo', $request->input('id_grupo'))
+            ->whereRaw('CAST(fecha_final AS date) > cast( NOW() AS date)')
+            ->orderBy('fecha_final')
+            ->exists();
+
+        if($existe_apoyo_especial) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Existe un apoyo vigente',
+                ],422);
+            }
+
+            return redirect()->back()->with([
+                'message' => 'Apoyo creado correctamente'
+            ]);
+        }
+
+        ApoyoEspecial::create($data);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'El apoyo creado correctamente',
+            ]);
+        }
+
+        return redirect()->back()->with([
+            'message' => 'Apoyo creado correctamente'
+        ]);
+    }
+
+    public function destroy(ApoyoEspecial $apoyoEspecial, Request $request)
+    {
+        $apoyoEspecial->delete();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'El apoyo fue eliminado con exito',
+            ]);
+        }
+
+        return redirect()->back()->with([
+            'message' => 'El apoyo fue eliminado con exito',
+        ]);
+    }
+}
