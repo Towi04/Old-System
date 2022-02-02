@@ -196,7 +196,7 @@
                                         </td>
                                         <td>
                                             @foreach ($venta->partidas as $partida)
-                                                {{$partida->producto->nombre}}<br>
+                                                {{optional($partida->producto)->nombre}}<br>
                                             @endforeach
                                         </td>
 
