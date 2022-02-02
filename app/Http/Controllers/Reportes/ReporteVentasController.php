@@ -128,7 +128,9 @@ class ReporteVentasController extends Controller
             ]);
         }
 
-        return view('reportes.reporte_ventas.index', compact('pagos', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo','mostrar_solo_fiscales'));
+        $puede_editar_reporte_ventas = auth()->user()->can('editar_reporte_ventas');
+
+        return view('reportes.reporte_ventas.index', compact('pagos', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo','mostrar_solo_fiscales','puede_editar_reporte_ventas'));
     }
 
     public function corte_caja(Request $request)
@@ -545,7 +547,7 @@ class ReporteVentasController extends Controller
     {
         \Carbon\Carbon::setWeekStartsAt(Carbon::SUNDAY);
         \Carbon\Carbon::setWeekEndsAt(Carbon::SATURDAY);
-        
+
         if ($request->has('tipo')) {
             $tipo = $request->input('tipo');
         } else {

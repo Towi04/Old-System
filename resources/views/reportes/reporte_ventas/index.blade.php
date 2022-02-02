@@ -208,12 +208,14 @@
                                                 @foreach ($pagos->filter(function($pago){ return !empty($pago->folio_fiscal); }) as $pago)
                                                     <tr id="abono-{{ $pago->id }}">
                                                         <td class="text-primary text-center">
-                                                            <a class='editable_pagos_folio_fiscal editable'
+                                                            <a @if($puede_editar_reporte_ventas)
+                                                                class='editable_pagos_folio_fiscal editable'
                                                                 data-type='text'
                                                                 data-name='folio_fiscal'
                                                                 data-pk='{{ $pago->id }}'
                                                                 data-url='{{ route('abonos.actualizar_pago_xeditable') }}'
-                                                                data-value='{{$pago->folio_fiscal }}'>
+                                                                data-value='{{$pago->folio_fiscal }}'
+                                                                @endif>
                                                                 {{ $pago->folio_fiscal }}
                                                             </a>
 
@@ -235,12 +237,15 @@
                                                         </td>
 
                                                         <td class="text-nowrap">
-                                                            <a class="editable_abonos_fecha editable"
-                                                                data-name="fecha"
-                                                                data-type="date"
-                                                                data-value="{{ $pago->fecha->format('Y-m-d') }}"
-                                                                data-pk="{{ $pago->id }}"
-                                                                data-url="{{ route('abonos.actualizar_pago_xeditable') }}">
+                                                            <a @if($puede_editar_reporte_ventas)
+                                                                    class="editable_abonos_fecha editable"
+                                                                    data-name="fecha"
+                                                                    data-type="date"
+                                                                    data-value="{{ $pago->fecha->format('Y-m-d') }}"
+                                                                    data-pk="{{ $pago->id }}"
+                                                                    data-url="{{ route('abonos.actualizar_pago_xeditable') }}"
+                                                                @endif
+                                                            >
                                                                 {{ $pago->fecha->format('d-m-Y h:i a') }}
                                                             </a>
 
@@ -251,12 +256,14 @@
                                                         </td>
 
                                                         <td>
-                                                            <a class='editable_abonos_id_alumno editable'
-                                                                data-type='select2'
-                                                                data-pk='{{ $pago->id }}'
-                                                                data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
-                                                                data-value='{{ $pago->id_alumno }}'
-                                                                data-name='id_alumno'
+                                                            <a @if($puede_editar_reporte_ventas)
+                                                                    class='editable_abonos_id_alumno editable'
+                                                                    data-type='select2'
+                                                                    data-pk='{{ $pago->id }}'
+                                                                    data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
+                                                                    data-value='{{ $pago->id_alumno }}'
+                                                                    data-name='id_alumno'
+                                                                @endif
                                                                 >
                                                                 {{ $pago->alumno->fullname }}
                                                             </a>
@@ -264,12 +271,14 @@
 
                                                         <td>
                                                             @foreach ($pago->abonos as $abono)
-                                                                <a class='editable_alumnos_pagos_concepto editable'
+                                                                <a @if($puede_editar_reporte_ventas)
+                                                                    class='editable_alumnos_pagos_concepto editable'
                                                                     data-type='text'
                                                                     data-name='concepto'
                                                                     data-pk='{{ $abono->alumno_pago->id }}'
                                                                     data-url='{{ route('abonos.actualizar_alumno_pago_xeditable') }}'
                                                                     data-value='{{ $abono->alumno_pago->concepto }}'
+                                                                    @endif
                                                                     >
                                                                     {{ $abono->alumno_pago->concepto }}
                                                                 </a>
@@ -282,13 +291,15 @@
                                                         </td>
 
                                                         <td class="text-right text-nowrap" style="cursor:pointer">
-                                                            <a class='editable_abonos_monto editable'
-                                                                data-type='number'
-                                                                data-step="0.01"
-                                                                data-name='monto'
-                                                                data-pk='{{ $pago->id }}'
-                                                                data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
-                                                                data-value='{{ $pago->monto }}'>
+                                                            <a @if($puede_editar_reporte_ventas)
+                                                                    class='editable_abonos_monto editable'
+                                                                    data-type='number'
+                                                                    data-step="0.01"
+                                                                    data-name='monto'
+                                                                    data-pk='{{ $pago->id }}'
+                                                                    data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
+                                                                    data-value='{{ $pago->monto }}'
+                                                                @endif>
                                                                 $ {{ number_format($pago->monto, '2', '.', ',') }}
                                                             </a>
                                                         </td>
@@ -330,12 +341,15 @@
                                                     @foreach ($pagos->filter(function($pago){ return empty($pago->folio_fiscal); }) as $pago)
                                                         <tr id="abono-{{ $pago->id }}">
                                                             <td class="text-danger text-center">
-                                                                <a class='editable_pagos_folio editable'
-                                                                    data-type='text'
-                                                                    data-name='folio'
-                                                                    data-pk='{{ $pago->id }}'
-                                                                    data-url='{{ route('abonos.actualizar_pago_xeditable') }}'
-                                                                    data-value='{{$pago->folio }}'>
+                                                                <a  @if($puede_editar_reporte_ventas)
+                                                                        class='editable_pagos_folio editable'
+                                                                        data-type='text'
+                                                                        data-name='folio'
+                                                                        data-pk='{{ $pago->id }}'
+                                                                        data-url='{{ route('abonos.actualizar_pago_xeditable') }}'
+                                                                        data-value='{{$pago->folio }}'
+                                                                    @endif
+                                                                >
                                                                     {{ $pago->folio }}
                                                                 </a>
                                                                 <div class="mt-1 btn-group">
@@ -357,12 +371,14 @@
                                                             </td>
 
                                                             <td class="text-nowrap">
-                                                                <a class="editable_abonos_fecha editable"
-                                                                    data-name="fecha"
-                                                                    data-type="date"
-                                                                    data-value="{{ $pago->fecha->format('Y-m-d') }}"
-                                                                    data-pk="{{ $pago->id }}"
-                                                                    data-url="{{ route('abonos.actualizar_pago_xeditable') }}">
+                                                                <a @if($puede_editar_reporte_ventas)
+                                                                        class="editable_abonos_fecha editable"
+                                                                        data-name="fecha"
+                                                                        data-type="date"
+                                                                        data-value="{{ $pago->fecha->format('Y-m-d') }}"
+                                                                        data-pk="{{ $pago->id }}"
+                                                                        data-url="{{ route('abonos.actualizar_pago_xeditable') }}"
+                                                                    @endif>
                                                                     {{ $pago->fecha->format('d-m-Y h:i a') }}
                                                                 </a>
 
@@ -373,12 +389,14 @@
                                                             </td>
 
                                                             <td>
-                                                                <a class='editable_abonos_id_alumno editable'
+                                                                <a @if($puede_editar_reporte_ventas)
+                                                                    class='editable_abonos_id_alumno editable'
                                                                     data-type='select2'
                                                                     data-pk='{{ $pago->id }}'
                                                                     data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
                                                                     data-value='{{ $pago->id_alumno }}'
                                                                     data-name='id_alumno'
+                                                                    @endif
                                                                     >
                                                                     {{ $pago->alumno->fullname }}
                                                                 </a>
@@ -386,12 +404,14 @@
 
                                                             <td>
                                                                 @foreach ($pago->abonos as $abono)
-                                                                    <a class='editable_alumnos_pagos_concepto editable'
-                                                                        data-type='text'
-                                                                        data-name='concepto'
-                                                                        data-pk='{{ $abono->alumno_pago->id }}'
-                                                                        data-url='{{ route('abonos.actualizar_alumno_pago_xeditable') }}'
-                                                                        data-value='{{ $abono->alumno_pago->concepto }}'
+                                                                    <a @if($puede_editar_reporte_ventas)
+                                                                            class='editable_alumnos_pagos_concepto editable'
+                                                                            data-type='text'
+                                                                            data-name='concepto'
+                                                                            data-pk='{{ $abono->alumno_pago->id }}'
+                                                                            data-url='{{ route('abonos.actualizar_alumno_pago_xeditable') }}'
+                                                                            data-value='{{ $abono->alumno_pago->concepto }}'
+                                                                        @endif
                                                                         >
                                                                         {{ $abono->alumno_pago->concepto }}
                                                                     </a>
@@ -403,13 +423,16 @@
                                                             </td>
 
                                                             <td class="text-right text-nowrap" style="cursor:pointer">
-                                                                <a class='editable_abonos_monto editable'
-                                                                    data-type='number'
-                                                                    data-step="0.01"
-                                                                    data-name='monto'
-                                                                    data-pk='{{ $pago->id }}'
-                                                                    data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
-                                                                    data-value='{{ $pago->monto }}'>
+                                                                <a  @if($puede_editar_reporte_ventas)
+                                                                        class='editable_abonos_monto editable'
+                                                                        data-type='number'
+                                                                        data-step="0.01"
+                                                                        data-name='monto'
+                                                                        data-pk='{{ $pago->id }}'
+                                                                        data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
+                                                                        data-value='{{ $pago->monto }}'
+                                                                    @endif
+                                                                    >
                                                                     $ {{ number_format($pago->monto, '2', '.', ',') }}
                                                                 </a>
                                                             </td>
@@ -749,127 +772,129 @@
             });
 
             // 👉 XEDITABLES
-            $('.editable').on('shown', function(e, editable) {
-                $('.editable-submit').html('<i class="fas fa-check fa-1x"></i>');
-                $('.editable-cancel').html('<i class="fas fa-times"></i>');
-            });
+            @if($puede_editar_reporte_ventas)
+                $('.editable').on('shown', function(e, editable) {
+                    $('.editable-submit').html('<i class="fas fa-check fa-1x"></i>');
+                    $('.editable-cancel').html('<i class="fas fa-times"></i>');
+                });
 
-            $('.editable_alumnos_pagos_concepto').editable({
-                emptytext: 'Vacio',
-                onblur: 'ignore',
-            });
+                $('.editable_alumnos_pagos_concepto').editable({
+                    emptytext: 'Vacio',
+                    onblur: 'ignore',
+                });
 
-            $('.editable_pagos_folio_fiscal').editable({
-                emptytext: 'Vacio',
-                onblur: 'ignore',
-            });
+                $('.editable_pagos_folio_fiscal').editable({
+                    emptytext: 'Vacio',
+                    onblur: 'ignore',
+                });
 
-            $('.editable_pagos_folio').editable({
-                emptytext: 'Vacio',
-                onblur: 'ignore',
-            });
+                $('.editable_pagos_folio').editable({
+                    emptytext: 'Vacio',
+                    onblur: 'ignore',
+                });
 
-            $('.editable_abonos_monto').editable({
-                emptytext: 'Vacio',
-                onblur: 'ignore',
-                display: function(value) {
-                    let format = Helpers.number_format(value,2);
-                    $(this).text("$ "+ format);
-                }
-            });
-
-            $('.editable_abonos_monto').on('save',function(e,params) {
-                // 👉 ACTUALIZACION DEL MONTO DE LOS ABONOS
-                $.ajax({
-                    url: "{{ route('reportes.reporte-ventas.index') }}",
-                    type: 'GET',
-                    cache: false,
-                    data: {
-                        tipo:"{{ request('tipo','dia') }}",
-                        fecha:"{{ request('fecha') }}"
-                    },
-                    success: function (response){
-                        $("#span_abonos_monto").html(Helpers.number_format(response.monto_abonos,2));
-                        $("#span-monto-abono-fiscal").html(Helpers.number_format(response.monto_abono_fiscal,2))
-                        $("#span-monto-abono-no-fiscal").html(Helpers.number_format(response.monto_abono_no_fiscal,2))
-                    },
-                    fail:function(error){
-                        toastr.error('Error', 'Ocurrio un error inesperado');
+                $('.editable_abonos_monto').editable({
+                    emptytext: 'Vacio',
+                    onblur: 'ignore',
+                    display: function(value) {
+                        let format = Helpers.number_format(value,2);
+                        $(this).text("$ "+ format);
                     }
                 });
-            });
 
-            $('.editable_abonos_id_alumno').editable({
-                select2: {
-                    placeholder: 'Selecciona un alumno',
-                    allowClear: true,
-                    minimumInputLength: 3,
-                    ajax: {
-                        method: 'POST',
-                        url: '{{ route("alumnos.traer_alumnos_select2") }}',
-                        dataType: 'json',
+                $('.editable_abonos_monto').on('save',function(e,params) {
+                    // 👉 ACTUALIZACION DEL MONTO DE LOS ABONOS
+                    $.ajax({
+                        url: "{{ route('reportes.reporte-ventas.index') }}",
+                        type: 'GET',
                         cache: false,
-                        delay:250,
-                        data:function (params) {
-                            return {
-                                _token: '{{ csrf_token() }}',
-                                term: params.term,
-                                page: params.page || 1,
-                                id_sucursal: "{{ optional(session('sucursal'))->id }}",
-                                status:'Alumno'
+                        data: {
+                            tipo:"{{ request('tipo','dia') }}",
+                            fecha:"{{ request('fecha') }}"
+                        },
+                        success: function (response){
+                            $("#span_abonos_monto").html(Helpers.number_format(response.monto_abonos,2));
+                            $("#span-monto-abono-fiscal").html(Helpers.number_format(response.monto_abono_fiscal,2))
+                            $("#span-monto-abono-no-fiscal").html(Helpers.number_format(response.monto_abono_no_fiscal,2))
+                        },
+                        fail:function(error){
+                            toastr.error('Error', 'Ocurrio un error inesperado');
+                        }
+                    });
+                });
+
+                $('.editable_abonos_id_alumno').editable({
+                    select2: {
+                        placeholder: 'Selecciona un alumno',
+                        allowClear: true,
+                        minimumInputLength: 3,
+                        ajax: {
+                            method: 'POST',
+                            url: '{{ route("alumnos.traer_alumnos_select2") }}',
+                            dataType: 'json',
+                            cache: false,
+                            delay:250,
+                            data:function (params) {
+                                return {
+                                    _token: '{{ csrf_token() }}',
+                                    term: params.term,
+                                    page: params.page || 1,
+                                    id_sucursal: "{{ optional(session('sucursal'))->id }}",
+                                    status:'Alumno'
+                                }
+                            },
+                            beforeSend:function(xhr,type){
+                                xhr.setRequestHeader('X-CSRF-Token',$('meta[name="csrf-token"]').attr('content'))
+                            },
+                            processResults: function (data, page) {
+                                return data;
                             }
                         },
-                        beforeSend:function(xhr,type){
-                            xhr.setRequestHeader('X-CSRF-Token',$('meta[name="csrf-token"]').attr('content'))
+                        templateResult: function(option){
+                            if (option.loading) {
+                                return option.text;
+                            }
+
+                            if(!option.nuevo_numero_control || !option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                                return option.text
+                            }
+
+                            return `No. Control: ${option.nuevo_numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
                         },
-                        processResults: function (data, page) {
-                            return data;
+                        templateSelection: function(option){
+                            if(!option.nuevo_numero_control ||  !option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                                return option.text
+                            }
+
+                            return `No. Control: ${option.nuevo_numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                        },
+                    },
+                    display: function(value, sourceData,response) {
+                        if(sourceData){
+                            $(this).text(sourceData.alumno);
                         }
                     },
-                    templateResult: function(option){
-                        if (option.loading) {
-                            return option.text;
-                        }
+                    mode:'inline',
+                    emptytext: 'Vacio',
+                    tpl: '<select style="width:100%;z-index: 289;">',
+                })
 
-                        if(!option.nuevo_numero_control || !option.nombres || !option.apellido_paterno || !option.apellido_materno){
-                            return option.text
-                        }
-
-                        return `No. Control: ${option.nuevo_numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                $('.editable_abonos_fecha').editable({
+                    format: 'yyyy-mm-dd',
+                    viewformat: 'dd-mm-yyyy',
+                    emptytext: 'Vacio',
+                    datepicker: {
+                        weekStart: 1,
+                        orientation: 'bottom left',
+                        language: 'es',
                     },
-                    templateSelection: function(option){
-                        if(!option.nuevo_numero_control ||  !option.nombres || !option.apellido_paterno || !option.apellido_materno){
-                            return option.text
+                    display: function(value, sourceData,response) {
+                        if(sourceData && sourceData.hasOwnProperty('pago')){
+                            $(this).text(sourceData.pago.format_fecha);
                         }
-
-                        return `No. Control: ${option.nuevo_numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
                     },
-                },
-                display: function(value, sourceData,response) {
-                    if(sourceData){
-                        $(this).text(sourceData.alumno);
-                    }
-                },
-                mode:'inline',
-                emptytext: 'Vacio',
-                tpl: '<select style="width:100%;z-index: 289;">',
-            })
-
-            $('.editable_abonos_fecha').editable({
-                format: 'yyyy-mm-dd',
-                viewformat: 'dd-mm-yyyy',
-                emptytext: 'Vacio',
-                datepicker: {
-                    weekStart: 1,
-                    orientation: 'bottom left',
-                    language: 'es',
-                },
-                display: function(value, sourceData,response) {
-                    if(sourceData && sourceData.hasOwnProperty('pago')){
-                        $(this).text(sourceData.pago.format_fecha);
-                    }
-                },
-            });
+                });
+            @endif
         })
     </script>
 @endsection

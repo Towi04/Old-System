@@ -312,6 +312,11 @@ return [
             'description'   => 'Permite ver el reporte de ventas'
         ],
         [
+            'name'          => 'editar_reporte_ventas',
+            'display_name'  => 'Editar reporte de ventas',
+            'description'   => 'Permite editar informacion en el reporte de ventas'
+        ],
+        [
             'name'          => 'ver_reporte_ventas_productos',
             'display_name'  => 'Ver reporte de ventas por productos',
             'description'   => 'Permite ver el reporte de ventas por productos'
