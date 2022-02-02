@@ -112,7 +112,7 @@ class GruposController extends Controller
 
         $especialidad = Especialidad::findOrFail($request->input('id_especialidad'));
 
-        $materias = Materia::query()->where('id_especialidad', $request->input('id_especialidad'))->pluck('id');
+        $materias = Materia::toBase()->select('id','orden')->where('id_especialidad', $request->input('id_especialidad'))->get();
 
         # 👉 VERIFICACION DEL STATUS DEL GRUPO
         $status = Carbon::parse($request->input('fecha_inicio'))->lt(now())
@@ -133,10 +133,14 @@ class GruposController extends Controller
 
         $grupo = Grupo::create($data);
 
-        $grupo->materias()->attach($materias, [
-            'horas_semana'  => null,
-            'id_profesor'   => null,
-        ]);
+        # 👉 ASOCIAR LAS MATERIAS AL GRUPO ESPECIFICANDO UN ORDEN
+        foreach ($materias as $materia) {
+            $grupo->materias()->attach($materia->id,[
+                'horas_semana'  => null,
+                'id_profesor'   => null,
+                'orden'         => $materia->orden
+            ]);
+        }
 
         // CREACION DE HORAS Y DIAS
         foreach ($request->dia as $dia) {
@@ -344,6 +348,19 @@ class GruposController extends Controller
             })->with(['materia', 'profesor']);
 
         return DataTables::eloquent($query)
+            ->editColumn('orden', function ($model) {
+                $route = route('grupos.actualizar_materias_xeditable');
+                return " <a  class='editable_orden editable'
+                    data-type='number'
+                    data-name='orden'
+                    data-pk='{$model->id}'
+                    data-url='{$route}'
+                    data-value='{$model->orden}'
+                    data-min='1'
+                    data-placeholder='Escribe el orden de la materia'>
+                    {$model->orden}
+                </a>";
+            })
             ->addColumn('nombre_materia', function ($model) {
                 $route = route('grupos.actualizar_materias_xeditable');
 
@@ -352,7 +369,7 @@ class GruposController extends Controller
                     data-name='id_materia'
                     data-pk='{$model->id}'
                     data-url='{$route}'
-                    data-value='{$model->id_materia}}'
+                    data-value='{$model->id_materia}'
                     data-title='Selecciona una materia'>
                     {$model->materia->nombre}
                 </a>";
@@ -382,7 +399,7 @@ class GruposController extends Controller
                     data-placeholder='Horas por semana'> {$model->horas_semana} </a>";
             })
             ->addColumn('buttons', 'grupos.datatables._buttons_materias')
-            ->rawColumns(['nombre_materia', 'nombre_profesor', 'horas_semana', 'buttons'])
+            ->rawColumns(['orden','nombre_materia', 'nombre_profesor', 'horas_semana', 'buttons'])
             ->make(true);
     }
 

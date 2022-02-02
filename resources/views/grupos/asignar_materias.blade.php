@@ -150,6 +150,7 @@
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th>Orden</th>
                             <th>Materia</th>
                             <th>Profesor</th>
                             <th></th>
@@ -206,6 +207,7 @@
                 },
                 columns: [
                     {data: 'id', name: 'id'},
+                    {data: 'orden', name: 'orden'},
                     {data: 'nombre_materia', name: 'materia.nombre'},
                     {data: 'nombre_profesor',name:'nombre_profesor'},
                     {data: 'profesor.nombres', name: 'profesor.nombres',visible:false},
@@ -214,7 +216,7 @@
                     {data: 'horas_semana',name:'horas_semana'},
                     {data: 'buttons', name: 'buttons', orderable: false, searchable: false}
                 ],
-                order: [[ 0, "asc" ]],
+                order: [[ 1, "asc" ]],
                 language: {
                     "lengthMenu": "Mostrar _MENU_ registros por pagina",
                     "zeroRecords": "No se encontro ningún registro",
@@ -364,6 +366,16 @@
                         tpl: '<select style="width:100%;z-index: 289;">',
                         type: 'select2',
                     });
+
+                    $('.editable_orden').editable({
+                        emptytext: 'Vacio',
+                        onblur: 'ignore',
+                    });
+
+                    $('.editable_orden').on('save', function(e, params) {
+                        dt.ajax.reload(null,false);
+                    });
+
                 },
             });
 
