@@ -43,8 +43,9 @@
         <p class="text-center" >
             {{ $sucursal->direccion }}
             {{ $sucursal->municipio }}, {{ $sucursal->estado }} <br>
-            <b>RFC:</b> CNC050207D21<br>
+            <b>RFC:</b> {{ $sucursal->rfc }}<br>
             <b>Sucursal:</b> {{ $pago->sucursal->nombre }}<br>
+            <b>Tel:</b> {{ $sucursal->telefono }}<br>
             <b>Fecha</b>  {{ $pago->fecha->format('d-m-Y') }}
             <b>Hora</b> {{ $pago->fecha->format('H:i:s') }}
             <b>Folio:</b> {{ empty($pago->folio_fiscal) ? $pago->folio: $pago->folio_fiscal }}<br>

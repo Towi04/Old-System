@@ -45,6 +45,8 @@
                                 <th>Dirección</th>
                                 <th>Municipio</th>
                                 <th>Estado</th>
+                                <th>Telefono</th>
+                                <th>RFC</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
                         </thead>
@@ -90,6 +92,8 @@
                 { data: 'direccion', name: 'direccion', class: 'text-nowrap' },
                 { data: 'municipio', name: 'municipio', class: 'text-nowrap' },
                 { data: 'estado', name: 'estado', class: 'text-nowrap' },
+                { data: 'telefono', name: 'telefono', class: 'text-nowrap' },
+                { data: 'rfc', name: 'rfc', class: 'text-nowrap' },
                 { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
             ],
             language: {

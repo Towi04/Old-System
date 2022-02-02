@@ -26,7 +26,7 @@ class SucursalesController extends Controller
 
     public function datatables()
     {
-        $query = Sucursal::query()->select(['id', 'nombre', 'direccion','municipio','estado']);
+        $query = Sucursal::query()->select(['id', 'nombre', 'direccion','municipio','estado','telefono','rfc']);
 
         return DataTables::eloquent($query)
             ->addColumn('buttons', 'admin.sucursales.datatables._buttons')
@@ -101,6 +101,8 @@ class SucursalesController extends Controller
         $sucursal->fill($request->all());
 
         $sucursal->save();
+
+        Session::put('sucursal',$sucursal);
 
         return redirect()->route('admin.sucursales.index')->with([
             'message' => 'Se actualizó la sucursal con éxito'

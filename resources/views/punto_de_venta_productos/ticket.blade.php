@@ -13,7 +13,7 @@
    <img src="{{ asset('img/logo.png') }}" width="120px"><br><br>
    Centro Nacional de Computación de México S.C.<br>
     Domicilio fiscal: Andador Gongora No. 104 Colonia Centro. CP 38000<br>
-    RFC CNC050207D21 - TEL (461) 613-01-01<BR> Celaya, Guanajuato. <br><br>
+    RFC {{$venta->sucursal->rfc}} - {{$venta->sucursal->telefono}}<BR> Celaya, Guanajuato. <br><br>
 
     <b>Sucursal:</b> {{ $venta->sucursal->nombre }} <br>
     Domicilio sucursal: {{$venta->sucursal->direccion}}, {{$venta->sucursal->municipio}}, {{$venta->sucursal->estado}}

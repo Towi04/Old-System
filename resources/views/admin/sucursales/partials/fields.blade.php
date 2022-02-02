@@ -16,6 +16,16 @@
         </div>
 
         <div class="form-group">
+            {!! Form::label('telefono', 'Telefono:'); !!}
+            {!! Form::text('telefono', null, ['class' => 'form-control', 'placeholder' => 'Escribe aqui el telefono de la sucursal']); !!}
+        </div>
+
+        <div class="form-group">
+            {!! Form::label('rfc', 'RFC:*'); !!}
+            {!! Form::text('rfc', null, ['class' => 'form-control', 'placeholder' => 'Escribe aqui el rfc de la sucursal']); !!}
+        </div>
+
+        <div class="form-group">
             {!! Form::label('estado', 'Estado'); !!}
             {!! Form::text('estado', null, ['class' => 'form-control', 'placeholder' => 'Escribe aqui el estado de la sucursal']); !!}
         </div>
