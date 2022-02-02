@@ -220,19 +220,24 @@
                                                             </a>
 
                                                             <div class="btn-group mt-1">
-                                                                @can('eliminar_movimiento_reporte_ventas')
+
+                                                                @if($puede_eliminar_registro)
                                                                     <button class="btn btn-sm btn-danger"
                                                                         data-url="{{ route('reportes.reporte-ventas.eliminar-pago',$pago) }}"
                                                                         data-action="eliminar"><i class="fas fa-trash"></i>
                                                                     </button>
-                                                                @endcan
-                                                                <button type="button"
-                                                                    data-action="imprimir"
-                                                                    data-url="{{ route('punto_de_venta.ticket',$pago) }}"
-                                                                    class="btn btn-sm btn-primary"
-                                                                    title="Imprimir"  >
-                                                                    <i class="fas fa-print"></i>
-                                                                </button>
+                                                                @endif
+
+                                                                @if( $puede_reimprimir_ticket)
+                                                                    <button type="button"
+                                                                        data-action="imprimir"
+                                                                        data-url="{{ route('punto_de_venta.ticket',$pago) }}"
+                                                                        class="btn btn-sm btn-primary"
+                                                                        title="Imprimir"  >
+                                                                        <i class="fas fa-print"></i>
+                                                                    </button>
+                                                                @endif
+
                                                             </div>
                                                         </td>
 
@@ -353,20 +358,24 @@
                                                                     {{ $pago->folio }}
                                                                 </a>
                                                                 <div class="mt-1 btn-group">
-                                                                    @can('eliminar_movimiento_reporte_ventas')
+
+                                                                    @if($puede_eliminar_registro)
                                                                         <button class="btn btn-sm btn-danger"
                                                                             type="button"
                                                                             data-url="{{ route('reportes.reporte-ventas.eliminar-pago',$pago) }}"
                                                                             data-action="eliminar"><i class="fas fa-trash"></i>
                                                                         </button>
-                                                                    @endcan
-                                                                    <button type="button"
-                                                                        data-action="imprimir"
-                                                                        data-url="{{ route('punto_de_venta.ticket',$pago) }}"
-                                                                        class="btn btn-sm btn-primary"
-                                                                        title="Imprimir"  >
-                                                                        <i class="fas fa-print"></i>
-                                                                    </button>
+                                                                    @endif
+
+                                                                    @if($puede_reimprimir_ticket)
+                                                                        <button type="button"
+                                                                            data-action="imprimir"
+                                                                            data-url="{{ route('punto_de_venta.ticket',$pago) }}"
+                                                                            class="btn btn-sm btn-primary"
+                                                                            title="Imprimir"  >
+                                                                            <i class="fas fa-print"></i>
+                                                                        </button>
+                                                                    @endif
                                                                 </div>
                                                             </td>
 

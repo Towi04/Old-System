@@ -114,9 +114,22 @@ class ReporteVentasController extends Controller
             ]);
         }
 
-        $puede_editar_reporte_ventas = auth()->user()->can('editar_reporte_ventas');
+        $user = auth()->user();
+        $puede_editar_reporte_ventas = $user->can('editar_reporte_ventas');
+        $puede_eliminar_registro = $user->can('eliminar_movimiento_reporte_ventas');
+        $puede_reimprimir_ticket = $user->can('reimprimir_ticket_reporte_ventas');
 
-        return view('reportes.reporte_ventas.index', compact('pagos', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo','mostrar_solo_fiscales','puede_editar_reporte_ventas'));
+        return view('reportes.reporte_ventas.index', compact(
+            'pagos',
+            'fecha',
+            'fecha_antes',
+            'fecha_despues',
+            'tipo',
+            'mostrar_solo_fiscales',
+            'puede_editar_reporte_ventas',
+            'puede_eliminar_registro',
+            'puede_reimprimir_ticket',
+        ));
     }
 
     public function corte_caja(Request $request)

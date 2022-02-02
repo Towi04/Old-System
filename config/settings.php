@@ -371,6 +371,11 @@ return [
             'display_name'  => 'Asignar apoyos especiales en inscripcion',
             'description'   => 'Permite asignar apoyos especiales en la inscripción del alumno'
         ],
+        [
+            'name'          => 'reimprimir_ticket_reporte_ventas',
+            'display_name'  => 'Reimprimir Ticket Reporte Ventas',
+            'description'   => 'Permite reimprimir ticket desde el reporte de ventas'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)
