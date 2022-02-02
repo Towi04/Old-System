@@ -47,7 +47,7 @@
             <b>Sucursal:</b> {{ $pago->sucursal->nombre }}<br>
             <b>Fecha</b>  {{ $pago->fecha->format('d-m-Y') }}
             <b>Hora</b> {{ $pago->fecha->format('H:i:s') }}
-            <b>Folio:</b> {{ $pago->folio }}<br>
+            <b>Folio:</b> {{ empty($pago->folio_fiscal) ? $pago->folio: $pago->folio_fiscal }}<br>
             <b>Recibio:</b> {{ $pago->recibio->fullname }}<br>
             <b>Alumno:</b> {{ $pago->alumno->fullname }}<br>
             <b>No Control:</b> {{ $pago->alumno->nuevo_numero_control }}<br>

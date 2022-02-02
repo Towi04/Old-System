@@ -69,7 +69,7 @@
             @endforeach
             <tr class="gradeX" >
                     <td colspan="6" class="text-primary text-right text-white bg-primary">
-                        TOTAL: 
+                        TOTAL:
                     </td>
                     <td class="text-nowrap text-right">
                         ${{ number_format($pagos->sum('monto'),2,'.',',') }}

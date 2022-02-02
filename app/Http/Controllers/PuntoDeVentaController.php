@@ -60,8 +60,8 @@ class PuntoDeVentaController extends Controller
             DB::beginTransaction();
 
             $pago = Pago::create([
-                'folio'         => $folio + 1,
-                'folio_fiscal'   => ($venta_fiscal)?$folio_fiscal + 1 : null,
+                'folio'         => ($venta_fiscal)? null:($folio + 1),  # 👉 SI NO ES UNA VENTA FISCAL, PONER EL FOLIO EN NULL
+                'folio_fiscal'  => ($venta_fiscal)?$folio_fiscal + 1 : null,
                 'id_sucursal'   => $id_sucursal,
                 'id_alumno'     => $alumno->id,
                 'monto'         => $monto,
@@ -163,7 +163,6 @@ class PuntoDeVentaController extends Controller
             'id_grupo'      => 'required',
             'monto'         => 'required',
             'concepto'      => 'required',
-            // 'folio'         => 'required',
             'forma_pago'    => 'required',
             'fecha'         => 'required',
             'no_pago'       => 'required',
@@ -184,7 +183,7 @@ class PuntoDeVentaController extends Controller
             # FOLIO Y VENTA FISCAL 😁
             $folio_fiscal = Pago::query()->select('folio_fiscal')->where('id_sucursal', $id_sucursal)->max('folio_fiscal') ?? 0;
             $venta_fiscal = ($request->input('forma_pago','') != 'Efectivo') ? true : $alumno->solicitud_factura;
-            $folio = Pago::query()->select('folio')->where('id_sucursal', $id_sucursal)->max('folio') + 1 ?? 0;
+            $folio = Pago::query()->select('folio')->where('id_sucursal', $id_sucursal)->max('folio') ?? 0;
 
 
 
@@ -199,8 +198,8 @@ class PuntoDeVentaController extends Controller
 
             # CREO EL PAGO DEL ALUMNO 😏
             $pago = Pago::create([
-                'folio'         => $folio,
-                'folio_fiscal'  => ($venta_fiscal)?$folio_fiscal + 1 : null,
+                'folio'         => ($venta_fiscal)? null: ($folio + 1),  # 👉 SI NO ES UNA VENTA FISCAL, PONER EL FOLIO EN NULL,
+                'folio_fiscal'  => ($venta_fiscal) ? ($folio_fiscal + 1) : null,
                 'id_sucursal'   => $id_sucursal,
                 'id_alumno'     => $alumno->id,
                 'monto'         => $request->input('monto'),

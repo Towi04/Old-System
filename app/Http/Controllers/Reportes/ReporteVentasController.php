@@ -19,90 +19,76 @@ class ReporteVentasController extends Controller
 {
     public function index(Request $request)
     {
-        \Carbon\Carbon::setWeekStartsAt(Carbon::SUNDAY);
-        \Carbon\Carbon::setWeekEndsAt(Carbon::SATURDAY);
+        Carbon::setWeekStartsAt(Carbon::SUNDAY);
+        Carbon::setWeekEndsAt(Carbon::SATURDAY);
+
         $tipo = $request->input('tipo') ?? 'dia';
 
         $sucursal = optional(session('sucursal'));
 
         $mostrar_solo_fiscales = optional(Configuracion::where('nombre', '=', 'mostrar_solo_fiscales')->first())->valor == 'Si';
 
+        if (isset($request->fecha)) {
+            $fecha = Carbon::createFromFormat('d-m-Y', $request->input('fecha'));
+        } else {
+            $fecha = Carbon::today();
+        }
+
         if ($tipo == 'dia') {
             $tipo = 'dia';
-
-            if (isset($request->fecha)) {
-                $fecha = Carbon::createFromFormat('d-m-Y', $request->input('fecha'));
-            } else {
-                $fecha = Carbon::today();
-            }
 
             $fecha =  new Date($fecha);
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDay();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDay();
 
-
             $pagos = Pago::query()
                 ->where('id_sucursal', '=', $sucursal->id)
-                ->whereBetween('created_at', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
-                ->orderBy('created_at', 'desc');
-
+                ->whereBetween('fecha', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
+                ->orderBy('fecha', 'desc');
 
             $fecha_antes = new Date($fecha_antes);
             $fecha_despues = new Date($fecha_despues);
         }
 
         if ($tipo == 'mes') {
-            if (isset($request->fecha)) {
-                $fecha = Carbon::createFromFormat('d-m-Y', $request->fecha);
-            } else {
-                $fecha = Carbon::today();
-            }
+
             $fecha =  new Date($fecha);
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subMonth();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addMonth();
 
             $pagos = Pago::query()
                 ->where('id_sucursal', '=', $sucursal->id)
-                ->whereBetween('created_at', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
-                ->orderBy('created_at', 'desc');
+                ->whereBetween('fecha', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
+                ->orderBy('fecha', 'desc');
 
             $fecha_antes = new Date($fecha_antes);
             $fecha_despues = new Date($fecha_despues);
         }
 
         if ($tipo == 'semanal') {
-            if (isset($request->fecha)) {
-                $fecha = Carbon::createFromFormat('d-m-Y', $request->fecha);
-            } else {
-                $fecha = Carbon::today();
-            }
+
             $fecha =  new Date($fecha);
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDays(7);
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDays(7);
 
             $pagos = Pago::query()
                 ->where('id_sucursal', '=', $sucursal->id)
-                ->whereBetween('created_at', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
-                ->orderBy('created_at', 'desc');
+                ->whereBetween('fecha', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
+                ->orderBy('fecha', 'desc');
 
             $fecha_antes = new Date($fecha_antes);
             $fecha_despues = new Date($fecha_despues);
         }
 
         if ($tipo == 'anual') {
-            if (isset($request->fecha)) {
-                $fecha = Carbon::createFromFormat('d-m-Y', $request->fecha);
-            } else {
-                $fecha = Carbon::today();
-            }
             $fecha =  new Date($fecha);
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subYear();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addYear();
 
             $pagos = Pago::query()
                 ->where('id_sucursal', '=', $sucursal->id)
-                ->whereBetween('created_at', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
-                ->orderBy('created_at', 'desc');
+                ->whereBetween('fecha', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
+                ->orderBy('fecha', 'desc');
 
             $fecha_antes = new Date($fecha_antes);
             $fecha_despues = new Date($fecha_despues);
@@ -138,11 +124,7 @@ class ReporteVentasController extends Controller
         \Carbon\Carbon::setWeekStartsAt(Carbon::SUNDAY);
         \Carbon\Carbon::setWeekEndsAt(Carbon::SATURDAY);
 
-        if ($request->has('tipo')) {
-            $tipo = $request->input('tipo');
-        } else {
-            $tipo = 'dia';
-        }
+        $tipo = $request->input('tipo') ?? 'dia';
 
         $sucursal = optional(session('sucursal'));
 
@@ -162,8 +144,8 @@ class ReporteVentasController extends Controller
 
             $pagos = Pago::query()
                 ->where('id_sucursal', '=', $sucursal->id)
-                ->whereBetween('created_at', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
-                ->orderBy('created_at', 'desc');
+                ->whereBetween('fecha', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
+                ->orderBy('fecha', 'desc');
 
             $fecha_antes = new Date($fecha_antes);
             $fecha_despues = new Date($fecha_despues);
@@ -181,8 +163,8 @@ class ReporteVentasController extends Controller
 
             $pagos = Pago::query()
                 ->where('id_sucursal', '=', $sucursal->id)
-                ->whereBetween('created_at', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
-                ->orderBy('created_at', 'desc');
+                ->whereBetween('fecha', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
+                ->orderBy('fecha', 'desc');
 
             $fecha_antes = new Date($fecha_antes);
             $fecha_despues = new Date($fecha_despues);
@@ -200,8 +182,8 @@ class ReporteVentasController extends Controller
 
             $pagos = Pago::query()
                 ->where('id_sucursal', '=', $sucursal->id)
-                ->whereBetween('created_at', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
-                ->orderBy('created_at', 'desc');
+                ->whereBetween('fecha', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
+                ->orderBy('fecha', 'desc');
 
             $fecha_antes = new Date($fecha_antes);
             $fecha_despues = new Date($fecha_despues);
@@ -219,8 +201,8 @@ class ReporteVentasController extends Controller
 
             $pagos = Pago::query()
                 ->where('id_sucursal', '=', $sucursal->id)
-                ->whereBetween('created_at', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
-                ->orderBy('created_at', 'desc');
+                ->whereBetween('fecha', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
+                ->orderBy('fecha', 'desc');
 
             $fecha_antes = new Date($fecha_antes);
             $fecha_despues = new Date($fecha_despues);
