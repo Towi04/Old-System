@@ -22,7 +22,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="element-box">
-                {!! Form::model($alumno, ['route' => ['pre-registro-alumnos.inscribir', $alumno], 'method' => 'PUT', 'accept-charset' => 'UTF-8', 'enctype' => 'multipart/form-data','onsubmit' => "wait.modal('show')",'id'=>'form-inscribir']) !!}
+                {!! Form::model($alumno, ['route' => ['pre-registro-alumnos.inscribir', $alumno], 'method' => 'PUT', 'accept-charset' => 'UTF-8', 'enctype' => 'multipart/form-data','id'=>'form-inscribir']) !!}
                     <h5 class="form-header">
                         Llena el formulario
                     </h5>
@@ -30,7 +30,7 @@
                     @include('alumnos.pre_registro.partials._fields_inscripcion')
 
                     <div class="form-buttons-w text-right">
-                        <button id="inscribir" class="btn btn-success" type="button" ><i class="fa fa-plus"></i> Inscribir</button>
+                        <button id="inscribir" class="btn btn-success" type="submit" ><i class="fa fa-plus"></i> Inscribir</button>
                     </div>
                 {!! Form::close() !!}
             </div>
@@ -121,7 +121,8 @@
 
         dom.especialidad.trigger('change')
 
-        dom.btn_inscribir.click(function(){
+        dom.form_inscribir.submit(function(e){
+            e.preventDefault();
 
             const forma_pago = $('input[name=forma_pago]:checked').val();
 
@@ -160,8 +161,6 @@
                     cancelButtonText: "Cerrar",
                 })
             }
-
-
         });
 
         dom.form_inscripcion.submit(function(e){
@@ -172,7 +171,11 @@
 
             var formData = new FormData(dom.form_inscribir[0]);
             formData.append('tipo_pago',$("#tipo_pago").val());
-            formData.append('precio_inscripcion',$("#precio_inscripcion").val());
+
+            // 👉 EVITAR ENVIAR EL CAMPO EN CASO DE QUE NO TENGA PERMISO PARA EMITIR PRECIO INSCRIPCION
+            if ($("#precio_inscripcion").val()) {
+                formData.append('precio_inscripcion',$("#precio_inscripcion").val());
+            }
 
             $.ajax({
                 url: dom.form_inscribir.attr('action'),

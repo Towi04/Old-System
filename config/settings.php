@@ -366,6 +366,11 @@ return [
             'display_name'  => 'Asignar apoyos especiales',
             'description'   => 'Permite asignar apoyos especiales a los alumnos'
         ],
+        [
+            'name'          => 'asignar_apoyos_especiales_en_inscripcion',
+            'display_name'  => 'Asignar apoyos especiales en inscripcion',
+            'description'   => 'Permite asignar apoyos especiales en la inscripción del alumno'
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)
