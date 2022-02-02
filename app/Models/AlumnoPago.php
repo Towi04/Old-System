@@ -31,6 +31,7 @@ class AlumnoPago extends Model
         'id_grupo',
         'concepto',
         'monto',
+        'monto_apoyo_inscripcion',
         'saldo',
         'fecha_limite',
         'status',

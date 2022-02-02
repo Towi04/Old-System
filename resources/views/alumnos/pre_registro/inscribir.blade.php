@@ -124,6 +124,21 @@
         dom.form_inscribir.submit(function(e){
             e.preventDefault();
 
+            if(!$('input[name="grado_estudios[]"]:checked').length){
+                swal({
+                    title: "Debes seleccionar un grado de estudios",
+                    text: '',
+                    type: "error",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    cancelButtonColor: "#999999",
+                    cancelButtonText: "Cerrar",
+                });
+
+                return;
+            }
+
+
             const forma_pago = $('input[name=forma_pago]:checked').val();
 
              if(dom.grupo.val() != '' && forma_pago !== undefined){
@@ -144,6 +159,7 @@
 
                         dom.modal_inscripcion.find('#inscripcion-detalle').text(txt);
                         dom.modal_inscripcion.find('#precio_inscripcion').val(inscripcion);
+                        dom.modal_inscripcion.find('#precio_inscripcion').attr("max",inscripcion);
                         dom.modal_inscripcion.modal('show');
                     },
                     "json"
