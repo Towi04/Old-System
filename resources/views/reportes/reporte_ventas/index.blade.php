@@ -193,7 +193,7 @@
                             <div class="tab-content">
                                 <div class="tab-pane active" id="tab-ventas-fiscales">
                                     <div class="table-responsive">
-                                        <table class="table table-striped table-hover tb-pagos" id="tabla_abonos">
+                                        <table class="table table-striped table-sm table-hover tb-pagos" id="tabla_abonos">
                                             <thead>
                                                 <tr>
                                                     <th>Folio</th>
@@ -201,6 +201,7 @@
                                                     <th>No. Control</th>
                                                     <th>Alumno</th>
                                                     <th>Concepto</th>
+                                                    <th>Grupo</th>
                                                     <th>Recibido por</th>
                                                     <th>Forma de Pago</th>
                                                     <th>Total</th>
@@ -294,6 +295,12 @@
                                                         </td>
 
                                                         <td>
+                                                            @foreach ($pago->abonos as $abono)
+                                                                <small>{{ $abono->alumno_pago->grupo->especialidad->nombre }}</small>
+                                                            @endforeach
+                                                        </td>
+
+                                                        <td>
                                                             {{ $pago->recibio->full_name }}
                                                         </td>
                                                         <td>
@@ -346,7 +353,7 @@
                                 @if(!$mostrar_solo_fiscales)
                                     <div class="tab-pane" id="tab-ventas-no-fiscales">
                                         <div class="table-responsive">
-                                            <table class="table table-striped table-hover tb-pagos" id="tb-no-fiscales">
+                                            <table class="table table-sm table-striped table-hover tb-pagos" id="tb-no-fiscales">
                                                 <thead>
                                                     <tr>
                                                         <th>Folio</th>
@@ -354,6 +361,7 @@
                                                         <th>No. Control</th>
                                                         <th>Alumno</th>
                                                         <th>Concepto</th>
+                                                        <th>Grupo</th>
                                                         <th>Recibido por</th>
                                                         <th>Forma Pago</th>
                                                         <th>Total</th>
@@ -444,6 +452,13 @@
                                                                 @endforeach
 
                                                             </td>
+
+                                                            <td>
+                                                                @foreach ($pago->abonos as $abono)
+                                                                   <small>{{ $abono->alumno_pago->grupo->especialidad->nombre }}</small>
+                                                                @endforeach
+                                                            </td>
+
                                                             <td>
                                                                 {{ $pago->recibio->full_name }}
                                                             </td>
