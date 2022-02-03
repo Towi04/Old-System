@@ -202,6 +202,7 @@
                                                     <th>Alumno</th>
                                                     <th>Concepto</th>
                                                     <th>Recibido por</th>
+                                                    <th>Forma de Pago</th>
                                                     <th>Total</th>
                                                 </tr>
                                             </thead>
@@ -294,6 +295,20 @@
 
                                                         <td>
                                                             {{ $pago->recibio->full_name }}
+                                                        </td>
+                                                        <td>
+                                                            <a
+                                                                @if($puede_editar_reporte_ventas)
+                                                                    class='editable_pagos_forma_pago editable'
+                                                                    data-type='select'
+                                                                    data-name='forma_pago'
+                                                                    data-pk='{{ $pago->id }}'
+                                                                    data-url='{{ route('abonos.actualizar_pago_xeditable') }}'
+                                                                    data-value='{{ $pago->forma_pago }}'
+                                                                @endif
+                                                            >
+                                                                {{ $pago->forma_pago }}
+                                                            </a>
                                                         </td>
 
                                                         <td class="text-right text-nowrap" style="cursor:pointer">
