@@ -140,6 +140,7 @@ class PagoInscripcionService
                 'id_sucursal'   => $this->request->input('id_sucursal'),
                 'id_alumno'     => $this->alumno->id,
                 'monto'         => $precio_inscripcion,
+                'forma_pago'    => $this->request->input('tipo_pago'),
                 'fecha'         => now(),
                 'id_recibio'    => auth()->id(),
             ]);

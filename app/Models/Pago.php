@@ -27,6 +27,7 @@ class Pago extends Model
         'id_sucursal',
         'id_alumno',
         'monto',
+        'forma_pago',
         'fecha',
         'id_recibio',
         'folio_fiscal',

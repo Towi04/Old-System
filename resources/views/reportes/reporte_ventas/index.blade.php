@@ -65,7 +65,7 @@
         </div>
     </div>
     <div class="row mt-2">
-        <div class="col-lg-9">
+        <div class="col-lg-10">
             <div class="element-box p-3">
                 <div class="ibox-title mb-2">
                     <div class="row">
@@ -91,6 +91,7 @@
                                         class="fas fa-arrow-alt-circle-right fa-2x"></i></a>
                             </div>
                         @endif
+
                         @if (request('tipo','dia') == 'mes')
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
                                 <a href="{{ route('reportes.reporte-ventas.index',['tipo'=>'mes','fecha'=> $fecha_antes->format('d-m-Y') ]) }}"
@@ -339,6 +340,7 @@
                                                         <th>Alumno</th>
                                                         <th>Concepto</th>
                                                         <th>Recibido por</th>
+                                                        <th>Forma Pago</th>
                                                         <th>Total</th>
                                                     </tr>
                                                 </thead>
@@ -431,6 +433,21 @@
                                                                 {{ $pago->recibio->full_name }}
                                                             </td>
 
+                                                            <td>
+                                                                <a
+                                                                    @if($puede_editar_reporte_ventas)
+                                                                        class='editable_pagos_forma_pago editable'
+                                                                        data-type='select'
+                                                                        data-name='forma_pago'
+                                                                        data-pk='{{ $pago->id }}'
+                                                                        data-url='{{ route('abonos.actualizar_pago_xeditable') }}'
+                                                                        data-value='{{ $pago->forma_pago }}'
+                                                                    @endif
+                                                                >
+                                                                    {{ $pago->forma_pago }}
+                                                                </a>
+                                                            </td>
+
                                                             <td class="text-right text-nowrap" style="cursor:pointer">
                                                                 <a  @if($puede_editar_reporte_ventas)
                                                                         class='editable_abonos_monto editable'
@@ -473,12 +490,12 @@
 
         </div>
 
-        <div class="col-lg-3 mb-3 no_print">
+        <div class="col-lg-2 mb-3 no_print">
 
             @can('generar_corte_caja')
                 <div class="row pb-2">
                     <div class="col-12">
-                        <a class="btn btn-block btn-primary"
+                        <a class="btn btn-block btn-sm btn-primary"
                             target="_blank"
                             href="{{ route('reportes.reporte-ventas.corte-caja',['tipo' => request('tipo','dia'),'fecha'=> request('fecha')]) }}">
                             <i class="fas fa-pdf"></i> Corte de caja
@@ -492,7 +509,7 @@
                   <div class="label mb-2">
                     Total
                   </div>
-                  <div class="value">
+                  <div class="value" style="font-size: 0.85rem">
                     $ <span id="span_abonos_monto">{{ number_format($pagos->sum('monto'), 2, '.', ',') }}</span>
                   </div>
                 </a>
@@ -506,7 +523,7 @@
                                 <div class="label mb-2">
                                     No fiscales
                                 </div>
-                                <div class="value">
+                                <div class="value" style="font-size: 0.85rem">
                                     $ <span id="span-monto-abono-no-fiscal">{{ number_format($pagos->filter(function($pago){
                                         return empty($pago->folio_fiscal);
                                     })->sum('monto'), 2, '.', ',') }}</span>
@@ -520,7 +537,7 @@
                         <div class="label mb-2">
                             Fiscales
                         </div>
-                        <div class="value">
+                        <div class="value" style="font-size: 0.85rem">
                             $ <span id="span-monto-abono-fiscal" >{{ number_format($pagos->filter(function($pago){
                                 return !empty($pago->folio_fiscal);
                             })->sum('monto'), 2, '.', ',') }}</span>
@@ -533,7 +550,7 @@
                             <div class="label mb-2">
                                 % de fiscales
                             </div>
-                            <div class="value">
+                            <div class="value" style="font-size: 0.85rem">
                                 @if($pagos->sum('monto') > 0)
                                 {{ number_format( $pagos->filter(function($pago){
                                     return !empty($pago->folio_fiscal);
@@ -546,7 +563,7 @@
                     </div>
 
                     @if(!$mostrar_solo_fiscales)
-                        <button id="convertir_fiscales" class="btn btn-primary btn-block ">Convertir ventas no fiscales a fiscales</button>
+                        <button id="convertir_fiscales" class="btn btn-sm btn-primary btn-block " style="font-size: 0.59rem">Convertir ventas no fiscales a fiscales</button>
                     @endif
                 @endif
 
@@ -800,6 +817,17 @@
                 $('.editable_pagos_folio').editable({
                     emptytext: 'Vacio',
                     onblur: 'ignore',
+                });
+
+                $('.editable_pagos_forma_pago').editable({
+                    emptytext: 'Vacio',
+                    onblur: 'ignore',
+                    source: [
+                        {value: 'Efectivo', text: 'Efectivo'},
+                        {value: 'Tarjate de debito', text: 'Tarjeta de debito'},
+                        {value:  'Tarjate de crédito', text: 'Tarjeta de crédito'},
+                        {value:  'Transferencia', text: 'Transferencia'},
+                    ]
                 });
 
                 $('.editable_abonos_monto').editable({
