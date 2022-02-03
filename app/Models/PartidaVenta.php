@@ -12,6 +12,15 @@ class PartidaVenta extends Model
     protected $table = 'partidas_ventas';
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'cantidad' => 'integer',
+    ];
+
+    /**
      * Get the venta t
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

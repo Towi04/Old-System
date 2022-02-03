@@ -88,6 +88,7 @@
                                         class="fas fa-arrow-alt-circle-right fa-2x"></i></a>
                             </div>
                         @endif
+
                         @if (request('tipo','dia') == 'mes')
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
                                 <a href="{{ route('reportes.reporte-ventas.index_productos',['tipo'=>'mes','fecha'=> $fecha_antes->format('d-m-Y') ]) }}"
@@ -178,30 +179,117 @@
                                     <th>Fecha Venta</th>
                                     <th>Alumno</th>
                                     <th>Concepto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio</th>
                                     <th>Total</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($ventas as $venta)
-                                    <tr class="gradeX" id="venta-{{ $venta->id }}">
+                                @foreach ($partidas as $partida)
+                                    <tr class="gradeX" id="venta-{{ $partida->id }}">
 
                                             <td class="text-danger text-center">
-                                                {{ $venta->folio }}
+                                                <div>
+                                                    <a  @if($puede_editar)
+                                                            class='editable_ventas_folio editable'
+                                                            data-type='number'
+                                                            data-name='folio'
+                                                            data-min="1"
+                                                            data-pk='{{ $partida->id_venta }}'
+                                                            data-url='{{ route('reportes.reporte-ventas-producto.actualizar_ventas_xeditable') }}'
+                                                            data-value='{{$partida->venta->folio }}'
+                                                        @endif
+                                                    >
+                                                        {{ $partida->venta->folio }}
+                                                    </a>
+                                                </div>
+
+                                                <div class="mt-2 btn-group">
+
+                                                    @if($puede_eliminar)
+                                                        <button class="btn btn-sm btn-danger"
+                                                            type="button"
+                                                            data-url="{{ route('reportes.reporte-ventas-producto.eliminar_partida',$partida) }}"
+                                                            data-action="eliminar"><i class="fas fa-trash"></i>
+                                                        </button>
+                                                    @endif
+
+                                                    @if($puede_reimprimir)
+                                                        <button type="button"
+                                                            data-action="imprimir"
+                                                            data-url="{{ route('punto_de_venta_productos.ticket',$partida->id_venta) }}"
+                                                            class="btn btn-sm btn-primary"
+                                                            title="Imprimir"  >
+                                                            <i class="fas fa-print"></i>
+                                                        </button>
+                                                    @endif
+                                                </div>
                                             </td>
 
 
-                                        <td nowrap>{{ optional($venta->fecha)->format('d-m-Y H:i') }}</td>
-                                        <td>
-                                            {{ optional($venta->alumno)->fullname }}
+                                        <td nowrap>
+                                            <a @if($puede_editar)
+                                                    class="editable_ventas_fecha editable"
+                                                    data-name="fecha"
+                                                    data-type="date"
+                                                    data-value="{{ $partida->venta->fecha->format('Y-m-d') }}"
+                                                    data-pk="{{ $partida->id_venta }}"
+                                                    data-url="{{ route('reportes.reporte-ventas-producto.actualizar_ventas_xeditable') }}"
+                                                @endif>
+
+                                                {{ optional($partida->venta->fecha)->format('d-m-Y H:i') }}
+                                            </a>
+
                                         </td>
                                         <td>
-                                            @foreach ($venta->partidas as $partida)
-                                                {{optional($partida->producto)->nombre}}<br>
-                                            @endforeach
+                                            <a @if($puede_editar)
+                                                    class='editable_ventas_id_alumno editable'
+                                                    data-type='select2'
+                                                    data-pk='{{ $partida->id_venta }}'
+                                                    data-url='{{ route('reportes.reporte-ventas-producto.actualizar_ventas_xeditable') }}'
+                                                    data-value='{{ $partida->venta->id_alumno }}'
+                                                    data-name='id_alumno'
+                                                @endif
+                                                >
+                                                {{ optional($partida->venta->alumno)->fullname }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a @if($puede_editar)
+                                                    class='editable_partidas_ventas_id_producto editable'
+                                                    data-type='select2'
+                                                    data-pk='{{ $partida->id }}'
+                                                    data-url='{{ route('reportes.reporte-ventas-producto.actualizar_partidas_ventas_xeditable') }}'
+                                                    data-value='{{ $partida->id_producto }}'
+                                                    data-name='id_producto'
+                                                @endif
+                                                >
+                                                {{ optional($partida->producto)->nombre }}
+                                            </a>
+
                                         </td>
 
                                         <td class="text-right text-nowrap" style="cursor:pointer">
-                                            $ {{ number_format($venta->total, '2', '.', ',') }}
+                                            <a @if($puede_editar)
+                                                    class='editable_partidas_ventas_cantidad editable'
+                                                    data-type='number'
+                                                    data-min="1"
+                                                    data-pk='{{ $partida->id }}'
+                                                    data-url='{{ route('reportes.reporte-ventas-producto.actualizar_partidas_ventas_xeditable') }}'
+                                                    data-value='{{ $partida->cantidad }}'
+                                                    data-name='cantidad'
+                                                @endif
+                                                >
+                                                {{ $partida->cantidad }}
+                                            </a>
+                                        </td>
+
+                                        <td class="text-right text-nowrap" data-precio style="cursor:pointer">
+                                            $ {{ number_format($partida->precio, '2', '.', ',') }}
+                                        </td>
+
+                                        <td class="text-right text-nowrap" data-total style="cursor:pointer">
+                                            $ {{ number_format($partida->total, '2', '.', ',') }}
                                         </td>
                                     </tr>
                                 @endforeach
@@ -212,7 +300,8 @@
                         <table class="table table-bordered mt-3 float-right print_only" style="width:50%;">
                             <tr>
                                 <td style="font-size: 1rem;">Total: </td>
-                                <td class="text-right"><b style="font-size: 1rem;"> ${{ number_format($ventas->sum('total'), 2, '.', ',') }}</b>
+                                <td class="text-right">
+                                    <b style="font-size: 1rem;"> $ <span id="span-print-total">{{ number_format($partidas->sum('total'), 2, '.', ',') }}</span></b>
                                 </td>
                             </tr>
                             <tr>
@@ -227,19 +316,17 @@
         </div>
 
         <div class="col-lg-3 mb-3 no_print">
-            {{-- <button onclick="window.print();" class="btn btn-block btn-secondary mb-3">
-                <i class="fas fa-print"></i> Imprimir
-            </button> --}}
             <div class="col-sm-12 col-xxxl-12 p-1">
                 <a class="element-box el-tablo" href="#">
                   <div class="label mb-2">
                     Total
                   </div>
                   <div class="value">
-                    $ {{ number_format($ventas->sum('total'), 2, '.', ',') }}
+                    $ <span id="span-total">{{ number_format($total, 2, '.', ',') }}</span>
                   </div>
                 </a>
             </div>
+
             @can('convertir_no_fiscales_a_fiscales')
                 @if($tipo == 'semanal' || $tipo == 'mes' )
                     <div class="col-sm-12 col-xxxl-12 p-1">
@@ -248,7 +335,7 @@
                             No fiscales
                         </div>
                         <div class="value">
-                            $ {{ number_format($ventas->where('venta_fiscal',0)->sum('monto'), 2, '.', ',') }}
+                            $ <span id="span-total-no-fiscal">{{ number_format($total_no_fiscal, 2, '.', ',') }}</span>
                         </div>
                         </a>
                     </div>
@@ -258,7 +345,7 @@
                             Fiscales
                         </div>
                         <div class="value">
-                            $ {{ number_format($ventas->where('venta_fiscal',1)->sum('monto'), 2, '.', ',') }}
+                            $  <span id="span-total-fiscal">{{ number_format($total_fiscal, 2, '.', ',') }}</span>
                         </div>
                         </a>
                     </div>
@@ -268,11 +355,7 @@
                             % de fiscales
                         </div>
                         <div class="value">
-                            @if($ventas->sum('monto') > 0)
-                            {{ number_format( $ventas->where('venta_fiscal',1)->sum('monto') / $ventas->sum('monto') *100, 2, '.', ',') }} %
-                            @else
-                            NO SE HAN REGISTRADO VENTAS
-                            @endif
+                           <span id="span-porcentaje-fiscal">{{ $porcentaje_fiscal }}</span>
                         </div>
                         </a>
                     </div>
@@ -302,19 +385,88 @@
             </div>
         </div>
     </div>
+
+    <div class="modal inmodal fade animated" id="modal-ticket" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Ticket</h4>
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">
+                            &times;</span><span class="sr-only">Close</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div id="contenido-ticket"></div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
+    <link rel="stylesheet" href="{{ asset('plugins/xeditable/css/bootstrap-editable.css') }}">
+    <script src="{{ asset('plugins/xeditable/js/bootstrap-editable.min.js') }}"></script>
+    <script src="{{ asset('template-clean-admin/bower_components/select2/dist/js/i18n/es.js') }}"></script>
+
     <script type="text/javascript">
-        $.fn.datepicker.dates['es'] = {
+
+        const CONFIG_DATEPICKER = {
             days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
             daysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
-            daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"],
+            daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
             months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
             monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
             today: "Hoy",
-            clear: "Borrar"
+            monthsTitle: "Meses",
+            clear: "Borrar",
+            weekStart: 1,
+        }
+
+        const Helpers = {
+            number_format: function(number,decimals){
+                return parseFloat(number).toFixed(decimals).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString()
+            },
+            formTokenDelete:function(){
+                const token = document.head.querySelector('meta[name="csrf-token"]');
+
+                const form = $('<form>', { 'method': 'POST' });
+
+                const inputToken = $('<input>', {
+                    'type': 'hidden',
+                    'name': '_token',
+                    'value': token.content
+                });
+
+                const inputDelete = $('<input>', {
+                    'type': 'hidden',
+                    'name': '_method',
+                    'value': 'DELETE'
+                });
+
+                form.append(inputToken);
+                form.append(inputDelete);
+
+                return form;
+            },
         };
+
+        const dom = {
+            tikets:{
+                contenido_ticket:$("#contenido-ticket"),
+                modal: $("#modal-ticket"),
+            },
+        };
+
+        $.fn.datepicker.dates['es'] = CONFIG_DATEPICKER     //👉 DATEPICKER
+        $.fn.bdatepicker.dates['es'] = CONFIG_DATEPICKER    //👉 XEDITABLE DATEPICKER
+
 
         $('#tabla_ventas').DataTable({
             responsive: true,
@@ -352,6 +504,44 @@
                 @endcan
             ],
             order: [[0,'desc']],
+        });
+
+        $('#tabla_ventas').on('click','button[data-action="eliminar"]',function(e){
+            const $button = $(this);
+
+            swal({
+                title: "Deseas eliminar este registro",
+                text:'Esta acción no podrá deshacerse',
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#ff3333",
+                cancelButtonColor: "#CDCDCD",
+                confirmButtonText: "Si",
+                cancelButtonText: "Cancelar",
+                showLoaderOnConfirm: false,
+            }).then(function(result) {
+                if (!result.value) {
+                    return;
+                }
+
+                wait.modal('show');
+
+                const form = Helpers.formTokenDelete();
+
+                form.attr('action',$button.data('url'));
+
+                form.appendTo('body').submit();
+
+            })
+        });
+
+        $('#tabla_ventas').on('click','button[data-action="imprimir"]',function(e){
+            const $button = $(this);
+            const route = $button.data('url');
+
+            dom.tikets.modal.modal('show');
+            dom.tikets.contenido_ticket.html();
+            dom.tikets.contenido_ticket.html(`<iframe scrolling='auto' type='text/html' scroll='auto' src='${route}' width='100%' height='450px' align='center'></iframe>`);
         });
 
         $('#datepicker').datepicker({
@@ -399,5 +589,189 @@
                 });
             })
         });
+
+        @if($puede_editar)
+            const actualizarTotales = function(){
+                return $.ajax({
+                    url: window.location.href,
+                    type: 'GET',
+                    cache: false,
+                    data: {
+                        tipo:"{{ request('tipo','dia') }}",
+                        fecha:"{{ request('fecha') }}"
+                    },
+                    success: function (response){
+                        $("#span-total").html(Helpers.number_format(response.total,2));
+                        $("#span-print-total").html(Helpers.number_format(response.total,2));
+                        $("#span-total-fiscal").html(Helpers.number_format(response.total_fiscal,2))
+                        $("#span-total-no-fiscal").html(Helpers.number_format(response.total_no_fiscal,2))
+                        $("#span-porcentaje-fiscal").html(response.porcentaje_fiscal)
+                    },
+                    fail:function(error){
+                        toastr.error('Error', 'Ocurrio un error inesperado');
+                    }
+                });
+            }
+
+            // 👉 VENTAS
+            $('.editable_ventas_folio').editable({
+                emptytext: 'Vacio',
+                onblur: 'ignore',
+            });
+
+            $('.editable_ventas_fecha').editable({
+                format: 'yyyy-mm-dd',
+                viewformat: 'dd-mm-yyyy',
+                emptytext: 'Vacio',
+                datepicker: {
+                    weekStart: 1,
+                    orientation: 'bottom left',
+                    language: 'es',
+                },
+                display: function(value, sourceData,response) {
+                    if(sourceData && sourceData.hasOwnProperty('venta')){
+                        $(this).text(sourceData.venta.format_fecha);
+
+                    }
+                },
+            });
+
+            $('.editable_ventas_id_alumno').editable({
+                select2: {
+                    placeholder: 'Selecciona un alumno',
+                    allowClear: true,
+                    minimumInputLength: 3,
+                    ajax: {
+                        method: 'POST',
+                        url: '{{ route("alumnos.traer_alumnos_select2") }}',
+                        dataType: 'json',
+                        cache: false,
+                        delay:250,
+                        data:function (params) {
+                            return {
+                                _token: '{{ csrf_token() }}',
+                                term: params.term,
+                                page: params.page || 1,
+                                id_sucursal: "{{ optional(session('sucursal'))->id }}",
+                                status:'Alumno'
+                            }
+                        },
+                        beforeSend:function(xhr,type){
+                            xhr.setRequestHeader('X-CSRF-Token',$('meta[name="csrf-token"]').attr('content'))
+                        },
+                        processResults: function (data, page) {
+                            return data;
+                        }
+                    },
+                    templateResult: function(option){
+                        if (option.loading) {
+                            return option.text;
+                        }
+
+                        if(!option.nuevo_numero_control || !option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                            return option.text
+                        }
+
+                        return `No. Control: ${option.nuevo_numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                    },
+                    templateSelection: function(option){
+                        if(!option.nuevo_numero_control ||  !option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                            return option.text
+                        }
+
+                        return `No. Control: ${option.nuevo_numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                    },
+                },
+                display: function(value, sourceData,response) {
+                    if(sourceData){
+                        $(this).text(sourceData.alumno);
+                    }
+                },
+                mode:'inline',
+                emptytext: 'Vacio',
+                tpl: '<select style="width:100%;z-index: 289;">',
+            })
+
+            // 👉 PARTIDAS VENTAS
+            $('.editable_partidas_ventas_id_producto').editable({
+                select2: {
+                    placeholder: 'Selecciona un producto',
+                    allowClear: true,
+                    minimumInputLength: 3,
+                    ajax: {
+                        method: 'POST',
+                        url: '{{ route("admin.productos.traer_productos_select2") }}',
+                        dataType: 'json',
+                        cache: false,
+                        delay:250,
+                        data:function (params) {
+                            return {
+                                _token: '{{ csrf_token() }}',
+                                term: params.term,
+                                page: params.page || 1,
+                                id_sucursal: "{{ optional(session('sucursal'))->id }}",
+                            }
+                        },
+                        beforeSend:function(xhr,type){
+                            xhr.setRequestHeader('X-CSRF-Token',$('meta[name="csrf-token"]').attr('content'))
+                        },
+                        processResults: function (data, page) {
+                            return data;
+                        }
+                    },
+                    templateResult: function(option){
+                        if (option.loading) {
+                            return option.text;
+                        }
+
+                        if(!option.nombre || !option.descripcion ){
+                            return option.text
+                        }
+
+                        return `${option.nombre} ${option.descripcion} `;
+                    },
+                    templateSelection: function(option){
+                        if(!option.nombre || !option.descripcion){
+                            return option.text
+                        }
+
+                        return `${option.nombre} ${option.descripcion} `;
+                    },
+                },
+                display: function(value, sourceData,response) {
+                    if (sourceData) {
+                        const partida = sourceData.partida;
+                        const producto = partida.producto;
+
+                        $(this).text(producto.nombre);
+                        $(this).closest('tr').find('[data-precio]').html('$ ' + Helpers.number_format(partida.precio,2) );
+                        $(this).closest('tr').find('[data-total]').html('$ '+ Helpers.number_format(partida.total,2) );
+
+                        actualizarTotales();
+                    }
+                },
+                mode:'inline',
+                emptytext: 'Vacio',
+                tpl: '<select style="width:100%;z-index: 289;">',
+            })
+
+            $('.editable_partidas_ventas_cantidad').editable({
+                emptytext: 'Vacio',
+                onblur: 'ignore',
+                display: function(value, sourceData,response) {
+                    if (sourceData) {
+                        const partida = sourceData.partida;
+                        const producto = partida.producto;
+
+                        $(this).text(partida.cantidad);
+                        $(this).closest('tr').find('[data-precio]').html('$ ' + Helpers.number_format(partida.precio,2) );
+                        $(this).closest('tr').find('[data-total]').html('$ '+ Helpers.number_format(partida.total,2) );
+
+                        actualizarTotales();
+                    }
+                },
+            });
+
+        @endif
     </script>
 @endsection

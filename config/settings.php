@@ -376,6 +376,22 @@ return [
             'display_name'  => 'Reimprimir Ticket Reporte Ventas',
             'description'   => 'Permite reimprimir ticket desde el reporte de ventas'
         ],
+
+        [
+            'name'          => 'editar_reporte_ventas_productos',
+            'display_name'  => 'Editar Reporte Ventas Productos',
+            'description'   => 'Permite editar la informacion desde el reporte de ventas de productos'
+        ],
+        [
+            'name'          => 'eliminar_movimiento_reporte_ventas_productos',
+            'display_name'  => 'Eliminar Movimiento Reporte Ventas Productos',
+            'description'   => 'Permite eliminar un movimiento desde el reporte de ventas de productos',
+        ],
+        [
+            'name'          => 'reimprimir_ticket_reporte_ventas_productos',
+            'display_name'  => 'Reimprimir Ticket Reporte Ventas Productos',
+            'description'   => 'Permite reimprimir el ticket desde el reporte de ventas de productos',
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

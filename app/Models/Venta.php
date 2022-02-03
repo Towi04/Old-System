@@ -16,6 +16,15 @@ class Venta extends Model
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'format_fecha',
+    ];
+
+    /**
      * Get all of the partidas f
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -49,5 +58,12 @@ class Venta extends Model
         return $this->belongsTo(User::class, 'id_recibio', 'id');
     }
 
+    public function getFormatFechaAttribute($value)
+    {
+        if(empty($this->fecha)){
+            return '';
+        }
 
+        return $this->fecha->format('d-m-Y H:i');
+    }
 }

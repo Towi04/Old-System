@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Reportes;
 
 use App\Models\Pago;
 use App\Models\User;
-use App\Models\Venta;
 use App\Models\Alumno;
 use Jenssegers\Date\Date;
 use Illuminate\Http\Request;
@@ -12,6 +11,8 @@ use App\Models\Configuracion;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\PartidaVenta;
+use App\Models\Venta;
 use Yajra\DataTables\Facades\DataTables;
 use PDF;
 
@@ -540,101 +541,197 @@ class ReporteVentasController extends Controller
 
     public function index_productos(Request $request)
     {
-        \Carbon\Carbon::setWeekStartsAt(Carbon::SUNDAY);
-        \Carbon\Carbon::setWeekEndsAt(Carbon::SATURDAY);
+        Carbon::setWeekStartsAt(Carbon::SUNDAY);
+        Carbon::setWeekEndsAt(Carbon::SATURDAY);
 
-        if ($request->has('tipo')) {
-            $tipo = $request->input('tipo');
-        } else {
-            $tipo = 'dia';
-        }
+        # 👉 SECCION DE VARIABLES
+        $tipo = $request->input('tipo') ?? 'dia';
 
         $sucursal = optional(session('sucursal'));
 
+        if (isset($request->fecha)) {
+            $fecha = Carbon::createFromFormat('d-m-Y', $request->input('fecha'));
+        } else {
+            $fecha = Carbon::today();
+        }
+
+        $inicio  = null;
+        $final = null;
+
         if ($tipo == 'dia') {
-            $tipo = 'dia';
-
-            if (isset($request->fecha)) {
-                $fecha = Carbon::createFromFormat('d-m-Y', $request->input('fecha'));
-            } else {
-                $fecha = Carbon::today();
-            }
-
             $fecha =  new Date($fecha);
-            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDay();
-            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDay();
 
+            $inicio = $fecha->startOfDay()->format('Y-m-d H:i:s');
+            $final = $fecha->endOfDay()->format('Y-m-d H:i:s');
 
-            $ventas = Venta::query()->where('status', '=', 'Cerrada')
-                ->where('id_sucursal', '=', $sucursal->id)
-                ->whereBetween('fecha', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
-                ->orderBy('created_at', 'desc');
-
-            $fecha_antes = new Date($fecha_antes);
-            $fecha_despues = new Date($fecha_despues);
+            $fecha_antes = new Date($fecha->clone()->subDay()->format('Y-m-d'));
+            $fecha_despues = new Date($fecha->clone()->addDay()->format('Y-m-d'));
         }
 
         if ($tipo == 'mes') {
-            if (isset($request->fecha)) {
-                $fecha = Carbon::createFromFormat('d-m-Y', $request->fecha);
-            } else {
-                $fecha = Carbon::today();
-            }
             $fecha =  new Date($fecha);
-            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subMonth();
-            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addMonth();
+            $fecha_antes = new Date($fecha->clone()->subMonth()->format('Y-m-d'));
+            $fecha_despues = new Date($fecha->clone()->addMonth()->format('Y-m-d'));
 
-            $ventas = Venta::query()->where('status', '=', 'Cerrada')
-                ->where('id_sucursal', '=', $sucursal->id)
-                ->whereBetween('fecha', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
-                ->orderBy('created_at', 'desc');
-
-            $fecha_antes = new Date($fecha_antes);
-            $fecha_despues = new Date($fecha_despues);
+            $inicio = $fecha->startOfMonth()->format('Y-m-d H:i:s');
+            $final = $fecha->endOfMonth()->format('Y-m-d H:i:s');
         }
 
         if ($tipo == 'semanal') {
-            if (isset($request->fecha)) {
-                $fecha = Carbon::createFromFormat('d-m-Y', $request->fecha);
-            } else {
-                $fecha = Carbon::today();
-            }
             $fecha =  new Date($fecha);
-            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDays(7);
-            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDays(7);
+            $fecha_antes = new Date($fecha->clone()->subDays(7)->format('Y-m-d'));
+            $fecha_despues = new Date($fecha->clone()->addDays(7)->format('Y-m-d'));
 
-            $ventas = Venta::query()->where('status', '=', 'Cerrada')
-                ->where('id_sucursal', '=', $sucursal->id)
-                ->whereBetween('fecha', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
-                ->orderBy('created_at', 'desc');
-
-            $fecha_antes = new Date($fecha_antes);
-            $fecha_despues = new Date($fecha_despues);
+            $inicio = $fecha->startOfWeek()->format('Y-m-d H:i:s');
+            $final = $fecha->endOfWeek()->format('Y-m-d H:i:s');
         }
+
         if ($tipo == 'anual') {
-            if (isset($request->fecha)) {
-                $fecha = Carbon::createFromFormat('d-m-Y', $request->fecha);
-            } else {
-                $fecha = Carbon::today();
-            }
             $fecha =  new Date($fecha);
-            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subYear();
-            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addYear();
+            $fecha_antes = new Date($fecha->clone()->subYear()->format('Y-m-d'));
+            $fecha_despues = new Date($fecha->clone()->addYear()->format('Y-m-d'));
 
-            $ventas = Venta::query()->where('status', '=', 'Cerrada')
-                ->where('id_sucursal', '=', $sucursal->id)
-                ->whereBetween('fecha', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
-                ->orderBy('created_at', 'desc');
-
-            $fecha_antes = new Date($fecha_antes);
-            $fecha_despues = new Date($fecha_despues);
+            $inicio = $fecha->startOfYear()->format('Y-m-d H:i:s');
+            $final = $fecha->endOfYear()->format('Y-m-d H:i:s');
         }
 
-        $ventas =  $ventas->get();
+        # 👉 OBTENER PARTIDAS
+        $partidas = PartidaVenta::query()
+        ->whereHas('venta',function($q) use($inicio,$final,$sucursal){
+            $q->where('id_sucursal', '=', $sucursal->id);
+            $q->whereBetween('fecha', [$inicio, $final]);
+            $q->where('status','Cerrada');
+        })
+        ->with(['venta','producto'])
+        ->get();
 
-        return view('reportes.reporte_ventas.index_productos', compact('ventas', 'fecha', 'fecha_antes', 'fecha_despues', 'tipo'));
+        # 👉 CALCULO TOTALES
+        $total = $partidas->sum('total');
+
+        $total_fiscal = $partidas->filter(function($partida){
+            return $partida->venta->forma_pago != 'Efectivo';
+        })->sum('total');
+
+        $total_no_fiscal = $partidas->filter(function($partida){
+            return $partida->venta->forma_pago == 'Efectivo';
+        })->sum('total');
+
+        $porcentaje_fiscal = ($total_fiscal > 0) ?
+            number_format($total_fiscal / $total * 100, 2) . ' %':
+            ' NO SE HAN REGISTRADO VENTAS';
+
+        if ($request->ajax()) {
+            return response()->json([
+                'total'             => $total,
+                'total_fiscal'      => $total_fiscal,
+                'total_no_fiscal'   => $total_no_fiscal,
+                'porcentaje_fiscal' => $porcentaje_fiscal,
+            ]);
+        }
+
+        # 👉 PERMISOS
+        $user = auth()->user();
+        $puede_editar = $user->can('editar_reporte_ventas_productos');
+        $puede_eliminar = $user->can('eliminar_movimiento_reporte_ventas_productos');
+        $puede_reimprimir = $user->can('reimprimir_ticket_reporte_ventas_productos');
+
+        return view('reportes.reporte_ventas.index_productos', compact(
+            'partidas',
+            'fecha',
+            'fecha_antes',
+            'fecha_despues',
+            'tipo',
+            'puede_editar',
+            'puede_eliminar',
+            'puede_reimprimir',
+            'total',
+            'total_fiscal',
+            'total_no_fiscal',
+            'porcentaje_fiscal',
+        ));
     }
 
+    public function actualizar_ventas_xeditable(Request $request)
+    {
+        $venta = Venta::findOrFail($request->pk);
+        $venta[$request->name] = $request->value;
+
+        switch ($request->name) {
+            case 'fecha':
+                $hour = now()->format('h:i a');
+                $fecha = "{$request->value} {$hour}";
+                $venta[$request->name] = $fecha;
+            break;
+            default:
+                $venta[$request->name] = $request->value;
+            break;
+        }
+
+        $venta->save();
+
+        return response()->json([
+            'venta' => $venta
+        ]);
+    }
+
+    public function actualizar_partidas_ventas_xeditable(Request $request)
+    {
+        # 👉 ACTUALIZA INFORMACION
+        $partida = PartidaVenta::findOrFail($request->pk);
+        $partida[$request->name] = $request->value;
+        $partida->save();
+
+        # 👉 ACTUALIZO LA INFORMACION DEL PRODUCTO
+        $producto = $partida->producto;
+        $partida->precio = $producto->precio;
+        $partida->total = $producto->precio;
+        $partida->total = $partida->cantidad * $partida->precio;
+        $partida->save();
+
+        # 👉 ACTUALIZO EL TOTAL DE LA VENTA
+        $venta = $partida->venta;
+        $venta->total = $venta->partidas->sum('total');
+        $venta->save();
+
+        return response()->json([
+            'partida' => $partida
+        ]);
+    }
+
+    public function eliminar_partida(Request $request, PartidaVenta $partida)
+    {
+        DB::beginTransaction();
+
+        try {
+            # ELIMINAMOS LA PARTIDA
+            $venta = $partida->venta;
+            $partida->delete();
+
+            # SE RECALCULA EL TOTAL DE LAS PARTIDAS
+            $venta->total = $venta->partidas()->sum('total');
+            $venta->save();
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()
+                ->back()
+                ->with([
+                    'error' => 'Hubo un error al eliminar la partida: ',
+                ]);
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'message' => 'Partida eliminada correctamente',
+                'success' => true,
+            ]);
+        }
+
+        return redirect()->back()->with([
+            'message' => 'Partida eliminada correctamente',
+        ]);
+    }
 
     public function eliminar_pago(Request $request, Pago $pago)
     {

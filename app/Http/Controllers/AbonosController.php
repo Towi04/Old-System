@@ -86,8 +86,7 @@ class AbonosController extends Controller
 
         switch ($request->name) {
             case 'fecha':
-                $hour = now()->format('h:i a');
-                $fecha = "{$request->value} {$hour}";
+                $fecha = "{$request->value}";
                 $pago[$request->name] = $fecha;
             break;
             default:
