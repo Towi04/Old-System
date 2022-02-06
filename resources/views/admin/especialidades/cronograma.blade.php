@@ -57,6 +57,7 @@
                     <table class="table table-striped table-bordered table-hover"  id="table_cronograma" >
                         <thead>
                             <tr>
+                                <th class="bg-primary text-white ">Orden</th>
                                 <th class="bg-primary text-white ">Materia</th>
                                 @php
                                     $fecha_in = $fecha_inicio->copy();
@@ -80,6 +81,9 @@
                                 @endphp
                                 @foreach($grupo->materias as $materia)
                                 <tr>
+                                    <td class="bg-primary text-white">
+                                        {{$materia->orden}} 
+                                    </td>
                                     <td class="bg-primary text-white">
                                         {{$materia->nombre}} <br> Grupo: {{$grupo->clave}}
                                     </td>

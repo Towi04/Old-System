@@ -199,8 +199,8 @@ class PuntoDeVentaController extends Controller
 
             # CREO EL PAGO DEL ALUMNO 😏
             $pago = Pago::create([
-                'folio'         => ($venta_fiscal)? null: ($folio + 1),  # 👉 SI NO ES UNA VENTA FISCAL, PONER EL FOLIO EN NULL,
-                'folio_fiscal'  => ($venta_fiscal) ? ($folio_fiscal + 1) : null,
+                'folio'         => ($venta_fiscal)? null: $request->input('folio'),  # 👉 SI NO ES UNA VENTA FISCAL, PONER EL FOLIO EN NULL,
+                'folio_fiscal'  => ($venta_fiscal) ? $request->input('folio') : null,
                 'id_sucursal'   => $id_sucursal,
                 'id_alumno'     => $alumno->id,
                 'monto'         => $request->input('monto'),

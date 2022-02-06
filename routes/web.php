@@ -27,6 +27,7 @@ use App\Http\Controllers\ComprasController;
 use App\Http\Controllers\Reportes\ReporteVentasController;
 use App\Http\Controllers\PuntoDeVentaProductosController;
 use App\Http\Controllers\AsistenciasController;
+use App\Http\Controllers\ReportesController;
 
 #NOTE: CONFIGURACION DE RUTAS
 Auth::routes(['register'=> false]);
@@ -239,6 +240,9 @@ Route::middleware(['auth','sucursal'])->group(function () {
         Route::post('reporte-ventas-productos/actualizar_ventas_xeditable',[ReporteVentasController::class,'actualizar_ventas_xeditable'])->name('reporte-ventas-producto.actualizar_ventas_xeditable');
         Route::post('reporte-ventas-productos/actualizar_partidas_ventas_xeditable',[ReporteVentasController::class,'actualizar_partidas_ventas_xeditable'])->name('reporte-ventas-producto.actualizar_partidas_ventas_xeditable');
         Route::delete('reporte-ventas-productos/eliminar_partida/{partida}',[ReporteVentasController::class,'eliminar_partida'])->name('reporte-ventas-producto.eliminar_partida');
+
+        // REPORTE DE ASISTENCIAS DEL PERSONAL
+        Route::get('asistencias_personal',[AsistenciasController::class,'asistencias_personal'])->name('asistencias_personal');
     });
 
     Route::get('configuraciones', [ ConfiguracionesController::class,'index'])->name('configuraciones.index');

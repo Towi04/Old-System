@@ -392,6 +392,11 @@ return [
             'display_name'  => 'Reimprimir Ticket Reporte Ventas Productos',
             'description'   => 'Permite reimprimir el ticket desde el reporte de ventas de productos',
         ],
+        [
+            'name'          => 'ver_reporte_asistencias_personal',
+            'display_name'  => 'Ver el reporte de asistencias del personal',
+            'description'   => 'Ver el reporte de asistencias del personal',
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

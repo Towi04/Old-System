@@ -206,14 +206,14 @@
                     },
                 },
                 columns: [
-                    {data: 'id', name: 'id'},
+                    {data: 'id', name: 'id', visible:false},
                     {data: 'orden', name: 'orden'},
                     {data: 'nombre_materia', name: 'materia.nombre'},
                     {data: 'nombre_profesor',name:'nombre_profesor'},
                     {data: 'profesor.nombres', name: 'profesor.nombres',visible:false},
                     {data: 'profesor.apellido_paterno', name: 'profesor.apellido_paterno',visible:false},
                     {data: 'profesor.apellido_materno', name: 'profesor.apellido_materno',visible:false},
-                    {data: 'horas_semana',name:'horas_semana'},
+                    {data: 'horas_semana',name:'horas_semana',visible:false},
                     {data: 'buttons', name: 'buttons', orderable: false, searchable: false}
                 ],
                 order: [[ 1, "asc" ]],

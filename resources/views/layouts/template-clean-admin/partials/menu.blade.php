@@ -211,6 +211,11 @@
                         <a href="{{ route('reportes.reporte-ventas.asesores') }}">Reporte de Asesores</a>
                     </li>
                     @endcan
+                    @can('ver_reporte_asistencias_personal')
+                    <li>
+                        <a href="{{ route('reportes.asistencias_personal') }}">Reporte de Asistencias Personal</a>
+                    </li>
+                    @endcan
                 </ul>
             </div>
         </div>

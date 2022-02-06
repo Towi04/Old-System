@@ -19,4 +19,14 @@ class Asistencia extends Model
     public function getFechaAttribute($value){
         return new Date($value);
     }
+
+    /**
+     * Get the personal t
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function personal()
+    {
+        return $this->belongsTo(User::class, 'id_usuario', 'id');
+    }
 }

@@ -56,6 +56,7 @@
                 <table class="table table-striped table-bordered table-hover"  id="table_cronograma" >
                     <thead>
                         <tr>
+                            <th class="bg-primary text-white ">Orden</th>
                             <th class="bg-primary text-white ">Materia</th>
                             @php 
                                 $fecha_inicio = $grupo->fecha_inicio->startOfWeek();
@@ -73,6 +74,9 @@
                     <tbody>
                             @foreach($grupo->materias as $materia)
                             <tr>
+                                <td class="bg-primary text-white">
+                                    {{$materia->orden}}
+                                </td>
                                 <td class="bg-primary text-white">
                                     {{$materia->nombre}}
                                 </td>
@@ -133,7 +137,7 @@
             "loadingRecords": "Cargando...",
                 "processing":     "Procesando...",
             },
-            "order": false,
+            "order": [[0,'asc']],
             fixedColumns:   {
                 leftColumns: 1,
                 // rightColumns: 1
