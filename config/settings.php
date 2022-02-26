@@ -402,6 +402,16 @@ return [
             'display_name'  => 'Ver el reporte de desercion',
             'description'   => 'Ver el reporte de desercion',
         ],
+        [
+            'name'          => 'baja_grupo',
+            'display_name'  => 'Dar de baja a un alumno de un grupo',
+            'description'   => 'Permite dar de baja a un alumno de un grupo',
+        ],
+        [
+            'name'          => 'cambio_horario_grupo',
+            'display_name'  => 'Cambio horario grupo',
+            'description'   => 'Permite realizar un cambio de horario de un grupo a un alumno',
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

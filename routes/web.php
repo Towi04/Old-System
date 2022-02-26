@@ -150,6 +150,12 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::post('alumnos/traer_alumnos_select2', [AlumnosController::class, 'traer_alumnos_select2']) ->name('alumnos.traer_alumnos_select2');
     Route::get('alumnos/formulario_inscribir_otro_grupo/{alumno}', [ AlumnosController::class,'formulario_inscribir_otro_grupo'])->name('alumnos.formulario_inscribir_otro_grupo');
     Route::put('alumnos/inscribir_a_otro_grupo/{id}', [ AlumnosController::class,'inscribir_a_otro_grupo'])->name('alumnos.inscribir_a_otro_grupo');
+    Route::post('alumnos/baja_grupo', [ AlumnosController::class,'baja_grupo'])->name('alumnos.baja_grupo');
+
+    Route::get('alumnos/cambio_horario/{id_alumno}/{id_grupo_origen}', [ AlumnosController::class,'cambio_horario'])->name('alumnos.cambio_horario');
+    Route::post('alumnos/guardar_cambio_horario', [ AlumnosController::class,'guardar_cambio_horario'])->name('alumnos.guardar_cambio_horario');
+
+
 
     Route::resource('alumnos', AlumnosController::class)->parameters([
         'alumnos' => 'alumno'
@@ -176,7 +182,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
     # NOTE: RUTAS GRUPOS (RESPETAR EL ORDEN DE LAS RUTAS)
     Route::post('grupos/finalizar_grupo', [ GruposController::class,'finalizar_grupo'])->name('grupos.finalizar_grupo');
     Route::post('grupos/activar_grupo', [ GruposController::class,'activar_grupo'])->name('grupos.activar_grupo');
-    
+
     Route::post('grupos/datatables', [ GruposController::class,'datatables'])->name('grupos.datatables');
     Route::post('grupos/traer_grupos_select2', [ GruposController::class,'traer_grupos_select2'])->name('grupos.traer_grupos_select2');
 

@@ -126,15 +126,32 @@
                                     Horario:<br> {!!$grupo->horario_corto!!}
                                 </div>
                                 <div class="post-foot">
-                                    <div class="post-tags">
-                                    <div class="badge badge-primary">
-                                        Alumnos {{$grupo->alumnos->count()}}
+                                    <div class="row">
+                                        <div class="col-12">
+                                            @can('cambio_horario_grupo')
+                                            <a href="{{route('alumnos.cambio_horario', [$alumno->id,$grupo->id])}}" class="btn btn-sm btn-dark">Cambio Horario</a>
+                                            @endcan
+
+                                            @can('baja_grupo')
+                                            <button data-id="{{$grupo->id}}" class="btn btn-sm btn-danger baja_grupo">Baja</button>
+                                            @endcan
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="post-tags mt-2">
+                                                <div class="badge badge-primary">
+                                                    Alumnos {{$grupo->alumnos->count()}}
+                                                </div>
+                                                
+                                                <a class="post-link float-right" href="{{route('grupos.show', $grupo)}}"><span>Ir a grupo</span><i class="os-icon os-icon-arrow-right7"></i></a>
+                                            </div>
+                                        </div>
                                     </div>
-                                    {{-- <div class="badge badge-primary">
-                                        Crypto
-                                    </div> --}}
-                                    </div>
-                                    <a class="post-link" href="{{route('grupos.show', $grupo)}}"><span>Ir a grupo</span><i class="os-icon os-icon-arrow-right7"></i></a>
+                                    
+
+                                    
+                                <br>  
+                                    
+                              
                                 </div>
                                 </div>
                             </div>
@@ -585,6 +602,46 @@
                 initComplete: function(settings, json) {
                     
                 }
+            });
+
+            $('.baja_grupo').click(function(){
+                id = $(this).data('id');
+                swal({
+                            title: "¿Estas seguro de dar de baja al alumno de este grupo?",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#ff3333",
+                            cancelButtonColor: "#CDCDCD",
+                            confirmButtonText: "Si, dar de baja",
+                            cancelButtonText: "Cancelar",
+                            showLoaderOnConfirm: false,
+                        }).then(function(result) {
+                            if (!result.value) {
+                                return;
+                            }
+
+                            wait.modal('show');
+
+                            $.ajax({
+                                url: "{{route('alumnos.baja_grupo')}}",
+                                type: 'POST',
+                                cache: false,
+                                data: {
+                                    _token: $("meta[name='csrf-token']").attr("content"),
+                                    id_alumno: {{$alumno->id}},
+                                    id_grupo: id,
+                                },
+                                success: function (response){
+                                    location.reload();
+                                },
+                                error:function(error){
+                                    setTimeout(() => {
+                                        wait.modal('hide');
+                                        toastr.error('Error', 'Ocurrio un error inesperado');
+                                    }, 250);
+                                }
+                            });
+                        })
             });
         });
     </script>

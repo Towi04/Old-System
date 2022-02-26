@@ -15,7 +15,7 @@ class GenerarDesercionesGrupos extends Command
      *
      * @var string
      */
-    protected $signature = 'generar-deserciones:grupos';
+    protected $signature = 'generar-deserciones:grupos {semana?}';
 
     /**
      * The console command description.
@@ -47,20 +47,23 @@ class GenerarDesercionesGrupos extends Command
         $grupos = Grupo::where('status','=','Activo')->get();
         $fecha = Carbon::now();
         
-        $semana = $fecha->weekOfYear;
+        if($this->argument('semana')){
+            $semana = $this->argument('semana');
+        }else{
+            $semana = $fecha->weekOfYear;
+        }
+
         $year = $fecha->year;
-        
+        $semana_anterior = $semana-1;
+
         foreach ($grupos as $grupo) {
             
             #SE BUSCA LA DESERCION DE LA SEMANA ANTERIOR
-            
-
-
             $desercion_anterior = GrupoDesercion::where('id_grupo','=',$grupo->id)
-                                    ->where('semana','=',$fecha->subWeek()->weekOfYear)
+                                    ->where('semana','=',$semana_anterior)
                                     ->where('year','=',$fecha->year)
                                     ->first();
-
+            
             if($desercion_anterior){
                 $final_anterior = $desercion_anterior->total_final;
             }else{
@@ -82,9 +85,9 @@ class GenerarDesercionesGrupos extends Command
             $grupo_desercion->anterior = $final_anterior;
             $grupo_desercion->inicios = null;
             $grupo_desercion->reingresos = null;
-            $grupo_desercion->cambios_horarios_plus = null;
+            $grupo_desercion->cambios_horarios_altas = null;
             $grupo_desercion->bajas = null;
-            $grupo_desercion->cambios_horarios_minus = null;
+            $grupo_desercion->cambios_horarios_bajas = null;
             $grupo_desercion->fin_curso = null;
             $grupo_desercion->total_final = $final_anterior;
             $grupo_desercion->save();

@@ -495,4 +495,46 @@ class AlumnosController extends Controller
             ->rawColumns(['abonos.alumno_pago.concepto'])
             ->make(true);
     }
+
+    public function baja_grupo(Request $request){
+
+        $alumno = Alumno::find($request->id_alumno);
+
+        $alumno->grupos()->detach($request->id_grupo);
+
+        $grupo = Grupo::find($request->id_grupo);
+
+        $grupo->actualizarReporteDesercion('sumar','bajas',1);
+
+
+    }
+
+    public function cambio_horario($id_alumno, $id_grupo){
+
+        $alumno = Alumno::find($id_alumno);
+        $grupo_origen = Grupo::find($id_grupo);
+
+        $especialidades = Especialidad::get()->pluck('nombre','id');
+
+        return view('alumnos.cambio_horario', compact('alumno','grupo_origen','especialidades'));
+
+    }
+
+    public function guardar_cambio_horario(Request $request){
+
+        $grupo_origen = Grupo::find($request->id_grupo_origen);
+            
+        $id_grupo = $request->id_grupo;
+        $alumno = Alumno::find($request->id_alumno);
+
+        $alumno->grupos()->detach($request->id_grupo_origen);
+        $grupo_origen->actualizarReporteDesercion('sumar','cambios_horarios_bajas',1);
+
+        $alumno->grupos()->attach($id_grupo);
+        $grupo = Grupo::find($request->id_grupo);
+        $grupo->actualizarReporteDesercion('sumar','cambios_horarios_altas',1);
+
+        return redirect()->route('alumnos.show', $alumno->id);
+
+    }
 }
