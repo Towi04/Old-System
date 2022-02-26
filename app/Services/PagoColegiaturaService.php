@@ -56,7 +56,7 @@ class PagoColegiaturaService
             $precio_semanal = $this->calcular_precio_semanal($grupo, $this->alumno);
 
             $dias_de_la_semana = 7;
-            $fecha_inicio = $this->fecha_actual->copy()->startOfWeek(Carbon::MONDAY);
+            $fecha_inicio = $this->fecha_actual->copy()->startOfWeek(Carbon::SUNDAY);
             $fecha_final = $this->fecha_actual->copy();
             $dias_transcurridos = $fecha_inicio->diffInDays($fecha_final);
             $semanal = ($dias_transcurridos * $precio_semanal) / $dias_de_la_semana;

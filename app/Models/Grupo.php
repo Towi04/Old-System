@@ -157,4 +157,42 @@ class Grupo extends Model
 
         return $this->clave . ' | ' . $this->especialidad->nombre . ' | ' . $horario;
     }
+
+    /**
+     * Get all of the deserciones f
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function deserciones()
+    {
+        return $this->hasMany(GrupoDesercion::class, 'id_grupo', 'id');
+    }
+
+    public function getDesercionSemana($semana,$year){
+
+        return $this->deserciones->where('semana',$semana)->where('year',$year)->first();
+
+    }
+
+    public function actualizarReporteDesercion($operacion, $campo, $cantidad){
+
+        $fecha = Carbon::now();
+        $semana = $fecha->weekOfYear;
+        $year = $fecha->year;
+
+        $desercion = $this->deserciones->where('semana',$semana)->where('year',$year)->first();
+
+        // dd($this->deserciones);
+        switch($operacion){
+            case 'sumar':
+                $desercion[$campo] = $desercion[$campo] + $cantidad;
+                break;
+            case 'restar':
+                $desercion[$campo] = $desercion[$campo] - $cantidad;
+                break;
+        }
+
+        $desercion->total_final = $desercion->anterior +$desercion->inicios + $desercion->reingresos + $desercion->cambios_horarios_altas - $desercion->bajas - $desercion->cambios_horarios_bajas  - $desercion->fin_curso;
+        $desercion->save();
+    }
 }

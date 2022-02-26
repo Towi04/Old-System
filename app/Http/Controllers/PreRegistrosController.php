@@ -366,6 +366,10 @@ class PreRegistrosController extends Controller
                     $pis->semanalPorGrupo($grupo_inscripcion);
                 break;
             }
+
+            // OPERACIONES: sumar | restar
+            // CAMPOS: inicios | reingresos | cambios_horarios_plus | bajas | cambios_horarios_minus | fin_curso
+            $grupo_inscripcion->actualizarReporteDesercion('sumar','inicios',1);
         }
 
         if($request->ajax()) {

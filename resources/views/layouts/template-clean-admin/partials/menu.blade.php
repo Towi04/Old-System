@@ -216,6 +216,12 @@
                         <a href="{{ route('reportes.asistencias_personal') }}">Reporte de Asistencias Personal</a>
                     </li>
                     @endcan
+                    @can('ver_reporte_desercion')
+                    <li>
+                        <a href="{{ route('reportes.desercion') }}">Reporte de Deserción</a>
+                    </li>
+                    @endcan
+
                 </ul>
             </div>
         </div>

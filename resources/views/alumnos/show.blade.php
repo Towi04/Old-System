@@ -64,7 +64,7 @@
                     <div class="up-main-info " style="padding-bottom: 150px; padding-top:10px">
                         <img alt="" src="{{ $alumno->url_foto }}" style="width: 50%">
                         <h2 class="up-header">
-                            {{ $alumno->full_name }}
+                            {{ $alumno->nuevo_numero_control }} - {{ $alumno->full_name }}
                         </h2>
                         <h6 class="up-sub-header">
                         Alumno
@@ -159,7 +159,11 @@
                                     <ul class="nav nav-tabs smaller">
 
                                         <li class="nav-item">
-                                            <a class="nav-link active" data-toggle="tab" href="#tab-pagos-pendientes">Pagos Pendientes</a>
+                                            <a class="nav-link" data-toggle="tab" href="#tab-pagos-pendientes">Documentos</a>
+                                        </li>
+
+                                        <li class="nav-item">
+                                            <a class="nav-link active" data-toggle="tab" href="#tab-historial-pagos">Historial de pagos</a>
                                         </li>
 
                                         <li class="nav-item">
@@ -178,7 +182,7 @@
                                 </div>
 
                                 <div class="tab-content">
-                                    <div class="tab-pane active" id="tab-pagos-pendientes">
+                                    <div class="tab-pane" id="tab-pagos-pendientes">
                                         <div class="form-group">
                                             {!! Form::label('id_grupo','Selecciona el grupo:') !!}
                                             {!! Form::select('id_grupo', $alumno->grupos->pluck('nombre_compuesto','id'), optional($alumno->grupos->first())->id, ['id'=>'select_grupo','class'=>'form-control w-100']) !!}
@@ -226,6 +230,25 @@
                                             </fieldset>
                                         @endcan
 
+                                    </div>
+
+                                    <div class="tab-pane active" id="tab-historial-pagos">
+                                       
+                                        <table class="table table-striped table-bordered table-hover" id="tb-historial-pagos" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Fecha</th>
+                                                    <th>Pago</th>
+                                                    <th>Forma Pago</th>
+                                                    <th>Cubrio</th>
+                                                    <th>Recibio</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+
+                                    
                                     </div>
 
                                     <div class="tab-pane" id="tab-info-alumno">
@@ -293,7 +316,7 @@
         $(document).ready(function() {
             const dom = {
                 tb_pagos: $("#tb-pagos"),
-
+                tb_historial_pagos: $("#tb-historial-pagos"),
                 tb_apoyos: $("#tb-apoyos-especiales"),
                 btn_apoyo_especial: $('#btn-agregar-apoyo-especial'),
                 form_apoyo_especial: $("#form-apoyo-especial"),
@@ -510,6 +533,57 @@
 
 
                     })
+                }
+            });
+
+            var tb_historial_pagos = dom.tb_historial_pagos.DataTable({
+                dom: "<'row'<'col-12'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
+                processing: true,
+                serverSide: true,
+                responsive: true,
+                pageLength: 10,
+                ajax: {
+                    url: "{{ route('alumnos.datatables_historial_pagos') }}",
+                    type: "POST",
+                    data: function (d) {
+                        d.id_alumno = "{{ $alumno->id }}";
+                        d._token = $("meta[name='csrf-token']").attr("content");
+                    },
+                    beforeSend: function(xhr,type) {
+                    if (!type.crossDomain) {
+                            xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+                        }
+                    },
+                },
+                columns: [
+                    {data: 'fecha', name: 'fecha'},
+                    {data: 'monto', name: 'monto'},
+                    {data: 'forma_pago', name: 'forma_pago'},
+                    {data: 'abonos.alumno_pago.concepto', name: 'abonos.alumno_pago.concepto'},
+                    {data: 'recibio.nombres', name: 'recibio.nombres'},
+                ],
+                order: [[ 0, "desc" ]],
+                language: {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontro ningún registro",
+                    "info": "Mostrando del _START_ al _END_ de _TOTAL_ registros. (Página _PAGE_ de _PAGES_)",
+                    "infoEmpty": "No hay registros disponibles",
+                    "infoFiltered": "(Filtrado de un total de _MAX_ registros)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "first": "Primera",
+                        "last": "Última",
+                        "previous": '<i class="fas fa-chevron-left"></i>',
+                        "next": '<i class="fas fa-chevron-right"></i>'
+                    },
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                },
+                drawCallback: function (settings) {
+                    $("[data-toggle='tooltip']").tooltip();
+                },
+                initComplete: function(settings, json) {
+                    
                 }
             });
         });

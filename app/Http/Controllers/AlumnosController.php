@@ -7,6 +7,7 @@ use App\Models\Grupo;
 use App\Models\Alumno;
 use App\Models\AlumnoPago;
 use App\Models\Especialidad;
+use App\Models\Pago;
 use App\Services\FacturacionService;
 use App\Services\PagoInscripcionService;
 use Illuminate\Http\Request;
@@ -429,6 +430,7 @@ class AlumnosController extends Controller
             ])
             ->make(true);
     }
+    
 
     public function formulario_inscribir_otro_grupo(Alumno $alumno)
     {
@@ -457,9 +459,40 @@ class AlumnosController extends Controller
                     $pis->semanalPorGrupo($grupo_inscripcion);
                     break;
             }
+
+            // OPERACIONES: sumar | restar
+            // CAMPOS: inicios | reingresos | cambios_horarios_plus | bajas | cambios_horarios_minus | fin_curso
+            $grupo_inscripcion->actualizarReporteDesercion('sumar','inicios',1);
+
         }
 
         Session::flash('message', 'Se inscribio al alumno con éxito');
         return redirect()->route('alumnos.show', $alumno->id);
+    }
+
+    #DATATABLES QUE TRAE LOS PAGOS REALIZADOS POR LOS ALUMNOS
+    public function datatables_historial_pagos(Request $request)
+    {
+
+        $query = Pago::with(['recibio','alumno','abonos.alumno_pago'])
+            ->when($request->input('id_alumno'), function ($q, $id_alumno) {
+                $q->where('id_alumno', $id_alumno);
+            });
+
+        return DataTables::eloquent($query)
+            ->addIndexColumn()
+            ->editColumn('fecha', function ($model) {
+                return optional($model->fecha)->format('d/m/Y H:i');
+            })
+            ->editColumn('abonos.alumno_pago.concepto', function ($model) {
+                $txt = '';
+                foreach($model->abonos as $abono){
+                    $txt.= $abono->alumno_pago->concepto.'<br>';
+                }
+
+                return $txt;
+            })
+            ->rawColumns(['abonos.alumno_pago.concepto'])
+            ->make(true);
     }
 }

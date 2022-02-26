@@ -397,6 +397,11 @@ return [
             'display_name'  => 'Ver el reporte de asistencias del personal',
             'description'   => 'Ver el reporte de asistencias del personal',
         ],
+        [
+            'name'          => 'ver_reporte_desercion',
+            'display_name'  => 'Ver el reporte de desercion',
+            'description'   => 'Ver el reporte de desercion',
+        ],
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

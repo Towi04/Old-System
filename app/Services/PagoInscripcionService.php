@@ -113,8 +113,8 @@ class PagoInscripcionService
 
     private function inscripcion(Grupo $grupo)
     {
-        $precio_inscripcion = $this->request->input('precio_inscripcion') ?? $grupo->precio_inscripcion ?? 0;
-        $monto_apoyo_inscripcion = $this->request->has('precio_inscripcion') ? ($grupo->precio_inscripcion  - $this->request->input('precio_inscripcion')): null;
+        $precio_inscripcion = optional($this->request)->input('precio_inscripcion') ?? $grupo->precio_inscripcion ?? 0;
+        $monto_apoyo_inscripcion =optional($this->request)->has('precio_inscripcion') ? ($grupo->precio_inscripcion  - $this->request->input('precio_inscripcion')): null;
 
         $pago_alumno = $this->alumno->pagos()->create([
             'id_grupo'                  => $grupo->id,

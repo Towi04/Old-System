@@ -71,12 +71,21 @@
     @endcan
 
     @can('finalizar_grupo')
-    <a  data-id="{{$id}}"
-        class="btn btn-secondary btn-sm text-white fas fa-ban finalizar_grupo"
-        data-toggle="tooltip"
-        data-placement="top"
-        title="Finalizar grupo">
-    </a>
-@endcan
+        @if($status == 'Activo')
+            <a  data-id="{{$id}}"
+                class="btn btn-secondary btn-sm text-white fas fa-ban finalizar_grupo"
+                data-toggle="tooltip"
+                data-placement="top"
+                title="Finalizar grupo">
+            </a>
+        @else 
+            <a  data-id="{{$id}}"
+                class="btn btn-success btn-sm text-white fas fa-check activar_grupo"
+                data-toggle="tooltip"
+                data-placement="top"
+                title="Activar grupo">
+            </a>
+        @endif
+    @endcan
     </div>
 </div>

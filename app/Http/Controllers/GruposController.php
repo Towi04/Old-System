@@ -534,10 +534,33 @@ class GruposController extends Controller
         $grupo->status = 'Finalizado';
         $grupo->save();
 
+        // OPERACIONES: sumar | restar
+        // CAMPOS: inicios | reingresos | cambios_horarios_plus | bajas | cambios_horarios_minus | fin_curso
+        $grupo->actualizarReporteDesercion('sumar','fin_curso',$grupo->alumnos->count());
+        $grupo = Grupo::find($request->id);
+
         return response()->json([
             'grupo' => $grupo
         ]);
     }
+
+    public function activar_grupo(Request $request)
+    {
+        $grupo = Grupo::find($request->id);
+        $grupo->status = 'Activo';
+        $grupo->save();
+
+        // OPERACIONES: sumar | restar
+        // CAMPOS: inicios | reingresos | cambios_horarios_plus | bajas | cambios_horarios_minus | fin_curso
+        $grupo->actualizarReporteDesercion('restar','fin_curso',$grupo->alumnos->count());
+        
+        $grupo = Grupo::find($request->id);
+
+        return response()->json([
+            'grupo' => $grupo
+        ]);
+    }
+
 
     public function lista_asistencia(Grupo $grupo,Request $request)
     {

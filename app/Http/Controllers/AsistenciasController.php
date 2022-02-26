@@ -113,7 +113,7 @@ class AsistenciasController extends Controller
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subYear();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addYear();
 
-            $asistencias = Asistencia::query()
+            $asistencias = Asistencia::query()Alumnos
                 ->whereBetween('fecha', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
                 ->whereNotNull('id_usuario')
                 ->orderBy('fecha', 'desc');

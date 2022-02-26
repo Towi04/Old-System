@@ -194,10 +194,51 @@
                             success: function (response){
                                 dt.ajax.reload( function(e){
                                     wait.modal('hide');
-                                    toastr.success('Éxito', 'Se borró con éxito el registro');
+                                    toastr.success('Éxito', 'Se finalizó con éxito el grupo');
                                 }, false )
                             },
                             fail:function(error){
+                                wait.modal('hide');
+                                toastr.error('Error', 'Ocurrio un error inesperado');
+                            }
+                        });
+                    })
+                })
+
+                $('.activar_grupo').on('click',function(){
+                    id= $(this).data('id')
+                    swal({
+                        title: "¿Estas seguro de ACTIVAR el grupo?",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#2ad521",
+                        cancelButtonColor: "#CDCDCD",
+                        confirmButtonText: "Si, activar",
+                        cancelButtonText: "Cancelar",
+                        showLoaderOnConfirm: false,
+                    }).then(function(result) {
+                        if (!result.value) {
+                            return;
+                        }
+
+                        wait.modal('show');
+
+                        $.ajax({
+                            url: "{{route('grupos.activar_grupo')}}",
+                            type: 'POST',
+                            cache: false,
+                            data: {
+                                _token: $("meta[name='csrf-token']").attr("content"),
+                                id:id
+                            },
+                            success: function (response){
+                                dt.ajax.reload( function(e){
+                                    wait.modal('hide');
+                                    toastr.success('Éxito', 'Se activo con éxito el grupo');
+                                }, false )
+                            },
+                            fail:function(error){
+                                wait.modal('hide');
                                 toastr.error('Error', 'Ocurrio un error inesperado');
                             }
                         });
@@ -292,6 +333,20 @@
         $('#status_grupo').change(function(){
             dt.draw();
         });
+
+        $('#select_id_especialidad').change(function(){
+            window.localStorage.setItem('activeTabIdEspecelidad',$(this).val());
+            dt.ajax.reload(null, false);
+        });
+
+        // SE ACTIVA LOCAL STORAGE PARA GUARDAR STATUS TIPO DE ESTACION
+        activeTabIdEspecelidad = window.localStorage.getItem('activeTabIdEspecelidad');
+        //INIT
+        if (activeTabIdEspecelidad) {
+
+            $('#select_id_especialidad').val(activeTabIdEspecelidad);
+            dt.ajax.reload(null,false);
+        }
     })
 </script>
 @endsection

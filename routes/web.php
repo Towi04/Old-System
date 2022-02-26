@@ -28,6 +28,7 @@ use App\Http\Controllers\Reportes\ReporteVentasController;
 use App\Http\Controllers\PuntoDeVentaProductosController;
 use App\Http\Controllers\AsistenciasController;
 use App\Http\Controllers\ReportesController;
+use App\Http\Controllers\Reportes\ReporteDesercionController;
 
 #NOTE: CONFIGURACION DE RUTAS
 Auth::routes(['register'=> false]);
@@ -144,6 +145,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
     # NOTE: RUTAS ALUMNOS
     Route::post('alumnos/datatables', [ AlumnosController::class,'datatables'])->name('alumnos.datatables');
     Route::post('alumnos/datatables_pagos', [ AlumnosController::class,'datatables_pagos'])->name('alumnos.datatables_pagos');
+    Route::post('alumnos/datatables_historial_pagos', [ AlumnosController::class,'datatables_historial_pagos'])->name('alumnos.datatables_historial_pagos');
     Route::post('alumnos/datatables_pagos_pendientes', [ AlumnosController::class,'datatables_pagos_pendientes'])->name('alumnos.datatables_pagos_pendientes');
     Route::post('alumnos/traer_alumnos_select2', [AlumnosController::class, 'traer_alumnos_select2']) ->name('alumnos.traer_alumnos_select2');
     Route::get('alumnos/formulario_inscribir_otro_grupo/{alumno}', [ AlumnosController::class,'formulario_inscribir_otro_grupo'])->name('alumnos.formulario_inscribir_otro_grupo');
@@ -173,6 +175,8 @@ Route::middleware(['auth','sucursal'])->group(function () {
 
     # NOTE: RUTAS GRUPOS (RESPETAR EL ORDEN DE LAS RUTAS)
     Route::post('grupos/finalizar_grupo', [ GruposController::class,'finalizar_grupo'])->name('grupos.finalizar_grupo');
+    Route::post('grupos/activar_grupo', [ GruposController::class,'activar_grupo'])->name('grupos.activar_grupo');
+    
     Route::post('grupos/datatables', [ GruposController::class,'datatables'])->name('grupos.datatables');
     Route::post('grupos/traer_grupos_select2', [ GruposController::class,'traer_grupos_select2'])->name('grupos.traer_grupos_select2');
 
@@ -243,6 +247,10 @@ Route::middleware(['auth','sucursal'])->group(function () {
 
         // REPORTE DE ASISTENCIAS DEL PERSONAL
         Route::get('asistencias_personal',[AsistenciasController::class,'asistencias_personal'])->name('asistencias_personal');
+
+        Route::get('desercion',[ReporteDesercionController::class,'index'])->name('desercion');
+
+
     });
 
     Route::get('configuraciones', [ ConfiguracionesController::class,'index'])->name('configuraciones.index');
