@@ -221,7 +221,7 @@
                         <a href="{{ route('reportes.desercion') }}">Reporte de Deserción</a>
                     </li>
                     @endcan
-
+                    
                 </ul>
             </div>
         </div>
