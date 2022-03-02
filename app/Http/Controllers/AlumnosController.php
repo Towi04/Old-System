@@ -378,7 +378,17 @@ class AlumnosController extends Controller
             ->editColumn('fecha_limite', function ($model) {
                 return optional($model->fecha_limite)->format('d/m/Y');
             })
-            ->rawColumns([])
+            ->editColumn('saldo', function ($model) {
+                return number_format($model->saldo,2);
+            })
+            ->editColumn('status', function ($model) {
+                if ($model->fecha_limite->lt(\Carbon\Carbon::today()) && $model->status == 'Pendiente') {
+                    return "<span class='badge badge-danger text-white'>Vencido</span>";
+                }else{
+                    return "<span class='badge badge-success'>{$model->status}</span>";
+                }
+            })
+            ->rawColumns(['status'])
             ->make(true);
     }
 
@@ -430,7 +440,7 @@ class AlumnosController extends Controller
             ])
             ->make(true);
     }
-    
+
 
     public function formulario_inscribir_otro_grupo(Alumno $alumno)
     {
@@ -523,7 +533,7 @@ class AlumnosController extends Controller
     public function guardar_cambio_horario(Request $request){
 
         $grupo_origen = Grupo::find($request->id_grupo_origen);
-            
+
         $id_grupo = $request->id_grupo;
         $alumno = Alumno::find($request->id_alumno);
 

@@ -141,17 +141,17 @@
                                                 <div class="badge badge-primary">
                                                     Alumnos {{$grupo->alumnos->count()}}
                                                 </div>
-                                                
+
                                                 <a class="post-link float-right" href="{{route('grupos.show', $grupo)}}"><span>Ir a grupo</span><i class="os-icon os-icon-arrow-right7"></i></a>
                                             </div>
                                         </div>
                                     </div>
-                                    
 
-                                    
-                                <br>  
-                                    
-                              
+
+
+                                <br>
+
+
                                 </div>
                                 </div>
                             </div>
@@ -211,6 +211,7 @@
                                                     <th># Pago</th>
                                                     <th>Concepto</th>
                                                     <th>Monto</th>
+                                                    <th>Saldo</th>
                                                     <th>Fecha Limite</th>
                                                     <th>Status</th>
                                                 </tr>
@@ -250,7 +251,7 @@
                                     </div>
 
                                     <div class="tab-pane active" id="tab-historial-pagos">
-                                       
+
                                         <table class="table table-striped table-bordered table-hover" id="tb-historial-pagos" width="100%">
                                             <thead>
                                                 <tr>
@@ -265,7 +266,7 @@
                                             </tbody>
                                         </table>
 
-                                    
+
                                     </div>
 
                                     <div class="tab-pane" id="tab-info-alumno">
@@ -385,9 +386,10 @@
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false,orderable: false},
                     {data: 'concepto', name: 'concepto'},
-                    {data: 'monto', name: 'monto'},
+                    {data: 'monto', name: 'monto',className:"text-right"},
+                    {data: 'saldo', name: 'saldo', className:"text-right"},
                     {data: 'fecha_limite', name: 'fecha_limite'},
-                    {data: 'status_vencimiento', className:"text-center", name: 'status'},
+                    {data: 'status', className:"text-center", name: 'status'},
                 ],
                 order: [[ 3, "asc" ]],
                 language: {
@@ -600,7 +602,7 @@
                     $("[data-toggle='tooltip']").tooltip();
                 },
                 initComplete: function(settings, json) {
-                    
+
                 }
             });
 
