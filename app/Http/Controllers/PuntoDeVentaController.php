@@ -193,6 +193,7 @@ class PuntoDeVentaController extends Controller
                 'id_grupo'      => $request->input('id_grupo'),
                 'concepto'      => $request->input('concepto').' '.$request->input('forma').' '.$request->input('no_pago'),
                 'monto'         => $request->input('monto'),
+                'tipo'          => config('alumnos.concepto.colegiatura'),
                 'fecha_limite'  => $fecha_pago,
                 'status'        => config('pagos.status.Pagado'),
             ]);

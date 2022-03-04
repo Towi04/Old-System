@@ -182,7 +182,10 @@ class Grupo extends Model
 
         $desercion = $this->deserciones->where('semana',$semana)->where('year',$year)->first();
 
-        // dd($this->deserciones);
+        if (empty($desercion)) {
+            return;
+        }
+
         switch($operacion){
             case 'sumar':
                 $desercion[$campo] = $desercion[$campo] + $cantidad;

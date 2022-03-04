@@ -35,6 +35,7 @@ class AlumnoPago extends Model
         'saldo',
         'fecha_limite',
         'status',
+        'tipo',
     ];
 
     protected $attributes = [

@@ -42,7 +42,9 @@ class PagoColegiaturaService
             $this->alumno->pagos()->create([
                 'id_grupo'      => $grupo->id,
                 'concepto'      => config('alumnos.concepto.colegiatura') . ' ' . $fecha_mes->format('F \d\e\l Y'),
+                'tipo'          => config('alumnos.concepto.colegiatura'),
                 'monto'         => $mensualidad,
+                'saldo'         => $mensualidad,
                 'fecha_limite'  => $fecha_inicio->endOfMonth(),
             ]);
         }
@@ -65,6 +67,8 @@ class PagoColegiaturaService
                 'id_grupo'      => $grupo->id,
                 'concepto'      => config('alumnos.concepto.colegiatura'),
                 'monto'         => $semanal,
+                'saldo'         => $semanal,
+                'tipo'          => config('alumnos.concepto.colegiatura'),
                 'fecha_limite'  => optional($grupo->fecha_inicio)->copy(),
             ]);
         }
@@ -86,7 +90,16 @@ class PagoColegiaturaService
         $apoyo_especial = $this->apoyo_especial($grupo, $alumno);
 
         if (empty($apoyo_especial)) {
-            return  $grupo->precio_mensualidad  ?? 0;
+
+            $dia = $this->fecha_actual->day;
+
+            # SI EL DIA ACTUAL ES ENTRE 1-6, ENTONCES SE ASIGNA EL PRECIO DE PRONTO PAGO
+            if (in_array($dia,range(1,6))) {
+                return  $grupo->precio_mensualidad_pronto_pago ?? 0;
+            }
+
+            # SE AGREGA EL PRECIO NORMAL DE LA MENSUALIDAD
+            return  $grupo->precio_mensualidad ?? 0;
         }
 
         return $apoyo_especial->precio ?? 0;
