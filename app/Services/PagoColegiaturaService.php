@@ -39,13 +39,16 @@ class PagoColegiaturaService
             $mensualidad = ($dias_faltan * $precio_mensualidad) / $dias_del_mes;
             $fecha_mes = new Date($fecha_inicio);
 
-            $this->alumno->pagos()->create([
+            $this->crear_documento([
                 'id_grupo'      => $grupo->id,
                 'concepto'      => config('alumnos.concepto.colegiatura') . ' ' . $fecha_mes->format('F \d\e\l Y'),
                 'tipo'          => config('alumnos.concepto.colegiatura'),
                 'monto'         => $mensualidad,
                 'saldo'         => $mensualidad,
                 'fecha_limite'  => $fecha_inicio->endOfMonth(),
+                'mes'           => $this->fecha_actual->month,
+                'anio'          => $this->fecha_actual->year,
+                'modalidad'     => 'mensual',
             ]);
         }
     }
@@ -63,13 +66,16 @@ class PagoColegiaturaService
             $dias_transcurridos = $fecha_inicio->diffInDays($fecha_final);
             $semanal = ($dias_transcurridos * $precio_semanal) / $dias_de_la_semana;
 
-            $this->alumno->pagos()->create([
+            $this->crear_documento([
                 'id_grupo'      => $grupo->id,
                 'concepto'      => config('alumnos.concepto.colegiatura'),
                 'monto'         => $semanal,
                 'saldo'         => $semanal,
                 'tipo'          => config('alumnos.concepto.colegiatura'),
                 'fecha_limite'  => optional($grupo->fecha_inicio)->copy(),
+                'semana'        => $this->fecha_actual->week,
+                'anio'          => $this->fecha_actual->year,
+                'modalidad'     => 'semanal',
             ]);
         }
     }
@@ -94,7 +100,7 @@ class PagoColegiaturaService
             $dia = $this->fecha_actual->day;
 
             # SI EL DIA ACTUAL ES ENTRE 1-6, ENTONCES SE ASIGNA EL PRECIO DE PRONTO PAGO
-            if (in_array($dia,range(1,6))) {
+            if (in_array($dia, range(1, 6))) {
                 return  $grupo->precio_mensualidad_pronto_pago ?? 0;
             }
 
@@ -104,7 +110,6 @@ class PagoColegiaturaService
 
         return $apoyo_especial->precio ?? 0;
     }
-
 
     private function apoyo_especial($grupo, $alumno)
     {
@@ -116,5 +121,29 @@ class PagoColegiaturaService
             ->first();
 
         return $apoyo_especial;
+    }
+
+    private function crear_documento(array $atributos)
+    {
+        $fields = [
+            'semanal' => 'semana',
+            'mensual' => 'mes'
+        ];
+
+        $field = $fields[$atributos['modalidad']];
+
+        # SE DEBE VERIFICAR SI EXISTEN DOCUMENTOS QUE FUERON CREADOS POR ADELANTADO
+        $existe_documento = $this->alumno->pagos()
+            ->where('id_grupo', $atributos['id_grupo'])
+            ->where('modalidad', $atributos['modalidad'])
+            ->where('anio', $atributos['anio'])
+            ->where($field, $atributos[$field] )
+            ->whereYear('created_at', $this->fecha_actual->year)
+            ->exists();
+
+        # SI NO EXISTE DOCUMENTO , SE DEBE GENERAR
+        if (!$existe_documento) {
+            $this->alumno->pagos()->create($atributos);
+        }
     }
 }
