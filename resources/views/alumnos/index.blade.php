@@ -57,6 +57,7 @@
                             <th></th>
 
                             <th>Grupos</th>
+                            <th>Forma de pago</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -122,6 +123,7 @@
                     { data: 'asesor_educativo.apellido_materno', name: 'asesor_educativo.apellido_materno',class: 'text-nowrap',visible:false},
 
                     { data: 'no_grupos', name: 'no_grupos',class: 'text-nowrap', orderable: false, searchable: false},
+                    { data: 'forma_pago', name: 'forma_pago',class: 'text-nowrap'},
                     { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
                 ],
                 language: {
