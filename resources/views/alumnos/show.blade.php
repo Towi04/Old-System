@@ -122,9 +122,11 @@
                                     Grupo: {{$grupo->clave}} - {{$grupo->especialidad->nombre}}
                                 </h6>
                                 <div class="post-text">
-                                    Fecha inicio: {{$grupo->fecha_inicio->format('d-m-Y')}}<br>
+                                    Fecha inicio: {{ $grupo->fecha_inicio->format('d-m-Y')}}<br>
                                     Horario:<br> {!!$grupo->horario_corto!!}
-                                    N° Semanas a cursar:<br> {!!$grupo->materias->sum('semanas')!!}
+                                    N° Semanas a cursar:<br> {!!$grupo->materias->sum('semanas')!!}<br>
+                                    Fecha Inicio:<br> {!!  optional($grupo->pivot->fecha_inicio)->format('d-m-Y') !!}
+                                    Semanas cursadas:<br> {!! (!empty($grupo->pivot->fecha_inicio)) ? $grupo->pivot->fecha_inicio->diffInWeeks( now() ): '' !!}<br>
                                 </div>
                                 <div class="post-foot">
                                     <div class="row">

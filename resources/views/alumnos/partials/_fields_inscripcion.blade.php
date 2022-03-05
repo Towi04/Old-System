@@ -17,7 +17,10 @@
             </div>
         </div>
 
-        
+        <div class="col-12 pb-3">
+            {!! Form::label('fecha_inicio', 'Fecha Inicio:*'); !!}
+            {!! Form::text('fecha_inicio', null, ['class' => 'form-control form-control-sm', 'placeholder' => 'Escribe la fecha de inicio','autocomplete' => 'off','required' => true]); !!}
+        </div>
 
         <div class="col-md-12">
             <div class="form-group">
@@ -34,7 +37,7 @@
         </div>
 
 
-        
+
 
     </div>
 </fieldset>

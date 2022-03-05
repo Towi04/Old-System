@@ -87,6 +87,15 @@
             autoclose: true,
         });
 
+        $("#fecha_inicio").datepicker({
+            language: 'es',
+            format: 'dd-mm-yyyy',
+            ignoreReadonly: false,
+            todayHighlight: true,
+            todayBtn: true,
+            autoclose: true,
+        });
+
         dom.especialidad.change(function(e){
             if(!e.target.value){
                 dom.grupo.empty().append('<option value="">Selecciona antes una especialidad</option>');
@@ -187,6 +196,7 @@
 
             var formData = new FormData(dom.form_inscribir[0]);
             formData.append('tipo_pago',$("#tipo_pago").val());
+            formData.append('fecha_inicio',$("#fecha_inicio").val());
 
             // 👉 EVITAR ENVIAR EL CAMPO EN CASO DE QUE NO TENGA PERMISO PARA EMITIR PRECIO INSCRIPCION
             if ($("#precio_inscripcion").val()) {

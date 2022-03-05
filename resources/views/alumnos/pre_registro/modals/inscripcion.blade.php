@@ -17,7 +17,7 @@
                         </div>
                     </div>
 
-                    <fieldset class="form-group">
+                    <fieldset class="form-group m-0">
                         <legend><span>Forma de pago</span></legend>
                         <div class="row">
                             <div class="col-12">
@@ -28,6 +28,13 @@
                                     'Tarjate de crédito'    => 'Tarjate de crédito',
                                     'Transferencia'         => 'Transferencia'
                                 ],null, ['class' => 'form-control form-control-sm','form-selector'=> '','placeholder' =>'Selecciona una forma de pago' ,'required' => true]) !!}
+                            </div>
+                        </div>
+
+                        <div class="row pt-3">
+                            <div class="col-12">
+                                {!! Form::label('fecha_inicio', 'Fecha Inicio:*'); !!}
+                                {!! Form::text('fecha_inicio', null, ['class' => 'form-control form-control-sm', 'placeholder' => 'Escribe la fecha de inicio','autocomplete' => 'off','required' => true]); !!}
                             </div>
                         </div>
 
