@@ -51,6 +51,7 @@
                             <th>Dias</th>
                             <th>Tipo</th>
                             <th>No Alumnos</th>
+                            <th>Semanas</th>
                             <th>Fecha Inicio</th>
                             <th>Status</th>
                             <th class="text-center">Acciones</th>
@@ -141,6 +142,7 @@
                 { data: 'days', name: 'days',class: 'text-nowrap'},
                 { data: 'infantil', name: 'infantil',class: 'text-nowrap'},
                 { data: 'no_alumnos', name: 'infantil',class: 'text-nowrap',orderable: false, searchable: false},
+                { data: 'no_semanas', name: 'no_semanas',class: 'text-nowrap',orderable: false, searchable: false},
                 { data: 'fecha_inicio', name: 'fecha_inicio',class: 'text-nowrap'},
                 { data: 'status', name: 'status',class: 'text-nowrap'},
                 { data: 'buttons', name: 'buttons', orderable: false, searchable: false }

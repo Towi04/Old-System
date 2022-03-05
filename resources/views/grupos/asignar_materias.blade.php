@@ -63,6 +63,12 @@
                         </td>
                     </tr>
                     <tr>
+                        <td class="bg-primary text-white"><b>Semanas</b></td>
+                        <td>
+                            {{ $grupo->materias->sum('semanas') }}
+                        </td>
+                    </tr>
+                    <tr>
                         <td class="bg-primary text-white"><b>Accion</b></td>
                         <td>
                             <button id="btn-asignar-materia" class="btn btn-success btn-sm" type="button">
@@ -153,10 +159,10 @@
                             <th>Orden</th>
                             <th>Materia</th>
                             <th>Profesor</th>
+                            <th>Semanas</th>
                             <th></th>
                             <th></th>
                             <th></th>
-                            <th>Horas</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -210,10 +216,10 @@
                     {data: 'orden', name: 'orden'},
                     {data: 'nombre_materia', name: 'materia.nombre'},
                     {data: 'nombre_profesor',name:'nombre_profesor'},
+                    {data: 'semanas',name:'materia.semanas',className:'text-right'},
                     {data: 'profesor.nombres', name: 'profesor.nombres',visible:false},
                     {data: 'profesor.apellido_paterno', name: 'profesor.apellido_paterno',visible:false},
                     {data: 'profesor.apellido_materno', name: 'profesor.apellido_materno',visible:false},
-                    {data: 'horas_semana',name:'horas_semana',visible:false},
                     {data: 'buttons', name: 'buttons', orderable: false, searchable: false}
                 ],
                 order: [[ 1, "asc" ]],
@@ -244,7 +250,7 @@
                         $('.editable-cancel').html('<i class="fas fa-times"></i>');
                     });
 
-                    $('.editable_horas_semana').editable({
+                    $('.editable_semanas').editable({
                         emptytext: 'Vacio',
                         onblur: 'ignore',
                         validate: function(value) {

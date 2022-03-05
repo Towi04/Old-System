@@ -30,7 +30,7 @@ class GruposController extends Controller
         $puede_ver_todos_grupos = $user->can('ver_todos_grupos');
         $especialidades = $user->especialidades->pluck('id');
 
-        $query = Grupo::with('days')
+        $query = Grupo::query()
             ->when($request->input('id_sucursal'), function ($q, $id_sucursal) {
                 $q->where('id_sucursal', $id_sucursal);
             })
@@ -40,7 +40,7 @@ class GruposController extends Controller
             ->when(!$puede_ver_todos_grupos,function($q)use($especialidades){
                 $q->whereIn('id_especialidad',$especialidades);
             })
-            ->with('especialidad','days','alumnos');
+            ->with('especialidad','days','alumnos','materias');
 
         return DataTables::eloquent($query)
             ->editColumn('fecha_inicio', function ($model) {
@@ -55,6 +55,9 @@ class GruposController extends Controller
             })
             ->addColumn('no_alumnos', function ($model) {
                 return $model->alumnos->count();
+            })
+            ->addColumn('no_semanas', function ($model) {
+                return $model->materias->sum('semanas');
             })
             ->addColumn('buttons', 'grupos.datatables._buttons')
             ->rawColumns(['buttons', 'infantil', 'days'])
@@ -387,19 +390,19 @@ class GruposController extends Controller
                     {$model->profesor->full_name}
                 </a>";
             })
-            ->editColumn('horas_semana', function ($model) {
+            ->editColumn('semanas', function ($model) {
                 $route = route('grupos.actualizar_materias_xeditable');
 
-                return "<a class='editable_horas_semana editable'
+                return "<a class='editable_semanas editable'
                     data-type='text'
-                    data-name='horas_semana'
+                    data-name='semanas'
                     data-pk='{$model->id}'
                     data-url='{$route}'
-                    data-value='{$model->horas_semana}'
-                    data-placeholder='Horas por semana'> {$model->horas_semana} </a>";
+                    data-value='{$model->materia->semanas}'
+                    data-placeholder='Horas por semana'> {$model->materia->semanas} </a>";
             })
             ->addColumn('buttons', 'grupos.datatables._buttons_materias')
-            ->rawColumns(['orden','nombre_materia', 'nombre_profesor', 'horas_semana', 'buttons'])
+            ->rawColumns(['orden','nombre_materia', 'nombre_profesor', 'semanas', 'buttons'])
             ->make(true);
     }
 
@@ -553,7 +556,7 @@ class GruposController extends Controller
         // OPERACIONES: sumar | restar
         // CAMPOS: inicios | reingresos | cambios_horarios_plus | bajas | cambios_horarios_minus | fin_curso
         $grupo->actualizarReporteDesercion('restar','fin_curso',$grupo->alumnos->count());
-        
+
         $grupo = Grupo::find($request->id);
 
         return response()->json([
