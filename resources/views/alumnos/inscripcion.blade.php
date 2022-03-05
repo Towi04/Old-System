@@ -29,7 +29,7 @@
 
                     @include('alumnos.partials._fields_inscripcion')
 
-                    
+
                     <div class="form-buttons-w text-right">
                         <button id="inscribir" class="btn btn-success" type="button" ><i class="fa fa-plus"></i> Inscribir</button>
                     </div>
@@ -50,6 +50,15 @@
                 grupo: $('#id_grupo'),
                 form_inscribir: $('#form-inscribir'),
             }
+
+            $("#fecha_inicio").datepicker({
+                language: 'es',
+                format: 'dd-mm-yyyy',
+                ignoreReadonly: false,
+                todayHighlight: true,
+                todayBtn: true,
+                autoclose: true,
+            });
 
             dom.especialidad.change(function(e){
 

@@ -19,6 +19,13 @@ class AlumnoGrupo extends Pivot
      */
     public $timestamps = false;
 
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['fecha_inicio'];
+
     public function alumno()
     {
         return $this->belongsTo(Alumno::class,'id_alumno','id')->withDefault([

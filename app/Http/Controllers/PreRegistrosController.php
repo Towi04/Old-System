@@ -351,7 +351,7 @@ class PreRegistrosController extends Controller
         $alumno->save();
 
         if ($request->has('id_grupo')) {
-            $alumno->grupos()->attach($request->input('id_grupo'));
+            $alumno->grupos()->attach($request->input('id_grupo'),['fecha_inicio' => $request->input('fecha_inicio')]);
 
             $grupo_inscripcion = Grupo::findOrFail($request->input('id_grupo'));
 
