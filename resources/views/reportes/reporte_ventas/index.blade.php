@@ -79,6 +79,7 @@
                             </div>
                             <div class="col-10 col-xxl-10 col-xl-10 col-md-10 col-sm-10">
                                 <center>
+                                    <small>Semana {{ $fecha->week }}</small>
                                     <h3>{{ $fecha->format('d \d\e F \d\e\l Y') }} <small><a class="no_print"
                                                 data-toggle="modal" data-target="#seleccionarFecha"><i
                                                     class="far fa-calendar-alt"></i></a></small></h3>
@@ -129,10 +130,13 @@
                             </div>
                             <div class="col-10 col-xxl-10 col-xl-10 col-md-10 col-sm-10">
                                 <center>
+                                    <small>Semana {{ $fecha->week }}</small>
                                     <h3>{{ $fecha->startOfWeek()->format('d \d\e F \d\e\l Y') }} al
                                         {{ $fecha->endOfWeek()->format('d \d\e F \d\e\l Y') }} <small><a class="no_print"
                                                 data-toggle="modal" data-target="#seleccionarFecha"><i
-                                                    class="far fa-calendar-alt"></i></a></small></h3>
+                                                    class="far fa-calendar-alt"></i></a></small>
+
+                                    </h3>
                                 </center>
                             </div>
                             <div class="col-1 col-xxl-1 col-xl-1 col-md-1 col-sm-1">
