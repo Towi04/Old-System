@@ -36,7 +36,7 @@ class PagoColegiaturaService
             $fecha_final = $this->fecha_actual->copy();
             $dias_transcurridos = $fecha_inicio->diffInDays($fecha_final);
             $dias_faltan = $dias_del_mes - $dias_transcurridos;
-            $mensualidad = ($dias_faltan * $precio_mensualidad) / $dias_del_mes;
+            $mensualidad = $precio_mensualidad;
             $fecha_mes = new Date($fecha_inicio);
 
             $this->crear_documento([
@@ -62,17 +62,17 @@ class PagoColegiaturaService
 
             $dias_de_la_semana = 7;
             $fecha_inicio = $this->fecha_actual->copy()->startOfWeek(Carbon::SUNDAY);
-            $fecha_final = $this->fecha_actual->copy();
-            $dias_transcurridos = $fecha_inicio->diffInDays($fecha_final);
-            $semanal = ($dias_transcurridos * $precio_semanal) / $dias_de_la_semana;
-
+            $fecha_final = $this->fecha_actual->copy()->endOfWeek(Carbon::SATURDAY);;
+            // $dias_transcurridos = $fecha_inicio->diffInDays($fecha_final);
+            // $semanal = ($dias_transcurridos * $precio_semanal) / $dias_de_la_semana;
+            $semanal =  $precio_semanal;
             $this->crear_documento([
                 'id_grupo'      => $grupo->id,
                 'concepto'      => config('alumnos.concepto.colegiatura'),
                 'monto'         => $semanal,
                 'saldo'         => $semanal,
                 'tipo'          => config('alumnos.concepto.colegiatura'),
-                'fecha_limite'  => optional($grupo->fecha_inicio)->copy(),
+                'fecha_limite'  => $fecha_final,
                 'semana'        => $this->fecha_actual->week,
                 'anio'          => $this->fecha_actual->year,
                 'modalidad'     => 'semanal',

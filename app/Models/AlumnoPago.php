@@ -87,4 +87,18 @@ class AlumnoPago extends Model
             return $this->status;
         }
     }
+
+    public function getConceptoCompletoAttribute(){
+        #SE PONE NOMBRE COMPLETO CON SEMANA Y AÑO PARA CUANDO UN PAGO ES SEMANAL
+        if($this->modalidad == 'semanal'){
+            return $this->concepto.' Semana #'.$this->semana.' del '.$this->anio;
+        }
+        #SE PONE NOMBRE COMPLETO CON MENSUAL Y AÑO PARA CUANDO UN PAGO ES MENUSAL
+        if($this->modalidad == 'mensual'){
+            return $this->concepto.' Mes '.$this->mes.' del '.$this->anio;
+        }
+
+        return $this->concepto;
+        
+    }
 }

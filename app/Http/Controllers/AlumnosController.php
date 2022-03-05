@@ -381,6 +381,9 @@ class AlumnosController extends Controller
             ->editColumn('saldo', function ($model) {
                 return number_format($model->saldo,2);
             })
+            ->editColumn('concepto', function ($model) {
+                return $model->concepto_completo;
+            })
             ->editColumn('status', function ($model) {
                 if ($model->fecha_limite->lt(\Carbon\Carbon::today()) && $model->status == 'Pendiente') {
                     return "<span class='badge badge-danger text-white'>Vencido</span>";
@@ -429,8 +432,15 @@ class AlumnosController extends Controller
             ->editColumn('saldo', function ($model) {
                 return number_format($model->saldo, 2, '.', ',');
             })
+            ->editColumn('concepto', function ($model) {
+                return $model->concepto_completo;
+            })
             ->editColumn('status', function ($model) {
-                return "<span class='badge badge-danger text-white'>{$model->status}</span>";
+                if ($model->fecha_limite->lt(\Carbon\Carbon::today()) && $model->status == 'Pendiente') {
+                    return "<span class='badge badge-danger text-white'>Vencido</span>";
+                }else{
+                    return "<span class='badge badge-success'>{$model->status}</span>";
+                }
             })
 
 
