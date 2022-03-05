@@ -504,13 +504,10 @@ class AlumnosController extends Controller
             ->editColumn('fecha', function ($model) {
                 return optional($model->fecha)->format('d/m/Y H:i');
             })
-            ->editColumn('concepto', function ($model) {
-                return $model->concepto_completo;
-            })
             ->editColumn('abonos.alumno_pago.concepto', function ($model) {
                 $txt = '';
                 foreach($model->abonos as $abono){
-                    $txt.= $abono->alumno_pago->concepto.'<br>';
+                    $txt.= $abono->alumno_pago->concepto_completo.'<br>';
                 }
 
                 return $txt;
