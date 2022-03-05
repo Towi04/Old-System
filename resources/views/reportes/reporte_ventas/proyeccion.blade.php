@@ -24,7 +24,7 @@
         {{-- <button onclick="window.print();" class="btn btn-block btn-secondary mb-3">
             <i class="fas fa-print"></i> Imprimir
         </button> --}}
-        <div class="col-sm-12 col-xxxl-12 p-1">
+        {{-- <div class="col-sm-12 col-xxxl-12 p-1">
             <a class="element-box el-tablo" href="#">
               <div class="label mb-2">
                 Total
@@ -32,7 +32,7 @@
               <div class="total_proyeccion">
               </div>
             </a>
-        </div>
+        </div> --}}
     </div>
 </div>
 <div class="row">
@@ -102,8 +102,8 @@
                 { data: 'nombres', name: 'nombres',class: 'text-nowrap',visible:false},
                 { data: 'apellido_paterno', name: 'apellido_paterno',class: 'text-nowrap',visible:false},
                 { data: 'apellido_materno', name: 'apellido_materno',class: 'text-nowrap',visible:false},
-                { data: 'pagos_por_cobrar', class: 'text-nowrap text-center'},
-                { data: 'monto_por_cobrar', class: 'text-nowrap text-right'},
+                { data: 'pagos_por_cobrar', class: 'text-nowrap text-center',orderable:false,searchable:false},
+                { data: 'monto_por_cobrar', class: 'text-nowrap text-right',orderable:false,searchable:false},
                 // { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
             ],
             language: {

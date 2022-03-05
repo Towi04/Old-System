@@ -20,6 +20,8 @@ class ReporteDesercionController extends Controller
 {
     public function index(Request $request)
     {
+        Carbon::setWeekStartsAt(Carbon::SUNDAY);
+        Carbon::setWeekEndsAt(Carbon::SATURDAY);
         
         if($request->semana){
             $semana = $request->semana;

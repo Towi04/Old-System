@@ -1,7 +1,7 @@
 @extends('layouts.template-'.config('settings.template').'.plantilla')
 
 @section('titulo')
-    Reporte de desercion
+    Reporte de retención
 @endsection
 
 @section('breadcrumb')
@@ -13,7 +13,7 @@
             Reportes
         </li>
         <li class="breadcrumb-item active">
-            <strong>Reporte de deserción</strong>
+            <strong>Reporte de retención</strong>
         </li>
     </ol>
 @endsection
@@ -58,7 +58,7 @@
                     <div class="element-wrapper">
                         <div class="os-tabs-w">
                             
-                            <h4>Reporte de desercion de  semana {{$semana}} del {{$year}} <br><small>Del {{$fecha_inicio->format('d-m-Y')}} al {{$fecha_final->format('d-m-Y')}}</small></h4>
+                            <h4>Reporte de retención de semana {{$semana}} del {{$year}} <br><small>Del {{$fecha_inicio->format('d-m-Y')}} al {{$fecha_final->format('d-m-Y')}}</small></h4>
                                     <div class="table-responsive">
                                         <table class="table table-bordered table-striped table-sm table-hover tb-pagos" id="tabla_abonos">
                                             <thead>
@@ -101,6 +101,104 @@
                                                     <td class="text-center">{{optional($grupo->getDesercionSemana($semana,$year))->total_final}}</td>     
                                                </tr>
                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <h6 class="mt-4 element-header">Resumen</h6>
+                                    <div class="table-responsive">
+                                        <table class=" table table-bordered table-striped table-sm table-hover tb-pagos" id="table_resumen" style="width: 50%">
+                                         
+                                            <tbody>
+                                                <tr>
+                                                    <td class="bg-primary text-white">Anterior</td>
+                                                    <td>{{$grupos->sum(function($gru) use($semana, $year){
+                                                        $ds = $gru->getDesercionSemana($semana,$year);
+                                                        if(!$ds){
+                                                            return 0;
+                                                        }else{
+                                                            return $ds->anterior;
+                                                        }
+                                                    }) }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="bg-primary text-white">Inicios</td>
+                                                    <td>{{$grupos->sum(function($gru) use($semana, $year){
+                                                        $ds = $gru->getDesercionSemana($semana,$year);
+                                                        if(!$ds){
+                                                            return 0;
+                                                        }else{
+                                                            return $ds->inicios;
+                                                        }
+                                                    }) }}</td>
+                                                     </tr>
+                                                     <tr>
+                                                     <td class="bg-primary text-white">Reintegros</td>
+                                                     <td>{{$grupos->sum(function($gru) use($semana, $year){
+                                                         $ds = $gru->getDesercionSemana($semana,$year);
+                                                         if(!$ds){
+                                                             return 0;
+                                                         }else{
+                                                             return $ds->reintegros;
+                                                         }
+                                                     }) }}</td>
+                                                     </tr>
+                                                     <tr>
+                                                      <td class="bg-primary text-white">Cambios horario (+)</td>
+                                                      <td>{{$grupos->sum(function($gru) use($semana, $year){
+                                                          $ds = $gru->getDesercionSemana($semana,$year);
+                                                          if(!$ds){
+                                                              return 0;
+                                                          }else{
+                                                              return $ds->cambios_horarios_altas;
+                                                          }
+                                                      }) }}</td>
+                                                       </tr>
+                                                       <tr>
+                                                      <td class="bg-primary text-white">Bajas</td>
+                                                      <td>{{$grupos->sum(function($gru) use($semana, $year){
+                                                          $ds = $gru->getDesercionSemana($semana,$year);
+                                                          if(!$ds){
+                                                              return 0;
+                                                          }else{
+                                                              return $ds->bajas;
+                                                          }
+                                                      }) }}</td>
+                                                       </tr>
+                                                       <tr>
+                                                      <td class="bg-primary text-white">Cambos horario (-)</td>
+                                                      <td>{{$grupos->sum(function($gru) use($semana, $year){
+                                                          $ds = $gru->getDesercionSemana($semana,$year);
+                                                          if(!$ds){
+                                                              return 0;
+                                                          }else{
+                                                              return $ds->cambios_horarios_bajas;
+                                                          }
+                                                      }) }}</td>
+                                                       </tr>
+                                                       <tr>
+                                                      <td class="bg-primary text-white">Fin Curso</td>
+                                                      <td>{{$grupos->sum(function($gru) use($semana, $year){
+                                                        $ds = $gru->getDesercionSemana($semana,$year);
+                                                        if(!$ds){
+                                                            return 0;
+                                                        }else{
+                                                            return $ds->fin_curso;
+                                                        }
+                                                    }) }}</td>
+                                                     </tr>
+                                                     <tr>
+                                                    <td class="bg-primary text-white">Total</td>
+                                                    <td>{{$grupos->sum(function($gru) use($semana, $year){
+                                                        $ds = $gru->getDesercionSemana($semana,$year);
+                                                        if(!$ds){
+                                                            return 0;
+                                                        }else{
+                                                            return $ds->total_final;
+                                                        }
+                                                    }) }}</td>
+                                                </tr>
+                                               
                                             </tbody>
                                         </table>
                                     </div>

@@ -165,7 +165,7 @@ class Alumno extends Model
     public function getPagosVencidosAttribute()
     {
         return $this->pagos->filter(function ($pago) {
-            return $pago->status == 'pendiente' && $pago->fecha_limite->lt(\Carbon\Carbon::today());
+            return $pago->status == 'Pendiente' && $pago->fecha_limite->lt(\Carbon\Carbon::today());
         });
     }
 
@@ -177,7 +177,7 @@ class Alumno extends Model
     public function getPagosPorCobrarAttribute()
     {
         return $this->pagos->filter(function ($pago) {
-            return $pago->status == 'pendiente' && $pago->fecha_limite->lte(\Carbon\Carbon::today()->endOfMonth());
+            return $pago->status == 'Pendiente' && $pago->fecha_limite->lte(\Carbon\Carbon::today()->endOfMonth());
         });
     }
 
