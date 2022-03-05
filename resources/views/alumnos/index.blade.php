@@ -50,12 +50,13 @@
                             <th></th>
                             <th></th>
                             <th></th>
-                            <th>Fecha Nac.</th>
-                            <th>Telefono</th>
-                            <th>Email</th>
+
+                            <th>Asesor</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+
                             <th>Grupos</th>
-                            {{-- <th>Descripcion</th>
-                            <th class="text-center">Acciones</th> --}}
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -109,13 +110,17 @@
                 columns: [
                     { data: 'nuevo_numero_control', name: 'nuevo_numero_control',class: 'text-nowrap'},
                     { data: 'numero_control', name: 'numero_control',class: 'text-nowrap'},
+
                     { data: 'nombre_alumno', name: 'nombre_alumno',class: 'text-nowrap'},
                     { data: 'nombres', name: 'nombres',class: 'text-nowrap',visible:false},
                     { data: 'apellido_paterno', name: 'apellido_paterno',class: 'text-nowrap',visible:false},
                     { data: 'apellido_materno', name: 'apellido_materno',class: 'text-nowrap',visible:false},
-                    { data: 'fecha_nacimiento',class: 'text-nowrap'},
-                    { data: 'telefono',name: 'nombre_alumno',class: 'text-nowrap'},
-                    { data: 'email', name: 'email',class: 'text-nowrap'},
+
+                    { data: 'nombre_asesor',name: 'nombre_asesor',class: 'text-nowrap'},
+                    { data: 'asesor_educativo.nombres', name: 'asesor_educativo.nombres',class: 'text-nowrap',visible:false},
+                    { data: 'asesor_educativo.apellido_paterno', name: 'asesor_educativo.apellido_paterno',class: 'text-nowrap',visible:false},
+                    { data: 'asesor_educativo.apellido_materno', name: 'asesor_educativo.apellido_materno',class: 'text-nowrap',visible:false},
+
                     { data: 'no_grupos', name: 'no_grupos',class: 'text-nowrap', orderable: false, searchable: false},
                     { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
                 ],

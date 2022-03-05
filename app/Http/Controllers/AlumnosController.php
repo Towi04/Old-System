@@ -36,14 +36,14 @@ class AlumnosController extends Controller
                 if ($alumnos_no_grupos == 'true') {
                     $q->whereRaw(DB::raw('id not in (Select id_alumno from alumnos_grupos)'));
                 }
-            });
+            })->with('asesor_educativo');
 
         return DataTables::eloquent($query)
             ->addColumn('nombre_alumno', function ($model) {
                 return "<a href=" . route('alumnos.show', $model->id) . ">{$model->nombres} {$model->apellido_paterno} {$model->apellido_materno}</a>";
             })
-            ->addColumn('fecha_nacimiento', function ($model) {
-                return optional($model->fecha_nacimiento)->format('d/m/Y');
+            ->addColumn('nombre_asesor', function ($model) {
+                return $model->asesor_educativo->full_name;
             })
             ->addColumn('no_grupos', function ($model) {
                 return $model->grupos->count();
