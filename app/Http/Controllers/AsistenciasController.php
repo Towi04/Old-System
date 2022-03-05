@@ -34,13 +34,13 @@ class AsistenciasController extends Controller
     }
 
     public function eliminar_asistencia(Request $request){
-       
+
 
         $asistencia = Asistencia::find($request->id);
         $asistencia->delete();
-    
+
         return response()->json([
-            
+
             'asistencia'=>$asistencia
         ], 200);
     }
@@ -62,7 +62,7 @@ class AsistenciasController extends Controller
 
         if ($tipo == 'dia') {
             $tipo = 'dia';
-            
+
             $fecha =  new Date($fecha);
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDay();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDay();
@@ -70,9 +70,10 @@ class AsistenciasController extends Controller
             $asistencias = Asistencia::query()
                 ->whereBetween('fecha', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
                 ->whereNotNull('id_usuario')
+                ->whereIn('id_usuario',function($query) use ($sucursal){
+                    $query->select('id_usuario')->from('sucursales_usuarios')->where('id_sucursal',$sucursal->id);
+                })
                 ->orderBy('fecha', 'desc');
-
-                
 
             $fecha_antes = new Date($fecha_antes);
             $fecha_despues = new Date($fecha_despues);
@@ -87,6 +88,9 @@ class AsistenciasController extends Controller
             $asistencias = Asistencia::query()
                 ->whereBetween('fecha', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
                 ->whereNotNull('id_usuario')
+                ->whereIn('id_usuario',function($query) use ($sucursal){
+                    $query->select('id_usuario')->from('sucursales_usuarios')->where('id_sucursal',$sucursal->id);
+                })
                 ->orderBy('fecha', 'desc');
 
             $fecha_antes = new Date($fecha_antes);
@@ -102,6 +106,9 @@ class AsistenciasController extends Controller
             $asistencias = Asistencia::query()
                 ->whereBetween('fecha', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
                 ->whereNotNull('id_usuario')
+                ->whereIn('id_usuario',function($query) use ($sucursal){
+                    $query->select('id_usuario')->from('sucursales_usuarios')->where('id_sucursal',$sucursal->id);
+                })
                 ->orderBy('fecha', 'desc');
 
             $fecha_antes = new Date($fecha_antes);
@@ -116,6 +123,9 @@ class AsistenciasController extends Controller
             $asistencias = Asistencia::query()
                 ->whereBetween('fecha', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
                 ->whereNotNull('id_usuario')
+                ->whereIn('id_usuario',function($query) use ($sucursal){
+                    $query->select('id_usuario')->from('sucursales_usuarios')->where('id_sucursal',$sucursal->id);
+                })
                 ->orderBy('fecha', 'desc');
 
 
@@ -123,7 +133,7 @@ class AsistenciasController extends Controller
             $fecha_despues = new Date($fecha_despues);
         }
 
-       
+
 
         return view('reportes.asistencias_personal', compact(
             'asistencias',
