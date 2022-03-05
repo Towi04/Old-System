@@ -7,6 +7,7 @@ use App\Console\Commands\GenerarPagoMensual;
 use App\Console\Commands\GenerarPagoMensualSinProntoPago;
 use App\Console\Commands\GenerarPagoSemanal;
 use App\Console\Commands\RevisarStatusGrupos;
+use App\Console\Commands\GenerarDesercionesGrupos;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -22,7 +23,8 @@ class Kernel extends ConsoleKernel
         GenerarPagoSemanal::class,
         GenerarFoliosAlumnos::class,
         RevisarStatusGrupos::class,
-        GenerarPagoMensualSinProntoPago::class
+        GenerarPagoMensualSinProntoPago::class,
+        GenerarDesercionesGrupos::class,
     ];
 
     /**
@@ -34,9 +36,11 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('forma-pago:mensual')->monthlyOn(1, '00:00');
-        $schedule->command('forma-pago:semanal')->weeklyOn(1, '00:00');
+        $schedule->command('forma-pago:semanal')->weeklyOn(7, '00:00');
         $schedule->command('revisar-status:grupos')->dailyAt('00:15');
         $schedule->command('generar-pago:mensual-sin-pronto-pago')->monthlyOn(7,'00:15');
+        $schedule->command('generar-deserciones:grupos')->weeklyOn(7, '00:10');
+        
     }
 
     /**

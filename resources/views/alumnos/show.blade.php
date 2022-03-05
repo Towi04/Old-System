@@ -392,7 +392,7 @@
                     {data: 'fecha_limite', name: 'fecha_limite'},
                     {data: 'status', className:"text-center", name: 'status'},
                 ],
-                order: [[ 3, "asc" ]],
+                order: [[ 4, "asc" ]],
                 language: {
                     "lengthMenu": "Mostrar _MENU_ registros por pagina",
                     "zeroRecords": "No se encontro ningún registro",
