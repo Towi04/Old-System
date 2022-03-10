@@ -360,10 +360,12 @@ class PreRegistrosController extends Controller
 
             switch ($request->input('forma_pago')) {
                 case config('alumnos.forma_pago.mensual','mensual'):
-                    $pis->mensualPorGrupo($grupo_inscripcion);
+                    $pis->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
+                    // $pis->mensualPorGrupo($grupo_inscripcion);
                 break;
                 case config('alumnos.forma_pago.semanal','semanal'):
-                    $pis->semanalPorGrupo($grupo_inscripcion);
+                    $pis->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
+                    // $pis->semanalPorGrupo($grupo_inscripcion);
                 break;
             }
 

@@ -57,6 +57,7 @@ class PagoInscripcionService
         }
     }
 
+    
     public function mensualPorGrupo(Grupo $grupo)
     {
         # 👉 SE CALCULA EL PRECIO SEGUN EL EL NUMERO DE CLASES TRANSCURRIDAS
@@ -88,9 +89,10 @@ class PagoInscripcionService
         ]);
     }
 
-    private function inscripcion(Grupo $grupo,$precio_inscripcion)
+    public function inscripcion(Grupo $grupo,$precio_inscripcion)
     {
         $monto_apoyo_inscripcion = optional($this->request)->has('precio_inscripcion') ? ($grupo->precio_inscripcion  - $this->request->input('precio_inscripcion')): null;
+        $precio_inscripcion = optional($this->request)->has('precio_inscripcion')  ? $this->request->input('precio_inscripcion'): $precio_inscripcion;
 
         $pago_alumno = $this->alumno->pagos()->create([
             'id_grupo'                  => $grupo->id,
