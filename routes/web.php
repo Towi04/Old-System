@@ -145,8 +145,10 @@ Route::middleware(['auth','sucursal'])->group(function () {
     # NOTE: RUTAS ALUMNOS
     Route::post('alumnos/datatables', [ AlumnosController::class,'datatables'])->name('alumnos.datatables');
     Route::post('alumnos/datatables_pagos', [ AlumnosController::class,'datatables_pagos'])->name('alumnos.datatables_pagos');
+    Route::post('alumnos/datatables_documentos', [ AlumnosController::class,'datatables_documentos'])->name('alumnos.datatables_documentos');
     Route::post('alumnos/datatables_historial_pagos', [ AlumnosController::class,'datatables_historial_pagos'])->name('alumnos.datatables_historial_pagos');
     Route::post('alumnos/datatables_pagos_pendientes', [ AlumnosController::class,'datatables_pagos_pendientes'])->name('alumnos.datatables_pagos_pendientes');
+    Route::post('alumnos/datatables_documentos_pendientes', [ AlumnosController::class,'datatables_documentos_pendientes'])->name('alumnos.datatables_documentos_pendientes');
     Route::post('alumnos/traer_alumnos_select2', [AlumnosController::class, 'traer_alumnos_select2']) ->name('alumnos.traer_alumnos_select2');
     Route::get('alumnos/formulario_inscribir_otro_grupo/{alumno}', [ AlumnosController::class,'formulario_inscribir_otro_grupo'])->name('alumnos.formulario_inscribir_otro_grupo');
     Route::put('alumnos/inscribir_a_otro_grupo/{id}', [ AlumnosController::class,'inscribir_a_otro_grupo'])->name('alumnos.inscribir_a_otro_grupo');
@@ -302,4 +304,11 @@ Route::middleware(['auth','sucursal'])->group(function () {
         Route::post('actualizar_alumno_pago_xeditable', [AbonosController::class,'actualizar_alumno_pago_xeditable'])->name('actualizar_alumno_pago_xeditable');
     });
 
+    
+});
+
+
+#RUTAS ESPECIALES PARA ACOMODAR COSAS EN LA PLATAFORMA
+Route::prefix('especiales')->name('especiales.')->group(function(){
+     Route::get('generar_documentos',[HomeController::class,'generar_documentos'])->name('generar_documentos');
 });

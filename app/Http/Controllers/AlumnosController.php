@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Grupo;
 use App\Models\Alumno;
 use App\Models\AlumnoPago;
+use App\Models\Documento;
 use App\Models\Especialidad;
 use App\Models\Pago;
 use App\Services\FacturacionService;
@@ -450,6 +451,98 @@ class AlumnosController extends Controller
             ])
             ->make(true);
     }
+    #FUNCIONALIDAD PARA DOCUMENTOS EN LUGAR DE ALUMNOS_PAGOS
+    public function datatables_documentos(Request $request)
+    {
+
+        $query = Documento::query()
+            ->when($request->input('id_alumno'), function ($q, $id_alumno) {
+                $q->where('id_alumno', $id_alumno);
+            })
+            ->when($request->input('status'), function ($q, $status) {
+                $q->where('status', $status);
+            })
+            ->when($request->input('id_grupo'), function ($q, $id_grupo) {
+                $q->where('id_grupo', $id_grupo);
+            });
+
+        return DataTables::eloquent($query)
+            ->addIndexColumn()
+            ->editColumn('fecha_limite', function ($model) {
+                return optional($model->fecha_limite)->format('d/m/Y');
+            })
+            ->editColumn('saldo', function ($model) {
+                return number_format($model->saldo,2);
+            })
+            ->editColumn('concepto', function ($model) {
+                return $model->concepto_completo;
+            })
+            ->editColumn('status', function ($model) {
+                if ($model->fecha_limite->lt(\Carbon\Carbon::today()) && $model->status == 'Pendiente') {
+                    return "<span class='badge badge-danger text-white'>Vencido</span>";
+                }else{
+                    return "<span class='badge badge-success'>{$model->status}</span>";
+                }
+            })
+            ->rawColumns(['status'])
+            ->make(true);
+    }
+
+    public function datatables_documentos_pendientes(Request $request)
+    {
+        if (isset($request->id_alumno)) {
+            $query = Documento::query()
+                ->when($request->input('id_alumno'), function ($q, $id_alumno) {
+                    $q->where('id_alumno', $id_alumno);
+                })
+                ->when($request->input('status'), function ($q, $status) {
+                    $q->where('status', $status);
+                })->when($request->input('id_grupo'), function ($q, $id_grupo) {
+                    $q->where('id_grupo', $id_grupo);
+                });
+
+            $total_pendiente = AlumnoPago::query()
+                ->when($request->input('id_alumno'), function ($q, $id_alumno) {
+                    $q->where('id_alumno', $id_alumno);
+                })
+                ->when($request->input('status'), function ($q, $status) {
+                    $q->where('status', $status);
+                })->when($request->input('id_grupo'), function ($q, $id_grupo) {
+                    $q->where('id_grupo', $id_grupo);
+                })->sum('saldo');
+        } else {
+            $query = AlumnoPago::where('id_alumno', 'xxxxxxxxx');
+            $total_pendiente = 0;
+        }
+
+        return DataTables::eloquent($query)
+            ->editColumn('fecha_limite', function ($model) {
+                return optional($model->fecha_limite)->format('d/m/Y');
+            })
+            ->editColumn('monto', function ($model) {
+                return number_format($model->monto, 2, '.', ',');
+            })
+            ->editColumn('saldo', function ($model) {
+                return number_format($model->saldo, 2, '.', ',');
+            })
+            ->editColumn('concepto', function ($model) {
+                return $model->concepto_completo;
+            })
+            ->editColumn('status', function ($model) {
+                if ($model->fecha_limite->lt(\Carbon\Carbon::today()) && $model->status == 'Pendiente') {
+                    return "<span class='badge badge-danger text-white'>Vencido</span>";
+                }else{
+                    return "<span class='badge badge-success'>{$model->status}</span>";
+                }
+            })
+
+
+            ->rawColumns(['status'])
+            ->with([
+                'total_pendiente' => $total_pendiente
+            ])
+            ->make(true);
+    }
 
 
     public function formulario_inscribir_otro_grupo(Alumno $alumno)
@@ -494,7 +587,7 @@ class AlumnosController extends Controller
     public function datatables_historial_pagos(Request $request)
     {
 
-        $query = Pago::with(['recibio','alumno','abonos.alumno_pago'])
+        $query = Pago::with(['recibio','alumno','abonos.alumno_pago','abonos_documentos.documento'])
             ->when($request->input('id_alumno'), function ($q, $id_alumno) {
                 $q->where('id_alumno', $id_alumno);
             });
@@ -504,10 +597,10 @@ class AlumnosController extends Controller
             ->editColumn('fecha', function ($model) {
                 return optional($model->fecha)->format('d/m/Y H:i');
             })
-            ->editColumn('abonos.alumno_pago.concepto', function ($model) {
+            ->editColumn('abonos_documentos.documento.concepto', function ($model) {
                 $txt = '';
-                foreach($model->abonos as $abono){
-                    $txt.= $abono->alumno_pago->concepto_completo.'<br>';
+                foreach($model->abonos_documentos as $abono){
+                    $txt.= $abono->documento->concepto_completo.'<br>';
                 }
 
                 return $txt;

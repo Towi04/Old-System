@@ -83,6 +83,12 @@ class Pago extends Model
         return $this->hasMany(Abono::class,'id_pago','id');
     }
 
+    #NUEVOS ABONOS A DOCUMENTOS
+    public function abonos_documentos()
+    {
+        return $this->hasMany(AbonoDocumento::class,'id_pago','id');
+    }
+
     public function getFormatFechaAttribute($value)
     {
         if(empty($this->fecha)){

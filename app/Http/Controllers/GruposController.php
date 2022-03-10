@@ -494,17 +494,11 @@ class GruposController extends Controller
 
         return DataTables::eloquent($query)
             ->addColumn('nombre_alumno', function ($model) {
-                $route = route('grupos.actualizar_alumnos_xeditable');
+                $route = route('alumnos.show', $model->id_alumno);
 
                 return "
-                <a  class='editable_id_alumno editable'
-                    data-type='select2'
-                    data-name='id_alumno'
-                    data-pk='{$model->id}'
-                    data-url='{$route}'
-                    data-value='{$model->id_alumno}'
-                    data-title='Selecciona un alumno'>
-                    {$model->alumno->full_name}
+                <a target='_blank'  href='{$route}' >
+                    {$model->alumno->full_name} 
                 </a>";
             })
             ->addColumn('buttons', 'grupos.datatables._buttons_alumnos')

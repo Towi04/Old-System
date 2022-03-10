@@ -6,6 +6,13 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
+use Jenssegers\Date\Date;
+
+use App\Models\Documento; 
+use App\Models\Grupo;
+use App\Services\PagoInscripcionDocumentosService;
+
+use Carbon\Carbon;
 
 class HomeController extends Controller
 {
@@ -82,4 +89,130 @@ class HomeController extends Controller
             }
         }
     }
+
+    public function generar_documentos(PagoInscripcionDocumentosService $pids){
+        
+
+        #borramos todos los documentos
+        Documento::query()->delete();
+
+        #obtenemos todos los grupos
+        $grupos = Grupo::with('alumnos')->where('id','=','206')->get();
+        foreach($grupos as $grupo){
+            #OBTENEMOS TODOS LOS ALUMNOS DEL GRUPO
+            $alumnos = $grupo->alumnos;
+            // dd($alumnos);
+            foreach($alumnos as $alumno){
+                $pids->setAlumno($alumno);
+                $pids->inscripcion($grupo, $grupo->precio_inscripcion);
+                $fecha_inicio = $grupo->fecha_inicio;
+                $forma_pago = $alumno->forma_pago;
+                if($forma_pago == 'mensual'){
+                    $this->generar_mensuales($grupo, $alumno );
+                    
+                }
+                if($forma_pago == 'semanal'){
+                    $this->generar_semanales($grupo, $alumno);
+                }
+
+                $this->generar_abonos($alumno);
+
+
+            }
+
+        }
+
+    }
+
+    public function generar_mensuales($grupo, $alumno ){
+        $fecha_inicio = new Date($grupo->fecha_inicio);
+        $today = Carbon::today();
+
+        #VALIDAMOS SI SE VAN A GENERAR PRONTO PAGO O NORMAL
+        $dia = $today->day;
+        # SI EL DIA ACTUAL ES ENTRE 1-6, ENTONCES SE ASIGNA EL PRECIO DE PRONTO PAGO
+        if (in_array($dia, range(1, 6))) {
+            $monto =  $grupo->precio_mensualidad_pronto_pago ?? 0;
+        }
+        # SE AGREGA EL PRECIO NORMAL DE LA MENSUALIDAD
+        $monto =  $grupo->precio_mensualidad ?? 0;
+        #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
+        #SI NO SE SIGUEN GENERANDO PAGOS MENSUALE
+        while(!$today->copy()->addMonth()->isSameMonth($fecha_inicio)){
+            $documento = $alumno->documentos()->create([
+                'id_grupo'                  => $grupo->id,
+                'concepto'                  => config('alumnos.concepto.colegiatura') .'de '.$fecha_inicio->format('F').' del '.$fecha_inicio->year,
+                'monto'                     => $monto,
+                'saldo'                     => $monto,
+                'monto_apoyo_inscripcion'   => 0,
+                'mes'                       => $fecha_inicio->month,
+                'anio'                      => $fecha_inicio->year,
+                'fecha_limite'              => $fecha_inicio->copy()->endOfMonth(),
+                'modalidad'                 => 'mensual',
+                'tipo'                      => config('alumnos.concepto.colegiatura'),
+                'status'                    => config('pagos.status.Pendiente'),
+            ]);
+
+            echo "Fecha {$fecha_inicio->format('d-m-Y')} | {$alumno->fullname}<br>";
+            $fecha_inicio->addMonth();
+            
+
+        }   
+        
+
+
+    }
+
+    public function generar_semanales($grupo, $alumno ){
+        Carbon::setWeekStartsAt(Carbon::SUNDAY);
+        Carbon::setWeekEndsAt(Carbon::SATURDAY);
+
+        $fecha_inicio = new Date($grupo->fecha_inicio);
+        if($fecha_inicio->isSunday()){
+            $fecha_inicio->addDay();
+        }
+        $today = Carbon::today();
+
+        # SE AGREGA EL PRECIO NORMAL DE LA MENSUALIDAD
+        $monto =  $grupo->precio_semanal ?? 0;
+        #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
+        #SI NO SE SIGUEN GENERANDO PAGOS MENSUALE
+        while(!$today->copy()->addWeek()->isSameWeek($fecha_inicio)){
+            $documento = $alumno->documentos()->create([
+                'id_grupo'                  => $grupo->id,
+                'concepto'                  => config('alumnos.concepto.colegiatura') .'de semana #'.$fecha_inicio->weekOfYear.' del '.$fecha_inicio->year,
+                'monto'                     => $monto,
+                'saldo'                     => $monto,
+                'monto_apoyo_inscripcion'   => 0,
+                'mes'                       => $fecha_inicio->weekOfYear,
+                'anio'                      => $fecha_inicio->year,
+                'fecha_limite'              => $fecha_inicio->copy()->endOfWeek(),
+                'modalidad'                 => 'mensual',
+                'tipo'                      => config('alumnos.concepto.colegiatura'),
+                'status'                    => config('pagos.status.Pendiente'),
+            ]);
+
+            echo "Semana {$fecha_inicio->weekOfYear} fin_semana {$fecha_inicio->copy()->endOfWeek()}| Fecha {$fecha_inicio->format('d-m-Y')} | {$alumno->fullname}<br>";
+            $fecha_inicio->addWeek();
+            
+
+        }   
+        
+
+
+    }
+
+    public function abonos($alumno){
+        $pagos = $alumno->pagos;
+
+        #Para cada pago realizado se van a crear los abnos a los documentos del mas antiguo al mas reciente
+        foreach($pagos as $pago){
+            
+
+
+        }
+
+
+    }
+
 }

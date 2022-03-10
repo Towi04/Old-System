@@ -90,7 +90,7 @@ class Alumno extends Model
     ];
 
     protected $appends = [
-        'pagos_vencidos', 'monto_vencido','url_foto','fullname'
+        'documentos_vencidos', 'pagos_vencidos', 'monto_vencido','url_foto','fullname'
     ];
 
     # NOTE: MODEL RELATIONSHIPS
@@ -169,15 +169,27 @@ class Alumno extends Model
         });
     }
 
+    // public function getMontoVencidoAttribute()
+    // {
+    //     return $this->pagos_vencidos->sum('saldo');
+    // }
+
+    public function getDocumentosVencidosAttribute()
+    {
+        return $this->documentos->filter(function ($documento) {
+            return $documento->status == 'Pendiente' && $documento->fecha_limite->lt(\Carbon\Carbon::today());
+        });
+    }
+
     public function getMontoVencidoAttribute()
     {
-        return $this->pagos_vencidos->sum('saldo');
+        return $this->documentos_vencidos->sum('saldo');
     }
 
     public function getPagosPorCobrarAttribute()
     {
-        return $this->pagos->filter(function ($pago) {
-            return $pago->status == 'Pendiente' && $pago->fecha_limite->lte(\Carbon\Carbon::today()->endOfMonth());
+        return $this->documentos->filter(function ($documento) {
+            return $documento->status == 'Pendiente' && $documento->fecha_limite->lte(\Carbon\Carbon::today()->endOfMonth());
         });
     }
 
@@ -218,6 +230,11 @@ class Alumno extends Model
     public function ventas()
     {
         return $this->hasMany(Venta::class, 'id_alumno', 'id');
+    }
+
+    public function documentos()
+    {
+        return $this->hasMany(Documento::class, 'id_alumno', 'id');
     }
 
 }

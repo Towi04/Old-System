@@ -418,7 +418,7 @@
                 responsive: true,
                 pageLength: 10,
                 ajax: {
-                    url: "{{ route('alumnos.datatables_pagos_pendientes') }}",
+                    url: "{{ route('alumnos.datatables_documentos_pendientes') }}",
                     type: "POST",
                     data: function (d) {
                         d.id_alumno = dom.select_alumno.val();

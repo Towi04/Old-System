@@ -28,7 +28,8 @@ class AgregarIdGrupoAsistencia extends Migration
     public function down()
     {
         Schema::table('asistencias', function (Blueprint $table) {
-            $table->bigInteger('id_grupo')->nullable();
+            $table->dropForeign('asistencias_id_grupo_foreign');
+            $table->dropColumn('id_grupo');
         });
     }
 }

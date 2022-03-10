@@ -179,8 +179,13 @@
                                     <ul class="nav nav-tabs smaller">
 
                                         <li class="nav-item">
-                                            <a class="nav-link" data-toggle="tab" href="#tab-pagos-pendientes">Documentos</a>
+                                            <a class="nav-link" data-toggle="tab" href="#tab-documentos">Documentos.</a>
                                         </li>
+
+
+                                        {{-- <li class="nav-item">
+                                            <a class="nav-link" data-toggle="tab" href="#tab-pagos-pendientes">Documentos</a>
+                                        </li> --}}
 
                                         <li class="nav-item">
                                             <a class="nav-link active" data-toggle="tab" href="#tab-historial-pagos">Historial de pagos</a>
@@ -202,6 +207,58 @@
                                 </div>
 
                                 <div class="tab-content">
+                                    <div class="tab-pane" id="tab-documentos">
+                                        <div class="form-group">
+                                            {!! Form::label('id_grupo','Selecciona el grupo:') !!}
+                                            {!! Form::select('id_grupo', $alumno->grupos->pluck('nombre_compuesto','id'), optional($alumno->grupos->first())->id, ['id'=>'select_grupo_documentos','class'=>'form-control w-100']) !!}
+                                        </div>
+
+                                        <table class="table table-striped table-bordered table-hover" id="tb-documentos" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th># Docto</th>
+                                                    <th>Concepto</th>
+                                                    <th>Monto</th>
+                                                    <th>Saldo</th>
+                                                    <th>Fecha Limite</th>
+                                                    <th>Created at</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+
+                                        @can('asignar_apoyos_especiales')
+                                            <fieldset class="form-group">
+                                                <legend>Apoyos especiales</legend>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <button type="button" id="btn-agregar-apoyo-especial" title="Apoyo especial" class="btn btn-sm btn-primary">Agregar Apoyo</button>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <table class="table table-striped table-bordered table-hover" id="tb-apoyos-especiales" width="100%">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th></th>
+                                                                    <th>Fecha Final</th>
+                                                                    <th>Monto</th>
+                                                                    <th>Acciones</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        @endcan
+
+                                    </div>
+
                                     <div class="tab-pane" id="tab-pagos-pendientes">
                                         <div class="form-group">
                                             {!! Form::label('id_grupo','Selecciona el grupo:') !!}
@@ -337,6 +394,7 @@
         $(document).ready(function() {
             const dom = {
                 tb_pagos: $("#tb-pagos"),
+                tb_documentos: $("#tb-documentos"),
                 tb_historial_pagos: $("#tb-historial-pagos"),
                 tb_apoyos: $("#tb-apoyos-especiales"),
                 btn_apoyo_especial: $('#btn-agregar-apoyo-especial'),
@@ -415,6 +473,251 @@
                     $("[data-toggle='tooltip']").tooltip();
                 },
                 initComplete: function(settings, json) {
+                    // var dt_apoyos = dom.tb_apoyos.DataTable({
+                    //     dom: "<'row'<'col-12'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
+                    //     processing: true,
+                    //     serverSide: true,
+                    //     responsive: true,
+                    //     pageLength: 10,
+                    //     ajax: {
+                    //         url: "{{ route('apoyos-especiales.datatables') }}",
+                    //         type: "POST",
+                    //         data: function (d) {
+                    //             d.id_alumno = "{{ $alumno->id }}";
+                    //             d.id_grupo = $('#select_grupo').val();
+                    //             d._token = $("meta[name='csrf-token']").attr("content");
+                    //         },
+                    //         beforeSend: function(xhr,type) {
+                    //         if (!type.crossDomain) {
+                    //                 xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+                    //             }
+                    //         },
+                    //     },
+                    //     columns: [
+                    //         {data: 'id', name: 'id',visible:false},
+                    //         {data: 'fecha_final', name: 'fecha_final'},
+                    //         {data: 'precio', name: 'precio'},
+                    //         { data: 'buttons', name: 'buttons', orderable: false, searchable: false },
+                    //     ],
+                    //     order: [[ 0, "asc" ]],
+                    //     language: {
+                    //         "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    //         "zeroRecords": "No se encontro ningún registro",
+                    //         "info": "Mostrando del _START_ al _END_ de _TOTAL_ registros. (Página _PAGE_ de _PAGES_)",
+                    //         "infoEmpty": "No hay registros disponibles",
+                    //         "infoFiltered": "(Filtrado de un total de _MAX_ registros)",
+                    //         "search": "Buscar:",
+                    //         "paginate": {
+                    //             "first": "Primera",
+                    //             "last": "Última",
+                    //             "previous": '<i class="fas fa-chevron-left"></i>',
+                    //             "next": '<i class="fas fa-chevron-right"></i>'
+                    //         },
+                    //         "loadingRecords": "Cargando...",
+                    //         "processing": "Procesando...",
+                    //     },
+                    //     drawCallback: function (settings) {
+                    //         $("[data-toggle='tooltip']").tooltip();
+                    //     },
+                    // });
+
+                    // dom.tb_apoyos.on('click',"a[data-action='delete']",function(event){
+                    //     event.preventDefault();
+
+                    //     swal({
+                    //         title: "¿Estas seguro de eliminar el registro?",
+                    //         type: "warning",
+                    //         showCancelButton: true,
+                    //         confirmButtonColor: "#ff3333",
+                    //         cancelButtonColor: "#CDCDCD",
+                    //         confirmButtonText: "Borrar",
+                    //         cancelButtonText: "Cancelar",
+                    //         showLoaderOnConfirm: false,
+                    //     }).then(function(result) {
+                    //         if (!result.value) {
+                    //             return;
+                    //         }
+
+                    //         wait.modal('show');
+
+                    //         $.ajax({
+                    //             url: event.target.href,
+                    //             type: 'POST',
+                    //             cache: false,
+                    //             data: {
+                    //                 _token: $("meta[name='csrf-token']").attr("content"),
+                    //                 _method: 'DELETE',
+                    //             },
+                    //             success: function (response){
+                    //                 dt_apoyos.ajax.reload( function(e){
+                    //                     wait.modal('hide');
+                    //                     toastr.success('Éxito', 'Se borró con éxito el registro');
+                    //                 }, false )
+                    //             },
+                    //             error:function(error){
+                    //                 setTimeout(() => {
+                    //                     wait.modal('hide');
+                    //                     toastr.error('Error', 'Ocurrio un error inesperado');
+                    //                 }, 250);
+                    //             }
+                    //         });
+                    //     })
+                    // })
+
+                    // $('#select_grupo').change(function(){
+                    //     dt_pagos.draw();
+                    //     dt_apoyos.draw();
+                    // });
+
+                    // dom.btn_apoyo_especial.click(function(e){
+                    //     dom.form_apoyo_especial[0].reset();
+                    //     dom.modal_apoyo_especial.modal('show');
+                    // })
+
+                    // dom.form_apoyo_especial.submit(function(e){
+                    //     e.preventDefault();
+
+                    //     dom.modal_apoyo_especial.modal('hide');
+                    //     wait.modal('show');
+
+                    //     const $form = $(this);
+                    //     const formData = new FormData(this);
+                    //     formData.append('id_grupo',$('#select_grupo').val());
+                    //     formData.append('id_alumno',"{{ $alumno->id }}");
+
+                    //     $.ajax({
+                    //         url: $form.attr('action'),
+                    //         type: 'POST',
+                    //         cache: false,
+                    //         contentType: false,
+                    //         processData: false,
+                    //         data: formData,
+                    //         success: function (response){
+                    //             dt_apoyos.ajax.reload( function(e){
+                    //                 setTimeout(() => {
+                    //                     wait.modal('hide');
+                    //                     toastr.success('Éxito', response.message || 'Apoyo agregado correctamente');
+                    //                 })
+                    //             }, false )
+                    //         },
+                    //         error:function(error){
+                    //             wait.modal('hide');
+                    //             const errors = error.responseJSON || {};
+
+                    //             setTimeout(() => {
+                    //                 dom.modal_apoyo_especial.modal('show');
+                    //                 toastr.error('Error',  errors.message || 'Ocurrio un error inesperado');
+                    //             }, 250);
+                    //         }
+                    //     });
+
+
+                    // })
+                }
+            });
+
+            var tb_historial_pagos = dom.tb_historial_pagos.DataTable({
+                dom: "<'row'<'col-12'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
+                processing: true,
+                serverSide: true,
+                responsive: true,
+                pageLength: 10,
+                ajax: {
+                    url: "{{ route('alumnos.datatables_historial_pagos') }}",
+                    type: "POST",
+                    data: function (d) {
+                        d.id_alumno = "{{ $alumno->id }}";
+                        d._token = $("meta[name='csrf-token']").attr("content");
+                    },
+                    beforeSend: function(xhr,type) {
+                    if (!type.crossDomain) {
+                            xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+                        }
+                    },
+                },
+                columns: [
+                    {data: 'fecha', name: 'fecha'},
+                    {data: 'monto', name: 'monto'},
+                    {data: 'forma_pago', name: 'forma_pago'},
+                    {data: 'abonos_documentos.documento.concepto', name: 'abonos_documentos.documento.concepto'},
+                    {data: 'recibio.nombres', name: 'recibio.nombres'},
+                ],
+                order: [[ 0, "desc" ]],
+                language: {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontro ningún registro",
+                    "info": "Mostrando del _START_ al _END_ de _TOTAL_ registros. (Página _PAGE_ de _PAGES_)",
+                    "infoEmpty": "No hay registros disponibles",
+                    "infoFiltered": "(Filtrado de un total de _MAX_ registros)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "first": "Primera",
+                        "last": "Última",
+                        "previous": '<i class="fas fa-chevron-left"></i>',
+                        "next": '<i class="fas fa-chevron-right"></i>'
+                    },
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                },
+                drawCallback: function (settings) {
+                    $("[data-toggle='tooltip']").tooltip();
+                },
+                initComplete: function(settings, json) {
+
+                }
+            });
+
+            // DATATABLES DE DOCUMENTOS
+            var dt_documentos = dom.tb_documentos.DataTable({
+                dom: "<'row'<'col-12'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
+                processing: true,
+                serverSide: true,
+                responsive: true,
+                pageLength: 10,
+                ajax: {
+                    url: "{{ route('alumnos.datatables_documentos') }}",
+                    type: "POST",
+                    data: function (d) {
+                        d.id_alumno = "{{ $alumno->id }}";
+                        d.id_grupo = $('#select_grupo_documentos').val();
+                        d._token = $("meta[name='csrf-token']").attr("content");
+                    },
+                    beforeSend: function(xhr,type) {
+                    if (!type.crossDomain) {
+                            xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+                        }
+                    },
+                },
+                columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false,orderable: false},
+                    {data: 'concepto', name: 'concepto'},
+                    {data: 'monto', name: 'monto',className:"text-right"},
+                    {data: 'saldo', name: 'saldo', className:"text-right"},
+                    {data: 'fecha_limite', name: 'fecha_limite'},
+                    {data: 'created_at', name: 'created_at', visible:false},
+                    {data: 'status', className:"text-center", name: 'status'},
+                ],
+                order: [[ 5, "asc" ]],
+                language: {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontro ningún registro",
+                    "info": "Mostrando del _START_ al _END_ de _TOTAL_ registros. (Página _PAGE_ de _PAGES_)",
+                    "infoEmpty": "No hay registros disponibles",
+                    "infoFiltered": "(Filtrado de un total de _MAX_ registros)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "first": "Primera",
+                        "last": "Última",
+                        "previous": '<i class="fas fa-chevron-left"></i>',
+                        "next": '<i class="fas fa-chevron-right"></i>'
+                    },
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                },
+                drawCallback: function (settings) {
+                    $("[data-toggle='tooltip']").tooltip();
+                },
+                initComplete: function(settings, json) {
                     var dt_apoyos = dom.tb_apoyos.DataTable({
                         dom: "<'row'<'col-12'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
                         processing: true,
@@ -426,7 +729,7 @@
                             type: "POST",
                             data: function (d) {
                                 d.id_alumno = "{{ $alumno->id }}";
-                                d.id_grupo = $('#select_grupo').val();
+                                d.id_grupo = $('#select_grupo_documentos').val();
                                 d._token = $("meta[name='csrf-token']").attr("content");
                             },
                             beforeSend: function(xhr,type) {
@@ -506,8 +809,8 @@
                         })
                     })
 
-                    $('#select_grupo').change(function(){
-                        dt_pagos.draw();
+                    $('#select_grupo_documentos').change(function(){
+                        dt_documentos.draw();
                         dt_apoyos.draw();
                     });
 
@@ -524,7 +827,7 @@
 
                         const $form = $(this);
                         const formData = new FormData(this);
-                        formData.append('id_grupo',$('#select_grupo').val());
+                        formData.append('id_grupo',$('#select_grupo_documentos').val());
                         formData.append('id_alumno',"{{ $alumno->id }}");
 
                         $.ajax({
@@ -555,57 +858,6 @@
 
 
                     })
-                }
-            });
-
-            var tb_historial_pagos = dom.tb_historial_pagos.DataTable({
-                dom: "<'row'<'col-12'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
-                processing: true,
-                serverSide: true,
-                responsive: true,
-                pageLength: 10,
-                ajax: {
-                    url: "{{ route('alumnos.datatables_historial_pagos') }}",
-                    type: "POST",
-                    data: function (d) {
-                        d.id_alumno = "{{ $alumno->id }}";
-                        d._token = $("meta[name='csrf-token']").attr("content");
-                    },
-                    beforeSend: function(xhr,type) {
-                    if (!type.crossDomain) {
-                            xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
-                        }
-                    },
-                },
-                columns: [
-                    {data: 'fecha', name: 'fecha'},
-                    {data: 'monto', name: 'monto'},
-                    {data: 'forma_pago', name: 'forma_pago'},
-                    {data: 'abonos.alumno_pago.concepto', name: 'abonos.alumno_pago.concepto'},
-                    {data: 'recibio.nombres', name: 'recibio.nombres'},
-                ],
-                order: [[ 0, "desc" ]],
-                language: {
-                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
-                    "zeroRecords": "No se encontro ningún registro",
-                    "info": "Mostrando del _START_ al _END_ de _TOTAL_ registros. (Página _PAGE_ de _PAGES_)",
-                    "infoEmpty": "No hay registros disponibles",
-                    "infoFiltered": "(Filtrado de un total de _MAX_ registros)",
-                    "search": "Buscar:",
-                    "paginate": {
-                        "first": "Primera",
-                        "last": "Última",
-                        "previous": '<i class="fas fa-chevron-left"></i>',
-                        "next": '<i class="fas fa-chevron-right"></i>'
-                    },
-                    "loadingRecords": "Cargando...",
-                    "processing": "Procesando...",
-                },
-                drawCallback: function (settings) {
-                    $("[data-toggle='tooltip']").tooltip();
-                },
-                initComplete: function(settings, json) {
-
                 }
             });
 

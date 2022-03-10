@@ -270,20 +270,20 @@ class ReporteVentasController extends Controller
 
     public function datatables_vencimientos(Request $request)
     {
-        $query = Alumno::with(['pagos'])
+        $query = Alumno::with(['documentos'])
             ->where('status', config('alumnos.status.Alumno'))
             ->when($request->input('id_sucursal'), function ($q, $id_sucursal) {
                 $q->where('id_sucursal', $id_sucursal);
-            })->whereHas('pagos', function ($q) {
-                return $q->where('status', '=', 'pendiente')->where('fecha_limite', '<', date('Y-m-d'));
+            })->whereHas('documentos', function ($q) {
+                return $q->where('status', '=', 'Pendiente')->where('fecha_limite', '<', date('Y-m-d'));
             });
 
         return DataTables::eloquent($query)
             ->addColumn('nombre_alumno', function ($model) {
                 return "<a href=" . route('alumnos.show', $model->id) . ">{$model->nombres} {$model->apellido_paterno} {$model->apellido_materno}</a>";
             })
-            ->editColumn('pagos_vencidos', function ($model) {
-                return $model->pagos_vencidos->count();
+            ->editColumn('documentos_vencidos', function ($model) {
+                return $model->documentos_vencidos->count();
             })
             ->editColumn('monto_vencido', function ($model) {
                 return "$ " . number_format($model->monto_vencido, 2, '.', ',');
