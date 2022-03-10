@@ -97,7 +97,7 @@ class HomeController extends Controller
         Documento::query()->delete();
 
         #obtenemos todos los grupos
-        $grupos = Grupo::with('alumnos')->get();
+        $grupos = Grupo::with('alumnos')->where('id','=',139)->get();
         foreach($grupos as $grupo){
             #OBTENEMOS TODOS LOS ALUMNOS DEL GRUPO
             $alumnos = $grupo->alumnos;
@@ -125,7 +125,16 @@ class HomeController extends Controller
     }
 
     public function generar_mensuales($grupo, $alumno ){
-        $fecha_inicio = new Date($grupo->fecha_inicio);
+
+        
+        if(optional(optional($grupo->alumnos->where('id',$alumno->id)->first())->pivot)->fecha_inicio){
+            $fecha_inicio = optional(optional($grupo->alumnos->where('id',$alumno->id)->first())->pivot)->fecha_inicio;
+        }else{
+            $fecha_inicio = new Date($grupo->fecha_inicio);
+        }
+
+
+        $fecha_inicio = new Date($fecha_inicio);
         $today = Carbon::today();
 
         #VALIDAMOS SI SE VAN A GENERAR PRONTO PAGO O NORMAL
@@ -167,7 +176,13 @@ class HomeController extends Controller
         Carbon::setWeekStartsAt(Carbon::SUNDAY);
         Carbon::setWeekEndsAt(Carbon::SATURDAY);
 
-        $fecha_inicio = new Date($grupo->fecha_inicio);
+        if(optional(optional($grupo->alumnos->where('id',$alumno->id)->first())->pivot)->fecha_inicio){
+            $fecha_inicio = optional(optional($grupo->alumnos->where('id',$alumno->id)->first())->pivot)->fecha_inicio;
+        }else{
+            $fecha_inicio = new Date($grupo->fecha_inicio);
+        }
+
+
         if($fecha_inicio->isSunday()){
             $fecha_inicio->addDay();
         }
@@ -177,7 +192,7 @@ class HomeController extends Controller
         $monto =  $grupo->precio_semanal ?? 0;
         #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
         #SI NO SE SIGUEN GENERANDO PAGOS MENSUALE
-        while(!$today->copy()->addWeek()->isSameWeek($fecha_inicio) && $fecha_inicio->lte($today->copy()->addMonth())){
+        while(!$today->copy()->addWeek()->isSameWeek($fecha_inicio) && $fecha_inicio->lte($today->copy()->addWeek())){
             $documento = $alumno->documentos()->create([
                 'id_grupo'                  => $grupo->id,
                 'concepto'                  => config('alumnos.concepto.colegiatura') .'de semana #'.$fecha_inicio->weekOfYear.' del '.$fecha_inicio->year,

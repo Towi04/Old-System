@@ -90,7 +90,7 @@ class Grupo extends Model
     public function alumnos()
     {
         return $this->belongsToMany(Alumno::class, 'alumnos_grupos', 'id_grupo', 'id_alumno')
-            ->withPivot('id', 'id_alumno')->using(AlumnoGrupo::class);
+            ->withPivot('id', 'id_alumno','fecha_inicio')->using(AlumnoGrupo::class);
     }
 
 
