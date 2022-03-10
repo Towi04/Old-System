@@ -97,7 +97,7 @@ class HomeController extends Controller
         Documento::query()->delete();
 
         #obtenemos todos los grupos
-        $grupos = Grupo::with('alumnos')->where('id','=','206')->get();
+        $grupos = Grupo::with('alumnos')->get();
         foreach($grupos as $grupo){
             #OBTENEMOS TODOS LOS ALUMNOS DEL GRUPO
             $alumnos = $grupo->alumnos;
@@ -115,7 +115,7 @@ class HomeController extends Controller
                     $this->generar_semanales($grupo, $alumno);
                 }
 
-                $this->generar_abonos($alumno);
+                // $this->generar_abonos($alumno);
 
 
             }
@@ -138,7 +138,7 @@ class HomeController extends Controller
         $monto =  $grupo->precio_mensualidad ?? 0;
         #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
         #SI NO SE SIGUEN GENERANDO PAGOS MENSUALE
-        while(!$today->copy()->addMonth()->isSameMonth($fecha_inicio)){
+        while(!$today->copy()->addMonth()->isSameMonth($fecha_inicio) && $fecha_inicio->lte($today->copy()->addMonth())){
             $documento = $alumno->documentos()->create([
                 'id_grupo'                  => $grupo->id,
                 'concepto'                  => config('alumnos.concepto.colegiatura') .'de '.$fecha_inicio->format('F').' del '.$fecha_inicio->year,
@@ -177,7 +177,7 @@ class HomeController extends Controller
         $monto =  $grupo->precio_semanal ?? 0;
         #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
         #SI NO SE SIGUEN GENERANDO PAGOS MENSUALE
-        while(!$today->copy()->addWeek()->isSameWeek($fecha_inicio)){
+        while(!$today->copy()->addWeek()->isSameWeek($fecha_inicio) && $fecha_inicio->lte($today->copy()->addMonth())){
             $documento = $alumno->documentos()->create([
                 'id_grupo'                  => $grupo->id,
                 'concepto'                  => config('alumnos.concepto.colegiatura') .'de semana #'.$fecha_inicio->weekOfYear.' del '.$fecha_inicio->year,
@@ -207,7 +207,7 @@ class HomeController extends Controller
 
         #Para cada pago realizado se van a crear los abnos a los documentos del mas antiguo al mas reciente
         foreach($pagos as $pago){
-            
+
 
 
         }
