@@ -304,12 +304,12 @@ class ReporteVentasController extends Controller
         $today = \Carbon\Carbon::today();
         $fin_de_mes = $today->endOfMonth();
 
-        $query = Alumno::with(['pagos'])
+        $query = Alumno::with(['documentos'])
             ->where('status', config('alumnos.status.Alumno'))
             ->when($request->input('id_sucursal'), function ($q, $id_sucursal) {
                 $q->where('id_sucursal', $id_sucursal);
-            })->whereHas('pagos', function ($q) use ($fin_de_mes) {
-                return $q->where('status', '=', 'pendiente')->where('fecha_limite', '<', $fin_de_mes->format('Y-m-d'));
+            })->whereHas('documentos', function ($q) use ($fin_de_mes) {
+                return $q->where('status', '=', 'Pendiente')->where('fecha_limite', '<', $fin_de_mes->format('Y-m-d'));
             });
 
         return DataTables::eloquent($query)
