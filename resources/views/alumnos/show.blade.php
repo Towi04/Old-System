@@ -183,9 +183,9 @@
                                         </li>
 
 
-                                        {{-- <li class="nav-item">
-                                            <a class="nav-link" data-toggle="tab" href="#tab-pagos-pendientes">Documentos</a>
-                                        </li> --}}
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-toggle="tab" href="#tab-pagos-pendientes">Documentos (old)</a>
+                                        </li>
 
                                         <li class="nav-item">
                                             <a class="nav-link active" data-toggle="tab" href="#tab-historial-pagos">Historial de pagos</a>
