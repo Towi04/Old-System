@@ -97,7 +97,7 @@ class HomeController extends Controller
         Documento::query()->delete();
 
         #obtenemos todos los grupos
-        $grupos = Grupo::with('alumnos')->where('id','=',139)->get();
+        $grupos = Grupo::with('alumnos')->get();
         foreach($grupos as $grupo){
             #OBTENEMOS TODOS LOS ALUMNOS DEL GRUPO
             $alumnos = $grupo->alumnos;
