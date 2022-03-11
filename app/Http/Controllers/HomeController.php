@@ -307,7 +307,7 @@ class HomeController extends Controller
         foreach($alumnos as $alumno){
             $table .= '<tr>';
             $table .= "  <td style='background: #030050; color:white' >";
-            $table .= $alumno->fullname;
+            $table .= $alumno->nuevo_numero_control.' '.$alumno->fullname;
             $table .= '  </td>';
             $table .= '</tr>';
             foreach($alumno->grupos as $grupo){
