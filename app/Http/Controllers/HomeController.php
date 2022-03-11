@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Response;
 use Jenssegers\Date\Date;
 
 use App\Models\Documento; 
+use App\Models\AbonoDocumento; 
 use App\Models\Grupo;
 use App\Services\PagoInscripcionDocumentosService;
 
@@ -97,7 +98,7 @@ class HomeController extends Controller
         Documento::query()->delete();
 
         #obtenemos todos los grupos
-        $grupos = Grupo::with('alumnos')->get();
+        $grupos = Grupo::with('alumnos')->whereIn('id',['168'])->get();
         foreach($grupos as $grupo){
             #OBTENEMOS TODOS LOS ALUMNOS DEL GRUPO
             $alumnos = $grupo->alumnos;
@@ -106,7 +107,9 @@ class HomeController extends Controller
                 $pids->setAlumno($alumno);
                 $pids->inscripcion($grupo, $grupo->precio_inscripcion);
                 $fecha_inicio = $grupo->fecha_inicio;
-                $forma_pago = $alumno->forma_pago;
+                $forma_pago = ($alumno->forma_pago) ? $alumno->forma_pago :'semanal';
+                
+
                 if($forma_pago == 'mensual'){
                     $this->generar_mensuales($grupo, $alumno );
                     
@@ -115,12 +118,12 @@ class HomeController extends Controller
                     $this->generar_semanales($grupo, $alumno);
                 }
 
-                // $this->generar_abonos($alumno);
-
-
             }
 
         }
+
+        #GENERAR ABONOS DE LA SUCURSAL DE CELAYA
+        $this->generar_abonos(2);
 
     }
 
@@ -150,7 +153,7 @@ class HomeController extends Controller
         while(!$today->copy()->addMonth()->isSameMonth($fecha_inicio) && $fecha_inicio->lte($today->copy()->addMonth())){
             $documento = $alumno->documentos()->create([
                 'id_grupo'                  => $grupo->id,
-                'concepto'                  => config('alumnos.concepto.colegiatura') .'de '.$fecha_inicio->format('F').' del '.$fecha_inicio->year,
+                'concepto'                  => config('alumnos.concepto.colegiatura') .' de '.$fecha_inicio->format('F').' del '.$fecha_inicio->year,
                 'monto'                     => $monto,
                 'saldo'                     => $monto,
                 'monto_apoyo_inscripcion'   => 0,
@@ -195,7 +198,7 @@ class HomeController extends Controller
         while(!$today->copy()->addWeek()->isSameWeek($fecha_inicio) && $fecha_inicio->lte($today->copy()->addWeek())){
             $documento = $alumno->documentos()->create([
                 'id_grupo'                  => $grupo->id,
-                'concepto'                  => config('alumnos.concepto.colegiatura') .'de semana #'.$fecha_inicio->weekOfYear.' del '.$fecha_inicio->year,
+                'concepto'                  => config('alumnos.concepto.colegiatura') .' de semana #'.$fecha_inicio->weekOfYear.' del '.$fecha_inicio->year,
                 'monto'                     => $monto,
                 'saldo'                     => $monto,
                 'monto_apoyo_inscripcion'   => 0,
@@ -217,15 +220,74 @@ class HomeController extends Controller
 
     }
 
-    public function abonos($alumno){
-        $pagos = $alumno->pagos;
+    public function generar_abonos($id_sucursal){
 
-        #Para cada pago realizado se van a crear los abnos a los documentos del mas antiguo al mas reciente
-        foreach($pagos as $pago){
+        #borramos todos los documentos
+        AbonoDocumento::query()->delete();
+        // dd('hola');
+        #obtenemos todos los grupos de la sucursal
+        // $grupos = Grupo::with('alumnos')->where('id_sucursal','=',$id_sucursal)->get();
+        $grupos = Grupo::with('alumnos')->where('id','=','168')->get();
+
+        foreach($grupos as $grupo){
+
+            foreach($grupo->alumnos as $alumno){
+                $pagos = $alumno->pagos_caja;
+                #Para cada pago realizado se van a crear los abnos a los documentos del mas antiguo al mas reciente
+                foreach($pagos as $pago){
+
+                    $monto_pago = $pago->monto;
+                    $documentos = $alumno->documentos->where('saldo','>',0)->sortBy('fecha_limite');
+
+                    foreach($documentos as $documento){
+                        # GENERO EL ABONO
+                        #SE VA A VALIDAR SI FUE COLEGIATURA POR PRONTO PAGO
+                        if($documento->tipo == 'Colegiatura'){
+                            // validar fecha limite de pronto pago
+                            $fecha_limite_pronto = Carbon::createFromFormat('Y-m-d',$documento->anio.'-'.$documento->mes.'-06');
+
+                            if($pago->fecha->lte($fecha_limite_pronto) &&  $documento->monto == $grupo->precio_mensualidad ){
+                                $documento->monto = $grupo->precio_mensualidad_pronto_pago;
+                                $documento->saldo = $grupo->precio_mensualidad_pronto_pago;
+                                $documento->save();
+                            }
+                        }
+
+                        if($documento->saldo >= $monto_pago){
+                            $monto = $monto_pago;
+                            $monto_pago = 0;
+                        }else{
+                            $monto = $documento->saldo;
+                            $monto_pago = $monto_pago - $documento->saldo;
+                        }
+
+                        $pago->abonos_documentos()->create([
+                            'id_sucursal'       => $id_sucursal,
+                            'id_documento'    => $documento->id,
+                            'monto'             => $monto,
+                            'venta_fiscal'      => '0',
+                        ]);
+
+                        $documento->saldo = $documento->saldo - $monto;
+                        if($documento->saldo == 0){
+                            $documento->status = 'Pagado';
+                        }
+                        $documento->save();
+                        
+                        if($monto_pago <= 0){
+                            break;
+                        }
+                        
+
+                    }
 
 
 
+                }
+            }
+            
         }
+        
 
 
     }

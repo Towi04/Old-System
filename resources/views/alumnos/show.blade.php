@@ -182,10 +182,10 @@
                                             <a class="nav-link" data-toggle="tab" href="#tab-documentos">Documentos.</a>
                                         </li>
 
-
+{{-- 
                                         <li class="nav-item">
                                             <a class="nav-link" data-toggle="tab" href="#tab-pagos-pendientes">Documentos (old)</a>
-                                        </li>
+                                        </li> --}}
 
                                         <li class="nav-item">
                                             <a class="nav-link active" data-toggle="tab" href="#tab-historial-pagos">Historial de pagos</a>
@@ -621,7 +621,7 @@
                 processing: true,
                 serverSide: true,
                 responsive: true,
-                pageLength: 10,
+                pageLength: -1,
                 ajax: {
                     url: "{{ route('alumnos.datatables_historial_pagos') }}",
                     type: "POST",

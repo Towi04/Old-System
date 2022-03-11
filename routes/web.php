@@ -311,4 +311,6 @@ Route::middleware(['auth','sucursal'])->group(function () {
 #RUTAS ESPECIALES PARA ACOMODAR COSAS EN LA PLATAFORMA
 Route::prefix('especiales')->name('especiales.')->group(function(){
      Route::get('generar_documentos',[HomeController::class,'generar_documentos'])->name('generar_documentos');
+     Route::get('generar_abonos/{id_sucursal}',[HomeController::class,'generar_abonos'])->name('generar_abonos');
+
 });

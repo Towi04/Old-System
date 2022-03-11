@@ -605,7 +605,7 @@ class AlumnosController extends Controller
 
                 return $txt;
             })
-            ->rawColumns(['abonos.alumno_pago.concepto'])
+            ->rawColumns(['abonos_documentos.documento.concepto'])
             ->make(true);
     }
 

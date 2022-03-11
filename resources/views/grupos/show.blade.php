@@ -184,8 +184,9 @@
                         <table class="table table-striped table-bordered table-hover" id="tb-alumnos" width="100%" >
                             <thead>
                                 <tr>
-                                    <th>#</th>
+                                    <th>No Control</th>
                                     <th>Alumno</th>
+                                    <th>Fecha inicio</th>
                                     <th></th>
                                     <th></th>
                                     <th></th>
@@ -281,8 +282,9 @@
                     },
                 },
                 columns: [
-                    {data: 'id', name: 'id'},
-                    {data: 'nombre_alumno', name: 'nombre_alumno'},
+                    {data: 'alumno.nuevo_numero_control', name: 'alumno.nuevo_numero_control'},
+                    {data: 'nombre_alumno', name: 'nombre_alumno', className:'text-nowrap'},
+                    {data: 'fecha_inicio', name: 'fecha_inicio'},
                     {data: 'alumno.nombres', name: 'alumno.nombres',visible:false},
                     {data: 'alumno.apellido_paterno', name: 'alumno.apellido_paterno',visible:false},
                     {data: 'alumno.apellido_materno', name: 'alumno.apellido_materno',visible:false},

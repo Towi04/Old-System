@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AbonoDocumento extends Model
 {
-    use HasFactory,SoftDeletes;
-
+    use HasFactory;
+    use SoftDeletes;
     /**
      * The table associated with the model.
      *

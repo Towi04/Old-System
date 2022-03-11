@@ -68,7 +68,7 @@ class Documento extends Model
 
     public function abonos()
     {
-        return $this->hasMany(Abono::class,'id_documento','id');
+        return $this->hasMany(AbonoDocumento::class,'id_documento','id');
     }
 
     # NOTE: SCOPES

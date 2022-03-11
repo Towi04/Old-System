@@ -21,7 +21,7 @@ return [
     ],
     'concepto' => [
         'inscripcion' => 'Inscripcion',
-        'colegiatura' => 'Colegiatura ',
+        'colegiatura' => 'Colegiatura',
     ],
     'status' => [
         'Pre-Registro'  => 'Pre-Registro',

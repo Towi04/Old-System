@@ -237,4 +237,10 @@ class Alumno extends Model
         return $this->hasMany(Documento::class, 'id_alumno', 'id');
     }
 
+    public function pagos_caja()
+    {
+        return $this->hasMany(Pago::class, 'id_alumno', 'id');
+    }
+
+
 }

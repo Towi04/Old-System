@@ -22,6 +22,12 @@ class AgregarAbonosDocumentos extends Migration
             $table->boolean('venta_fiscal')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->foreign('id_sucursal')->references('id')->on('sucursales')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('id_pago')->references('id')->on('pagos')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('id_documento')->references('id')->on('documentos')->onUpdate('cascade')->onDelete('cascade');
+
+            
         });
     }
 
