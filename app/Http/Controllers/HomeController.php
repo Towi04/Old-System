@@ -234,7 +234,9 @@ class HomeController extends Controller
             foreach($grupo->alumnos as $alumno){
                 $pagos = $alumno->pagos_caja;
                 #Para cada pago realizado se van a crear los abnos a los documentos del mas antiguo al mas reciente
-                foreach($pagos as $pago){
+                foreach($pagos->sortBy(function(){
+                    return $pago->fecha->format('Ymd');
+                }) as $pago){
 
                     $monto_pago = $pago->monto;
                     $documentos = $alumno->documentos->where('saldo','>',0)->sortBy('fecha_limite');
