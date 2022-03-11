@@ -11,6 +11,7 @@ use Jenssegers\Date\Date;
 use App\Models\Documento; 
 use App\Models\AbonoDocumento; 
 use App\Models\Grupo;
+use App\Models\Alumno;
 use App\Services\PagoInscripcionDocumentosService;
 
 use Carbon\Carbon;
@@ -291,6 +292,36 @@ class HomeController extends Controller
         }
         
 
+
+    }
+
+    public function info(){
+
+        #ALUMNOS CON MAS DE 2 GRUPOS
+
+        $alumnos = Alumno::with('grupos.especialidad')->where('id_sucursal','=',2)->has('grupos','>',1)->get();
+
+        
+        $table = '<h3>Sucursal Celaya</h3>';
+        $table .= '<table>';
+        foreach($alumnos as $alumno){
+            $table .= '<tr>';
+            $table .= "  <td style='background: #030050; color:white' >";
+            $table .= $alumno->fullname;
+            $table .= '  </td>';
+            $table .= '</tr>';
+            foreach($alumno->grupos as $grupo){
+                $table .= '<tr>';
+                $table .= "  <td >";
+                $table .= $grupo->clave.' - '.$grupo->especialidad->nombre;
+                $table .= '  </td>';
+                $table .= '</tr>';
+            }
+
+        }
+        $table .= '</table>';
+
+        echo $table;
 
     }
 
