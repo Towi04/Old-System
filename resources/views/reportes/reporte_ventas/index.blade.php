@@ -441,25 +441,25 @@
                                                             </td>
 
                                                             <td>
-                                                                @foreach ($pago->abonos as $abono)
+                                                                @foreach ($pago->abonos_documentos as $abono)
                                                                     <a @if($puede_editar_reporte_ventas)
-                                                                            class='editable_alumnos_pagos_concepto editable'
+                                                                            class=' editable'
                                                                             data-type='text'
                                                                             data-name='concepto'
-                                                                            data-pk='{{ $abono->alumno_pago->id }}'
+                                                                            data-pk='{{ $abono->documento->id }}'
                                                                             data-url='{{ route('abonos.actualizar_alumno_pago_xeditable') }}'
-                                                                            data-value='{{ $abono->alumno_pago->concepto }}'
+                                                                            data-value='{{ $abono->documento->concepto }}'
                                                                         @endif
                                                                         >
-                                                                        {{ $abono->alumno_pago->concepto }}
+                                                                        {{ $abono->documento->concepto }}
                                                                     </a>
                                                                 @endforeach
 
                                                             </td>
 
                                                             <td>
-                                                                @foreach ($pago->abonos as $abono)
-                                                                   <small>{{ $abono->alumno_pago->grupo->especialidad->nombre }}</small>
+                                                                @foreach ($pago->abonos_documentos as $abono)
+                                                                   <small>{{ $abono->documento->grupo->especialidad->nombre }}</small>
                                                                 @endforeach
                                                             </td>
 
