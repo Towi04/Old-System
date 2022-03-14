@@ -177,9 +177,9 @@ class PuntoDeVentaController extends Controller
                                     'status'    => config('pagos.status.Pagado'),
                                 ]);
 
-                                $pago->abonos()->create([
+                                $pago->abonos_documentos()->create([
                                     'id_sucursal'       => $id_sucursal,
-                                    'id_alumno_pago'    => $pa->id,
+                                    'id_documento'    => $pa->id,
                                     'monto'             => $saldo_alumno,
                                     'venta_fiscal'      => $venta_fiscal,
                                 ]);
@@ -191,9 +191,9 @@ class PuntoDeVentaController extends Controller
                                     'status'    => ($nuevo_saldo == 0) ? config('pagos.status.Pagado') : config('pagos.status.Pendiente'),
                                 ]);
 
-                                $pago->abonos()->create([
+                                $pago->abonos_documentos()->create([
                                     'id_sucursal'       => $id_sucursal,
-                                    'id_alumno_pago'    => $pa->id,
+                                    'id_documento'    => $pa->id,
                                     'monto'             => $monto,
                                     'venta_fiscal'      => $venta_fiscal,
                                 ]);
