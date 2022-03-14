@@ -92,10 +92,17 @@ class PagoInscripcionDocumentosService
 
     public function inscripcion(Grupo $grupo,$precio_inscripcion)
     {
-        $monto_apoyo_inscripcion = optional($this->request)->has('precio_inscripcion') ? ($grupo->precio_inscripcion  - $this->request->input('precio_inscripcion')): null;
-        $precio_inscripcion = optional($this->request)->has('precio_inscripcion')  ? $this->request->input('precio_inscripcion'): $precio_inscripcion;
+        $apartado = $this->alumno->saldo;
 
-        $pago_alumno = $this->alumno->documentos()->create([
+
+        $monto_apoyo_inscripcion = optional($this->request)->has('precio_inscripcion') ? ($grupo->precio_inscripcion  - $this->request->input('precio_inscripcion')): null;
+
+        $precio_inscripcion = optional($this->request)->has('precio_inscripcion')  ? $this->request->input('precio_inscripcion'): $precio_inscripcion;
+        $precio_inscripcion = $precio_inscripcion - $apartado;
+
+        // dd($precio_inscripcion);
+
+        $documento = $this->alumno->documentos()->create([
             'id_grupo'                  => $grupo->id,
             'concepto'                  => config('alumnos.concepto.inscripcion') . ' del grupo ' . $grupo->clave,
             'monto'                     => $precio_inscripcion,
@@ -127,16 +134,16 @@ class PagoInscripcionDocumentosService
             ]);
 
             # GENERO EL ABONO 🙄
-            $pago->abonos()->create([
+            $pago->abonos_documentos()->create([
                 'id_sucursal'       => $this->request->input('id_sucursal'),
-                'id_alumno_pago'    => $pago_alumno->id,
+                'id_documento'    => $documento->id,
                 'monto'             => $precio_inscripcion,
                 'venta_fiscal'      => $venta_fiscal,
             ]);
 
-            $pago_alumno -> status = config('pagos.status.Pagado');
-            $pago_alumno -> saldo = 0;
-            $pago_alumno -> save(); 
+            $documento -> status = config('pagos.status.Pagado');
+            $documento -> saldo = 0;
+            $documento -> save(); 
         }
     }
 

@@ -10,6 +10,7 @@ use App\Models\Pago;
 use Illuminate\Http\Request;
 use App\Services\FacturacionService;
 use App\Services\PagoInscripcionService;
+use App\Services\PagoInscripcionDocumentosService;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
@@ -240,7 +241,7 @@ class PreRegistrosController extends Controller
 
             $alumno->foto = $nombre_foto;
             $alumno->save();
-        }
+        }   
 
         $alumno->save();
 
@@ -268,7 +269,7 @@ class PreRegistrosController extends Controller
         ]);
     }
 
-    public function inscribir(Request $request, $id,PagoInscripcionService $pis)
+    public function inscribir(Request $request, $id,PagoInscripcionDocumentosService $pids)
     {
         $rules = [
             'id_sucursal'           => 'required',
@@ -355,17 +356,17 @@ class PreRegistrosController extends Controller
 
             $grupo_inscripcion = Grupo::findOrFail($request->input('id_grupo'));
 
-            $pis->setRequest($request);
-            $pis->setAlumno($alumno);
+            $pids->setRequest($request);
+            $pids->setAlumno($alumno);
 
             switch ($request->input('forma_pago')) {
                 case config('alumnos.forma_pago.mensual','mensual'):
-                    $pis->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
-                    // $pis->mensualPorGrupo($grupo_inscripcion);
+                    $pids->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
+                    // $pids->mensualPorGrupo($grupo_inscripcion);
                 break;
                 case config('alumnos.forma_pago.semanal','semanal'):
-                    $pis->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
-                    // $pis->semanalPorGrupo($grupo_inscripcion);
+                    $pids->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
+                    // $pids->semanalPorGrupo($grupo_inscripcion);
                 break;
             }
 

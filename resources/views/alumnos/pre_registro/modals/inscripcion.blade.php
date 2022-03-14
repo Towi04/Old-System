@@ -50,7 +50,7 @@
 
                             <div class="row pt-3" id="apoyo-especial" style="display: none;">
                                 <div class="col-12">
-                                    {!! Form::label('precio_inscripcion','Precio Inscripción:*') !!}
+                                    {!! Form::label('precio_inscripcion','Precio Original de Inscripción:*') !!}
                                     {!! Form::number('precio_inscripcion',null, ['class' => 'form-control form-control-sm','form-selector'=> '','placeholder' =>'Escribe el monto de la inscripcion','step' => '0.01','data-apoyo']) !!}
                                 </div>
                             </div>

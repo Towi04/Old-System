@@ -158,10 +158,10 @@
                         grupo = result.grupo;
                         alumno = result.alumno;
                         saldo = alumno.saldo;
-                        inscripcion = inscripcion - saldo;
+                        diferencia = inscripcion - saldo;
 
                         if(saldo > 0){
-                            txt = "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". El alumno ya tiene un apartado por "+saldo+" por lo que solo tienes que solicitar la inscripción de $ "+inscripcion+" que quedará registrada como pagada en la ficha del alumno.";
+                            txt = "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". El alumno ya tiene un apartado por "+saldo+" por lo que solo tienes que solicitar la diferencia  de $ "+diferencia+" que quedará registrada como pagada en la ficha del alumno. Precio original de la inscripción: $ "+inscripcion;
                         }else{
                             txt = "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". Tienes que solicitar la inscripción de $ "+inscripcion+" que quedará registrada como pagada en la ficha del alumno."
                         }
@@ -223,7 +223,7 @@
                             dom.tikets.contenido_ticket.html();
                             dom.tikets.contenido_ticket.html(`<iframe scrolling='auto' type='text/html' scroll='auto' src='${route}' width='100%' height='450px' align='center'></iframe>`);
                         }else{
-                            window.location.href = response.redirect;
+                            // window.location.href = response.redirect;
                         }
 
                     }, 250);
