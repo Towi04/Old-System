@@ -134,6 +134,82 @@ class HomeController extends Controller
 
     }
 
+    public function generar_documentos_sucursal($id, PagoInscripcionDocumentosService $pids){
+        
+
+        #borramos todos los documentos
+        Documento::with('alumno')->whereHas('alumno', function()use($id){
+            return $q->where('id_sucursal',$id);
+        })->delete();
+
+        #obtenemos todos los grupos
+        $grupos = Grupo::with('alumnos')->get();
+        foreach($grupos as $grupo){
+            #OBTENEMOS TODOS LOS ALUMNOS DEL GRUPO
+            $alumnos = $grupo->alumnos;
+            // dd($alumnos);
+            foreach($alumnos as $alumno){
+                $pids->setAlumno($alumno);
+                $pids->inscripcion($grupo, $grupo->precio_inscripcion);
+                $fecha_inicio = $grupo->fecha_inicio;
+                $forma_pago = ($alumno->forma_pago) ? $alumno->forma_pago :'semanal';
+                
+
+                if($forma_pago == 'mensual'){
+                    $this->generar_mensuales($grupo, $alumno );
+                    
+                }
+                if($forma_pago == 'semanal'){
+                    $this->generar_semanales($grupo, $alumno);
+                }
+
+            }
+
+        }
+
+
+        #borramos todos los documentos
+        AbonoDocumento::query()->delete();
+        #GENERAR ABONOS DE LA SUCURSAL DE CELAYA
+        #2 CELAYA,3 IRAPUATO 4 SALAMANCA
+        $this->generar_abonos(2);
+        $this->generar_abonos(3);
+        $this->generar_abonos(4);
+
+    }
+
+    public function generar_documentos_alumno($id, PagoInscripcionDocumentosService $pids){
+        
+
+        #borramos todos los documentos
+        Documento::with('alumno')->whereHas('alumno', function($q)use($id){
+            return $q->where('id_alumno',$id);
+        })->delete();
+
+        $alumno = Alumno::find($id);
+
+        $grupos = $alumno->grupos;
+
+        foreach($grupos as $grupo){
+            $pids->setAlumno($alumno);
+            $pids->inscripcion($grupo, $grupo->precio_inscripcion);
+            $fecha_inicio = $grupo->fecha_inicio;
+            $forma_pago = ($alumno->forma_pago) ? $alumno->forma_pago :'semanal';
+            
+
+            if($forma_pago == 'mensual'){
+                $this->generar_mensuales($grupo, $alumno );
+                
+            }
+            if($forma_pago == 'semanal'){
+                $this->generar_semanales($grupo, $alumno);
+            }
+        }
+        
+
+    }
+
+
     public function generar_mensuales($grupo, $alumno ){
 
         
@@ -245,7 +321,7 @@ class HomeController extends Controller
                 }) as $pago){
 
                     $monto_pago = $pago->monto;
-                    $documentos = $alumno->documentos->where('saldo','>',0)->sortBy('fecha_limite');
+                    $documentos = $alumno->documentos->where('saldo','>',0)->sortBy('fecha_limite')->values();
 
                     foreach($documentos as $documento){
                         # GENERO EL ABONO
@@ -293,6 +369,83 @@ class HomeController extends Controller
 
                 }
             }
+            
+        }
+        
+
+
+    }
+
+
+    public function generar_abonos_alumno($id_alumno){
+
+       
+        // dd('hola');
+        #obtenemos todos los grupos de la sucursal
+        // $grupos = Grupo::with('alumnos')->where('id_sucursal','=',$id_sucursal)->get();
+       
+        $alumno = Alumno::find($id_alumno);
+        $grupos = $alumno->grupos;
+
+        foreach($grupos as $grupo){
+
+                $pagos = $alumno->pagos_caja;
+                #Para cada pago realizado se van a crear los abnos a los documentos del mas antiguo al mas reciente
+                foreach($pagos->sortBy(function($pago){
+                    return $pago->fecha->format('Ymd');
+                }) as $pago){
+
+                    $monto_pago = $pago->monto;
+                    $documentos = $alumno->documentos->where('saldo','>',0)->sortBy('fecha_limite')->values();
+
+                    foreach($documentos as $documento){
+                        # GENERO EL ABONO
+                        #SE VA A VALIDAR SI FUE COLEGIATURA POR PRONTO PAGO
+                        if($documento->tipo == 'Colegiatura'){
+                            // validar fecha limite de pronto pago
+                            $fecha_limite_pronto = Carbon::createFromFormat('Y-m-d',$documento->anio.'-'.$documento->mes.'-06');
+
+                            if($pago->fecha->lte($fecha_limite_pronto) &&  $documento->monto == $grupo->precio_mensualidad ){
+                                $documento->monto = $grupo->precio_mensualidad_pronto_pago;
+                                $documento->saldo = $grupo->precio_mensualidad_pronto_pago;
+                                $documento->save();
+                            }
+                        }
+
+                        if($documento->saldo >= $monto_pago){
+                            $monto = $monto_pago;
+                            $monto_pago = 0;
+                        }else{
+                            $monto = $documento->saldo;
+                            $monto_pago = $monto_pago - $documento->saldo;
+                        }
+
+                        $abono = $pago->abonos_documentos()->create([
+                            'id_sucursal'       => $alumno->id_sucursal,
+                            'id_documento'    => $documento->id,
+                            'monto'             => $monto,
+                            'venta_fiscal'      => '0',
+                        ]);
+
+                        $documento->saldo = $documento->saldo - $monto;
+                        if($documento->saldo == 0){
+                            $documento->status = 'Pagado';
+                        }
+                        $documento->save();
+
+                        echo 'Pago: '.$monto_pago.'Documento: '.$documento->concepto_completo.' | Saldo: '.$documento->saldo.' | Saldo: '.$documento->saldo.' | Abono: '.$abono->monto.'<br>';
+                        
+                        if($monto_pago <= 0){
+                            break;
+                        }
+                        
+
+                    }
+
+
+
+                }
+            
             
         }
         

@@ -477,6 +477,7 @@ class AlumnosController extends Controller
             ->editColumn('concepto', function ($model) {
                 return $model->concepto_completo;
             })
+            
             ->editColumn('status', function ($model) {
                 if ($model->fecha_limite->lt(\Carbon\Carbon::today()) && $model->status == 'Pendiente') {
                     return "<span class='badge badge-danger text-white'>Vencido</span>";
@@ -600,7 +601,7 @@ class AlumnosController extends Controller
             ->editColumn('abonos_documentos.documento.concepto', function ($model) {
                 $txt = '';
                 foreach($model->abonos_documentos as $abono){
-                    $txt.= $abono->documento->concepto_completo.'<br>';
+                    $txt.= $abono->documento->concepto_completo.' ($ '.$abono->monto.') <br>';
                 }
 
                 return $txt;

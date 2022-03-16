@@ -318,7 +318,11 @@ Route::post('pagos/importar', [ ImportacionesController::class,'pagos_importar_s
 #RUTAS ESPECIALES PARA ACOMODAR COSAS EN LA PLATAFORMA
 Route::prefix('especiales')->name('especiales.')->group(function(){
      Route::get('generar_documentos',[HomeController::class,'generar_documentos'])->name('generar_documentos');
+     Route::get('generar_documentos_sucursal/{id_sucursal}',[HomeController::class,'generar_documentos'])->name('generar_documentos');
+     Route::get('generar_documentos_alumno/{id_alumno}',[HomeController::class,'generar_documentos_alumno'])->name('generar_documentos_alumno');
      Route::get('generar_abonos/{id_sucursal}',[HomeController::class,'generar_abonos'])->name('generar_abonos');
+     Route::get('generar_abonos_alumno/{id_alumno}',[HomeController::class,'generar_abonos_alumno'])->name('generar_abonos_alumno');
+     
      Route::get('info',[HomeController::class,'info'])->name('info');
 
 });
