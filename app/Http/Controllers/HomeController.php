@@ -124,7 +124,8 @@ class HomeController extends Controller
         }
 
         #GENERAR ABONOS DE LA SUCURSAL DE CELAYA
-        $this->generar_abonos(2);
+        #2 CELAYA, 4 SALAMANCA
+        $this->generar_abonos(4);
 
     }
 

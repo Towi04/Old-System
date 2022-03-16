@@ -29,6 +29,7 @@ use App\Http\Controllers\PuntoDeVentaProductosController;
 use App\Http\Controllers\AsistenciasController;
 use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\Reportes\ReporteDesercionController;
+use App\Http\Controllers\ImportacionesController;
 
 #NOTE: CONFIGURACION DE RUTAS
 Auth::routes(['register'=> false]);
@@ -305,6 +306,12 @@ Route::middleware(['auth','sucursal'])->group(function () {
     });
 
     
+});
+
+#RUTAS ESPECIALES DE IMPORTACION 
+Route::middleware(['auth','sucursal'])->group(function () {
+Route::get('pagos/importar', [ ImportacionesController::class,'pagos_importar'])->name('pagos.importar.index');
+Route::post('pagos/importar', [ ImportacionesController::class,'pagos_importar_store'])->name('pagos.importar.store');
 });
 
 

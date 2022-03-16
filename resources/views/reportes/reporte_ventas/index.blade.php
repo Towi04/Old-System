@@ -282,9 +282,9 @@
                                                         </td>
 
                                                         <td>
-                                                            @foreach ($pago->abonos as $abono)
+                                                            @foreach ($pago->abonos_documentos as $abono)
                                                                 <a @if($puede_editar_reporte_ventas)
-                                                                    class='editable_alumnos_pagos_concepto editable'
+                                                                    class=' editable'
                                                                     data-type='text'
                                                                     data-name='concepto'
                                                                     data-pk='{{ $abono->alumno_pago->id }}'
@@ -292,7 +292,7 @@
                                                                     data-value='{{ $abono->alumno_pago->concepto }}'
                                                                     @endif
                                                                     >
-                                                                    {{ $abono->alumno_pago->concepto }}
+                                                                    {{ $abono->documento->concepto }}
                                                                 </a>
                                                             @endforeach
 
