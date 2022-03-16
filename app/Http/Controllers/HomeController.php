@@ -308,16 +308,16 @@ class HomeController extends Controller
        
         // dd('hola');
         #obtenemos todos los grupos de la sucursal
-        // $grupos = Grupo::with('alumnos')->where('id_sucursal','=',$id_sucursal)->get();
-        $grupos = Grupo::with('alumnos')->get();
+        $grupos = Grupo::with('alumnos')->where('id_sucursal','=',$id_sucursal)->get();
+        // $grupos = Grupo::with('alumnos')->get();
 
         foreach($grupos as $grupo){
 
             foreach($grupo->alumnos as $alumno){
                 $pagos = $alumno->pagos_caja;
                 #Para cada pago realizado se van a crear los abnos a los documentos del mas antiguo al mas reciente
-                foreach($pagos->sortBy(function($pago){
-                    return $pago->fecha->format('Ymd');
+                foreach($pagos->sortBy(function($pa){
+                    return $pa->fecha->format('Ymd');
                 }) as $pago){
 
                     $monto_pago = $pago->monto;
