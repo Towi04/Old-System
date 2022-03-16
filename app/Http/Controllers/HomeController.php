@@ -123,6 +123,9 @@ class HomeController extends Controller
 
         }
 
+
+        #borramos todos los documentos
+        AbonoDocumento::query()->delete();
         #GENERAR ABONOS DE LA SUCURSAL DE CELAYA
         #2 CELAYA,3 IRAPUATO 4 SALAMANCA
         $this->generar_abonos(2);
@@ -226,8 +229,7 @@ class HomeController extends Controller
 
     public function generar_abonos($id_sucursal){
 
-        #borramos todos los documentos
-        AbonoDocumento::query()->delete();
+       
         // dd('hola');
         #obtenemos todos los grupos de la sucursal
         // $grupos = Grupo::with('alumnos')->where('id_sucursal','=',$id_sucursal)->get();
