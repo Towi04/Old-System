@@ -287,9 +287,9 @@
                                                                     class=' editable'
                                                                     data-type='text'
                                                                     data-name='concepto'
-                                                                    data-pk='{{ $abono->alumno_pago->id }}'
+                                                                    data-pk='{{ $abono->documento->id }}'
                                                                     data-url='{{ route('abonos.actualizar_alumno_pago_xeditable') }}'
-                                                                    data-value='{{ $abono->alumno_pago->concepto }}'
+                                                                    data-value='{{ $abono->documento->concepto }}'
                                                                     @endif
                                                                     >
                                                                     {{ $abono->documento->concepto }}
