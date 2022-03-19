@@ -6,12 +6,14 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Session;
 use Jenssegers\Date\Date;
 
 use App\Models\Documento; 
 use App\Models\AbonoDocumento; 
 use App\Models\Grupo;
 use App\Models\Alumno;
+use App\Models\AlumnoGrupo;
 use App\Services\PagoInscripcionDocumentosService;
 
 use Carbon\Carbon;
@@ -480,6 +482,81 @@ class HomeController extends Controller
         $table .= '</table>';
 
         echo $table;
+
+    }
+
+    public function alumnos_grupos(){
+        $sucursal  = Session::get('sucursal');
+
+        $alumnos = Alumno::with('pagos_caja')->has('pagos_caja')->where('id_sucursal','=',$sucursal->id)->get();
+
+        // echo "ALUMNOS CON GRUPOS DESFADASO DE SUCURSAL: {$sucursal->nombre}<br>";
+        $table = '<table class="table table-bordered"  ><thead class="bg-primary text-white"><tr><th>ALUMNO</th><th>FECHA PRIMER PAGO</th><th>INICIO GRUPO</th><th>INICIO DEL ALUMNO EN EL GRUPO</th></tr></thead>';
+        foreach($alumnos as $alumno){
+            
+            $fecha_primer_pago = $alumno->pagos_caja->sortBy('created_at')->first()->fecha;
+            
+            foreach($alumno->grupos as $grupo){
+                if($grupo->fecha_inicio->diffInDays($fecha_primer_pago, false) > 30){
+                    $table .= '<tr>';
+                    $table .= ' <td>';
+                    $table .= "     <a target='_blank' class='text-primary' href='".route('alumnos.show', $alumno->id)."'>{$alumno->fullname}</a>";
+                    $table .= ' </td>';
+                    $table .= ' <td>';
+                    $table .= "     {$fecha_primer_pago->format('d-m-Y')}";
+                    $table .= ' </td>';
+                    $table .= ' <td>';
+                    $table .= "     {$grupo->clave}: ".optional($grupo->fecha_inicio)->format('d-m-Y');
+                    $table .= ' </td>';
+                    $table .= " <td><a class='editable_fecha_inicio_grupo' data-pk='{$grupo->pivot->id}' data-name='fecha_inicio' data-url='".route('especiales.actualizar_informacion_grupos_alumnos')."' data-type='date' >";
+                    $table .=  optional($grupo->pivot->fecha_inicio)->format('d-m-Y');
+                    $table .= ' </a></td>';
+                    $table .= '</tr>';
+                } 
+            }
+            
+
+        }
+        $table .= '</table>';
+
+         // echo "ALUMNOS CON GRUPOS DESFADASO DE SUCURSAL: {$sucursal->nombre}<br>";
+         $table2 = '<table class="table table-bordered"  ><thead class="bg-primary text-white"><tr><th>ALUMNO</th><th>FECHA PRIMER PAGO</th><th>INICIO GRUPO</th><th>INICIO DEL ALUMNO EN EL GRUPO</th></tr></thead>';
+         foreach($alumnos as $alumno){
+             
+             $fecha_primer_pago = $alumno->pagos_caja->sortBy('created_at')->first()->fecha;
+             
+             foreach($alumno->grupos as $grupo){
+                 if($fecha_primer_pago->diffInDays($grupo->fecha_inicio, false) > 30){
+                     $table2 .= '<tr>';
+                     $table2 .= ' <td>';
+                     $table2 .= "     <a target='_blank' class='text-primary' href='".route('alumnos.show', $alumno->id)."'>{$alumno->fullname}</a>";
+                     $table2 .= ' </td>';
+                     $table2 .= ' <td>';
+                     $table2 .= "     {$fecha_primer_pago->format('d-m-Y')}";
+                     $table2 .= ' </td>';
+                     $table2 .= ' <td>';
+                     $table2 .= "     {$grupo->clave}: ".optional($grupo->fecha_inicio)->format('d-m-Y');
+                     $table2 .= ' </td>';
+                     $table2 .= " <td><a class='editable_fecha_inicio_grupo' data-pk='{$grupo->pivot->id}' data-name='fecha_inicio' data-url='".route('especiales.actualizar_informacion_grupos_alumnos')."' data-type='date' >";
+                     $table2 .=  optional($grupo->pivot->fecha_inicio)->format('d-m-Y');
+                     $table2 .= ' </a></td>';
+                     $table2 .= '</tr>';
+                 } 
+             }
+             
+ 
+         }
+         $table2 .= '</table>';
+ 
+
+        return view('especiales.alumnos_grupos', compact('table','table2'));
+
+    }
+
+    public function actualizar_informacion_grupos_alumnos(Request $request){
+        $alumno_grupo = AlumnoGrupo::findOrFail($request->pk);
+        $alumno_grupo[$request->name] = $request->value;
+        $alumno_grupo->save();
 
     }
 

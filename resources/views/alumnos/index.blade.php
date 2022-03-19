@@ -5,6 +5,7 @@
 @endsection
 
 @section('breadcrumb')
+
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
             <a href="{{ url('/') }}">Inicio</a>
@@ -13,6 +14,7 @@
             <strong>Alumnos</strong>
         </li>
     </ol>
+    
 @endsection
 
 @section('contenido')
