@@ -46,7 +46,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $appends = [
-        'fullname',
+        'fullname','link_verificacion'
     ];
 
     /**
@@ -119,5 +119,10 @@ class User extends Authenticatable
         return $this->belongsToMany(Especialidad::class, 'especialidades_users', 'id_usuario', 'id_especialidad')
             ->withPivot('id_especialidad')
             ->using(EspecialidadUser::class);
+    }
+
+    public function getLinkVerificacionAttribute(){
+        // return 'hola';
+        return route('users.verificacion', $this->id);
     }
 }

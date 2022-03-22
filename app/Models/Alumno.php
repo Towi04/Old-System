@@ -90,7 +90,7 @@ class Alumno extends Model
     ];
 
     protected $appends = [
-        'documentos_vencidos', 'pagos_vencidos', 'monto_vencido','url_foto','fullname'
+        'documentos_vencidos', 'pagos_vencidos', 'monto_vencido','url_foto','fullname','link_verificacion'
     ];
 
     # NOTE: MODEL RELATIONSHIPS
@@ -240,6 +240,11 @@ class Alumno extends Model
     public function pagos_caja()
     {
         return $this->hasMany(Pago::class, 'id_alumno', 'id');
+    }
+
+    public function getLinkVerificacionAttribute(){
+        return 'hola';
+        return route('alumnos.verificacion', $this->id);
     }
 
 

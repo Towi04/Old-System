@@ -12,9 +12,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use App\Http\Requests\Admin\User\EditUserRequest;
 use App\Http\Requests\Admin\User\CreateUserRequest;
 use Symfony\Component\HttpFoundation\Response as HTTPMessages;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
 
 class UsersController extends Controller
 {
@@ -133,6 +136,16 @@ class UsersController extends Controller
     {
         $usuario->load(['roles']);
 
+        $directory_cfdi = Storage::disk('local')->path("public/usuarios_qrs/".$usuario->id);
+
+        if (!File::exists($directory_cfdi)) {
+            File::makeDirectory($directory_cfdi, 0775, true);
+        }
+
+
+        // dd($usuario->link_verificacion);
+        QrCode::format('png')->size('250px')->generate($usuario->link_verificacion, storage_path('app/public/usuarios_qrs/' . $usuario->id . '/qr.png'));
+        
         return view('admin.users.show', [
             'user' => $usuario
         ]);
@@ -297,4 +310,16 @@ class UsersController extends Controller
 
         return redirect()->back();
     }
+
+   
+    public function verificacion($id)
+    {
+        $usuario = User::find($id);
+        
+
+        return view('admin.users.show_verificacion', [
+            'user' => $usuario
+        ]);
+    }
+
 }

@@ -158,8 +158,6 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::get('alumnos/cambio_horario/{id_alumno}/{id_grupo_origen}', [ AlumnosController::class,'cambio_horario'])->name('alumnos.cambio_horario');
     Route::post('alumnos/guardar_cambio_horario', [ AlumnosController::class,'guardar_cambio_horario'])->name('alumnos.guardar_cambio_horario');
 
-
-
     Route::resource('alumnos', AlumnosController::class)->parameters([
         'alumnos' => 'alumno'
     ]);
@@ -330,3 +328,6 @@ Route::prefix('especiales')->name('especiales.')->group(function(){
 
 
 });
+
+// RUTAS PUBLICAS 
+Route::get('personal/verificacion/{id}', [UsersController::class,'verificacion'])->name('users.verificacion');

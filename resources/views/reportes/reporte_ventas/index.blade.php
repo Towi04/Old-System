@@ -268,17 +268,10 @@
                                                         </td>
 
                                                         <td>
-                                                            <a @if($puede_editar_reporte_ventas)
-                                                                    class='editable_abonos_id_alumno editable'
-                                                                    data-type='select2'
-                                                                    data-pk='{{ $pago->id }}'
-                                                                    data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
-                                                                    data-value='{{ $pago->id_alumno }}'
-                                                                    data-name='id_alumno'
-                                                                @endif
-                                                                >
-                                                                {{ $pago->alumno->fullname }}
+                                                            <a target="_blank" href="{{route('alumnos.show', $pago->id_alumno)}}">
+                                                                {{ $pago->alumno->fullname }} 
                                                             </a>
+                                                             
                                                         </td>
 
                                                         <td>
@@ -324,7 +317,7 @@
 
                                                         <td class="text-right text-nowrap" style="cursor:pointer">
                                                             <a @if($puede_editar_reporte_ventas)
-                                                                    class='editable_abonos_monto editable'
+                                                                    class=' editable'
                                                                     data-type='number'
                                                                     data-step="0.01"
                                                                     data-name='monto'
@@ -427,15 +420,7 @@
                                                             </td>
 
                                                             <td>
-                                                                <a @if($puede_editar_reporte_ventas)
-                                                                    class='editable_abonos_id_alumno editable'
-                                                                    data-type='select2'
-                                                                    data-pk='{{ $pago->id }}'
-                                                                    data-url='{{ route('abonos.actualizar_informacion_xeditable') }}'
-                                                                    data-value='{{ $pago->id_alumno }}'
-                                                                    data-name='id_alumno'
-                                                                    @endif
-                                                                    >
+                                                                <a target="_blank" href="{{route('alumnos.show', $pago->id_alumno)}}">
                                                                     {{ $pago->alumno->fullname }}
                                                                 </a>
                                                             </td>
@@ -484,7 +469,7 @@
 
                                                             <td class="text-right text-nowrap" style="cursor:pointer">
                                                                 <a  @if($puede_editar_reporte_ventas)
-                                                                        class='editable_abonos_monto editable'
+                                                                        class=' editable'
                                                                         data-type='number'
                                                                         data-step="0.01"
                                                                         data-name='monto'
