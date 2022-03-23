@@ -431,6 +431,9 @@
                         $('.total_pendiente').html(
                             Helpers.number_format(response.total_pendiente || 0,2)
                         );
+
+                        $('#monto').val(response.total_pendiente);
+                        
                     },
                     beforeSend: function(xhr,type) {
                     if (!type.crossDomain) {

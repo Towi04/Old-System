@@ -502,7 +502,7 @@ class AlumnosController extends Controller
                     $q->where('id_grupo', $id_grupo);
                 });
 
-            $total_pendiente = AlumnoPago::query()
+            $total_pendiente = Documento::query()
                 ->when($request->input('id_alumno'), function ($q, $id_alumno) {
                     $q->where('id_alumno', $id_alumno);
                 })
@@ -512,7 +512,7 @@ class AlumnosController extends Controller
                     $q->where('id_grupo', $id_grupo);
                 })->sum('saldo');
         } else {
-            $query = AlumnoPago::where('id_alumno', 'xxxxxxxxx');
+            $query = Documento::where('id_alumno', 'xxxxxxxxx');
             $total_pendiente = 0;
         }
 
