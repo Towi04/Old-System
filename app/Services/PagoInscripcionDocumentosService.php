@@ -68,10 +68,8 @@ class PagoInscripcionDocumentosService
 
     public function semanalPorGrupo(Grupo $grupo)
     {
-        $precio_inscripcion = optional($this->request)->input('precio_inscripcion') ?? $grupo->precio_inscripcion ?? 0;
-
-        $this->inscripcion($grupo,$precio_inscripcion);
-
+        // $precio_inscripcion = optional($this->request)->input('precio_inscripcion') ?? $grupo->precio_inscripcion ?? 0;
+        // $this->inscripcion($grupo,$precio_inscripcion);
         $precio_semanal = $grupo->precio_semanal ?? 0;
 
         if ($grupo->fecha_inicio->greaterThan($this->fecha_actual)) {
@@ -80,7 +78,7 @@ class PagoInscripcionDocumentosService
             $fecha_inicio = $this->fecha_actual->copy();
         }
 
-        $this->alumno->pagos()->create([
+        $this->alumno->documentos()->create([
             'id_grupo'      => $grupo->id,
             'concepto'      => config('alumnos.concepto.colegiatura') . 'Semana: ' . $grupo->fecha_inicio->week . ' del ' . $grupo->fecha_inicio->year,
             'tipo'          => config('alumnos.concepto.colegiatura'),

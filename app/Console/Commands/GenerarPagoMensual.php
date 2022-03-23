@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Alumno;
-use App\Services\PagoColegiaturaService;
+use App\Services\PagoColegiaturaDocumentosService;
 use Illuminate\Console\Command;
 
 class GenerarPagoMensual extends Command
@@ -34,11 +34,11 @@ class GenerarPagoMensual extends Command
      *
      * @return void
      */
-    public function __construct(PagoColegiaturaService $pcs)
+    public function __construct(PagoColegiaturaDocumentosService $pcds)
     {
         parent::__construct();
 
-        $this->pcs = $pcs;
+        $this->pcds = $pcds;
 
     }
 
@@ -54,8 +54,8 @@ class GenerarPagoMensual extends Command
         Alumno::query()->alumno()->mensual()->whereHas('grupos')->with('alumno')
             ->cursor()
             ->each(function($alumno){
-                $this->pcs->setAlumno($alumno);
-                $this->pcs->mensual();
+                $this->pcds->setAlumno($alumno);
+                $this->pcds->mensual();
             });
 
 

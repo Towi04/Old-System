@@ -221,7 +221,6 @@ class HomeController extends Controller
             $fecha_inicio = new Date($grupo->fecha_inicio);
         }
 
-
         $fecha_inicio = new Date($fecha_inicio);
         $today = Carbon::today();
 
@@ -287,7 +286,7 @@ class HomeController extends Controller
                 'monto'                     => $monto,
                 'saldo'                     => $monto,
                 'monto_apoyo_inscripcion'   => 0,
-                'mes'                       => $fecha_inicio->weekOfYear,
+                'semana'                    => $fecha_inicio->weekOfYear,
                 'anio'                      => $fecha_inicio->year,
                 'fecha_limite'              => $fecha_inicio->copy()->endOfWeek(),
                 'modalidad'                 => 'mensual',

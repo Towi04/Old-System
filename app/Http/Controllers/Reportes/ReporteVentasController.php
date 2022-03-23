@@ -738,12 +738,16 @@ class ReporteVentasController extends Controller
         DB::beginTransaction();
 
         try {
-            $pago->load('abonos.alumno_pago');
+            $pago->load('abonos_documentos.documento');
 
-            $pago->abonos->each(function ($abono) {
-                $alumno_pago = $abono->alumno_pago;
-                $alumno_pago->saldo = $alumno_pago->saldo + $abono->monto;
-                $alumno_pago->save();
+            $pago->abonos_documentos->each(function ($abono) {
+                $documento = $abono->documento;
+                $documento->saldo = $documento->saldo + $abono->monto;
+                $documento->save();
+                if($documento->saldo > 0){
+                    $documento->status = 'Pendiente';
+                }  
+                $documento->save(); 
                 $abono->delete();
             });
 
@@ -752,6 +756,7 @@ class ReporteVentasController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
+             dd($e);
             return redirect()
                 ->back()
                 ->with([

@@ -35,8 +35,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('forma-pago:mensual')->monthlyOn(1, '00:00');
-        $schedule->command('forma-pago:semanal')->weeklyOn(7, '00:00');
+        $schedule->command('generar-pago:mensual')->monthlyOn(1, '00:00');
+        $schedule->command('generar-pago:semanal')->weeklyOn(7, '00:00');
         $schedule->command('revisar-status:grupos')->dailyAt('00:15');
         $schedule->command('generar-pago:mensual-sin-pronto-pago')->monthlyOn(7,'00:15');
         $schedule->command('generar-deserciones:grupos')->weeklyOn(7, '00:10');

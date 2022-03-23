@@ -719,12 +719,16 @@ class ReportesController extends Controller
         DB::beginTransaction();
 
         try {
-            $pago->load('abonos.alumno_pago');
-
-            $pago->abonos->each(function ($abono) {
-                $alumno_pago = $abono->alumno_pago;
-                $alumno_pago->saldo = $alumno_pago->saldo + $abono->monto;
-                $alumno_pago->save();
+            $pago->load('abonos_documentos.documento');
+            
+            dd( $pago->abonos_documentos);
+            $pago->abonos_documentos->each(function ($abono) {
+                $documento = $abono->documento;
+                $documento->saldo = $documento->saldo + $abono->monto;
+                if($documeno->saldo > 0){
+                    $documento->status = 'Pendiente';
+                }
+                $documento->save();
                 $abono->delete();
             });
 
