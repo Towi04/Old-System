@@ -90,7 +90,7 @@ class Alumno extends Model
     ];
 
     protected $appends = [
-        'documentos_vencidos', 'pagos_vencidos', 'monto_vencido','url_foto','fullname','link_verificacion'
+        'documentos_vencidos', 'pagos_vencidos', 'monto_vencido','url_foto','fullname'
     ];
 
     # NOTE: MODEL RELATIONSHIPS
@@ -154,7 +154,9 @@ class Alumno extends Model
 
     public function scopeSemanal($query)
     {
-        return $query->where('forma_pago', config('alumnos.forma_pago.semanal'));
+        return $query->where(function($q){
+            return $q->where('forma_pago', config('alumnos.forma_pago.semanal'))->orWhereNull('forma_pago');
+        });
     }
 
     public function scopeMensual($query)
@@ -242,10 +244,7 @@ class Alumno extends Model
         return $this->hasMany(Pago::class, 'id_alumno', 'id');
     }
 
-    public function getLinkVerificacionAttribute(){
-        return 'hola';
-        return route('alumnos.verificacion', $this->id);
-    }
+    
 
 
 }
