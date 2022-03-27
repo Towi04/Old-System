@@ -100,6 +100,7 @@ class PagoColegiaturaDocumentosService
             if($fecha_inicio->isSunday()){
                 $fecha_inicio->addDay();
             }
+            // dd($fecha_inicio);
             // $dias_transcurridos = $fecha_inicio->diffInDays($fecha_final);
             // $semanal = ($dias_transcurridos * $precio_semanal) / $dias_de_la_semana;
             $semanal =  $precio_semanal;
@@ -110,8 +111,8 @@ class PagoColegiaturaDocumentosService
                 'saldo'         => $semanal,
                 'tipo'          => config('alumnos.concepto.colegiatura'),
                 'fecha_limite'  => $fecha_final,
-                'semana'        => $this->fecha_actual->week,
-                'anio'          => $this->fecha_actual->year,
+                'semana'        => $fecha_inicio->week,
+                'anio'          => $fecha_inicio->year,
                 'modalidad'     => 'semanal',
             ]);
         }
@@ -177,6 +178,9 @@ class PagoColegiaturaDocumentosService
             ->where($field, $atributos[$field] )
             ->whereYear('created_at', $this->fecha_actual->year)
             ->exists();
+
+        // dd( $atributos[$field]);
+        
 
         # SI NO EXISTE DOCUMENTO , SE DEBE GENERAR
         if (!$existe_documento) {
