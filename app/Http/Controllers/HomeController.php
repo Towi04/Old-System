@@ -208,6 +208,7 @@ class HomeController extends Controller
             }
         }
         
+        return redirect()->back();
 
     }
 
@@ -329,13 +330,18 @@ class HomeController extends Controller
                         #SE VA A VALIDAR SI FUE COLEGIATURA POR PRONTO PAGO
                         if($documento->tipo == 'Colegiatura'){
                             // validar fecha limite de pronto pago
-                            $fecha_limite_pronto = Carbon::createFromFormat('Y-m-d',$documento->anio.'-'.$documento->mes.'-06');
+                            if($alumno->forma_pago == 'mensual'){
+                                $fecha_limite_pronto = Carbon::createFromFormat('Y-m-d',$documento->anio.'-'.$documento->mes.'-06');
 
-                            if($pago->fecha->lte($fecha_limite_pronto) &&  $documento->monto == $grupo->precio_mensualidad ){
-                                $documento->monto = $grupo->precio_mensualidad_pronto_pago;
-                                $documento->saldo = $grupo->precio_mensualidad_pronto_pago;
-                                $documento->save();
+                                if($pago->fecha->lte($fecha_limite_pronto) &&  $documento->monto == $grupo->precio_mensualidad ){
+                                    $documento->monto = $grupo->precio_mensualidad_pronto_pago;
+                                    $documento->saldo = $grupo->precio_mensualidad_pronto_pago;
+                                    $documento->save();
+                                }
                             }
+                            
+
+                            
                         }
 
                         if($documento->saldo >= $monto_pago){
@@ -379,12 +385,7 @@ class HomeController extends Controller
 
 
     public function generar_abonos_alumno($id_alumno){
-
-       
-        // dd('hola');
-        #obtenemos todos los grupos de la sucursal
-        // $grupos = Grupo::with('alumnos')->where('id_sucursal','=',$id_sucursal)->get();
-       
+   
         $alumno = Alumno::find($id_alumno);
         $grupos = $alumno->grupos;
 
@@ -398,18 +399,20 @@ class HomeController extends Controller
 
                     $monto_pago = $pago->monto;
                     $documentos = $alumno->documentos->where('saldo','>',0)->sortBy('fecha_limite')->values();
-
+                
                     foreach($documentos as $documento){
                         # GENERO EL ABONO
                         #SE VA A VALIDAR SI FUE COLEGIATURA POR PRONTO PAGO
                         if($documento->tipo == 'Colegiatura'){
-                            // validar fecha limite de pronto pago
-                            $fecha_limite_pronto = Carbon::createFromFormat('Y-m-d',$documento->anio.'-'.$documento->mes.'-06');
+                            if($alumno->forma_pago == 'mensual'){
+                                // validar fecha limite de pronto pago
+                                $fecha_limite_pronto = Carbon::createFromFormat('Y-m-d',$documento->anio.'-'.$documento->mes.'-06');
 
-                            if($pago->fecha->lte($fecha_limite_pronto) &&  $documento->monto == $grupo->precio_mensualidad ){
-                                $documento->monto = $grupo->precio_mensualidad_pronto_pago;
-                                $documento->saldo = $grupo->precio_mensualidad_pronto_pago;
-                                $documento->save();
+                                if($pago->fecha->lte($fecha_limite_pronto) &&  $documento->monto == $grupo->precio_mensualidad ){
+                                    $documento->monto = $grupo->precio_mensualidad_pronto_pago;
+                                    $documento->saldo = $grupo->precio_mensualidad_pronto_pago;
+                                    $documento->save();
+                                }
                             }
                         }
 
@@ -433,8 +436,6 @@ class HomeController extends Controller
                             $documento->status = 'Pagado';
                         }
                         $documento->save();
-
-                        echo 'Pago: '.$monto_pago.'Documento: '.$documento->concepto_completo.' | Saldo: '.$documento->saldo.' | Saldo: '.$documento->saldo.' | Abono: '.$abono->monto.'<br>';
                         
                         if($monto_pago <= 0){
                             break;
@@ -450,7 +451,7 @@ class HomeController extends Controller
             
         }
         
-
+        return redirect()->back();
 
     }
 

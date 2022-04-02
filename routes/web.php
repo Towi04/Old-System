@@ -157,6 +157,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
 
     Route::get('alumnos/cambio_horario/{id_alumno}/{id_grupo_origen}', [ AlumnosController::class,'cambio_horario'])->name('alumnos.cambio_horario');
     Route::post('alumnos/guardar_cambio_horario', [ AlumnosController::class,'guardar_cambio_horario'])->name('alumnos.guardar_cambio_horario');
+    Route::post('alumnos/actualizar_informacion', [ AlumnosController::class,'actualizar_informacion'])->name('alumnos.actualizar_informacion');
 
     Route::resource('alumnos', AlumnosController::class)->parameters([
         'alumnos' => 'alumno'

@@ -68,7 +68,22 @@
                         </h2>
                         <h6 class="up-sub-header">
                         Alumno
+                        <br>
+                            @role('administrador')
+                                Forma de pago: 
+                                <a class='editable_forma_pago' data-pk='{{$alumno->id}}' data-name='forma_pago' data-url='{{route("alumnos.actualizar_informacion")}}' data-type='select' data-value='{{$alumno->forma_pago}}'>
+                                </a><br>
+
+                                <a class="btn btn-info btn-xs btn-sm  mt-1" href="{{route('especiales.generar_documentos_alumno', $alumno->id)}}">
+                                    Actualizar documentos
+                                </a><br>
+                                <a class="btn btn-info btn-xs btn-sm mt-1" href="{{route('especiales.generar_abonos_alumno', $alumno->id)}}">
+                                    Aplicar pagos a documentos
+                                </a>
+                            @endrole
                         </h6>
+
+                        
                     </div>
                     <svg class="decor" width="842px" height="219px" viewBox="0 0 842 219"
                         preserveAspectRatio="xMaxYMax meet" version="1.1" xmlns="http://www.w3.org/2000/svg"
@@ -125,7 +140,11 @@
                                     Fecha inicio: {{ $grupo->fecha_inicio->format('d-m-Y')}}<br>
                                     Horario:<br> {!!$grupo->horario_corto!!}
                                     N° Semanas a cursar:<br> {!!$grupo->materias->sum('semanas')!!}<br>
-                                    Fecha Inicio:<br> {!!  optional($grupo->pivot->fecha_inicio)->format('d-m-Y') !!}<br>
+                                    Fecha Inicio:<br> 
+                                    <a class='editable_fecha_inicio_grupo' data-pk='{{$grupo->pivot->id}}' data-name='fecha_inicio' data-url='{{route("especiales.actualizar_informacion_grupos_alumnos")}}' data-type='date' data-value="{{ optional($grupo->pivot->fecha_inicio)->format('d-m-Y') }}">
+                                    {!!  optional($grupo->pivot->fecha_inicio)->format('d-m-Y') !!}
+                                    </a>
+                                    <br>
                                     Semanas cursadas:<br> {!! (!empty($grupo->pivot->fecha_inicio)) ? $grupo->pivot->fecha_inicio->diffInWeeks( now() ): '' !!}<br>
                                 </div>
                                 <div class="post-foot">
@@ -390,6 +409,10 @@
 
 
 @section('scripts')
+
+<link rel="stylesheet" href="{{ asset('plugins/xeditable/css/bootstrap-editable.css') }}">
+<script src="{{ asset('plugins/xeditable/js/bootstrap-editable.min.js') }}"></script>
+
     <script type="text/javascript">
         $(document).ready(function() {
             const dom = {
@@ -900,6 +923,38 @@
                             });
                         })
             });
+
+            // 
+            $('.editable_forma_pago').editable({
+                emptytext: 'Vacio',
+                source: [
+                    {value: 'semanal', text: 'semanal'},
+                    {value: 'mensual', text: 'mensual'},
+                ]
+            });
+
+            $('.editable_fecha_inicio_grupo').editable({
+                emptytext: 'Vacio',
+            });
+
+            // LOCAL STORAGE PARA LAS PESTAÑAS
+             // Probar local storage
+             var nav_tabs = $(".nav-tabs > li > a");
+            nav_tabs.on("shown.bs.tab",handleSeleccionTabShowAlumno);
+            activeTabShowAlumno = window.localStorage.getItem('activeTabShowAlumno');
+
+            //INIT
+            if (activeTabShowAlumno) {
+                $(`.nav-tabs a[href="${activeTabShowAlumno}"]`).tab('show');
+            }
+
+            function handleSeleccionTabShowAlumno(event)
+            {
+
+                var id = $(event.target).attr("href");
+                window.localStorage.setItem('activeTabShowAlumno',id);
+
+            }
         });
     </script>
 @endsection

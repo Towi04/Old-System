@@ -651,4 +651,10 @@ class AlumnosController extends Controller
         return redirect()->route('alumnos.show', $alumno->id);
 
     }
+
+    public function actualizar_informacion(Request $request){
+        $alumnos = Alumno::find($request->pk);
+        $alumnos[$request->name] = $request->value;
+        $alumnos->save();
+    }
 }
