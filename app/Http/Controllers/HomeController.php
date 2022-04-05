@@ -243,9 +243,9 @@ class HomeController extends Controller
                             if($alumno->forma_pago == 'mensual'){
                                 $fecha_limite_pronto = Carbon::createFromFormat('Y-m-d',$documento->anio.'-'.$documento->mes.'-06');
 
-                                if($pago->fecha->lte($fecha_limite_pronto) &&  $documento->monto == $grupo->precio_mensualidad ){
-                                    $documento->monto = $grupo->precio_mensualidad_pronto_pago;
-                                    $documento->saldo = $grupo->precio_mensualidad_pronto_pago;
+                                if($pago->fecha->gte($fecha_limite_pronto) &&  $documento->monto == $grupo->precio_mensualidad_pronto_pago ){
+                                    $documento->monto = $grupo->precio_mensualidad;
+                                    $documento->saldo = $grupo->precio_mensualidad;
                                     $documento->save();
                                 }
                             }
@@ -297,9 +297,9 @@ class HomeController extends Controller
     public function generar_abonos_alumno($id_alumno){
    
         $alumno = Alumno::find($id_alumno);
-        $grupos = $alumno->grupos;
+        
 
-        foreach($grupos as $grupo){
+
 
                 $pagos = $alumno->pagos_caja;
                 #Para cada pago realizado se van a crear los abnos a los documentos del mas antiguo al mas reciente
@@ -317,10 +317,11 @@ class HomeController extends Controller
                             if($alumno->forma_pago == 'mensual'){
                                 // validar fecha limite de pronto pago
                                 $fecha_limite_pronto = Carbon::createFromFormat('Y-m-d',$documento->anio.'-'.$documento->mes.'-06');
-
-                                if($pago->fecha->lte($fecha_limite_pronto) &&  $documento->monto == $grupo->precio_mensualidad ){
-                                    $documento->monto = $grupo->precio_mensualidad_pronto_pago;
-                                    $documento->saldo = $grupo->precio_mensualidad_pronto_pago;
+                                
+                                // dd($pago->fecha);
+                                if($pago->fecha->gte($fecha_limite_pronto) && $documento->especial == 0){
+                                    $documento->monto = $documento->grupo->precio_mensualidad;
+                                    $documento->saldo = $documento->grupo->precio_mensualidad;
                                     $documento->save();
                                 }
                             }
@@ -359,7 +360,7 @@ class HomeController extends Controller
                 }
             
             
-        }
+
         
         return redirect()->back();
 

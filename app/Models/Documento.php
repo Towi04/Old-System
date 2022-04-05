@@ -38,6 +38,7 @@ class Documento extends Model
         'mes',
         'anio',
         'modalidad',
+        'especial',
     ];
 
     protected $attributes = [

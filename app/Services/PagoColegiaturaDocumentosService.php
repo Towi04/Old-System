@@ -69,16 +69,16 @@ class PagoColegiaturaDocumentosService
         while(!$today->copy()->addMonth()->isSameMonth($fecha_inicio) && $fecha_inicio->lte($today->copy()->addMonth())){
 
             
-            $monto =  $this->calcular_precio_mensual($grupo, $alumno);
+            $result =  $this->calcular_precio_mensual($grupo, $alumno);
                 
                 
-            
+
 
             $documento = $alumno->documentos()->create([
                 'id_grupo'                  => $grupo->id,
                 'concepto'                  => config('alumnos.concepto.colegiatura') .' de '.$fecha_inicio->format('F').' del '.$fecha_inicio->year,
-                'monto'                     => $monto,
-                'saldo'                     => $monto,
+                'monto'                     => $result['monto'],
+                'saldo'                     => $result['monto'],
                 'monto_apoyo_inscripcion'   => 0,
                 'mes'                       => $fecha_inicio->month,
                 'anio'                      => $fecha_inicio->year,
@@ -86,6 +86,7 @@ class PagoColegiaturaDocumentosService
                 'modalidad'                 => 'mensual',
                 'tipo'                      => config('alumnos.concepto.colegiatura'),
                 'status'                    => config('pagos.status.Pendiente'),
+                'especial'                  => $result['especial'],
             ]);
 
             echo "Fecha {$fecha_inicio->format('d-m-Y')} | {$alumno->fullname}<br>";
@@ -112,7 +113,10 @@ class PagoColegiaturaDocumentosService
 
             # SI EL DIA ACTUAL ES ENTRE 1-6, ENTONCES SE ASIGNA EL PRECIO DE PRONTO PAGO
             if (in_array($dia, range(1, 6))) {
-                return  $grupo->precio_mensualidad_pronto_pago ?? 0;
+                return [
+                    'monto'=> $grupo->precio_mensualidad_pronto_pago ?? 0,
+                    'especial'=>0,
+                ];
             }else{
                 #SE CALCULA DE ACUERDO A LAS CLASES RESTANTES QUE TENGA EN EL MES
                     
@@ -145,14 +149,25 @@ class PagoColegiaturaDocumentosService
 
                     }
                     $precio = ($total_dias == 0) ? 0 : $dias_pendientes * $grupo->precio_mensualidad / $total_dias;
-                    return $precio;
+                    
+                    return [
+                        'monto'=>$precio ?? 0,
+                        'especial'=>1,
+                    ];
 
             }
             # SE AGREGA EL PRECIO NORMAL DE LA MENSUALIDAD
-            return  $grupo->precio_mensualidad ?? 0;
+
+            return [
+                'monto'=> $grupo->precio_mensualidad ?? 0,
+                'especial'=>0,
+            ];
         }
 
-        return $apoyo_especial->precio ?? 0;
+        return [
+            'monto'=>$apoyo_especial->precio ?? 0,
+            'especial'=>1,
+        ];
     }
 
     public function semanal()
