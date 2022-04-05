@@ -50,18 +50,17 @@ class PagosImport implements
             // Si existe el alumno se realiza el cambio
             if($alumno){
                 #Se borran los pagos del alumno
-                
-                $pagos = Pago::where('id_alumno','=',$alumno->id)->whereNotIn('id_alumno',$alumnos_borrar)->get();
+                // $pagos = Pago::where('id_alumno','=',$alumno->id)->whereNotIn('id_alumno',$alumnos_borrar)->get();
                 
                 // dd(AbonoDocumento::whereIn('id_pago',$pagos->pluck('id'))->get());
-                Abono::whereIn('id_pago',$pagos->pluck('id'))->delete();
-                AbonoDocumento::whereIn('id_pago',$pagos->pluck('id'))->delete();
-                Pago::where('id_alumno','=',$alumno->id)->whereNotIn('id_alumno',$alumnos_borrar)->delete();
+                // Abono::whereIn('id_pago',$pagos->pluck('id'))->delete();
+                // AbonoDocumento::whereIn('id_pago',$pagos->pluck('id'))->delete();
+                // Pago::where('id_alumno','=',$alumno->id)->whereNotIn('id_alumno',$alumnos_borrar)->delete();
 
 
-                if(!in_array($alumno->id, $alumnos_borrar)){
-                    array_push($alumnos_borrar,$alumno->id);
-                }
+                // if(!in_array($alumno->id, $alumnos_borrar)){
+                //     array_push($alumnos_borrar,$alumno->id);
+                // }
                 // Se obtiene primero las sexistenicas actualies. 
                 $pago = new Pago();
                 $pago -> folio = $row['folio'];
