@@ -206,6 +206,8 @@
                         <a href="{{ route('reportes.reporte-ventas.proyeccion') }}">Reporte de Proyección</a>
                     </li>
                     @endcan
+                </ul>
+                <ul class="sub-menu">
                     @can('ver_reporte_asesores')
                     <li>
                         <a href="{{ route('reportes.reporte-ventas.asesores') }}">Reporte de Asesores</a>
@@ -219,6 +221,11 @@
                     @can('ver_reporte_desercion')
                     <li>
                         <a href="{{ route('reportes.desercion') }}">Reporte de Retención</a>
+                    </li>
+                    @endcan
+                    @can('ver_reporte_apoyos_inscripcion')
+                    <li>
+                        <a href="{{ route('reportes.desercion') }}">Reporte de Apoyos a la inscripción</a>
                     </li>
                     @endcan
                     
