@@ -15,6 +15,8 @@ use App\Models\Grupo;
 use App\Models\Alumno;
 use App\Models\AlumnoGrupo;
 use App\Services\PagoInscripcionDocumentosService;
+use App\Services\PagoColegiaturaDocumentosService;
+
 
 use Carbon\Carbon;
 
@@ -180,9 +182,7 @@ class HomeController extends Controller
 
     }
 
-    public function generar_documentos_alumno($id, PagoInscripcionDocumentosService $pids){
-        
-
+    public function generar_documentos_alumno($id, PagoInscripcionDocumentosService $pids, PagoColegiaturaDocumentosService $pcds){
         #borramos todos los documentos
         Documento::with('alumno')->whereHas('alumno', function($q)use($id){
             return $q->where('id_alumno',$id);
@@ -194,17 +194,19 @@ class HomeController extends Controller
 
         foreach($grupos as $grupo){
             $pids->setAlumno($alumno);
+            $pcds->setAlumno($alumno);
             $pids->inscripcion($grupo, $grupo->precio_inscripcion);
             $fecha_inicio = $grupo->fecha_inicio;
             $forma_pago = ($alumno->forma_pago) ? $alumno->forma_pago :'semanal';
             
 
             if($forma_pago == 'mensual'){
-                $this->generar_mensuales($grupo, $alumno );
+                
+                $pcds->mensual($grupo, $alumno );
                 
             }
             if($forma_pago == 'semanal'){
-                $this->generar_semanales($grupo, $alumno);
+                $pcds->semanal($grupo, $alumno);
             }
         }
         
@@ -212,127 +214,6 @@ class HomeController extends Controller
 
     }
 
-
-    public function generar_mensuales($grupo, $alumno ){
-
-        
-        if(optional(optional($grupo->alumnos->where('id',$alumno->id)->first())->pivot)->fecha_inicio){
-            $fecha_inicio = optional(optional($grupo->alumnos->where('id',$alumno->id)->first())->pivot)->fecha_inicio;
-        }else{
-            $fecha_inicio = new Date($grupo->fecha_inicio);
-        }
-
-        $fecha_inicio = new Date($fecha_inicio);
-        $today = Carbon::today();
-
-      
-        #VALIDAMOS SI SE VAN A GENERAR PRONTO PAGO O NORMAL
-        $dia = $today->day;
-        # SI EL DIA ACTUAL ES ENTRE 1-6, ENTONCES SE ASIGNA EL PRECIO DE PRONTO PAGO
-        if (in_array($dia, range(1, 6))) {
-            $monto =  $grupo->precio_mensualidad_pronto_pago ?? 0;
-        }
-        # SE AGREGA EL PRECIO NORMAL DE LA MENSUALIDAD
-        $monto =  $grupo->precio_mensualidad ?? 0;
-        #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
-        #SI NO SE SIGUEN GENERANDO PAGOS MENSUALE
-        while(!$today->copy()->addMonth()->isSameMonth($fecha_inicio) && $fecha_inicio->lte($today->copy()->addMonth())){
-
-              #BUSCA UN APOYO SI EXISTE EN ESA SEMANA 
-                $apoyos = $alumno ->apoyos_especiales->where('id_grupo', $grupo->id)->filter(function($apoyo)use($fecha_inicio){
-                    return $apoyo->fecha_inicio->lte($fecha_inicio) && $apoyo->fecha_final->gte($fecha_inicio);
-                });
-
-                if($apoyos->first()){
-                    $monto =  $apoyos->first()->precio ?? 0;
-                }else{
-                    $monto =  $grupo->precio_mensualidad ?? 0;
-                }
-            
-
-            $documento = $alumno->documentos()->create([
-                'id_grupo'                  => $grupo->id,
-                'concepto'                  => config('alumnos.concepto.colegiatura') .' de '.$fecha_inicio->format('F').' del '.$fecha_inicio->year,
-                'monto'                     => $monto,
-                'saldo'                     => $monto,
-                'monto_apoyo_inscripcion'   => 0,
-                'mes'                       => $fecha_inicio->month,
-                'anio'                      => $fecha_inicio->year,
-                'fecha_limite'              => $fecha_inicio->copy()->endOfMonth(),
-                'modalidad'                 => 'mensual',
-                'tipo'                      => config('alumnos.concepto.colegiatura'),
-                'status'                    => config('pagos.status.Pendiente'),
-            ]);
-
-            echo "Fecha {$fecha_inicio->format('d-m-Y')} | {$alumno->fullname}<br>";
-            $fecha_inicio->addMonth();
-            
-
-        }   
-        
-
-
-    }
-
-    public function generar_semanales($grupo, $alumno ){
-        Carbon::setWeekStartsAt(Carbon::SUNDAY);
-        Carbon::setWeekEndsAt(Carbon::SATURDAY);
-
-        if(optional(optional($grupo->alumnos->where('id',$alumno->id)->first())->pivot)->fecha_inicio){
-            $fecha_inicio = optional(optional($grupo->alumnos->where('id',$alumno->id)->first())->pivot)->fecha_inicio;
-        }else{
-            $fecha_inicio = new Date($grupo->fecha_inicio);
-        }
-
-
-        if($fecha_inicio->isSunday()){
-            $fecha_inicio->addDay();
-        }
-        $today = Carbon::today();
-
-        # SE AGREGA EL PRECIO NORMAL DE LA MENSUALIDAD
-
-       
-
-        #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
-        #SI NO SE SIGUEN GENERANDO PAGOS MENSUALE
-        while(!$today->copy()->addWeek()->isSameWeek($fecha_inicio) && $fecha_inicio->lte($today->copy()->addWeek())){
-
-             #BUSCA UN APOYO SI EXISTE EN ESA SEMANA 
-            $apoyos = $alumno ->apoyos_especiales->where('id_grupo', $grupo->id)->filter(function($apoyo)use($fecha_inicio){
-                return $apoyo->fecha_inicio->lte($fecha_inicio) && $apoyo->fecha_final->gte($fecha_inicio);
-            });
-
-            if($apoyos->first()){
-                $monto =  $apoyos->first()->precio ?? 0;
-            }else{
-                $monto =  $grupo->precio_semanal ?? 0;
-            }
-            
-            
-            $documento = $alumno->documentos()->create([
-                'id_grupo'                  => $grupo->id,
-                'concepto'                  => config('alumnos.concepto.colegiatura') .' de semana #'.$fecha_inicio->weekOfYear.' del '.$fecha_inicio->year,
-                'monto'                     => $monto,
-                'saldo'                     => $monto,
-                'monto_apoyo_inscripcion'   => 0,
-                'semana'                    => $fecha_inicio->weekOfYear,
-                'anio'                      => $fecha_inicio->year,
-                'fecha_limite'              => $fecha_inicio->copy()->endOfWeek(),
-                'modalidad'                 => 'mensual',
-                'tipo'                      => config('alumnos.concepto.colegiatura'),
-                'status'                    => config('pagos.status.Pendiente'),
-            ]);
-
-            echo "Semana {$fecha_inicio->weekOfYear} fin_semana {$fecha_inicio->copy()->endOfWeek()}| Fecha {$fecha_inicio->format('d-m-Y')} | {$alumno->fullname}<br>";
-            $fecha_inicio->addWeek();
-            
-
-        }   
-        
-
-
-    }
 
     public function generar_abonos($id_sucursal){
 

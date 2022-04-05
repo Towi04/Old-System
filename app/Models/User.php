@@ -122,7 +122,9 @@ class User extends Authenticatable
     }
 
     public function getLinkVerificacionAttribute(){
-        // return 'hola';
-        return route('users.verificacion', $this->id);
+        if($this->id){
+            return route('users.verificacion', $this->id);
+        }
+        
     }
 }

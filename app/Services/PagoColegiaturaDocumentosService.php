@@ -23,6 +23,14 @@ class PagoColegiaturaDocumentosService
         return $this;
     }
 
+    public function setFechaActual($fecha_actual)
+    {
+        $this->fecha_actual = $fecha_actual;
+
+        return $this;
+    }
+
+
     public function mensual()
     {
         $grupos = $this->alumno->grupos;
@@ -36,51 +44,121 @@ class PagoColegiaturaDocumentosService
 
         foreach ($grupos as $grupo) {
 
-            if(optional(optional($grupo->alumnos->where('id',$alumno->id)->first())->pivot)->fecha_inicio){
-                $fecha_inicio = optional(optional($grupo->alumnos->where('id',$alumno->id)->first())->pivot)->fecha_inicio;
-            }else{
-                $fecha_inicio = new Date($grupo->fecha_inicio);
-            }
+              
+        if(optional(optional($grupo->alumnos->where('id',$alumno->id)->first())->pivot)->fecha_inicio){
+            $fecha_inicio = optional(optional($grupo->alumnos->where('id',$alumno->id)->first())->pivot)->fecha_inicio;
+        }else{
+            $fecha_inicio = new Date($grupo->fecha_inicio);
+        }
 
-            $fecha_inicio = new Date($fecha_inicio);
-            $today = Carbon::today();
+        
 
-            #VALIDAMOS SI SE VAN A GENERAR PRONTO PAGO O NORMAL
-            $dia = $today->day;
-            # SI EL DIA ACTUAL ES ENTRE 1-6, ENTONCES SE ASIGNA EL PRECIO DE PRONTO PAGO
-            if (in_array($dia, range(1, 6))) {
-                $monto =  $grupo->precio_mensualidad_pronto_pago ?? 0;
-            }
-            # SE AGREGA EL PRECIO NORMAL DE LA MENSUALIDAD
-            $monto =  $grupo->precio_mensualidad ?? 0;
-            #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
-            #SI NO SE SIGUEN GENERANDO PAGOS MENSUALE
-            while(!$today->copy()->addMonth()->isSameMonth($fecha_inicio) && $fecha_inicio->lte($today->copy()->addMonth())){
-                $documento = $this->crear_documento([
-                    'id_grupo'                  => $grupo->id,
-                    'concepto'                  => config('alumnos.concepto.colegiatura') .' de '.$fecha_inicio->format('F').' del '.$fecha_inicio->year,
-                    'monto'                     => $monto,
-                    'saldo'                     => $monto,
-                    'monto_apoyo_inscripcion'   => 0,
-                    'mes'                       => $fecha_inicio->month,
-                    'anio'                      => $fecha_inicio->year,
-                    'fecha_limite'              => $fecha_inicio->copy()->endOfMonth(),
-                    'modalidad'                 => 'mensual',
-                    'tipo'                      => config('alumnos.concepto.colegiatura'),
-                    'status'                    => config('pagos.status.Pendiente'),
-                ]);
+        $this->fecha_actual = $fecha_inicio;
 
-                // echo "Fecha {$fecha_inicio->format('d-m-Y')} | {$alumno->fullname}<br>";
-                $fecha_inicio->addMonth();
+        $fecha_inicio = new Date($fecha_inicio);
+        $today = Carbon::today();
+
+        #VALIDAMOS SI SE VAN A GENERAR PRONTO PAGO O NORMAL
+
+        $dia = $today->day;
+
+        
+       
+        #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
+        #SI NO SE SIGUEN GENERANDO PAGOS MENSUALE
+        while(!$today->copy()->addMonth()->isSameMonth($fecha_inicio) && $fecha_inicio->lte($today->copy()->addMonth())){
+
+            
+            $monto =  $this->calcular_precio_mensual($grupo, $alumno);
                 
+                
+            
 
-            }   
+            $documento = $alumno->documentos()->create([
+                'id_grupo'                  => $grupo->id,
+                'concepto'                  => config('alumnos.concepto.colegiatura') .' de '.$fecha_inicio->format('F').' del '.$fecha_inicio->year,
+                'monto'                     => $monto,
+                'saldo'                     => $monto,
+                'monto_apoyo_inscripcion'   => 0,
+                'mes'                       => $fecha_inicio->month,
+                'anio'                      => $fecha_inicio->year,
+                'fecha_limite'              => $fecha_inicio->copy()->endOfMonth(),
+                'modalidad'                 => 'mensual',
+                'tipo'                      => config('alumnos.concepto.colegiatura'),
+                'status'                    => config('pagos.status.Pendiente'),
+            ]);
+
+            echo "Fecha {$fecha_inicio->format('d-m-Y')} | {$alumno->fullname}<br>";
+            // dd($fecha_inicio->addMonthNoOverflow());
+            $fecha_inicio->addMonthNoOverflow()->startOfMonth();
+            $this->fecha_actual = $fecha_inicio;
+        }   
+        
             
         }
     }
 
+    private function calcular_precio_mensual($grupo, $alumno)
+    {
+        $fecha_inicio = $this->fecha_actual;
+        $apoyo_especial = $alumno ->apoyos_especiales->where('id_grupo', $grupo->id)->filter(function($apoyo)use($fecha_inicio){
+            return $apoyo->fecha_inicio->lte($fecha_inicio) && $apoyo->fecha_final->gte($fecha_inicio);
+        })->first();
+
+
+        if (empty($apoyo_especial)) {
+
+            $dia = $this->fecha_actual->day;
+
+            # SI EL DIA ACTUAL ES ENTRE 1-6, ENTONCES SE ASIGNA EL PRECIO DE PRONTO PAGO
+            if (in_array($dia, range(1, 6))) {
+                return  $grupo->precio_mensualidad_pronto_pago ?? 0;
+            }else{
+                #SE CALCULA DE ACUERDO A LAS CLASES RESTANTES QUE TENGA EN EL MES
+                    
+                    $precio_mensualidad = $grupo->precio_mensualidad;
+            
+                    $dia_actual = $fecha_inicio;
+                    $mes_actual = $dia_actual->month;
+                    
+
+                    $lista_numero_dias = [
+                        'lunes'     => 1,
+                        'martes'    => 2,
+                        'miercoles' => 3,
+                        'jueves'    => 4,
+                        'viernes'   => 5,
+                        'sabado'    => 6,
+                        'domingo'   => 7,
+                    ];
+            
+                    $total_dias = 0;
+                    $dias_pendientes = 0;
+            
+                    $days = $grupo->days;
+                    
+                    foreach ($days as $grupodia) {
+                        $numero_dia =  $lista_numero_dias[$grupodia->dia] ?? 0;
+
+                        $total_dias += countDaysInMonth($mes_actual,$numero_dia);
+                        $dias_pendientes += countDaysInMonth($dia_actual,$numero_dia);
+
+                    }
+                    $precio = ($total_dias == 0) ? 0 : $dias_pendientes * $grupo->precio_mensualidad / $total_dias;
+                    return $precio;
+
+            }
+            # SE AGREGA EL PRECIO NORMAL DE LA MENSUALIDAD
+            return  $grupo->precio_mensualidad ?? 0;
+        }
+
+        return $apoyo_especial->precio ?? 0;
+    }
+
     public function semanal()
     {
+        $alumno = $this->alumno;
+
         Carbon::setWeekStartsAt(Carbon::SUNDAY);
         Carbon::setWeekEndsAt(Carbon::SATURDAY);
 
@@ -91,30 +169,60 @@ class PagoColegiaturaDocumentosService
         });
 
         foreach ($grupos as $grupo) {
-            $precio_semanal = $this->calcular_precio_semanal($grupo, $this->alumno);
-
-            $dias_de_la_semana = 7;
-            $fecha_inicio = $this->fecha_actual->copy()->startOfWeek(Carbon::SUNDAY);
-            $fecha_final = $this->fecha_actual->copy()->endOfWeek(Carbon::SATURDAY);;
-            
+            Carbon::setWeekStartsAt(Carbon::SUNDAY);
+            Carbon::setWeekEndsAt(Carbon::SATURDAY);
+    
+            if(optional(optional($grupo->alumnos->where('id',$alumno->id)->first())->pivot)->fecha_inicio){
+                $fecha_inicio = optional(optional($grupo->alumnos->where('id',$alumno->id)->first())->pivot)->fecha_inicio;
+            }else{
+                $fecha_inicio = new Date($grupo->fecha_inicio);
+            }
+    
+    
             if($fecha_inicio->isSunday()){
                 $fecha_inicio->addDay();
             }
-            // dd($fecha_inicio);
-            // $dias_transcurridos = $fecha_inicio->diffInDays($fecha_final);
-            // $semanal = ($dias_transcurridos * $precio_semanal) / $dias_de_la_semana;
-            $semanal =  $precio_semanal;
-            $this->crear_documento([
-                'id_grupo'      => $grupo->id,
-                'concepto'      => config('alumnos.concepto.colegiatura') .' de semana #'.$fecha_inicio->weekOfYear.' del '.$fecha_inicio->year,
-                'monto'         => $semanal,
-                'saldo'         => $semanal,
-                'tipo'          => config('alumnos.concepto.colegiatura'),
-                'fecha_limite'  => $fecha_final,
-                'semana'        => $fecha_inicio->week,
-                'anio'          => $fecha_inicio->year,
-                'modalidad'     => 'semanal',
-            ]);
+            $today = Carbon::today();
+    
+            # SE AGREGA EL PRECIO NORMAL DE LA MENSUALIDAD
+    
+           
+    
+            #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
+            #SI NO SE SIGUEN GENERANDO PAGOS MENSUALE
+            while(!$today->copy()->addWeek()->isSameWeek($fecha_inicio) && $fecha_inicio->lte($today->copy()->addWeek())){
+    
+                 #BUSCA UN APOYO SI EXISTE EN ESA SEMANA 
+                $apoyos = $alumno ->apoyos_especiales->where('id_grupo', $grupo->id)->filter(function($apoyo)use($fecha_inicio){
+                    return $apoyo->fecha_inicio->lte($fecha_inicio) && $apoyo->fecha_final->gte($fecha_inicio);
+                });
+    
+                if($apoyos->first()){
+                    $monto =  $apoyos->first()->precio ?? 0;
+                }else{
+                    $monto =  $grupo->precio_semanal ?? 0;
+                }
+                
+                
+                $documento = $alumno->documentos()->create([
+                    'id_grupo'                  => $grupo->id,
+                    'concepto'                  => config('alumnos.concepto.colegiatura') .' de semana #'.$fecha_inicio->weekOfYear.' del '.$fecha_inicio->year,
+                    'monto'                     => $monto,
+                    'saldo'                     => $monto,
+                    'monto_apoyo_inscripcion'   => 0,
+                    'semana'                    => $fecha_inicio->weekOfYear,
+                    'anio'                      => $fecha_inicio->year,
+                    'fecha_limite'              => $fecha_inicio->copy()->endOfWeek(),
+                    'modalidad'                 => 'mensual',
+                    'tipo'                      => config('alumnos.concepto.colegiatura'),
+                    'status'                    => config('pagos.status.Pendiente'),
+                ]);
+    
+                echo "Semana {$fecha_inicio->weekOfYear} fin_semana {$fecha_inicio->copy()->endOfWeek()}| Fecha {$fecha_inicio->format('d-m-Y')} | {$alumno->fullname}<br>";
+                $fecha_inicio->addWeek();
+                
+    
+            }   
         }
     }
 
@@ -129,25 +237,7 @@ class PagoColegiaturaDocumentosService
         return $apoyo_especial->precio ?? 0;
     }
 
-    private function calcular_precio_mensual($grupo, $alumno)
-    {
-        $apoyo_especial = $this->apoyo_especial($grupo, $alumno);
-
-        if (empty($apoyo_especial)) {
-
-            $dia = $this->fecha_actual->day;
-
-            # SI EL DIA ACTUAL ES ENTRE 1-6, ENTONCES SE ASIGNA EL PRECIO DE PRONTO PAGO
-            if (in_array($dia, range(1, 6))) {
-                return  $grupo->precio_mensualidad_pronto_pago ?? 0;
-            }
-
-            # SE AGREGA EL PRECIO NORMAL DE LA MENSUALIDAD
-            return  $grupo->precio_mensualidad ?? 0;
-        }
-
-        return $apoyo_especial->precio ?? 0;
-    }
+    
 
     private function apoyo_especial($grupo, $alumno)
     {
@@ -157,6 +247,8 @@ class PagoColegiaturaDocumentosService
             ->whereRaw('CAST(fecha_final AS date) > cast( NOW() AS date) AND ')
             ->orderBy('fecha_final')
             ->first();
+
+
 
         return $apoyo_especial;
     }
