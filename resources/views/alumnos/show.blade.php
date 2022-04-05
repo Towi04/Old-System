@@ -263,6 +263,7 @@
                                                             <thead>
                                                                 <tr>
                                                                     <th></th>
+                                                                    <th>Fecha Inicio</th>
                                                                     <th>Fecha Final</th>
                                                                     <th>Monto</th>
                                                                     <th>Acciones</th>
@@ -439,6 +440,15 @@
             $.fn.datepicker.dates['es'] = CONFIG_DATEPICKER  //👉 DATEPICKER
 
             dom.form_apoyo_especial.find('[name="fecha_final"]').datepicker({
+                language: 'es',
+                format: 'dd-mm-yyyy',
+                ignoreReadonly: false,
+                todayHighlight: true,
+                todayBtn: true,
+                autoclose: true,
+            });
+
+            dom.form_apoyo_especial.find('[name="fecha_inicio"]').datepicker({
                 language: 'es',
                 format: 'dd-mm-yyyy',
                 ignoreReadonly: false,
@@ -763,6 +773,7 @@
                         },
                         columns: [
                             {data: 'id', name: 'id',visible:false},
+                            {data: 'fecha_inicio', name: 'fecha_inicio'},
                             {data: 'fecha_final', name: 'fecha_final'},
                             {data: 'precio', name: 'precio'},
                             { data: 'buttons', name: 'buttons', orderable: false, searchable: false },

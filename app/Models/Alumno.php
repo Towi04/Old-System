@@ -244,7 +244,15 @@ class Alumno extends Model
         return $this->hasMany(Pago::class, 'id_alumno', 'id');
     }
 
-    
+    /**
+     * Get all of the apoyos f
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function apoyos_especiales()
+    {
+        return $this->hasMany(ApoyoEspecial::class, 'id_alumno', 'id');
+    }
 
 
 }

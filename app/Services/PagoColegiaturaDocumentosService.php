@@ -154,7 +154,7 @@ class PagoColegiaturaDocumentosService
         $apoyo_especial = ApoyoEspecial::toBase()
             ->where('id_alumno', $alumno->id)
             ->where('id_grupo', $grupo->id)
-            ->whereRaw('CAST(fecha_final AS date) > cast( NOW() AS date)')
+            ->whereRaw('CAST(fecha_final AS date) > cast( NOW() AS date) AND ')
             ->orderBy('fecha_final')
             ->first();
 

@@ -14,6 +14,10 @@
                     {!! Form::number('precio', null, ['class' => 'form-control', 'placeholder' => 'Escribe el monto del apoyo','required' => true,'step' => '0.01','autocomplete' => 'off','style' => "",]); !!}
                 </div>
                 <div class="form-group">
+                    {!! Form::label('fecha_inicio', 'Fecha inicio:*'); !!}
+                    {!! Form::text('fecha_inicio', null, ['class' => 'form-control', 'placeholder' => 'Fecha inicio','required' => true,'autocomplete' => 'off','style' => "",]); !!}
+                </div>
+                <div class="form-group">
                     {!! Form::label('fecha_final', 'Fecha final:*'); !!}
                     {!! Form::text('fecha_final', null, ['class' => 'form-control', 'placeholder' => 'Fecha final','required' => true,'autocomplete' => 'off','style' => "",'data-date-start-date' => today()->format('d-m-Y')]); !!}
                 </div>

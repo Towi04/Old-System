@@ -27,6 +27,9 @@ class ApoyosEspecialesController extends Controller
             ->editColumn('fecha_final',function($model){
                 return optional($model->fecha_final)->format('d/m/Y');
             })
+            ->editColumn('fecha_inicio',function($model){
+                return optional($model->fecha_inicio)->format('d/m/Y');
+            })
             ->addColumn('buttons', 'apoyos_especiales.datatables._buttons')
             ->rawColumns(['buttons'])
             ->make(true);
@@ -39,11 +42,13 @@ class ApoyosEspecialesController extends Controller
             'id_grupo'          => 'required',
             'id_alumno'         => 'required',
             'fecha_final'       => 'required',
+            'fecha_inicio'       => 'required',
             'precio'            => 'required',
         ];
 
         $request->merge([
             'id_sucursal'   => optional(session('sucursal'))->id,
+            'fecha_inicio'   => Carbon::parse($request->input('fecha_inicio')),
             'fecha_final'   => Carbon::parse($request->input('fecha_final')),
         ]);
 

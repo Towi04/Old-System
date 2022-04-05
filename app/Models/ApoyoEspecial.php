@@ -27,6 +27,7 @@ class ApoyoEspecial extends Model
         'id_sucursal',
         'precio',
         'fecha_final',
+        'fecha_inicio',
     ];
 
     /**
@@ -34,7 +35,7 @@ class ApoyoEspecial extends Model
      *
      * @var array
      */
-    protected $dates = ['fecha_final'];
+    protected $dates = ['fecha_final','fecha_inicio',];
 
     public function alumno()
     {

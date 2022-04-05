@@ -225,6 +225,7 @@ class HomeController extends Controller
         $fecha_inicio = new Date($fecha_inicio);
         $today = Carbon::today();
 
+      
         #VALIDAMOS SI SE VAN A GENERAR PRONTO PAGO O NORMAL
         $dia = $today->day;
         # SI EL DIA ACTUAL ES ENTRE 1-6, ENTONCES SE ASIGNA EL PRECIO DE PRONTO PAGO
@@ -236,6 +237,19 @@ class HomeController extends Controller
         #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
         #SI NO SE SIGUEN GENERANDO PAGOS MENSUALE
         while(!$today->copy()->addMonth()->isSameMonth($fecha_inicio) && $fecha_inicio->lte($today->copy()->addMonth())){
+
+              #BUSCA UN APOYO SI EXISTE EN ESA SEMANA 
+                $apoyos = $alumno ->apoyos_especiales->where('id_grupo', $grupo->id)->filter(function($apoyo)use($fecha_inicio){
+                    return $apoyo->fecha_inicio->lte($fecha_inicio) && $apoyo->fecha_final->gte($fecha_inicio);
+                });
+
+                if($apoyos->first()){
+                    $monto =  $apoyos->first()->precio ?? 0;
+                }else{
+                    $monto =  $grupo->precio_mensualidad ?? 0;
+                }
+            
+
             $documento = $alumno->documentos()->create([
                 'id_grupo'                  => $grupo->id,
                 'concepto'                  => config('alumnos.concepto.colegiatura') .' de '.$fecha_inicio->format('F').' del '.$fecha_inicio->year,
@@ -277,10 +291,25 @@ class HomeController extends Controller
         $today = Carbon::today();
 
         # SE AGREGA EL PRECIO NORMAL DE LA MENSUALIDAD
-        $monto =  $grupo->precio_semanal ?? 0;
+
+       
+
         #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
         #SI NO SE SIGUEN GENERANDO PAGOS MENSUALE
         while(!$today->copy()->addWeek()->isSameWeek($fecha_inicio) && $fecha_inicio->lte($today->copy()->addWeek())){
+
+             #BUSCA UN APOYO SI EXISTE EN ESA SEMANA 
+            $apoyos = $alumno ->apoyos_especiales->where('id_grupo', $grupo->id)->filter(function($apoyo)use($fecha_inicio){
+                return $apoyo->fecha_inicio->lte($fecha_inicio) && $apoyo->fecha_final->gte($fecha_inicio);
+            });
+
+            if($apoyos->first()){
+                $monto =  $apoyos->first()->precio ?? 0;
+            }else{
+                $monto =  $grupo->precio_semanal ?? 0;
+            }
+            
+            
             $documento = $alumno->documentos()->create([
                 'id_grupo'                  => $grupo->id,
                 'concepto'                  => config('alumnos.concepto.colegiatura') .' de semana #'.$fecha_inicio->weekOfYear.' del '.$fecha_inicio->year,
