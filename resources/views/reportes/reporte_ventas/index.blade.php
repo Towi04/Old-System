@@ -293,7 +293,7 @@
 
                                                         <td>
                                                             @foreach ($pago->abonos_documentos as $abono)
-                                                                <small>{{ $abono->alumno_pago->grupo->especialidad->nombre }}</small>
+                                                                <small>{{ $abono->documento->grupo->especialidad->nombre }}</small>
                                                             @endforeach
                                                         </td>
 
