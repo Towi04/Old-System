@@ -8,8 +8,8 @@
     <meta content="{{ config('settings.company.description') }}"  name="description">
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link href="{{ asset('img/logo.png') }}" rel="shortcut icon">
-    <link href="apple-touch-icon.png" rel="apple-touch-icon">
+    <link href="{{ asset('icon.jpeg') }}" rel="shortcut icon">
+    <link href="{{ asset('icon.jpeg') }}" rel="apple-touch-icon">
 
     <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500" rel="stylesheet" type="text/css">
     <link href="{{ asset('template-clean-admin/bower_components/select2/dist/css/select2.min.css') }}" rel="stylesheet">
