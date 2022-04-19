@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 use Jenssegers\Date\Date;
 
 use App\Models\Documento; 
@@ -14,6 +15,8 @@ use App\Models\AbonoDocumento;
 use App\Models\Grupo;
 use App\Models\Alumno;
 use App\Models\AlumnoGrupo;
+use App\Models\AlumnoPago;
+use App\Models\ApoyoInscripcion;
 use App\Services\PagoInscripcionDocumentosService;
 use App\Services\PagoColegiaturaDocumentosService;
 
@@ -298,9 +301,6 @@ class HomeController extends Controller
    
         $alumno = Alumno::find($id_alumno);
         
-
-
-
                 $pagos = $alumno->pagos_caja;
                 #Para cada pago realizado se van a crear los abnos a los documentos del mas antiguo al mas reciente
                 foreach($pagos->sortBy(function($pago){
@@ -319,7 +319,7 @@ class HomeController extends Controller
                                 $fecha_limite_pronto = Carbon::createFromFormat('Y-m-d',$documento->anio.'-'.$documento->mes.'-06');
                                 
                                 // dd($pago->fecha);
-                                if($pago->fecha->gte($fecha_limite_pronto) && $documento->especial == 0){
+                                if($pago->fecha->gte($fecha_limite_pronto) && $documento->especial == 0 && $documento->saldo == $documento->monto){
                                     $documento->monto = $documento->grupo->precio_mensualidad;
                                     $documento->saldo = $documento->grupo->precio_mensualidad;
                                     $documento->save();
@@ -468,6 +468,34 @@ class HomeController extends Controller
         $alumno_grupo = AlumnoGrupo::findOrFail($request->pk);
         $alumno_grupo[$request->name] = $request->value;
         $alumno_grupo->save();
+
+    }
+
+    public function crear_apoyos_inscripcion(){
+        $pagos = AlumnoPago::where('monto_apoyo_inscripcion','>',0)->get();
+
+        foreach($pagos as $pago){
+            $apoyo = ApoyoInscripcion::create([
+                'id_alumno' => $pago->id_alumno,
+                'id_grupo'  => $pago->id_grupo,
+                'apoyo'     => $pago->monto_apoyo_inscripcion,
+                'id_usuario'=> Auth::id(),
+            ]);
+
+        }
+
+        $documentos = Documento::where('monto_apoyo_inscripcion','>',0)->get();
+
+        foreach($documentos as $documento){
+            $apoyo = ApoyoInscripcion::create([
+                'id_alumno' => $documento->id_alumno,
+                'id_grupo'  => $documento->id_grupo,
+                'apoyo'     => $documento->monto_apoyo_inscripcion,
+                'id_usuario'=> Auth::id(),
+            ]);
+        }
+
+
 
     }
 

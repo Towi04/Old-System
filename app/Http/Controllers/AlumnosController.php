@@ -9,8 +9,11 @@ use App\Models\AlumnoPago;
 use App\Models\Documento;
 use App\Models\Especialidad;
 use App\Models\Pago;
+use App\Models\ApoyoInscripcion;
 use App\Services\FacturacionService;
 use App\Services\PagoInscripcionService;
+
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -656,5 +659,42 @@ class AlumnosController extends Controller
         $alumnos = Alumno::find($request->pk);
         $alumnos[$request->name] = $request->value;
         $alumnos->save();
+    }
+
+    public function datatables_apoyos_inscripcion(Request $request)
+    {
+        $query = ApoyoInscripcion::with('grupo')
+            ->when($request->input('id_grupo'), function ($q, $id_grupo) {
+                $q->where('id_grupo', $id_grupo);
+            })
+            ->when($request->input('id_alumno'), function ($q, $id_alumno) {
+                $q->where('id_alumno', $id_alumno);
+            });
+
+        return DataTables::eloquent($query)
+            ->addIndexColumn()
+            ->addColumn('buttons', 'alumnos.datatables._buttons_apoyo_inscripcion')
+            ->rawColumns(['buttons'])
+            ->make(true);
+    }
+
+    public function eliminar_apoyo_inscripcion($id){
+        $apoyo = ApoyoInscripcion::find($id);
+        $apoyo->delete();
+
+        return response()->json([
+            'apoyo' => $apoyo
+        ]);
+    }
+
+    public function store_apoyo_inscripcion(Request $request){
+
+
+        $apoyo = ApoyoInscripcion::create([
+            'id_alumno' => $request->id_alumno,
+            'id_grupo'  => $request->id_grupo,
+            'apoyo'     => $request->apoyo,
+            'id_usuario'=> Auth::id(),
+        ]);
     }
 }

@@ -254,5 +254,15 @@ class Alumno extends Model
         return $this->hasMany(ApoyoEspecial::class, 'id_alumno', 'id');
     }
 
+    /**
+     * Get all of the apoyos f
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function apoyos_inscripcion()
+    {
+        return $this->hasMany(ApoyoInscripcion::class, 'id_alumno', 'id');
+    }
+
 
 }

@@ -408,9 +408,9 @@
                 });
 
             dom.select_profesor.select2({
+                dropdownParent: dom.modal_asignar_materia,
                 language: "es",
                 placeholder:'Selecciona un profesor',
-                dropdownParent: dom.modal_asignar_materia,
                 ajax: {
                     method: 'POST',
                     data:

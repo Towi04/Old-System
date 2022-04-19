@@ -92,13 +92,16 @@ class PagoInscripcionDocumentosService
     {
         $apartado = $this->alumno->saldo;
 
-
         $monto_apoyo_inscripcion = optional($this->request)->has('precio_inscripcion') ? ($grupo->precio_inscripcion  - $this->request->input('precio_inscripcion')): null;
+        $monto_apoyo_inscripcion = ($this->alumno->apoyos_inscripcion->where('id_grupo','=',$grupo->id)->first())? $this->alumno->apoyos_inscripcion->where('id_grupo','=',$grupo->id)->first()->apoyo : 0 ;
 
-        $precio_inscripcion = optional($this->request)->has('precio_inscripcion')  ? $this->request->input('precio_inscripcion'): $precio_inscripcion;
-        $precio_inscripcion = $precio_inscripcion - $apartado;
-
-        // dd($precio_inscripcion);
+        $precio_inscripcion = optional($this->request)->has('precio_inscripcion')  ? $this->request->input('precio_inscripcion'):$precio_inscripcion;
+        if($this->request){
+            $precio_inscripcion = $precio_inscripcion - $apartado;
+        }else{
+            $precio_inscripcion = $precio_inscripcion - $apartado - $monto_apoyo_inscripcion;
+        }
+        
 
         $documento = $this->alumno->documentos()->create([
             'id_grupo'                  => $grupo->id,

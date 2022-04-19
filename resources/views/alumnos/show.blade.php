@@ -247,6 +247,36 @@
                                             <tbody>
                                             </tbody>
                                         </table>
+                                        @can('asignar_apoyos_especiales_en_inscripcion')
+                                        @can('asignar_apoyos_especiales')
+                                        <fieldset class="form-group">
+                                            <legend>Apoyos en inscripcion</legend>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <button type="button" id="btn-agregar-apoyo-inscripcion" title="Apoyo inscripcion" class="btn btn-sm btn-primary">Agregar Apoyo a Inscripción</button>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <table class="table table-striped table-bordered table-hover" id="tb-apoyos-inscripcion" width="100%">
+                                                        <thead>
+                                                            <tr>    
+                                                                <th></th>
+                                                                <th>Grupo</th>
+                                                                <th>Monto</th>
+                                                                <th>Acciones</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    @endcan
+                                        @endcan
 
                                         @can('asignar_apoyos_especiales')
                                             <fieldset class="form-group">
@@ -406,6 +436,7 @@
     </div>
 
     @include('alumnos.modals.apoyos_especiales')
+    @include('alumnos.modals.apoyos_inscripciones')
 @endsection
 
 
@@ -423,7 +454,12 @@
                 tb_apoyos: $("#tb-apoyos-especiales"),
                 btn_apoyo_especial: $('#btn-agregar-apoyo-especial'),
                 form_apoyo_especial: $("#form-apoyo-especial"),
-                modal_apoyo_especial: $("#modal-apoyo-especial")
+                modal_apoyo_especial: $("#modal-apoyo-especial"),
+
+                tb_apoyos_inscripcion: $("#tb-apoyos-inscripcion"),
+                btn_apoyo_inscripcion: $('#btn-agregar-apoyo-inscripcion'),
+                form_apoyo_inscripcion: $("#form-apoyo-inscripcion"),
+                modal_apoyo_inscripcion: $("#modal-apoyo-inscripcion")
             }
 
             const CONFIG_DATEPICKER = {
@@ -800,6 +836,8 @@
                         },
                     });
 
+                   
+
                     dom.tb_apoyos.on('click',"a[data-action='delete']",function(event){
                         event.preventDefault();
 
@@ -852,6 +890,7 @@
                         dom.form_apoyo_especial[0].reset();
                         dom.modal_apoyo_especial.modal('show');
                     })
+                    
 
                     dom.form_apoyo_especial.submit(function(e){
                         e.preventDefault();
@@ -892,8 +931,150 @@
 
 
                     })
+
+                    //APOYOS A INSCRIPCION
+                    var dt_apoyos_inscripcion = dom.tb_apoyos_inscripcion.DataTable({
+                        dom: "<'row'<'col-12'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
+                        processing: true,
+                        serverSide: true,
+                        responsive: true,
+                        pageLength: 10,
+                        ajax: {
+                            url: "{{ route('alumnos.datatables_apoyos_inscripcion') }}",
+                            type: "POST",
+                            data: function (d) {
+                                d.id_alumno = "{{ $alumno->id }}";
+                                d.id_grupo = $('#select_grupo_documentos').val();
+                                d._token = $("meta[name='csrf-token']").attr("content");
+                            },
+                            beforeSend: function(xhr,type) {
+                            if (!type.crossDomain) {
+                                    xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+                                }
+                            },
+                        },
+                        columns: [
+                            {data: 'id', name: 'id',visible:false},
+                            {data: 'grupo.clave', name: 'grupo.clave'},
+                            {data: 'apoyo', name: 'apoyo'},
+                            {data: 'buttons', name: 'buttons', orderable: false, searchable: false },
+                        ],
+                        order: [[ 0, "asc" ]],
+                        language: {
+                            "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                            "zeroRecords": "No se encontro ningún registro",
+                            "info": "Mostrando del _START_ al _END_ de _TOTAL_ registros. (Página _PAGE_ de _PAGES_)",
+                            "infoEmpty": "No hay registros disponibles",
+                            "infoFiltered": "(Filtrado de un total de _MAX_ registros)",
+                            "search": "Buscar:",
+                            "paginate": {
+                                "first": "Primera",
+                                "last": "Última",
+                                "previous": '<i class="fas fa-chevron-left"></i>',
+                                "next": '<i class="fas fa-chevron-right"></i>'
+                            },
+                            "loadingRecords": "Cargando...",
+                            "processing": "Procesando...",
+                        },
+                        drawCallback: function (settings) {
+                            $("[data-toggle='tooltip']").tooltip();
+                        },
+                    });
+
+                    dom.tb_apoyos_inscripcion.on('click',"a[data-action='delete']",function(event){
+                        event.preventDefault();
+
+                        swal({
+                            title: "¿Estas seguro de eliminar el registro?",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#ff3333",
+                            cancelButtonColor: "#CDCDCD",
+                            confirmButtonText: "Borrar",
+                            cancelButtonText: "Cancelar",
+                            showLoaderOnConfirm: false,
+                        }).then(function(result) {
+                            if (!result.value) {
+                                return;
+                            }
+
+                            wait.modal('show');
+
+                            $.ajax({
+                                url: event.target.href,
+                                type: 'POST',
+                                cache: false,
+                                data: {
+                                    _token: $("meta[name='csrf-token']").attr("content"),
+                                    _method: 'DELETE',
+                                },
+                                success: function (response){
+                                    dt_apoyos_inscripcion.ajax.reload( function(e){
+                                        wait.modal('hide');
+                                        toastr.success('Éxito', 'Se borró con éxito el registro');
+                                    }, false )
+                                },
+                                error:function(error){
+                                    setTimeout(() => {
+                                        wait.modal('hide');
+                                        toastr.error('Error', 'Ocurrio un error inesperado');
+                                    }, 250);
+                                }
+                            });
+                        })
+                    })
+
+                    dom.btn_apoyo_inscripcion.click(function(e){
+                        dom.form_apoyo_inscripcion[0].reset();
+                        dom.modal_apoyo_inscripcion.modal('show');
+                    })
+                    
+
+                    dom.form_apoyo_inscripcion.submit(function(e){
+                        e.preventDefault();
+
+                        dom.modal_apoyo_inscripcion.modal('hide');
+                        wait.modal('show');
+
+                        const $form = $(this);
+                        const formData = new FormData(this);
+                        // formData.append('id_grupo',$('#select_grupo_documentos').val());
+                        // formData.append('id_alumno',"{{ $alumno->id }}");
+
+                        $.ajax({
+                            url: $form.attr('action'),
+                            type: 'POST',
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            data: formData,
+                            success: function (response){
+                                dt_apoyos_inscripcion.ajax.reload( function(e){
+                                    setTimeout(() => {
+                                        wait.modal('hide');
+                                        toastr.success('Éxito', response.message || 'Apoyo a inscripcion agregado correctamente');
+                                    })
+                                }, false )
+                            },
+                            error:function(error){
+                                wait.modal('hide');
+                                const errors = error.responseJSON || {};
+
+                                setTimeout(() => {
+                                    dom.modal_apoyo_inscripcion.modal('show');
+                                    toastr.error('Error',  errors.message || 'Ocurrio un error inesperado');
+                                }, 250);
+                            }
+                        });
+
+
+                    })
+
+
                 }
             });
+
+            // DATATABLES APOYOS A INSCRIPCION
 
             $('.baja_grupo').click(function(){
                 id = $(this).data('id');
@@ -949,8 +1130,8 @@
             });
 
             // LOCAL STORAGE PARA LAS PESTAÑAS
-             // Probar local storage
-             var nav_tabs = $(".nav-tabs > li > a");
+            // Probar local storage
+            var nav_tabs = $(".nav-tabs > li > a");
             nav_tabs.on("shown.bs.tab",handleSeleccionTabShowAlumno);
             activeTabShowAlumno = window.localStorage.getItem('activeTabShowAlumno');
 

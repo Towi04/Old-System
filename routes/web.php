@@ -144,6 +144,9 @@ Route::middleware(['auth','sucursal'])->group(function () {
     ]);
 
     # NOTE: RUTAS ALUMNOS
+    Route::delete('alumnos/eliminar_apoyo_inscripcion/{id}', [ AlumnosController::class,'eliminar_apoyo_inscripcion'])->name('alumnos.eliminar_apoyo_inscripcion');
+    Route::post('alumnos/store_apoyo_inscripcion', [ AlumnosController::class,'store_apoyo_inscripcion'])->name('alumnos.store_apoyo_inscripcion');
+    Route::post('alumnos/datatables_apoyos_inscripcion', [ AlumnosController::class,'datatables_apoyos_inscripcion'])->name('alumnos.datatables_apoyos_inscripcion');
     Route::post('alumnos/datatables', [ AlumnosController::class,'datatables'])->name('alumnos.datatables');
     Route::post('alumnos/datatables_pagos', [ AlumnosController::class,'datatables_pagos'])->name('alumnos.datatables_pagos');
     Route::post('alumnos/datatables_documentos', [ AlumnosController::class,'datatables_documentos'])->name('alumnos.datatables_documentos');
@@ -326,6 +329,9 @@ Route::prefix('especiales')->name('especiales.')->group(function(){
      Route::get('info',[HomeController::class,'info'])->name('info');
 
      Route::get('alumnos_grupos',[HomeController::class,'alumnos_grupos'])->name('alumnos_grupos');
+
+     #GENERAR APOYOS ESPECIALES CREADOS ANTERIORMENTE
+     Route::get('crear_apoyos_inscripcion',[HomeController::class,'crear_apoyos_inscripcion'])->name('crear_apoyos_inscripcion');
 
 
 });

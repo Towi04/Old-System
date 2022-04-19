@@ -281,7 +281,7 @@ class UsersController extends Controller
         $resultCount = 10;
         $offset = ($page - 1) * $resultCount;
 
-        $results = User::query()
+        $results = User::select(['id','nombres','apellido_paterno','apellido_materno'])
             ->where('nombres', 'like', "%{$term}%")
             ->orWhere('apellido_paterno', 'like', "%{$term}%")
             ->orWhere('apellido_materno', 'like', "%{$term}%")

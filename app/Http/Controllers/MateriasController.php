@@ -175,9 +175,6 @@ class MateriasController extends Controller
             ->when($request->input('id_especialidad'),function($q,$id_especialidad){
                 $q->where('id_especialidad',$id_especialidad);
             })
-            ->when($request->input('id_sucursal'),function($q,$sucursal){
-                $q->where('id_sucursal',$sucursal);
-            })
             ->orderBy('nombre', 'asc')
             ->skip($offset)
             ->take($resultCount)
