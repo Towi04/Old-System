@@ -200,7 +200,10 @@
 
             // 👉 EVITAR ENVIAR EL CAMPO EN CASO DE QUE NO TENGA PERMISO PARA EMITIR PRECIO INSCRIPCION
             if ($("#precio_inscripcion").val()) {
+                formData.append('apoyo_especial',$("#ckb-apoyo-especial").is(':checked'));
                 formData.append('precio_inscripcion',$("#precio_inscripcion").val());
+                formData.append('id_usuario_autoriza',$("#id_usuario_autoriza").val());
+                formData.append('password',$("#password").val());
             }
 
             $.ajax({
@@ -229,10 +232,26 @@
                     }, 250);
                 },
                 error:function(error){
-                    setTimeout(() => {
+                    // console.log(error.responseJSON.errors.mensaje);
+                    if(error.responseJSON){
+                        errors = error.responseJSON.errors.mensaje;
+                        msje = '';
+                        $.each(errors, function (index, error) { 
+                            msje +=''+error;
+                        });
+
+                        setTimeout(() => {
+                            wait.modal('hide');
+                            toastr.error('Error', msje);
+                        }, 250);
+
+                    }else{
+                        setTimeout(() => {
                         wait.modal('hide');
                         toastr.error('Error', 'Ocurrio un error inesperado');
                     }, 250);
+                    }
+                    
                 }
             });
         });
@@ -245,6 +264,13 @@
         dom.ckb_apoyo_especial.change(function(e){
             $("#apoyo-especial").toggle(e.target.checked);
             $("[data-apoyo]").attr('required',e.target.checked)
+            $("[data-password]").attr('required',e.target.checked)
+            $("[data-usuario]").attr('required',e.target.checked)
+
+            if(!e.target.checked){
+
+            }
+            
         })
     });
 

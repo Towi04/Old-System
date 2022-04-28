@@ -287,7 +287,7 @@
 
     <div class="form-group">
         {!! Form::label('id_asesor_educativo', 'Asesor educativo:*'); !!}
-        {!! Form::select('id_asesor_educativo',$asesores, null, ['class' => 'form-control','autocomplete' => 'off','required'=>true]) !!}
+        {!! Form::select('id_asesor_educativo',$asesores, null, ['class' => 'form-control','autocomplete' => 'off']) !!}
     </div>
 
 </fieldset>

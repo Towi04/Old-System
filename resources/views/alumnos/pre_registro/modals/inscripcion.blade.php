@@ -50,6 +50,14 @@
 
                             <div class="row pt-3" id="apoyo-especial" style="display: none;">
                                 <div class="col-12">
+                                    {!! Form::label('id_usuario_autoriza','Selecciona el usuario que autoriza el apoyo:*') !!}
+                                    {!! Form::select('id_usuario_autoriza',$usuarios_autorizados,null, ['class' => 'form-control form-control-sm','form-selector'=> '','data-usuario']) !!}
+                                </div>
+                                <div class="col-12">
+                                    {!! Form::label('password','Ingresa el password:*') !!}
+                                    {!! Form::password('password', ['class' => 'form-control form-control-sm','form-selector'=> '','data-password']) !!}
+                                </div>
+                                <div class="col-12">
                                     {!! Form::label('precio_inscripcion','Precio Original de Inscripción:*') !!}
                                     {!! Form::number('precio_inscripcion',null, ['class' => 'form-control form-control-sm','form-selector'=> '','placeholder' =>'Escribe el monto de la inscripcion','step' => '0.01','data-apoyo']) !!}
                                 </div>

@@ -91,7 +91,7 @@ class PagoInscripcionDocumentosService
     public function inscripcion(Grupo $grupo,$precio_inscripcion)
     {
         $apartado = $this->alumno->saldo;
-
+        
         $monto_apoyo_inscripcion = optional($this->request)->has('precio_inscripcion') ? ($grupo->precio_inscripcion  - $this->request->input('precio_inscripcion')): null;
         $monto_apoyo_inscripcion = ($this->alumno->apoyos_inscripcion->where('id_grupo','=',$grupo->id)->first())? $this->alumno->apoyos_inscripcion->where('id_grupo','=',$grupo->id)->first()->apoyo : 0 ;
 

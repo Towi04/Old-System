@@ -14,7 +14,9 @@ use App\Services\PagoInscripcionDocumentosService;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Validation\ValidationException;
 
 class PreRegistrosController extends Controller
 {
@@ -260,12 +262,18 @@ class PreRegistrosController extends Controller
             ->with(['error' => 'El alumno ya ha sido inscrito']);
         }
 
+        $usuarios_autorizados = User::with('roles.permissions')->whereHas('roles.permissions', function($q){
+            return $q->where('name','=','asignar_apoyos_especiales_en_inscripcion');
+        })->get();
+
+        // dd($usuarios_autorizados);
 
         return view('alumnos.pre_registro.inscribir', [
             'alumno'            => $alumno,
             'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
             'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi',''),
             'asesores'          => User::query()->get()->pluck('fullname','id')->sort()->prepend('CNCM',''),
+            'usuarios_autorizados' => $usuarios_autorizados->pluck('fullname','id')->sort()->prepend('Selecciona un usuario',''),
         ]);
     }
 
@@ -315,8 +323,20 @@ class PreRegistrosController extends Controller
 
         $sucursal = optional(session('sucursal'));
 
-        $alumno = Alumno::find($id);
+        // SI LE PONEN PRECIO DE INSCRIPCIÓN SE TIENE QUE VALIDAR QUE LO AUTORICE ALGUIEN
+        // dd($request->apoyo_especial);
+        if($request->apoyo_especial == "true"){
+            $usuario = User::find($request->id_usuario_autoriza);
+            
+            $password = $request->password;
+            if(!Hash::check($password,$usuario->password))
+            {
+                throw ValidationException::withMessages(['mensaje' => 'Credenciales de autorización incorrectas']);
+            }
+        }
 
+
+        $alumno = Alumno::find($id);
         $request->request->add([
             'id_sucursal'           => $sucursal->id,
             'solicitud_factura'     => $request->has('solicitud_factura'),
@@ -352,12 +372,17 @@ class PreRegistrosController extends Controller
         $alumno->save();
 
         if ($request->has('id_grupo')) {
+
+            
+
             $alumno->grupos()->attach($request->input('id_grupo'),['fecha_inicio' => $request->input('fecha_inicio')]);
 
             $grupo_inscripcion = Grupo::findOrFail($request->input('id_grupo'));
 
             $pids->setRequest($request);
             $pids->setAlumno($alumno);
+
+            
 
             switch ($request->input('forma_pago')) {
                 case config('alumnos.forma_pago.mensual','mensual'):
