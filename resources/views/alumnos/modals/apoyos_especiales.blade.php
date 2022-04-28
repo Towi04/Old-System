@@ -19,7 +19,7 @@
                 </div>
                 <div class="form-group">
                     {!! Form::label('fecha_final', 'Fecha final:*'); !!}
-                    {!! Form::text('fecha_final', null, ['class' => 'form-control', 'placeholder' => 'Fecha final','required' => true,'autocomplete' => 'off','style' => "",'data-date-start-date' => today()->format('d-m-Y')]); !!}
+                    {!! Form::text('fecha_final', null, ['class' => 'form-control', 'placeholder' => 'Fecha final','required' => true,'autocomplete' => 'off','style' => ""]); !!}
                 </div>
             </div>
             <div class="modal-footer">

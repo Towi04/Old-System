@@ -49,7 +49,7 @@
             <b>Fecha</b>  {{ $pago->fecha->format('d-m-Y') }}
             <b>Hora</b> {{ $pago->fecha->format('H:i:s') }}
             <b>Folio:</b> {{ empty($pago->folio_fiscal) ? $pago->folio: $pago->folio_fiscal }}<br>
-            <b>Recibio:</b> {{ $pago->recibio->fullname }}<br>
+            <b>Recibio:</b> {{ $pago->recibio->nombres }} {{ $pago->recibio->apellido_paterno }}<br>
             <b>Alumno:</b> {{ $pago->alumno->fullname }}<br>
             <b>No Control:</b> {{ $pago->alumno->nuevo_numero_control }}<br>
         </p>
