@@ -307,12 +307,14 @@ class HomeController extends Controller
                     return $pago->fecha->format('Ymd');
                 }) as $pago){
 
+                    
                     $monto_pago = $pago->monto;
                     $documentos = $alumno->documentos->where('saldo','>',0)->sortBy('fecha_limite')->values();
-                
-                    foreach($documentos as $documento){
+                    
+                    foreach($documentos->sortBy('fecha_limite') as $documento){
                         # GENERO EL ABONO
                         #SE VA A VALIDAR SI FUE COLEGIATURA POR PRONTO PAGO
+                        // dd($documento);
                         if($documento->tipo == 'Colegiatura'){
                             if($alumno->forma_pago == 'mensual'){
                                 // validar fecha limite de pronto pago

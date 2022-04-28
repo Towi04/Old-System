@@ -15,7 +15,7 @@
                 <div class="card text-center">
                     <div class="card-body">
                         <div class="profile-image">
-                            <img src="{{ url('archivo/usuarios_foto/') }}/{{ $user->id }}/{{ $user->foto }}" class="rounded-circle circle-border m-b-md" alt="profile">
+                            <img src="{{ url('archivo/usuarios_foto/') }}/{{ $user->id }}/{{ $user->foto }}" class="rounded-circle circle-border m-b-md" alt="profile" width="150px">
                         </div>
                         <div class="profile-info">
                             <div class="">

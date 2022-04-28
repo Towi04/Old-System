@@ -95,6 +95,10 @@ class UsersController extends Controller
         if (isset($file)) {
 
             $image = \Image::make($file);
+            $image->resize(150, null, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+            
 
             $nombre_foto = $file->getClientOriginalName();
 
@@ -223,6 +227,9 @@ class UsersController extends Controller
         if (isset($file)) {
 
             $image = \Image::make($file);
+            $image->resize(150, null, function ($constraint) {
+                $constraint->aspectRatio();
+            });
 
             $nombre_foto = $file->getClientOriginalName();
 
