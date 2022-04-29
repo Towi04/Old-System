@@ -184,12 +184,12 @@
                             <div class="os-tabs-controls m-1">
                                 <ul class="nav nav-tabs smaller border-0">
                                     <li class="nav-item">
-                                        <a class="nav-link active" data-toggle="tab" href="#tab-ventas-fiscales">Fiscales</a>
+                                        <a class="nav-link active" data-toggle="tab" href="#tab-ventas-fiscales">A</a>
                                     </li>
 
                                     @if(!$mostrar_solo_fiscales)
                                         <li class="nav-item">
-                                            <a class="nav-link" data-toggle="tab" href="#tab-ventas-no-fiscales">No Fiscales</a>
+                                            <a class="nav-link" data-toggle="tab" href="#tab-ventas-no-fiscales">B</a>
                                         </li>
                                     @endif
                                 </ul>
