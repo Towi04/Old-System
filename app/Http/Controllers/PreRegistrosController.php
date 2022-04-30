@@ -7,6 +7,7 @@ use App\Models\Alumno;
 use App\Models\User;
 use App\Models\Especialidad;
 use App\Models\Pago;
+use App\Models\ApoyoInscripcion;
 use Illuminate\Http\Request;
 use App\Services\FacturacionService;
 use App\Services\PagoInscripcionService;
@@ -263,7 +264,7 @@ class PreRegistrosController extends Controller
         }
 
         $usuarios_autorizados = User::with('roles.permissions')->whereHas('roles.permissions', function($q){
-            return $q->where('name','=','asignar_apoyos_especiales_en_inscripcion');
+            return $q->where('name','=','autorizar_apoyos_especiales_en_inscripcion');
         })->get();
 
         // dd($usuarios_autorizados);
@@ -322,9 +323,8 @@ class PreRegistrosController extends Controller
         ];
 
         $sucursal = optional(session('sucursal'));
-
+        // dd($request);
         // SI LE PONEN PRECIO DE INSCRIPCIÓN SE TIENE QUE VALIDAR QUE LO AUTORICE ALGUIEN
-        // dd($request->apoyo_especial);
         if($request->apoyo_especial == "true"){
             $usuario = User::find($request->id_usuario_autoriza);
             
@@ -334,7 +334,6 @@ class PreRegistrosController extends Controller
                 throw ValidationException::withMessages(['mensaje' => 'Credenciales de autorización incorrectas']);
             }
         }
-
 
         $alumno = Alumno::find($id);
         $request->request->add([
@@ -373,8 +372,6 @@ class PreRegistrosController extends Controller
 
         if ($request->has('id_grupo')) {
 
-            
-
             $alumno->grupos()->attach($request->input('id_grupo'),['fecha_inicio' => $request->input('fecha_inicio')]);
 
             $grupo_inscripcion = Grupo::findOrFail($request->input('id_grupo'));
@@ -382,7 +379,6 @@ class PreRegistrosController extends Controller
             $pids->setRequest($request);
             $pids->setAlumno($alumno);
 
-            
 
             switch ($request->input('forma_pago')) {
                 case config('alumnos.forma_pago.mensual','mensual'):
@@ -395,6 +391,18 @@ class PreRegistrosController extends Controller
                 break;
             }
 
+
+            #SE CREA EL APOYO A LA INSCRIPCION DEL ALUMNO
+            if($request->apoyo_especial == "true"){
+                $grupo = Grupo::find($request->input('id_grupo'));
+                $apoyo = ApoyoInscripcion::create([
+                    'id_alumno' => $alumno->id,
+                    'id_grupo'  => $grupo->id,
+                    'apoyo'     => $grupo->precio_inscripcion -  $request->precio_inscripcion,
+                    'id_usuario'=> Auth::id(),
+                    'id_usuario_autoriza'=> $request->id_usuario_autoriza,
+                ]);
+            }   
             // OPERACIONES: sumar | restar
             // CAMPOS: inicios | reingresos | cambios_horarios_plus | bajas | cambios_horarios_minus | fin_curso
             $grupo_inscripcion->actualizarReporteDesercion('sumar','inicios',1);

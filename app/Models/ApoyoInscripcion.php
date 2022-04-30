@@ -16,6 +16,7 @@ class ApoyoInscripcion extends Model
         'id_grupo',
         'apoyo',
         'id_usuario',
+        'id_usuario_autoriza'
     ];
 
     /**

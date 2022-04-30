@@ -695,6 +695,7 @@ class AlumnosController extends Controller
             'id_grupo'  => $request->id_grupo,
             'apoyo'     => $request->apoyo,
             'id_usuario'=> Auth::id(),
+            'id_usuario_autoriza'=> Auth::id(),
         ]);
     }
 }

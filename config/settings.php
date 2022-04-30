@@ -372,6 +372,11 @@ return [
             'description'   => 'Permite asignar apoyos especiales en la inscripción del alumno'
         ],
         [
+            'name'          => 'autorizar_apoyos_especiales_en_inscripcion',
+            'display_name'  => 'Autorizar apoyos especiales en inscripcion',
+            'description'   => 'Permite autorizar apoyos especiales en la inscripción del alumno'
+        ],
+        [
             'name'          => 'reimprimir_ticket_reporte_ventas',
             'display_name'  => 'Reimprimir Ticket Reporte Ventas',
             'description'   => 'Permite reimprimir ticket desde el reporte de ventas'
