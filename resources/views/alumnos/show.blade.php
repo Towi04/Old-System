@@ -134,18 +134,25 @@
                                 {{-- <div class="post-media" style="background-image: url(img/portfolio1.jpg)"></div> --}}
                                 <div class="post-content">
                                 <h6 class="post-title">
-                                    Grupo: {{$grupo->clave}} - {{$grupo->especialidad->nombre}}
+                                    @if($grupo->pivot->status == 'Pausa') 
+                                    <span class="float-right badge badge-warning"> {{$grupo->pivot->status }}</span>
+                                    @else 
+                                    <span class="float-right badge badge-success"> {{$grupo->pivot->status }}</span>
+                                    @endif
+                                    Grupo: {{$grupo->clave}} - {{$grupo->especialidad->nombre}} 
+                                   
                                 </h6>
                                 <div class="post-text">
-                                    Fecha inicio: {{ $grupo->fecha_inicio->format('d-m-Y')}}<br>
-                                    Horario:<br> {!!$grupo->horario_corto!!}
-                                    N° Semanas a cursar:<br> {!!$grupo->materias->sum('semanas')!!}<br>
-                                    Fecha Inicio:<br> 
+                                    <b>Fecha inicio:</b> {{ $grupo->fecha_inicio->format('d-m-Y')}}<br>
+                                    <b>Horario:</b><br> {!!$grupo->horario_corto!!}
+                                    <b>N° Semanas a cursar:</b>  {!!$grupo->materias->sum('semanas')!!}<br>
+                                    <b>Fecha Inicio: </b>
                                     <a class='editable_fecha_inicio_grupo' data-pk='{{$grupo->pivot->id}}' data-name='fecha_inicio' data-url='{{route("especiales.actualizar_informacion_grupos_alumnos")}}' data-type='date' data-value="{{ optional($grupo->pivot->fecha_inicio)->format('d-m-Y') }}">
                                     {!!  optional($grupo->pivot->fecha_inicio)->format('d-m-Y') !!}
                                     </a>
                                     <br>
-                                    Semanas cursadas:<br> {!! (!empty($grupo->pivot->fecha_inicio)) ? $grupo->pivot->fecha_inicio->diffInWeeks( now() ): '' !!}<br>
+                                    <b>Semanas cursadas:</b>  {!! (!empty($grupo->pivot->fecha_inicio)) ? $grupo->pivot->fecha_inicio->diffInWeeks( now() ): '' !!}<br>
+                                    <b>Status:</b>  {!! (!empty($grupo->pivot->status)) ? $grupo->pivot->status: '' !!}<br>
                                 </div>
                                 <div class="post-foot">
                                     <div class="row">
@@ -153,9 +160,13 @@
                                             @can('cambio_horario_grupo')
                                             <a href="{{route('alumnos.cambio_horario', [$alumno->id,$grupo->id])}}" class="btn btn-sm btn-dark">Cambio Horario</a>
                                             @endcan
-
+                                            
                                             @can('baja_grupo')
-                                            <button data-id="{{$grupo->id}}" class="btn btn-sm btn-danger baja_grupo">Baja</button>
+                                                @if($grupo->pivot->status == 'Inscrito')
+                                                    <button data-id="{{$grupo->id}}" class="btn btn-sm btn-warning pausar_grupo text-dark"><i class="fas fa-pause    "></i> Pausa</button>
+                                                @else 
+                                                    <button data-id="{{$grupo->id}}" class="btn btn-sm btn-success reaundar_grupo"><i class="fas fa-play    "></i> Reanudar</button>
+                                                @endif
                                             @endcan
                                         </div>
                                         <div class="col-12">
@@ -177,9 +188,6 @@
                                 </div>
                                 </div>
                             </div>
-
-
-
                             @endforeach
                         </div>
                     </div>
@@ -1075,6 +1083,86 @@
             });
 
             // DATATABLES APOYOS A INSCRIPCION
+
+            $('.pausar_grupo').click(function(){
+                id = $(this).data('id');
+                swal({
+                            title: "¿Estas seguro de dar pausa al alumno de este grupo?",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#ff3333",
+                            cancelButtonColor: "#CDCDCD",
+                            confirmButtonText: "Si, pausar",
+                            cancelButtonText: "Cancelar",
+                            showLoaderOnConfirm: false,
+                        }).then(function(result) {
+                            if (!result.value) {
+                                return;
+                            }
+
+                            wait.modal('show');
+
+                            $.ajax({
+                                url: "{{route('alumnos.pausar_grupo')}}",
+                                type: 'POST',
+                                cache: false,
+                                data: {
+                                    _token: $("meta[name='csrf-token']").attr("content"),
+                                    id_alumno: {{$alumno->id}},
+                                    id_grupo: id,
+                                },
+                                success: function (response){
+                                    location.reload();
+                                },
+                                error:function(error){
+                                    setTimeout(() => {
+                                        wait.modal('hide');
+                                        toastr.error('Error', 'Ocurrio un error inesperado');
+                                    }, 250);
+                                }
+                            });
+                        })
+            });
+
+            $('.reaundar_grupo').click(function(){
+                id = $(this).data('id');
+                swal({
+                            title: "¿Estas seguro de reaundar al alumno en este grupo?",
+                            type: "success",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3bd52c",
+                            cancelButtonColor: "#CDCDCD",
+                            confirmButtonText: "Si, reaundar",
+                            cancelButtonText: "Cancelar",
+                            showLoaderOnConfirm: false,
+                        }).then(function(result) {
+                            if (!result.value) {
+                                return;
+                            }
+
+                            wait.modal('show');
+
+                            $.ajax({
+                                url: "{{route('alumnos.reanudar_grupo')}}",
+                                type: 'POST',
+                                cache: false,
+                                data: {
+                                    _token: $("meta[name='csrf-token']").attr("content"),
+                                    id_alumno: {{$alumno->id}},
+                                    id_grupo: id,
+                                },
+                                success: function (response){
+                                    location.reload();
+                                },
+                                error:function(error){
+                                    setTimeout(() => {
+                                        wait.modal('hide');
+                                        toastr.error('Error', 'Ocurrio un error inesperado');
+                                    }, 250);
+                                }
+                            });
+                        })
+            });
 
             $('.baja_grupo').click(function(){
                 id = $(this).data('id');

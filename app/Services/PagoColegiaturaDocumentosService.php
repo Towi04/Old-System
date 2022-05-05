@@ -39,7 +39,7 @@ class PagoColegiaturaDocumentosService
         $today = Carbon::today();
 
         $grupos = $this->alumno->grupos->filter(function($grupo)use($today){
-            return $grupo->fecha_inicio->lte($today);
+            return $grupo->fecha_inicio->lte($today) && $grupo->status == 'Inscrito';
         });
 
         foreach ($grupos as $grupo) {
@@ -180,7 +180,10 @@ class PagoColegiaturaDocumentosService
         $today = Carbon::today();
 
         $grupos = $this->alumno->grupos->filter(function($grupo)use($today){
-            return $grupo->fecha_inicio->lte($today);
+            if($grupo->fecha_inicio){
+                return $grupo->fecha_inicio->lte($today) && $grupo->pivot->status == 'Inscrito';
+            }
+            
         });
 
         foreach ($grupos as $grupo) {
@@ -209,6 +212,7 @@ class PagoColegiaturaDocumentosService
     
                  #BUSCA UN APOYO SI EXISTE EN ESA SEMANA 
                 $apoyos = $alumno ->apoyos_especiales->where('id_grupo', $grupo->id)->filter(function($apoyo)use($fecha_inicio){
+                    
                     return $apoyo->fecha_inicio->lte($fecha_inicio) && $apoyo->fecha_final->gte($fecha_inicio);
                 });
     

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Grupo;
 use App\Models\Alumno;
+use App\Models\AlumnoGrupo;
 use App\Models\AlumnoPago;
 use App\Models\Documento;
 use App\Models\Especialidad;
@@ -697,5 +698,34 @@ class AlumnosController extends Controller
             'id_usuario'=> Auth::id(),
             'id_usuario_autoriza'=> Auth::id(),
         ]);
+    }
+
+    public function pausar_grupo(Request $request){
+
+        $alumno = Alumno::find($request->id_alumno);
+
+        AlumnoGrupo::where('id_alumno','=',$request->id_alumno)->where('id_grupo','=',$request->id_grupo)->update([
+            'status' => 'Pausa'
+        ]);
+
+        $grupo = Grupo::find($request->id_grupo);
+
+        $grupo->actualizarReporteDesercion('sumar','bajas',1);
+
+    }
+
+    public function reanudar_grupo(Request $request){
+
+        $alumno = Alumno::find($request->id_alumno);
+
+        AlumnoGrupo::where('id_alumno','=',$request->id_alumno)->where('id_grupo','=',$request->id_grupo)->update([
+            'status' => 'Inscrito'
+        ]);
+
+        $grupo = Grupo::find($request->id_grupo);
+
+        $grupo->actualizarReporteDesercion('sumar','altas',1);
+
+
     }
 }

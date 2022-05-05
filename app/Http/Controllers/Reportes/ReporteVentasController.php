@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PartidaVenta;
 use App\Models\Venta;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\ApoyoInscripcion;
 use PDF;
 
 class ReporteVentasController extends Controller
@@ -787,5 +788,94 @@ class ReporteVentasController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    public function apoyos_inscripcion(Request $request)
+    {
+        Carbon::setWeekStartsAt(Carbon::SUNDAY);
+        Carbon::setWeekEndsAt(Carbon::SATURDAY);
+
+        $tipo = $request->input('tipo') ?? 'semanal';
+
+        $sucursal = optional(session('sucursal'));
+
+        // dd($sucursal);
+
+        if (isset($request->fecha)) {
+            $fecha = Carbon::createFromFormat('d-m-Y', $request->input('fecha'));
+        } else {
+            $fecha = Carbon::today();
+        }
+
+        if ($tipo == 'dia') {
+            $tipo = 'dia';
+
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDay();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDay();
+
+            $apoyos_inscripcion = ApoyoInscripcion::with(['alumno','usuario_autorizo','usuario_solicito'])
+                ->whereBetween('created_at', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
+                ->orderBy('created_at', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'mes') {
+
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subMonth();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addMonth();
+
+            $apoyos_inscripcion = ApoyoInscripcion::with(['alumno','usuario_autorizo','usuario_solicito'])
+                ->whereBetween('created_at', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
+                ->orderBy('created_at', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'semanal') {
+
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDays(7);
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDays(7);
+
+            $apoyos_inscripcion = ApoyoInscripcion::with(['alumno','usuario_autorizo','usuario_solicito','grupo.especialidad'])
+                ->whereBetween('created_at', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
+                ->orderBy('created_at', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'anual') {
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subYear();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addYear();
+
+            $apoyos_inscripcion = ApoyoInscripcion::with(['alumno','usuario_autorizo','usuario_solicito'])
+                ->whereBetween('created_at', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
+                ->orderBy('created_at', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        $apoyos = $apoyos_inscripcion->get()->filter(function($apoyo)use($sucursal){
+            return $apoyo->alumno->id_sucursal == $sucursal->id;
+        });
+
+
+        $user = auth()->user();
+
+        return view('reportes.apoyos_inscripcion', compact(
+            'apoyos',
+            'fecha',
+            'fecha_antes',
+            'fecha_despues',
+            'tipo',
+        ));
     }
 }

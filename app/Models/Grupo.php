@@ -123,7 +123,7 @@ class Grupo extends Model
 
     public function getNombreAttribute()
     {
-        return '(' . $this->clave . ') ' . $this->especialidad . ' H:' . $this->horario . ' FI:' . $this->fecha_inicio->format('d-m-Y');
+        return '(' . $this->clave . ') ' . $this->especialidad->nombre;
     }
 
     public function days()

@@ -120,7 +120,7 @@ class Alumno extends Model
     public function grupos()
     {
         return $this->belongsToMany(Grupo::class, 'alumnos_grupos', 'id_alumno', 'id_grupo')
-            ->withPivot('id', 'id_grupo','fecha_inicio')->using(AlumnoGrupo::class);
+            ->withPivot('id', 'id_grupo','fecha_inicio','status')->using(AlumnoGrupo::class);
     }
 
     public function pagos()

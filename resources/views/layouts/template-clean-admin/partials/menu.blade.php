@@ -225,7 +225,7 @@
                     @endcan
                     @can('ver_reporte_apoyos_inscripcion')
                     <li>
-                        <a href="{{ route('reportes.desercion') }}">Reporte de Apoyos a la inscripción</a>
+                        <a href="{{ route('reportes.apoyos_inscripcion') }}">Reporte de Apoyos a la inscripción</a>
                     </li>
                     @endcan
                     

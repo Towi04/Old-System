@@ -417,6 +417,12 @@ return [
             'display_name'  => 'Cambio horario grupo',
             'description'   => 'Permite realizar un cambio de horario de un grupo a un alumno',
         ],
+        [
+            'name'          => 'ver_reporte_apoyos_inscripcion',
+            'display_name'  => 'Ver reporte de apoyos a inscripcion',
+            'description'   => 'Permite ver el reporte de apoyos a inscripción',
+        ],
+        
     ],
 
     # Roles del sistema (Puedes agregar mas roles de prueba)

@@ -158,6 +158,8 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::get('alumnos/formulario_inscribir_otro_grupo/{alumno}', [ AlumnosController::class,'formulario_inscribir_otro_grupo'])->name('alumnos.formulario_inscribir_otro_grupo');
     Route::put('alumnos/inscribir_a_otro_grupo/{id}', [ AlumnosController::class,'inscribir_a_otro_grupo'])->name('alumnos.inscribir_a_otro_grupo');
     Route::post('alumnos/baja_grupo', [ AlumnosController::class,'baja_grupo'])->name('alumnos.baja_grupo');
+    Route::post('alumnos/pausar_grupo', [ AlumnosController::class,'pausar_grupo'])->name('alumnos.pausar_grupo');
+    Route::post('alumnos/reanudar_grupo', [ AlumnosController::class,'reanudar_grupo'])->name('alumnos.reanudar_grupo');
 
     Route::get('alumnos/cambio_horario/{id_alumno}/{id_grupo_origen}', [ AlumnosController::class,'cambio_horario'])->name('alumnos.cambio_horario');
     Route::post('alumnos/guardar_cambio_horario', [ AlumnosController::class,'guardar_cambio_horario'])->name('alumnos.guardar_cambio_horario');
@@ -247,6 +249,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
             Route::delete('eliminar-pago/{pago}',[ReporteVentasController::class,'eliminar_pago'])->name('eliminar-pago');
         });
 
+        Route::get('reporte-ventas/apoyos-inscripcion',[ReporteVentasController::class,'apoyos_inscripcion'])->name('apoyos_inscripcion');
         Route::get('reporte-ventas-productos',[ReporteVentasController::class,'index_productos'])->name('reporte-ventas.index_productos');
         Route::get('vencimientos',[ReporteVentasController::class,'vencimientos'])->name('reporte-ventas.vencimientos');
         Route::post('datatables_vencimientos',[ReporteVentasController::class,'datatables_vencimientos'])->name('reporte-ventas.datatables_vencimientos');

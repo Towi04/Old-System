@@ -27,7 +27,7 @@ class ApoyoInscripcion extends Model
 
     public function alumno()
     {
-        return $this->belongsTo(Alumno::class, 'id_alumno', 'id');
+        return $this->belongsTo(Alumno::class, 'id_alumno', 'id')->withTrashed();
     }
 
     /**
@@ -49,4 +49,31 @@ class ApoyoInscripcion extends Model
     {
         return $this->belongsTo(User::class, 'id_usuario', 'id');
     }
+
+    /**
+     * Get the alumno t
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function usuario_solicito()
+    {
+        return $this->belongsTo(User::class, 'id_usuario', 'id')->withDefault([
+            'nombre' => 'NA',
+            'apellido_paterno' => ''
+        ]);
+    }
+
+    /**
+     * Get the alumno t
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function usuario_autorizo()
+    {
+        return $this->belongsTo(User::class, 'id_usuario_autoriza', 'id')->withDefault([
+            'nombre' => 'NA',
+            'apellido_paterno' => ''
+        ]);
+    }
+
 }
