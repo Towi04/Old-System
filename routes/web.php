@@ -144,6 +144,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
     ]);
 
     # NOTE: RUTAS ALUMNOS
+
     Route::delete('alumnos/eliminar_apoyo_inscripcion/{id}', [ AlumnosController::class,'eliminar_apoyo_inscripcion'])->name('alumnos.eliminar_apoyo_inscripcion');
     Route::post('alumnos/store_apoyo_inscripcion', [ AlumnosController::class,'store_apoyo_inscripcion'])->name('alumnos.store_apoyo_inscripcion');
     Route::post('alumnos/datatables_apoyos_inscripcion', [ AlumnosController::class,'datatables_apoyos_inscripcion'])->name('alumnos.datatables_apoyos_inscripcion');
@@ -162,9 +163,11 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::post('alumnos/guardar_cambio_horario', [ AlumnosController::class,'guardar_cambio_horario'])->name('alumnos.guardar_cambio_horario');
     Route::post('alumnos/actualizar_informacion', [ AlumnosController::class,'actualizar_informacion'])->name('alumnos.actualizar_informacion');
 
-    Route::resource('alumnos', AlumnosController::class)->parameters([
-        'alumnos' => 'alumno'
-    ]);
+    Route::group(['middleware' => ['permission:listar_alumnos']], function () {
+            Route::resource('alumnos', AlumnosController::class)->parameters([
+                'alumnos' => 'alumno'
+            ]);
+    });
 
     # NOTE: 👉 APOYOS ESPECIALES
     Route::prefix('apoyos-especiales')->name('apoyos-especiales.')->group(function () {
@@ -213,14 +216,14 @@ Route::middleware(['auth','sucursal'])->group(function () {
 
     # NOTE RUTAS PUNTO DE DE VENTA ALUMNOS
 
-    Route::prefix('punto_de_venta')->name('punto_de_venta.')->group(function () {
+    Route::middleware(['permission:ingresar_punto_venta'])->prefix('punto_de_venta')->name('punto_de_venta.')->group(function () {
         Route::post('pago_manual',[ PuntoDeVentaController::class,'pago_manual'])->name('pago_manual');
         Route::post('recibir_abonos',[ PuntoDeVentaController::class,'recibir_abonos'])->name('recibir_abonos');
         Route::get('ticket/{id}',[ PuntoDeVentaController::class,'ticket'])->name('ticket');
         Route::post('traer_grupos',[ PuntoDeVentaController::class,'traer_grupos'])->name('traer_grupos');
     });
 
-    Route::resource('punto_de_venta', PuntoDeVentaController::class)->only('index');
+    Route::middleware(['permission:ingresar_punto_venta'])->resource('punto_de_venta', PuntoDeVentaController::class)->only('index');
 
 
     # NOTE RUTAS PUNTO DE DE VENTA

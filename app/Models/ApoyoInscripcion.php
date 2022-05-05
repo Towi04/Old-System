@@ -20,10 +20,11 @@ class ApoyoInscripcion extends Model
     ];
 
     /**
-     * Get the alumno t
+     * Get the alumno
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
+
     public function alumno()
     {
         return $this->belongsTo(Alumno::class, 'id_alumno', 'id');
