@@ -202,6 +202,7 @@
                                                     <th>Monto</th>
                                                     <th>Solicitó</th>
                                                     <th>Autorizó</th>
+                                                    <th>Motivo</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -211,7 +212,7 @@
                                                            {{$apoyo->created_at->format('d-m-Y')}}
                                                         </td>
 
-                                                        <td class="text-nowrap">
+                                                        <td >
                                                             {{$apoyo->alumno->nuevo_numero_control}}
 
                                                             {{$apoyo->alumno->fullname}}
@@ -229,6 +230,9 @@
 
                                                         <td>
                                                             {{$apoyo->usuario_autorizo->fullname}} 
+                                                        </td>
+                                                        <td>
+                                                            {{$apoyo->motivo}} 
                                                         </td>
 
                                                     </tr>

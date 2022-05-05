@@ -204,6 +204,7 @@
                 formData.append('precio_inscripcion',$("#precio_inscripcion").val());
                 formData.append('id_usuario_autoriza',$("#id_usuario_autoriza").val());
                 formData.append('password',$("#password").val());
+                formData.append('motivo',$("#motivo").val());
             }
 
             $.ajax({
@@ -266,6 +267,7 @@
             $("[data-apoyo]").attr('required',e.target.checked)
             $("[data-password]").attr('required',e.target.checked)
             $("[data-usuario]").attr('required',e.target.checked)
+            $("[data-motivo]").attr('required',e.target.checked)
 
             if(!e.target.checked){
 

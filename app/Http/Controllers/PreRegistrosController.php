@@ -391,7 +391,7 @@ class PreRegistrosController extends Controller
                 break;
             }
 
-
+            // dd($request);
             #SE CREA EL APOYO A LA INSCRIPCION DEL ALUMNO
             if($request->apoyo_especial == "true"){
                 $grupo = Grupo::find($request->input('id_grupo'));
@@ -401,6 +401,7 @@ class PreRegistrosController extends Controller
                     'apoyo'     => $grupo->precio_inscripcion -  $request->precio_inscripcion,
                     'id_usuario'=> Auth::id(),
                     'id_usuario_autoriza'=> $request->id_usuario_autoriza,
+                    'motivo'    =>$request->motivo,
                 ]);
             }   
             // OPERACIONES: sumar | restar

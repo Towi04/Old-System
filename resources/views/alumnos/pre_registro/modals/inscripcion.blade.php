@@ -61,6 +61,10 @@
                                     {!! Form::label('precio_inscripcion','Precio Original de Inscripción:*') !!}
                                     {!! Form::number('precio_inscripcion',null, ['class' => 'form-control form-control-sm','form-selector'=> '','placeholder' =>'Escribe el monto de la inscripcion','step' => '0.01','data-apoyo']) !!}
                                 </div>
+                                <div class="col-12">
+                                    {!! Form::label('motivo','Escribe el motivo del apoyo:*') !!}
+                                    {!! Form::textarea('motivo',null, ['class' => 'form-control form-control-sm','placeholder' =>'Escribe el motivo del apoyo','data-motivo','rows'=>'3']) !!}
+                                </div>
                             </div>
                         @endcan
                     </fieldset>
