@@ -422,6 +422,12 @@ return [
             'display_name'  => 'Ver reporte de apoyos a inscripcion',
             'description'   => 'Permite ver el reporte de apoyos a inscripción',
         ],
+        [
+            'name'          => 'subir_foto_alumnos',
+            'display_name'  => 'Subir foto de los alumnos',
+            'description'   => 'Subir foto de los alumnos',
+        ],
+        
         
     ],
 

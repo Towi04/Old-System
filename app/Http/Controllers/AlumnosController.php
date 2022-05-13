@@ -728,4 +728,43 @@ class AlumnosController extends Controller
 
 
     }
+
+
+    public function subir_foto(Request $request)
+    {
+        $alumno = Alumno::find($request->id_alumno);
+
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+
+            $image = Image::make($file);
+
+            $nombre_foto = $file->getClientOriginalName();
+
+            if (!Storage::exists('alumnos_foto')) {
+                Storage::makeDirectory('usuarios_foto');
+            }
+
+            if (!Storage::exists("alumnos_foto/{$alumno->id}")) {
+                Storage::makeDirectory("alumnos_foto/{$alumno->id}");
+            }
+
+            $path = storage_path() . "/app/alumnos_foto/{$alumno->id}/";
+            // resize the image to a width of 300 and constrain aspect ratio (auto height)
+            $image->resize(780, null, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+            $image->save($path . $nombre_foto);
+
+
+            $alumno->foto = $nombre_foto;
+            $alumno->save();
+        }
+
+        $alumno->save();
+        return redirect()->back()->with([
+            'message' => 'Se actualizó la foto con éxito'
+        ]);
+    }
+
 }

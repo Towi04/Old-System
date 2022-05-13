@@ -61,8 +61,19 @@
                 <div class="up-head-w"
                     style="background-image: linear-gradient( var(--primary), 70%, var(--primary));">
 
-                    <div class="up-main-info " style="padding-bottom: 150px; padding-top:10px">
+                    <div class="up-main-info text-center " style="padding-bottom: 150px; padding-top:10px">
                         <img alt="" src="{{ $alumno->url_foto }}" style="width: 50%">
+                        @can('subir_foto_alumnos')
+                            {!! Form::open(['route' => ['alumnos.subir_foto'], 'method' => 'POST', 'accept-charset' => 'UTF-8', 'enctype' => 'multipart/form-data','onsubmit' => "wait.modal('show')"]) !!}
+                                <div class="form-buttons-w text-right">
+                                    <label for="input-file-now">Foto: </label>
+                                    <input type="file" id="input-file-now" class="dropify" name="foto" value="{{ @$alumno->foto }}" @if ($alumno->foto) data-default-file="{{ url('archivo/alumnos_foto/'.$alumno->id.'/'. $alumno->foto) }}" @endif />
+                                    <input type="hidden" name="id_alumno" value="{{$alumno->id}}">
+                                    <button class="btn btn-success" type="submit"><i class="fa fa-plus"></i> Subir foto</button>
+                                </div>
+                            {!! Form::close() !!}
+                        @endcan
+
                         <h2 class="up-header">
                             {{ $alumno->nuevo_numero_control }} - {{ $alumno->full_name }}
                         </h2>
