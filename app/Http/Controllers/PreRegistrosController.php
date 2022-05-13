@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Services\FacturacionService;
 use App\Services\PagoInscripcionService;
 use App\Services\PagoInscripcionDocumentosService;
+use App\Services\PagoColegiaturaDocumentosService;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
@@ -278,7 +279,7 @@ class PreRegistrosController extends Controller
         ]);
     }
 
-    public function inscribir(Request $request, $id,PagoInscripcionDocumentosService $pids)
+    public function inscribir(Request $request, $id,PagoInscripcionDocumentosService $pids, PagoColegiaturaDocumentosService $pcds)
     {
         $rules = [
             'id_sucursal'           => 'required',
@@ -378,20 +379,19 @@ class PreRegistrosController extends Controller
 
             $pids->setRequest($request);
             $pids->setAlumno($alumno);
-
+            $pcds->setAlumno($alumno);
 
             switch ($request->input('forma_pago')) {
                 case config('alumnos.forma_pago.mensual','mensual'):
                     $pids->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
-                    // $pids->mensualPorGrupo($grupo_inscripcion);
+                    $pcds->mensual();
                 break;
                 case config('alumnos.forma_pago.semanal','semanal'):
                     $pids->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
-                    // $pids->semanalPorGrupo($grupo_inscripcion);
+                    $pcds->semanal();
                 break;
             }
 
-            // dd($request);
             #SE CREA EL APOYO A LA INSCRIPCION DEL ALUMNO
             if($request->apoyo_especial == "true"){
                 $grupo = Grupo::find($request->input('id_grupo'));

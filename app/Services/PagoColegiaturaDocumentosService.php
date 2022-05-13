@@ -89,7 +89,7 @@ class PagoColegiaturaDocumentosService
                 'especial'                  => $result['especial'],
             ]);
 
-            echo "Fecha {$fecha_inicio->format('d-m-Y')} | {$alumno->fullname}<br>";
+            // echo "Fecha {$fecha_inicio->format('d-m-Y')} | {$alumno->fullname}<br>";
             // dd($fecha_inicio->addMonthNoOverflow());
             $fecha_inicio->addMonthNoOverflow()->startOfMonth();
             $this->fecha_actual = $fecha_inicio;
@@ -245,7 +245,7 @@ class PagoColegiaturaDocumentosService
                     'status'                    => config('pagos.status.Pendiente'),
                 ]);
     
-                echo "Semana {$fecha_inicio->weekOfYear} fin_semana {$fecha_inicio->copy()->endOfWeek()}| Fecha {$fecha_inicio->format('d-m-Y')} | {$alumno->fullname}<br>";
+                // echo "Semana {$fecha_inicio->weekOfYear} fin_semana {$fecha_inicio->copy()->endOfWeek()}| Fecha {$fecha_inicio->format('d-m-Y')} | {$alumno->fullname}<br>";
                 $fecha_inicio->addWeek();
                 
     

@@ -249,7 +249,7 @@
                     }else{
                         setTimeout(() => {
                         wait.modal('hide');
-                        toastr.error('Error', 'Ocurrio un error inesperado');
+                        toastr.error('Error', 'Ocurrio un error inesperado aldo');
                     }, 250);
                     }
                     

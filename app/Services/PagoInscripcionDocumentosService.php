@@ -23,6 +23,7 @@ class PagoInscripcionDocumentosService
         $this->alumno = new Alumno();
 
         $this->fecha_actual = today();
+        
     }
 
 
@@ -146,6 +147,11 @@ class PagoInscripcionDocumentosService
             $documento -> saldo = 0;
             $documento -> save(); 
         }
+
+       
+
+
+
     }
 
 

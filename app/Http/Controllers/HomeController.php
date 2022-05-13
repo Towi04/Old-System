@@ -205,7 +205,7 @@ class HomeController extends Controller
 
             if($forma_pago == 'mensual'){
                 
-                $pcds->mensual($grupo, $alumno );
+                $pcds->mensual();
                 
             }
             if($forma_pago == 'semanal'){
