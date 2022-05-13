@@ -513,5 +513,50 @@ class HomeController extends Controller
         }
 
 
+
+    }
+
+
+    public function alumnos_sin_fecha_inicio(){
+        $sucursal  = Session::get('sucursal');
+
+        $alumnos = Alumno::with('pagos_caja')->has('pagos_caja')->where('id_sucursal','=',$sucursal->id)->whereHas('grupos', function($q){
+            return $q->whereNull('alumnos_grupos.fecha_inicio');
+        })->get();
+
+
+
+        // echo "ALUMNOS CON GRUPOS DESFADASO DE SUCURSAL: {$sucursal->nombre}<br>";
+        $table = '<table class="table table-bordered"  ><thead class="bg-primary text-white"><tr><th>#</th><th>ALUMNO</th><th>INICIO GRUPO</th><th>INICIO DEL ALUMNO EN EL GRUPO</th></tr></thead>';
+        foreach($alumnos as $index => $alumno){
+            
+            foreach($alumno->grupos->filter(function($grupo){
+                return $grupo->pivot->fecha_inicio == null;
+            })  as $grupo){
+                
+                    $table .= '<tr>';
+                    $table .= ' <td>';
+                    $table .= $index+1;
+                    $table .= ' </td>';
+                    $table .= ' <td>';
+                    $table .= "     <a target='_blank' class='text-primary' href='".route('alumnos.show', $alumno->id)."'>{$alumno->fullname}</a>";
+                    $table .= ' </td>';
+                   
+                    $table .= ' <td>';
+                    $table .= "     {$grupo->clave}: ".optional($grupo->fecha_inicio)->format('d-m-Y');
+                    $table .= ' </td>';
+                    $table .= " <td><a class='editable_fecha_inicio_grupo' data-pk='{$grupo->pivot->id}' data-name='fecha_inicio' data-url='".route('especiales.actualizar_informacion_grupos_alumnos')."' data-type='date'  data-placement='bottom'>";
+                    $table .=  optional($grupo->pivot->fecha_inicio)->format('d-m-Y');
+                    $table .= ' </a></td>';
+                    $table .= '</tr>';
+            
+            }
+            
+
+        }
+        $table .= '</table>'; 
+
+        return view('especiales.alumnos_sin_fecha_inicio', compact('table'));
+
     }
 }

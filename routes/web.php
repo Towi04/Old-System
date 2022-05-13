@@ -344,6 +344,8 @@ Route::prefix('especiales')->name('especiales.')->group(function(){
 
      Route::get('actualizar_apoyos_inscripcion_monto_pago',[HomeController::class,'actualizar_apoyos_inscripcion_monto_pago'])->name('actualizar_apoyos_inscripcion_monto_pago');
 
+     #ALUMNOS SIN FECHA DE INICIO
+     Route::get('alumnos_sin_fecha_inicio',[HomeController::class,'alumnos_sin_fecha_inicio'])->name('alumnos_sin_fecha_inicio');
 
 });
 
