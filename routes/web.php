@@ -342,6 +342,8 @@ Route::prefix('especiales')->name('especiales.')->group(function(){
      #GENERAR APOYOS ESPECIALES CREADOS ANTERIORMENTE
      Route::get('crear_apoyos_inscripcion',[HomeController::class,'crear_apoyos_inscripcion'])->name('crear_apoyos_inscripcion');
 
+     Route::get('actualizar_apoyos_inscripcion_monto_pago',[HomeController::class,'actualizar_apoyos_inscripcion_monto_pago'])->name('actualizar_apoyos_inscripcion_monto_pago');
+
 
 });
 

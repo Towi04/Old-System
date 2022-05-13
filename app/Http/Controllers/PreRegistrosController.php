@@ -398,7 +398,7 @@ class PreRegistrosController extends Controller
                 $apoyo = ApoyoInscripcion::create([
                     'id_alumno' => $alumno->id,
                     'id_grupo'  => $grupo->id,
-                    'apoyo'     => $grupo->precio_inscripcion -  $request->precio_inscripcion,
+                    'apoyo'     => $request->precio_inscripcion,
                     'id_usuario'=> Auth::id(),
                     'id_usuario_autoriza'=> $request->id_usuario_autoriza,
                     'motivo'    =>$request->motivo,

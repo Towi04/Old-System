@@ -501,4 +501,17 @@ class HomeController extends Controller
 
     }
 
+    public function actualizar_apoyos_inscripcion_monto_pago(){
+
+        $apoyos = ApoyoInscripcion::with('grupo')->get();
+        
+        foreach($apoyos as $apoyo){
+            $grupo = $apoyo->grupo;
+            $apoyo->apoyo = $grupo->precio_inscripcion - $apoyo->apoyo;
+            $apoyo->save();
+
+        }
+
+
+    }
 }
