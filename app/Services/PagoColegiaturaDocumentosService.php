@@ -119,8 +119,11 @@ class PagoColegiaturaDocumentosService
                 ];
             }else{
                 #SE CALCULA DE ACUERDO A LAS CLASES RESTANTES QUE TENGA EN EL MES
+                #SE DEBEN CALCULAR DE ACUERDO A LAS SEMANAS RESTANTES DONDE CUMPLA CON TODAS SUS CLASES
+                #PAGA EL NUMERO DE SEMANAS COMPLETAS POR PAGO SEMANAL. 
                     
-                    $precio_mensualidad = $grupo->precio_mensualidad;
+                    // $precio_mensualidad = $grupo->precio_mensualidad;
+                    $precio_semana = $grupo->precio_semana;
             
                     $dia_actual = $fecha_inicio;
                     $mes_actual = $dia_actual->month;
@@ -140,6 +143,7 @@ class PagoColegiaturaDocumentosService
                     $dias_pendientes = 0;
             
                     $days = $grupo->days;
+                    $total_days = $days->count() * 4;
                     
                     foreach ($days as $grupodia) {
                         $numero_dia =  $lista_numero_dias[$grupodia->dia] ?? 0;
@@ -148,7 +152,11 @@ class PagoColegiaturaDocumentosService
                         $dias_pendientes += countDaysInMonth($dia_actual,$numero_dia);
 
                     }
+
+                    $semanas = round($dias_pendientes / $days->count());
+                    
                     $precio = ($total_dias == 0) ? 0 : $dias_pendientes * $grupo->precio_mensualidad / $total_dias;
+                    $precio = $semanas * $grupo->precio_semanal;
                     
                     return [
                         'monto'=>$precio ?? 0,
