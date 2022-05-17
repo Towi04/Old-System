@@ -168,7 +168,7 @@
 
                         dom.modal_inscripcion.find('#inscripcion-detalle').text(txt);
                         dom.modal_inscripcion.find('#precio_inscripcion').val(inscripcion);
-                        dom.modal_inscripcion.find('#precio_inscripcion').attr("max",inscripcion);
+                        // dom.modal_inscripcion.find('#precio_inscripcion').attr("max",inscripcion);
                         dom.modal_inscripcion.modal('show');
                     },
                     "json"

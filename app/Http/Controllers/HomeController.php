@@ -559,4 +559,6 @@ class HomeController extends Controller
         return view('especiales.alumnos_sin_fecha_inicio', compact('table'));
 
     }
+
+    
 }
