@@ -228,6 +228,11 @@
                         <a href="{{ route('reportes.apoyos_inscripcion') }}">Reporte de Apoyos a la inscripción</a>
                     </li>
                     @endcan
+                    @can('ver_reporte_pagos_eliminados')
+                    <li>
+                        <a href="{{ route('reportes.pagos_eliminados') }}">Reporte de Pagos Eliminados</a>
+                    </li>
+                    @endcan
                     
                 </ul>
             </div>

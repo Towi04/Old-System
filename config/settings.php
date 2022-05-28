@@ -427,7 +427,11 @@ return [
             'display_name'  => 'Subir foto de los alumnos',
             'description'   => 'Subir foto de los alumnos',
         ],
-        
+        [
+            'name'          => 'ver_reporte_pagos_eliminados',
+            'display_name'  => 'Ver reporte pagos eliminados',
+            'description'   => 'Ver reporte pagos eliminados',
+        ],
         
     ],
 

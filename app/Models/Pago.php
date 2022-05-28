@@ -39,7 +39,7 @@ class Pago extends Model
      *
      * @var array
      */
-    protected $dates = ['created_at', 'updated_at', 'fecha'];
+    protected $dates = ['created_at', 'updated_at', 'fecha','deleted_at'];
 
     /**
      * The accessors to append to the model's array form.
@@ -97,4 +97,16 @@ class Pago extends Model
 
         return $this->fecha->format('d-m-Y h:i a');
     }
+
+    /**
+     * Get the usuario_elimino that owns the Pago
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function usuario_elimino()
+    {
+        return $this->belongsTo(User::class, 'id_usuario_elimino', 'id');
+    }
+
+
 }

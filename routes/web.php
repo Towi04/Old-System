@@ -252,6 +252,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
             Route::delete('eliminar-pago/{pago}',[ReporteVentasController::class,'eliminar_pago'])->name('eliminar-pago');
         });
 
+        Route::get('reporte-ventas/pagos-eliminados',[ReporteVentasController::class,'pagos_eliminados'])->name('pagos_eliminados');
         Route::get('reporte-ventas/apoyos-inscripcion',[ReporteVentasController::class,'apoyos_inscripcion'])->name('apoyos_inscripcion');
         Route::get('reporte-ventas-productos',[ReporteVentasController::class,'index_productos'])->name('reporte-ventas.index_productos');
         Route::get('vencimientos',[ReporteVentasController::class,'vencimientos'])->name('reporte-ventas.vencimientos');

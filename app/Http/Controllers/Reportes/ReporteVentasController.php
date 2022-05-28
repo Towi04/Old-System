@@ -754,7 +754,10 @@ class ReporteVentasController extends Controller
                 $abono->delete();                
             });
 
+            $pago->id_usuario_elimino = Auth::id();
+            $pago->save();
             $pago->delete();
+            
             Log::alert('Usuario '.Auth::user()->fullname.' elimino el pago '.(($pago->folio_fiscal)?$pago->folio_fiscal:$pago->folio).' de '.$pago->alumno->numero_control_fullname.' por '.$pago->monto.' | Sucursal: '.$sucursal->nombre);
 
             DB::commit();
@@ -881,4 +884,121 @@ class ReporteVentasController extends Controller
             'tipo',
         ));
     }
+
+    public function pagos_eliminados(Request $request){
+
+        Carbon::setWeekStartsAt(Carbon::SUNDAY);
+        Carbon::setWeekEndsAt(Carbon::SATURDAY);
+
+        $tipo = $request->input('tipo') ?? 'dia';
+
+        $sucursal = optional(session('sucursal'));
+
+        $mostrar_solo_fiscales = optional(Configuracion::where('nombre', '=', 'mostrar_solo_fiscales')->first())->valor == 'Si';
+
+        if (isset($request->fecha)) {
+            $fecha = Carbon::createFromFormat('d-m-Y', $request->input('fecha'));
+        } else {
+            $fecha = Carbon::today();
+        }
+
+        if ($tipo == 'dia') {
+            $tipo = 'dia';
+
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDay();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDay();
+
+            $pagos = Pago::onlyTrashed()
+                ->where('id_sucursal', '=', $sucursal->id)
+                ->whereBetween('deleted_at', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
+                ->orderBy('deleted_at', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'mes') {
+
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subMonth();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addMonth();
+
+            $pagos = Pago::onlyTrashed()
+                ->where('id_sucursal', '=', $sucursal->id)
+                ->whereBetween('deleted_at', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
+                ->orderBy('deleted_at', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'semanal') {
+
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDays(7);
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDays(7);
+
+            $pagos = Pago::onlyTrashed()
+                ->where('id_sucursal', '=', $sucursal->id)
+                ->whereBetween('deleted_at', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
+                ->orderBy('deleted_at', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'anual') {
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subYear();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addYear();
+
+            $pagos = Pago::onlyTrashed()
+                ->where('id_sucursal', '=', $sucursal->id)
+                ->whereBetween('deleted_at', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
+                ->orderBy('deleted_at', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($mostrar_solo_fiscales) {
+            $pagos =  $pagos->whereHas('abonos', function ($q) {
+                return $q->where('venta_fiscal', '=', 1);
+            });
+        }
+
+        $pagos =  $pagos->with(['alumno', 'abonos.alumno_pago', 'recibio'])->get();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'monto_abonos'          => $pagos->sum('monto'),
+                'monto_abono_fiscal'    => $pagos->whereHas('abonos', function ($q) {
+                    return $q->where('venta_fiscal', '=', 1);
+                })->sum('monto'),
+                'monto_abono_no_fiscal' => $pagos->whereHas('abonos', function ($q) {
+                    return $q->where('venta_fiscal', '=', 0);
+                })->sum('monto'),
+            ]);
+        }
+
+        $user = auth()->user();
+        $puede_editar_reporte_ventas = $user->can('editar_reporte_ventas');
+        $puede_eliminar_registro = $user->can('eliminar_movimiento_reporte_ventas');
+        $puede_reimprimir_ticket = $user->can('reimprimir_ticket_reporte_ventas');
+
+        return view('reportes.reporte_ventas.pagos_eliminados', compact(
+            'pagos',
+            'fecha',
+            'fecha_antes',
+            'fecha_despues',
+            'tipo',
+            'mostrar_solo_fiscales',
+            'puede_editar_reporte_ventas',
+            'puede_eliminar_registro',
+            'puede_reimprimir_ticket',
+        ));
+
+    }
+
 }
