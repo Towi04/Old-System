@@ -278,7 +278,7 @@
 
                                                         <td class="text-right text-nowrap" style="cursor:pointer">
                                                             <a>
-                                                                $ {{$pago->deleted_at->format('d-m-Y') }}
+                                                                {{ optional($pago->usuario_elimino)->fullname}}
                                                             </a>
                                                         </td>
 
