@@ -272,7 +272,7 @@
 
                                                         <td class="text-right text-nowrap" style="cursor:pointer">
                                                             <a>
-                                                                $ {{$pago->deleted_at->format('d-m-Y') }}
+                                                                $ {{$pago->deleted_at->format('d-m-Y H:i:s') }}
                                                             </a>
                                                         </td>
 
@@ -434,59 +434,6 @@
                 </a>
             </div>
 
-            @can('convertir_no_fiscales_a_fiscales')
-                @if($tipo == 'semanal' || $tipo == 'mes' )
-                    @if(!$mostrar_solo_fiscales)
-                        <div class="col-sm-12 col-xxxl-12 p-1">
-                            <a class="element-box el-tablo p-3" href="#">
-                                <div class="label mb-2">
-                                    No fiscales
-                                </div>
-                                <div class="value" style="font-size: 0.85rem">
-                                    $ <span id="span-monto-abono-no-fiscal">{{ number_format($pagos->filter(function($pago){
-                                        return empty($pago->folio_fiscal);
-                                    })->sum('monto'), 2, '.', ',') }}</span>
-                                </div>
-                            </a>
-                        </div>
-                    @endif
-
-                    <div class="col-sm-12 col-xxxl-12 p-1">
-                        <a class="element-box el-tablo p-3" href="#">
-                        <div class="label mb-2">
-                            Fiscales
-                        </div>
-                        <div class="value" style="font-size: 0.85rem">
-                            $ <span id="span-monto-abono-fiscal" >{{ number_format($pagos->filter(function($pago){
-                                return !empty($pago->folio_fiscal);
-                            })->sum('monto'), 2, '.', ',') }}</span>
-                        </div>
-                        </a>
-                    </div>
-
-                    <div class="col-sm-12 col-xxxl-12 p-1">
-                        <a class="element-box el-tablo p-3" href="#">
-                            <div class="label mb-2">
-                                % de fiscales
-                            </div>
-                            <div class="value" style="font-size: 0.85rem">
-                                @if($pagos->sum('monto') > 0)
-                                {{ number_format( $pagos->filter(function($pago){
-                                    return !empty($pago->folio_fiscal);
-                                })->sum('monto') / $pagos->sum('monto') *100, 2, '.', ',') }} %
-                                @else
-                                NO SE HAN REGISTRADO VENTAS
-                                @endif
-                            </div>
-                        </a>
-                    </div>
-
-                    @if(!$mostrar_solo_fiscales)
-                        <button id="convertir_fiscales" class="btn btn-sm btn-primary btn-block " style="font-size: 0.59rem">Convertir ventas no fiscales a fiscales</button>
-                    @endif
-                @endif
-
-            @endcan
         </div>
     </div>
 
