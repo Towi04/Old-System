@@ -351,3 +351,7 @@ Route::prefix('especiales')->name('especiales.')->group(function(){
 
 // RUTAS PUBLICAS 
 Route::get('personal/verificacion/{id}', [UsersController::class,'verificacion'])->name('users.verificacion');
+
+Route::get('test-log', function () {
+    \Log::info('Info log test');
+});

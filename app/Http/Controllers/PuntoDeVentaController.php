@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Jenssegers\Date\Date;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class PuntoDeVentaController extends Controller
 {
@@ -33,6 +35,7 @@ class PuntoDeVentaController extends Controller
             'forma_pago'    => 'required',
         ]);
 
+        $sucursal = session('sucursal');
         $id_sucursal = optional(session('sucursal'))->id;
         $id_recibio = auth()->id();
         $fecha_abono = now();
@@ -46,6 +49,8 @@ class PuntoDeVentaController extends Controller
             $folio_fiscal = Pago::query()->select('folio_fiscal')->where('id_sucursal', $id_sucursal)->max('folio_fiscal') ?? 0;
 
             $venta_fiscal = ($request->input('forma_pago', '') != 'Efectivo') ? true : $alumno->solicitud_factura;
+
+            Log::alert('Usuario '.Auth::user()->fullname.' recibio abono de '.$alumno->numero_control_fullname.' por '.$monto.' con folio '.(($venta_fiscal)?$folio_fiscal+1:$folio+1).' Sucursal: '.$sucursal->nombre);
         }
 
         if (isset($request->id_preregistro)) {
@@ -56,6 +61,8 @@ class PuntoDeVentaController extends Controller
             $folio_fiscal = Pago::query()->select('folio_fiscal')->where('id_sucursal', $id_sucursal)->max('folio_fiscal') ?? 0;
 
             $venta_fiscal = ($request->input('forma_pago', '') != 'Efectivo') ? true : $alumno->solicitud_factura;
+
+            Log::alert('Usuario '.Auth::user()->fullname.' recibio anticipo de '.$alumno->numero_control_fullname.' por '.$monto.' con folio '.(($venta_fiscal)?$folio_fiscal+1:$folio+1).' Sucursal: '.$sucursal->nombre);
         }
 
         try {

@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use Symfony\Component\HttpFoundation\Response as HTTPMessages;
+use Illuminate\Support\Facades\Log;
 
 class AlumnosController extends Controller
 {
@@ -134,6 +135,8 @@ class AlumnosController extends Controller
         $data = $request->validate($rules);
 
         $alumno = Alumno::create($data);
+
+        Log::alert('Usuario '.Auth::user()->fullname.' creó alumno '.$alumno->fullname);
 
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
@@ -256,6 +259,8 @@ class AlumnosController extends Controller
 
         $data = $this->validate($request, $rules);
         $alumno->fill($data);
+        
+        Log::alert('Usuario '.Auth::user()->fullname.' actualizo usuario '.$alumno->numero_control_fullname);
 
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
@@ -296,6 +301,8 @@ class AlumnosController extends Controller
         $alumno->grupos()->detach();
         $alumno->pagos()->where('status', config('pagos.status.Pendiente'))->delete();
         $alumno->delete();
+
+        Log::alert('Usuario '.Auth::user()->fullname.' eliminó usuario '.$alumno->nuevo_numero_control.' '.$alumno->fullname);
 
         if ($request->ajax()) {
             return response()->json([
@@ -565,7 +572,11 @@ class AlumnosController extends Controller
         if ($request->has('id_grupo')) {
             $alumno->grupos()->attach($request->input('id_grupo'),['fecha_inicio' => $request->input('fecha_inicio')]);
 
+            
+
+
             $grupo_inscripcion = Grupo::findOrFail($request->input('id_grupo'));
+            Log::alert('Usuario '.Auth::user()->fullname.' inscribio a alumno '.$alumno->numero_control_fullname.' al grupo '.$grupo_inscripcion->nombre);
 
             $pis->setAlumno($alumno);
 
@@ -651,6 +662,7 @@ class AlumnosController extends Controller
         $alumno->grupos()->attach($id_grupo);
         $grupo = Grupo::find($request->id_grupo);
         $grupo->actualizarReporteDesercion('sumar','cambios_horarios_altas',1);
+        Log::alert('Usuario '.Auth::user()->fullname.' cambio de grupo al alumno '.$alumno->fullname.' de '.$grupo_origen->nombre.' a '.$grupo->nombre);
 
         return redirect()->route('alumnos.show', $alumno->id);
 
@@ -660,6 +672,8 @@ class AlumnosController extends Controller
         $alumnos = Alumno::find($request->pk);
         $alumnos[$request->name] = $request->value;
         $alumnos->save();
+
+
     }
 
     public function datatables_apoyos_inscripcion(Request $request)
@@ -680,8 +694,10 @@ class AlumnosController extends Controller
     }
 
     public function eliminar_apoyo_inscripcion($id){
-        $apoyo = ApoyoInscripcion::find($id);
+        $apoyo = ApoyoInscripcion::with(['grupo','alumno'])->find($id);
         $apoyo->delete();
+
+        Log::alert('Usuario '.Auth::user()->fullname.' elimino el apoyo a la inscripción del alumno '.$apoyo->alumno->numero_control_fullname.' del grupo'.$apoyo->grupo->nombre);
 
         return response()->json([
             'apoyo' => $apoyo
@@ -698,6 +714,10 @@ class AlumnosController extends Controller
             'id_usuario'=> Auth::id(),
             'id_usuario_autoriza'=> Auth::id(),
         ]);
+
+        $apoyo = ApoyoInscripcion::with(['alumno','grupo'])->find($apoyo->id);
+
+        Log::alert('Usuario '.Auth::user()->fullname.' creó el apoyo a la inscripción manual del alumno '.$apoyo->alumno->numero_control_fullname.' del grupo'.$apoyo->grupo->nombre);
     }
 
     public function pausar_grupo(Request $request){
@@ -709,6 +729,8 @@ class AlumnosController extends Controller
         ]);
 
         $grupo = Grupo::find($request->id_grupo);
+        Log::alert('Usuario '.Auth::user()->fullname.' pausó al alumno '.$alumno->numero_control_fullname.' del grupo '.$grupo->nombre);
+
 
         $grupo->actualizarReporteDesercion('sumar','bajas',1);
 
@@ -721,8 +743,9 @@ class AlumnosController extends Controller
         AlumnoGrupo::where('id_alumno','=',$request->id_alumno)->where('id_grupo','=',$request->id_grupo)->update([
             'status' => 'Inscrito'
         ]);
-
+        
         $grupo = Grupo::find($request->id_grupo);
+        Log::alert('Usuario '.Auth::user()->fullname.' reanudó al alumno '.$alumno->numero_control_fullname.' al grupo '.$grupo->nombre);
 
         $grupo->actualizarReporteDesercion('sumar','altas',1);
 
@@ -759,6 +782,9 @@ class AlumnosController extends Controller
 
             $alumno->foto = $nombre_foto;
             $alumno->save();
+
+            Log::alert('Usuario '.Auth::user()->fullname.' subio la foto del al alumno '.$alumno->numero_control_fullname);
+            
         }
 
         $alumno->save();

@@ -90,7 +90,7 @@ class Alumno extends Model
     ];
 
     protected $appends = [
-        'documentos_vencidos', 'pagos_vencidos', 'monto_vencido','url_foto','fullname'
+        'documentos_vencidos', 'pagos_vencidos', 'monto_vencido','url_foto','fullname','numero_control_fullname'
     ];
 
     # NOTE: MODEL RELATIONSHIPS
@@ -133,6 +133,12 @@ class Alumno extends Model
     {
         return $this->nombres . ' ' . $this->apellido_paterno . ' ' . $this->apellido_materno;
     }
+
+    public function getNumeroControlFullnameAttribute()
+    {
+        return $this->nuevo_numero_control . ' '.$this->nombres . ' ' . $this->apellido_paterno . ' ' . $this->apellido_materno;
+    }
+
 
     # NOTE: Form Model Accessors (Laravel Collective) https://laravelcollective.com/docs/5.4/html
 

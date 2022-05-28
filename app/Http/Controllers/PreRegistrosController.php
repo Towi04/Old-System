@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class PreRegistrosController extends Controller
 {
@@ -76,6 +77,7 @@ class PreRegistrosController extends Controller
             'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
             'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
         ]);
+
     }
 
     public function store(Request $request)
@@ -133,6 +135,7 @@ class PreRegistrosController extends Controller
         $data = $request->validate($rules);
 
         $alumno = Alumno::create($data);
+        Log::alert('Usuario '.Auth::user()->fullname.' creó el pre registro '.$alumno->numero_control_fullname);
 
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
@@ -224,6 +227,7 @@ class PreRegistrosController extends Controller
 
         $data = $this->validate($request, $rules);
         $alumno->fill($data);
+        Log::alert('Usuario '.Auth::user()->fullname.' actualizó el pre registro '.$alumno->numero_control_fullname);
 
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
@@ -406,8 +410,11 @@ class PreRegistrosController extends Controller
             }   
             // OPERACIONES: sumar | restar
             // CAMPOS: inicios | reingresos | cambios_horarios_plus | bajas | cambios_horarios_minus | fin_curso
+            Log::alert('Usuario '.Auth::user()->fullname.' inscribio a el pre registro '.$alumno->numero_control_fullname.' en el grupo '.$grupo_inscripcion->nombre);
             $grupo_inscripcion->actualizarReporteDesercion('sumar','inicios',1);
         }
+
+
 
         if($request->ajax()) {
             return response()->json([

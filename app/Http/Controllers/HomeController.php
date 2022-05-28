@@ -217,7 +217,6 @@ class HomeController extends Controller
 
     }
 
-
     public function generar_abonos($id_sucursal){
 
        
@@ -295,7 +294,6 @@ class HomeController extends Controller
 
 
     }
-
 
     public function generar_abonos_alumno($id_alumno){
    
@@ -516,7 +514,6 @@ class HomeController extends Controller
 
     }
 
-
     public function alumnos_sin_fecha_inicio(){
         $sucursal  = Session::get('sucursal');
 
@@ -560,5 +557,5 @@ class HomeController extends Controller
 
     }
 
-    
+
 }

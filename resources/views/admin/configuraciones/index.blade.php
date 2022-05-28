@@ -17,6 +17,7 @@
     <div class="widget-holder widget-full-height widget-flex col-lg-8">
         <div class="widget-body">
             <div class="table-responsive mt-3">
+                <a href="{{url('storage/actividad.log')}}" download><i class="fas fa-download    "></i>  Descargar Bitacora  </a>   
                 <table id="tb-roles" class="table table-padded  table-striped table-hover" style="border-collapse:separate !important">
                     <thead>
                         <tr>

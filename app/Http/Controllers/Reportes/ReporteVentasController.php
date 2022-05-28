@@ -16,6 +16,8 @@ use App\Models\Venta;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\ApoyoInscripcion;
 use PDF;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class ReporteVentasController extends Controller
 {
@@ -737,9 +739,9 @@ class ReporteVentasController extends Controller
     public function eliminar_pago(Request $request, Pago $pago)
     {
         DB::beginTransaction();
-
+        $sucursal = session('sucursal');
         try {
-            $pago->load('abonos_documentos.documento');
+            $pago->load(['abonos_documentos.documento','alumno']);
 
             $pago->abonos_documentos->each(function ($abono) {
                 $documento = $abono->documento;
@@ -749,10 +751,11 @@ class ReporteVentasController extends Controller
                     $documento->status = 'Pendiente';
                 }  
                 $documento->save(); 
-                $abono->delete();
+                $abono->delete();                
             });
 
             $pago->delete();
+            Log::alert('Usuario '.Auth::user()->fullname.' elimino el pago '.(($pago->folio_fiscal)?$pago->folio_fiscal:$pago->folio).' de '.$pago->alumno->numero_control_fullname.' por '.$pago->monto.' | Sucursal: '.$sucursal->nombre);
 
             DB::commit();
         } catch (\Exception $e) {
