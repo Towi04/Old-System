@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\User;
+
 use App\Http\Requests\Admin\User\EditUserRequest;
 use App\Http\Requests\Admin\User\CreateUserRequest;
 use Symfony\Component\HttpFoundation\Response as HTTPMessages;
@@ -72,6 +72,7 @@ class UsersController extends Controller
             'email'             => $request['email'],
             'celular'           => $request['celular'],
             'password'          => $request['password'],
+            'fecha_nacimiento'          => $request['fecha_nacimiento'],
             'email_verified_at' => date('Y-m-d')
         ]);
 
@@ -192,7 +193,8 @@ class UsersController extends Controller
             'apellido_materno'  => $request['apellido_materno'],
             'email'             => $request['email'],
             'celular'           => $request['celular'],
-            'password'          => $request['password']
+            'password'          => $request['password'],
+            'fecha_nacimiento'  => $request['fecha_nacimiento'],
         ]);
 
         $usuario->save();

@@ -43,4 +43,20 @@
 
 
 @section('scripts')
+
+<script>
+
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    $('.datepicker').datepicker({
+        language: 'es',
+        format: 'yyyy-mm-dd',
+        ignoreReadonly: false,
+        todayHighlight: true,
+        todayBtn: true
+    });
+
+})
+</script>
 @endsection

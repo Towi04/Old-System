@@ -27,6 +27,11 @@
         </div>
 
         <div class="form-group">
+            {!! Form::label('fecha_nacimiento', 'Fecha Nacimiento') !!}
+            {!! Form::text('fecha_nacimiento', null, ['class' => 'form-control datepicker', 'placeholder' => 'Ingresa fecha de nacimiento']) !!}
+        </div>
+
+        <div class="form-group">
         {!! Form::label('password', 'Contraseña*') !!}
         {!! Form::password('password', ['class' => 'form-control', 'placeholder' => 'Contraseña', 'id' => 'input_password']) !!}
         </div>

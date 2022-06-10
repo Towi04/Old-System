@@ -28,6 +28,7 @@ class User extends Authenticatable
         'apellido_materno',
         'email',
         'password',
+        'fecha_nacimiento',
     ];
 
     /**
