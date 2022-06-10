@@ -79,7 +79,7 @@
 
 
         @if($grupo->exists)
-        <legend class="mt-4"><span>Informacion de precios</span></legend>
+            <legend class="mt-4"><span>Informacion de precios</span></legend>
 
             <div class="col-md-6">
                 <div class="form-group">

@@ -193,6 +193,9 @@ Route::middleware(['auth','sucursal'])->group(function () {
     ]);
 
     # NOTE: RUTAS GRUPOS (RESPETAR EL ORDEN DE LAS RUTAS)
+
+    Route::post('grupos/guardar_precio', [ GruposController::class,'guardar_precio'])->name('grupos.guardar_precio');
+
     Route::post('grupos/finalizar_grupo', [ GruposController::class,'finalizar_grupo'])->name('grupos.finalizar_grupo');
     Route::post('grupos/activar_grupo', [ GruposController::class,'activar_grupo'])->name('grupos.activar_grupo');
 

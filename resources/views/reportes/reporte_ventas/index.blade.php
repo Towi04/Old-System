@@ -79,7 +79,8 @@
                             </div>
                             <div class="col-10 col-xxl-10 col-xl-10 col-md-10 col-sm-10">
                                 <center>
-                                    <small>Semana {{ $fecha->week }}</small>
+                                    
+                                    
                                     <h3>{{ $fecha->format('d \d\e F \d\e\l Y') }} <small><a class="no_print"
                                                 data-toggle="modal" data-target="#seleccionarFecha"><i
                                                     class="far fa-calendar-alt"></i></a></small></h3>

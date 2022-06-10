@@ -10,8 +10,10 @@ use App\Models\GrupoDia;
 use App\Models\AlumnoGrupo;
 use App\Models\Especialidad;
 use App\Models\GrupoMateria;
+use App\Models\Precio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use App\Services\PagoInscripcionService;
 use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
@@ -589,5 +591,62 @@ class GruposController extends Controller
         ]);
 
         return $pdf->stream('lista_asistencia.pdf');
+    }
+
+    public function guardar_precio(Request $request){
+        
+        $precio = Precio::where('id_grupo','=',$request->id_grupo)->where('tipo','=',$request->tipo)->whereNull('fecha_final')->update(['fecha_final'=>date('Y-m-d')]);
+
+        $grupo = Grupo::find($request->id_grupo);
+
+        if($request->tipo == 'Inscripción'){
+            $precio = Precio::create([
+                'tipo' => $request->tipo,
+                'id_grupo' => $request->id_grupo,
+                'fecha_inicio' => date('Y-m-d H:i:s'),
+                'precio_pronto_pago' => null,
+                'precio_normal' => $request->precio_inscripcion,
+                'id_usuario' => Auth::id(),
+            ]);
+
+            $grupo ->precio_inscripcion = $request->precio_inscripcion;
+            
+           
+        }
+
+        if($request->tipo == 'Precio Semanal'){
+
+            $precio = Precio::create([
+                'tipo' => $request->tipo,
+                'id_grupo' => $request->id_grupo,
+                'fecha_inicio' => date('Y-m-d H:i:s'),
+                'precio_pronto_pago' => null,
+                'precio_normal' => $request->precio_semanal,
+                'id_usuario' => Auth::id(),
+            ]);
+
+            $grupo ->precio_semanal = $request->precio_semanal;
+        }
+
+        if($request->tipo == 'Precio Mensual'){
+            $precio = Precio::create([
+                'tipo' => $request->tipo,
+                'id_grupo' => $request->id_grupo,
+                'fecha_inicio' => date('Y-m-d H:i:s'),
+                'precio_pronto_pago' => $request->precio_mensual_pronto_pago,
+                'precio_normal' => $request->precio_mensual,
+                'id_usuario' => Auth::id(),
+            ]);
+
+            $grupo ->precio_mensualidad_pronto_pago = $request->precio_mensual_pronto_pago;
+            $grupo ->precio_mensualidad = $request->precio_mensual;
+            
+        }
+        
+        $grupo->save();
+
+        Session::flash('message','Se dio de alta con éxito el precio');
+        return redirect()->back();
+       
     }
 }

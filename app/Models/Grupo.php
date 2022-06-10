@@ -198,4 +198,14 @@ class Grupo extends Model
         $desercion->total_final = $desercion->anterior +$desercion->inicios + $desercion->reingresos + $desercion->cambios_horarios_altas - $desercion->bajas - $desercion->cambios_horarios_bajas  - $desercion->fin_curso;
         $desercion->save();
     }
+
+    /**
+     * Get all of the precios for the Grupo
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function precios()
+    {
+        return $this->hasMany(Precio::class, 'id_grupo', 'id');
+    }
 }
