@@ -59,11 +59,7 @@ class PagoColegiaturaDocumentosService
         $today = Carbon::today();
 
         #VALIDAMOS SI SE VAN A GENERAR PRONTO PAGO O NORMAL
-
         $dia = $today->day;
-
-        
-       
         #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
         #SI NO SE SIGUEN GENERANDO PAGOS MENSUALE
         while(!$today->copy()->addMonth()->isSameMonth($fecha_inicio) && $fecha_inicio->lte($today->copy()->addMonth())){
@@ -128,6 +124,7 @@ class PagoColegiaturaDocumentosService
                     $dia_actual = $fecha_inicio;
                     $mes_actual = $dia_actual->month;
                     
+                    
 
                     $lista_numero_dias = [
                         'lunes'     => 1,
@@ -148,11 +145,12 @@ class PagoColegiaturaDocumentosService
                     foreach ($days as $grupodia) {
                         $numero_dia =  $lista_numero_dias[$grupodia->dia] ?? 0;
 
+                        
                         $total_dias += countDaysInMonth($mes_actual,$numero_dia);
                         $dias_pendientes += countDaysInMonth($dia_actual,$numero_dia);
 
                     }
-
+                    
                     $semanas = round($dias_pendientes / $days->count());
                     
                     $precio = ($total_dias == 0) ? 0 : $dias_pendientes * $grupo->precio_mensualidad / $total_dias;
