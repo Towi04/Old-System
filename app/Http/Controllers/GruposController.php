@@ -595,7 +595,7 @@ class GruposController extends Controller
 
     public function guardar_precio(Request $request){
         
-        $precio = Precio::where('id_grupo','=',$request->id_grupo)->where('tipo','=',$request->tipo)->whereNull('fecha_final')->update(['fecha_final'=>date('Y-m-d')]);
+        $precio = Precio::where('id_grupo','=',$request->id_grupo)->where('tipo','=',$request->tipo)->whereNull('fecha_final')->update(['fecha_final'=>date('Y-m-d H:i:s')]);
 
         $grupo = Grupo::find($request->id_grupo);
 
@@ -642,7 +642,7 @@ class GruposController extends Controller
             $grupo ->precio_mensualidad = $request->precio_mensual;
             
         }
-        
+
         $grupo->save();
 
         Session::flash('message','Se dio de alta con éxito el precio');
