@@ -438,7 +438,7 @@
                                                         @endforeach
                                                     </td>
                                                     <td class="text-right">
-                                                        {{number_format($partida->total,2,'.',',')}}
+                                                        {{number_format($venta->total,2,'.',',')}}
                                                     </td>
                                                 </tr>
                                             @endforeach
