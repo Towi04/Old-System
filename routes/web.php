@@ -359,3 +359,7 @@ Route::get('personal/verificacion/{id}', [UsersController::class,'verificacion']
 Route::get('test-log', function () {
     \Log::info('Info log test');
 });
+
+Route::get('/debug-sentry', function () {
+    throw new Exception('My first Sentry error!');
+});
