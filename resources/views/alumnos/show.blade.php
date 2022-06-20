@@ -158,7 +158,9 @@
                                     <b>Horario:</b><br> {!!$grupo->horario_corto!!}
                                     <b>N° Semanas a cursar:</b>  {!!$grupo->materias->sum('semanas')!!}<br>
                                     <b>Fecha Inicio: </b>
-                                    <a class='editable_fecha_inicio_grupo' data-pk='{{$grupo->pivot->id}}' data-name='fecha_inicio' data-url='{{route("especiales.actualizar_informacion_grupos_alumnos")}}' data-type='date' data-value="{{ optional($grupo->pivot->fecha_inicio)->format('d-m-Y') }}">
+                                    <a class='
+                                    @can('cambiar_fecha_inicio_grupo') editable_fecha_inicio_grupo @endcan
+                                    ' data-pk='{{$grupo->pivot->id}}' data-name='fecha_inicio' data-url='{{route("especiales.actualizar_informacion_grupos_alumnos")}}' data-type='date' data-value="{{ optional($grupo->pivot->fecha_inicio)->format('d-m-Y') }}">
                                     {!!  optional($grupo->pivot->fecha_inicio)->format('d-m-Y') !!}
                                     </a>
                                     <br>

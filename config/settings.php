@@ -432,6 +432,16 @@ return [
             'display_name'  => 'Ver reporte pagos eliminados',
             'description'   => 'Ver reporte pagos eliminados',
         ],
+        [
+            'name'          => 'cambiar_fecha_inicio_grupo',
+            'display_name'  => 'Cambiar fecha de inicio en grupo',
+            'description'   => 'Cambiar fecha de inicio en grupo',
+        ],
+        [
+            'name'          => 'crear_notas_alumnos',
+            'display_name'  => 'Crear notas en los alumnos',
+            'description'   => 'Crear notas en los alumnos',
+        ],
         
     ],
 
