@@ -270,5 +270,13 @@ class Alumno extends Model
         return $this->hasMany(ApoyoInscripcion::class, 'id_alumno', 'id');
     }
 
-
+    /**
+     * Get all of the notas f
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function notas()
+    {
+        return $this->hasMany(Nota::class, 'id_alumno', 'id');
+    }
 }

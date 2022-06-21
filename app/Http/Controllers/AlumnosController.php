@@ -10,6 +10,7 @@ use App\Models\AlumnoPago;
 use App\Models\Documento;
 use App\Models\Especialidad;
 use App\Models\Pago;
+use App\Models\Nota;
 use App\Models\ApoyoInscripcion;
 use App\Services\FacturacionService;
 use App\Services\PagoInscripcionService;
@@ -791,6 +792,26 @@ class AlumnosController extends Controller
         return redirect()->back()->with([
             'message' => 'Se actualizó la foto con éxito'
         ]);
+    }
+
+    public function guardar_nota(Request $request){
+
+        $rules = [
+            'nota'      => 'nullable',
+        ];
+        
+        $data = $this->validate($request, $rules);
+
+        $nota = Nota::create([
+            'id_alumno' => $request->id_alumno,
+            'nota' => $request->nota,
+            'id_usuario' => Auth::id(),
+            'fecha' => date('Y-m-d H:i:s')
+        ]);
+
+        // return redirect()->back();
+
+
     }
 
 }

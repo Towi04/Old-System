@@ -165,6 +165,8 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::post('alumnos/guardar_cambio_horario', [ AlumnosController::class,'guardar_cambio_horario'])->name('alumnos.guardar_cambio_horario');
     Route::post('alumnos/actualizar_informacion', [ AlumnosController::class,'actualizar_informacion'])->name('alumnos.actualizar_informacion');
 
+    Route::post('alumnos/guardar_nota', [ AlumnosController::class,'guardar_nota'])->name('alumnos.guardar_nota');
+
     Route::post('alumno/subir_foto', [ AlumnosController::class,'subir_foto'])->name('alumnos.subir_foto');
 
 

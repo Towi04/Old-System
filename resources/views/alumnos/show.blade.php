@@ -240,6 +240,11 @@
                                         <li class="nav-item">
                                             <a class="nav-link" data-toggle="tab" href="#tab-info-productos">Productos</a>
                                         </li>
+                                        @can('crear_notas_alumnos')
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-toggle="tab" href="#tab-notas">Notas</a>
+                                        </li>
+                                        @endif
 
                                     </ul>
                                     <ul class="nav nav-pills smaller d-none d-md-flex">
@@ -296,7 +301,7 @@
                                                 </div>
                                             </div>
                                         </fieldset>
-                                    @endcan
+                                        @endcan
                                         @endcan
 
                                         @can('asignar_apoyos_especiales')
@@ -446,6 +451,32 @@
                                             @endforeach
                                         </table>
                                     </div>
+
+                                    <div class="tab-pane" id="tab-notas">
+                                        <a id="btn-notas" class="btn btn-info text-white btn-sm" >Agregar nota</a>
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Fecha</th>
+                                                    <th>Nota</th>
+                                                    <th class="text-right">Autor</th>
+                                                </tr>
+                                            </thead>
+                                            @foreach ($alumno->notas->sortByDesc('fecha') as $nota)
+                                                    <td>
+                                                        {{optional($nota->fecha)->format('d-m-Y H:m:s')}}
+                                                    </td>
+                                                    <td>
+                                                       {!! $nota->nota !!}
+                                                    </td>
+                                                    <td class="text-right">
+                                                        {{$nota->usuario->fullname}}
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </table>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -458,6 +489,7 @@
 
     @include('alumnos.modals.apoyos_especiales')
     @include('alumnos.modals.apoyos_inscripciones')
+    @include('alumnos.modals.notas')
 @endsection
 
 
@@ -476,6 +508,11 @@
                 btn_apoyo_especial: $('#btn-agregar-apoyo-especial'),
                 form_apoyo_especial: $("#form-apoyo-especial"),
                 modal_apoyo_especial: $("#modal-apoyo-especial"),
+
+                btn_notas: $('#btn-notas'),
+                form_notas: $("#form-notas"),
+                modal_notas: $("#modal-notas"),
+
 
                 tb_apoyos_inscripcion: $("#tb-apoyos-inscripcion"),
                 btn_apoyo_inscripcion: $('#btn-agregar-apoyo-inscripcion'),
@@ -1083,6 +1120,55 @@
 
                                 setTimeout(() => {
                                     dom.modal_apoyo_inscripcion.modal('show');
+                                    toastr.error('Error',  errors.message || 'Ocurrio un error inesperado');
+                                }, 250);
+                            }
+                        });
+
+
+                    })
+
+                    //NOTAS
+                    dom.btn_notas.click(function(e){
+
+                        dom.form_notas[0].reset();
+                        dom.modal_notas.modal('show');
+                    })
+                    
+
+                    dom.form_notas.submit(function(e){
+                        e.preventDefault();
+
+                        dom.modal_notas.modal('hide');
+                        wait.modal('show');
+
+                        const $form = $(this);
+                        const formData = new FormData(this);
+                        formData.append('id_alumno',"{{ $alumno->id }}");
+
+                        $.ajax({
+                            url: $form.attr('action'),
+                            type: 'POST',
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            data: formData,
+                            success: function (response){
+                                // dt_notas.ajax.reload( function(e){
+                                //     setTimeout(() => {
+                                //         wait.modal('hide');
+                                //         toastr.success('Éxito', response.message || 'Nota agregada correctamente');
+                                //     })
+                                // }, false )
+                                location.reload();
+                                    
+                            },
+                            error:function(error){
+                                wait.modal('hide');
+                                const errors = error.responseJSON || {};
+
+                                setTimeout(() => {
+                                    dom.modal_notas.modal('show');
                                     toastr.error('Error',  errors.message || 'Ocurrio un error inesperado');
                                 }, 250);
                             }
