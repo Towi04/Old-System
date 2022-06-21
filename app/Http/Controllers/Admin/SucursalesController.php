@@ -38,6 +38,10 @@ class SucursalesController extends Controller
     {
         Session::put('sucursal',$sucursal);
 
+        $user = Auth::user();
+        $user->id_ultima_sucursal = $sucursal->id;
+        $user->save();
+
         return redirect()->back();
     }
 

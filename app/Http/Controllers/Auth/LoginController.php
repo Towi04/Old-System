@@ -58,6 +58,17 @@ class LoginController extends Controller
 
         # NOTE: ASIGNO LAS SUCURSALES DEL USUARIO AUTENTICADO
         Session::put('sucursales',$sucursales_usuario);
-        Session::put('sucursal',$sucursales_usuario->first());
+
+        if(!$user->id_ultima_sucursal){
+            Session::put('sucursal',$sucursales_usuario->first());
+        }else{
+            # SE OBTIENE LA ULTIMA SUCURSAL EN LA QUE ESTUVO TRABAJANDO ANTES DE CERRAR SESIÓN. SI ESTA ENTRE SUS SUCURSALES SE ABRE EN ESA
+            if($sucursales_usuario->where('id',$user->id_ultima_sucursal)->first()){
+                Session::put('sucursal', $sucursales_usuario->where('id',$user->id_ultima_sucursal)->first());
+            }else{
+                Session::put('sucursal',$sucursales_usuario->first());
+            }
+        }
+        
     }
 }
