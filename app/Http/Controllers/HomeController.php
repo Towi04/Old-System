@@ -8,12 +8,14 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Jenssegers\Date\Date;
 
 use App\Models\Documento; 
 use App\Models\AbonoDocumento; 
 use App\Models\Grupo;
 use App\Models\Alumno;
+use App\Models\User;
 use App\Models\AlumnoGrupo;
 use App\Models\AlumnoPago;
 use App\Models\ApoyoInscripcion;
@@ -32,7 +34,14 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+
+        $usuarios_cumples = User::whereRaw("DATE_FORMAT(fecha_nacimiento,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d')")->get();
+        
+        $alumnos_cumples = Alumno::whereRaw("DATE_FORMAT(fecha_nacimiento,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d')")->get();
+
+        
+
+        return view('home', compact('usuarios_cumples','alumnos_cumples'));
     }
 
     public function ver_archivo($modulo, $id, $archivo = null)

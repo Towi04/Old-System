@@ -442,6 +442,16 @@ return [
             'display_name'  => 'Crear notas en los alumnos',
             'description'   => 'Crear notas en los alumnos',
         ],
+        [
+            'name'          => 'ver_cumpleaños_personal',
+            'display_name'  => 'Ver cumpleaños de personal',
+            'description'   => 'Ver cumpleaños personal',
+        ],
+        [
+            'name'          => 'ver_cumpleaños_alumnos',
+            'display_name'  => 'Ver cumpleaños de alumnos',
+            'description'   => 'Ver cumpleaños de alumnos',
+        ],
         
     ],
 
@@ -561,6 +571,7 @@ return [
             'precio_mensualidad_pronto_pago' => null,
             'precio_semanal'     => null,
         ],
+        
     ],
     # Configuraciones del sistema
     'configuraciones' => [

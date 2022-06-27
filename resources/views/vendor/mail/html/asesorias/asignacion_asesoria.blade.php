@@ -1,5 +1,5 @@
 @component('mail::message')
-# Hola {{ $usuario->full_name }}
+# Hola {{ $usuario->fullname }}
 
 Asignacion de asesoria
 
