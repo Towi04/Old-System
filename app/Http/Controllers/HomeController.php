@@ -33,13 +33,14 @@ class HomeController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index()
-    {
+    {   
+        $sucursal = Session::get('sucursal');
 
-        $usuarios_cumples = User::whereRaw("DATE_FORMAT(fecha_nacimiento,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d')")->get();
+        $usuarios_cumples = User::whereRaw("DATE_FORMAT(fecha_nacimiento,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d')")->whereHas('sucursales', function($q)use($sucursal){
+            return $q->where('id','=',$sucursal->id);
+        })->get();
         
-        $alumnos_cumples = Alumno::whereRaw("DATE_FORMAT(fecha_nacimiento,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d')")->get();
-
-        
+        $alumnos_cumples = Alumno::whereRaw("DATE_FORMAT(fecha_nacimiento,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d')")->where('id_sucursal','=',$sucursal->id)->get();
 
         return view('home', compact('usuarios_cumples','alumnos_cumples'));
     }
