@@ -207,8 +207,10 @@ class HomeController extends Controller
 
         foreach($grupos as $grupo){
             $pids->setAlumno($alumno);
-            $pcds->setAlumno($alumno);
             $pids->inscripcion($grupo, $grupo->precio_inscripcion);
+        }
+
+            $pcds->setAlumno($alumno);
             $fecha_inicio = $grupo->fecha_inicio;
             $forma_pago = ($alumno->forma_pago) ? $alumno->forma_pago :'semanal';
             
@@ -221,12 +223,12 @@ class HomeController extends Controller
             if($forma_pago == 'semanal'){
                 $pcds->semanal($grupo, $alumno);
             }
-        }
+        
         
         return redirect()->back();
 
     }
-
+    
     public function generar_abonos($id_sucursal){
 
        
