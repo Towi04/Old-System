@@ -46,13 +46,13 @@
     <div class="row ">
         <div class="col-lg-12 no_print">
             <div class="btn-group ">
-                <a href="{{ route('reportes.inscritos',['tipo' => 'dia']) }}"
+                <a href="{{ route('reportes.inscritos',['tipo' => 'dia']) }}&@if(isset($_GET['id_asesor']))id_asesor={{$_GET['id_asesor']}}@endif"
                     class="btn @if ($tipo=='dia' ) btn-primary  text-white @else btn-white @endif">Día</a>
-                <a href="{{ route('reportes.inscritos',['tipo' => 'semanal']) }}"
+                <a href="{{ route('reportes.inscritos',['tipo' => 'semanal']) }}&@if(isset($_GET['id_asesor']))id_asesor={{$_GET['id_asesor']}}@endif"
                     class="btn  @if ($tipo=='semanal' ) btn-primary  text-white @else btn-white @endif">Semanal</a>
-                <a href="{{ route('reportes.inscritos',['tipo' => 'mes']) }}"
+                <a href="{{ route('reportes.inscritos',['tipo' => 'mes']) }}&@if(isset($_GET['id_asesor']))id_asesor={{$_GET['id_asesor']}}@endif"
                     class="btn  @if ($tipo=='mes' ) btn-primary  text-white @else btn-white @endif">Mensual</a>
-                <a href="{{ route('reportes.inscritos',['tipo' => 'anual']) }}"
+                <a href="{{ route('reportes.inscritos',['tipo' => 'anual']) }}&@if(isset($_GET['id_asesor']))id_asesor={{$_GET['id_asesor']}}@endif"
                     class="btn  @if ($tipo=='anual' ) btn-primary  text-white @else btn-white @endif">Anual</a>
             </div>
             <form action="" class="form-inline mt-3">
