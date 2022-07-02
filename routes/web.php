@@ -341,6 +341,7 @@ Route::prefix('especiales')->name('especiales.')->group(function(){
      Route::get('generar_abonos/{id_sucursal}',[HomeController::class,'generar_abonos'])->name('generar_abonos');
      Route::get('generar_abonos_alumno/{id_alumno}',[HomeController::class,'generar_abonos_alumno'])->name('generar_abonos_alumno');
      Route::post('actualizar_informacion_grupos_alumnos',[HomeController::class,'actualizar_informacion_grupos_alumnos'])->name('actualizar_informacion_grupos_alumnos');
+     Route::get('crear_precios_iniciales_grupos',[HomeController::class,'crear_precios_iniciales_grupos'])->name('crear_precios_iniciales_grupos');
      
      Route::get('info',[HomeController::class,'info'])->name('info');
 

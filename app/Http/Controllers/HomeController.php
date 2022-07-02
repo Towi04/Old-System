@@ -20,6 +20,7 @@ use App\Models\AlumnoGrupo;
 use App\Models\AlumnoPago;
 use App\Models\ApoyoInscripcion;
 use App\Models\Alerta;
+use App\Models\Precio;
 
 use App\Services\PagoInscripcionDocumentosService;
 use App\Services\PagoColegiaturaDocumentosService;
@@ -207,11 +208,11 @@ class HomeController extends Controller
 
         $alumno = Alumno::find($id);
 
-        $grupos = $alumno->grupos;
+        $grupos = $alumno->grupos->load('precios');
 
         foreach($grupos as $grupo){
             $pids->setAlumno($alumno);
-            $pids->inscripcion($grupo, $grupo->precio_inscripcion);
+            $pids->inscripcion($grupo, $grupo->getInscripcionFecha($grupo->pivot->fecha_inicio));
         }
 
             $pcds->setAlumno($alumno);
@@ -570,6 +571,46 @@ class HomeController extends Controller
         $table .= '</table>'; 
 
         return view('especiales.alumnos_sin_fecha_inicio', compact('table'));
+
+    }
+
+    public function crear_precios_iniciales_grupos(){
+
+        $grupos = Grupo::doesntHave('precios')->get();
+
+        foreach($grupos as $grupo){
+
+            #SE CREA LA INSCRIPCION INICIAL DEL GRUPO
+            $precio = Precio::create([
+                'tipo' => 'Inscripción',
+                'id_grupo' => $grupo->id,
+                'fecha_inicio' => '2022-01-01',
+                'precio_pronto_pago' => null,
+                'precio_normal' => ($grupo->precio_inscripcion)?$grupo->precio_inscripcion:0,
+                'id_usuario' => Auth::id(),
+            ]);
+
+            #SE CREA LA COLEGIATURA SEMANAL INICIAL DEL GRUPO
+            $precio = Precio::create([
+                'tipo' => 'Precio Semanal',
+                'id_grupo' => $grupo->id,
+                'fecha_inicio' => '2022-01-01',
+                'precio_pronto_pago' => null,
+                'precio_normal' => ($grupo->precio_semanal)?$grupo->precio_semanal:0,
+                'id_usuario' => Auth::id(),
+            ]);
+
+
+            #SE CREA LA COLEGIATURA MENSUAL INICIAL DEL GRUPO
+            $precio = Precio::create([
+                'tipo' => 'Precio Mensual',
+                'id_grupo' => $grupo->id,
+                'fecha_inicio' => '2022-01-01',
+                'precio_pronto_pago' => $grupo->precio_mensualidad_pronto_pago,
+                'precio_normal' => ($grupo->precio_mensualidad)?$grupo->precio_mensualidad:0,
+                'id_usuario' => Auth::id(),
+            ]);
+        }
 
     }
 
