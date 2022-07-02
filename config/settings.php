@@ -451,6 +451,11 @@ return [
             'name'          => 'ver_cumpleaños_alumnos',
             'display_name'  => 'Ver cumpleaños de alumnos',
             'description'   => 'Ver cumpleaños de alumnos',
+        ], 
+        [
+            'name'          => 'ver_alertas',
+            'display_name'  => 'Ver alertas',
+            'description'   => 'Ver alertas',
         ],
         
     ],

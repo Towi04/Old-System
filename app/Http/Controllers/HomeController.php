@@ -19,6 +19,8 @@ use App\Models\User;
 use App\Models\AlumnoGrupo;
 use App\Models\AlumnoPago;
 use App\Models\ApoyoInscripcion;
+use App\Models\Alerta;
+
 use App\Services\PagoInscripcionDocumentosService;
 use App\Services\PagoColegiaturaDocumentosService;
 
@@ -42,7 +44,9 @@ class HomeController extends Controller
         
         $alumnos_cumples = Alumno::whereRaw("DATE_FORMAT(fecha_nacimiento,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d')")->where('id_sucursal','=',$sucursal->id)->get();
 
-        return view('home', compact('usuarios_cumples','alumnos_cumples'));
+        $alertas = Alerta::where('fecha','=',date('Y-m-d'))->get();
+
+        return view('home', compact('usuarios_cumples','alumnos_cumples','alertas'));
     }
 
     public function ver_archivo($modulo, $id, $archivo = null)

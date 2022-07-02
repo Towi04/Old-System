@@ -69,6 +69,30 @@
               
             </div>
         @endcan
+
+        @can('ver_alertas')
+        <div class="col-6">
+            <div class="element-box">
+                <h4 class="element-header">
+                    Alertas de hoy
+                </h4>
+                <table class="table table-padded">
+                    <tbody>
+                        @foreach ($alertas as $alerta)
+                            <tr>
+                                <td>
+                                    <h5>{{$alerta->titulo}}</h5>
+                                    {!! $alerta->descripcion !!}
+
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+          
+        </div>
+    @endcan
     </div>
 
     @empty(session('sucursal'))

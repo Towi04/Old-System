@@ -53,6 +53,10 @@
             padding: 0px !important;
         }
 
+        .swal2-overflow {
+            overflow-x: visible;
+            overflow-y: visible;
+        }
     </style>
 
     <div class="row p-3">
@@ -1186,6 +1190,7 @@
                 id = $(this).data('id');
                 swal({
                             title: "¿Estas seguro de dar pausa al alumno de este grupo?",
+                            text: "Selecciona la fecha en la que re contactar al alumno.",
                             type: "warning",
                             showCancelButton: true,
                             confirmButtonColor: "#ff3333",
@@ -1193,6 +1198,21 @@
                             confirmButtonText: "Si, pausar",
                             cancelButtonText: "Cancelar",
                             showLoaderOnConfirm: false,
+                            html: 'Selecciona la fecha en la que re contactar al alumno. <br> <input id="datepicker_alerta">',
+                            customClass: 'swal2-overflow',
+                            onOpen: function() {
+                                // alert('abrio');
+                                $('#datepicker_alerta').datepicker({ 
+                                        language: 'es',
+                                        format: 'yyyy-mm-dd',
+                                        ignoreReadonly: false,
+                                        todayHighlight: true,
+                                        todayBtn: true,
+                                        autoclose: true,
+                                    });
+
+                                $('#datepicker_alerta').trigger('click');
+                            },
                         }).then(function(result) {
                             if (!result.value) {
                                 return;
@@ -1208,6 +1228,7 @@
                                     _token: $("meta[name='csrf-token']").attr("content"),
                                     id_alumno: {{$alumno->id}},
                                     id_grupo: id,
+                                    fecha_recontactar: $('#datepicker_alerta').val()
                                 },
                                 success: function (response){
                                     location.reload();

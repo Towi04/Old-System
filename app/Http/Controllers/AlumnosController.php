@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+#MODELS
 use App\Models\User;
 use App\Models\Grupo;
 use App\Models\Alumno;
@@ -11,7 +12,10 @@ use App\Models\Documento;
 use App\Models\Especialidad;
 use App\Models\Pago;
 use App\Models\Nota;
+use App\Models\Alerta;
 use App\Models\ApoyoInscripcion;
+
+#FACADES
 use App\Services\FacturacionService;
 use App\Services\PagoInscripcionService;
 
@@ -731,6 +735,14 @@ class AlumnosController extends Controller
 
         $grupo = Grupo::find($request->id_grupo);
         Log::alert('Usuario '.Auth::user()->fullname.' pausó al alumno '.$alumno->numero_control_fullname.' del grupo '.$grupo->nombre);
+
+        if(isset($request->fecha_recontactar)){
+            $alerta = Alerta::create([
+                'titulo' => 'Contactar alumno para reaundar grupo',
+                'descripcion' => 'Recontactar al alumno <a target="_blank" href="'.route('alumnos.show', $alumno->id).'"  >'.$alumno->numero_control_fullname.'</a> para reaundar grupo '.$grupo->nombre,
+                'fecha' => $request->fecha_recontactar
+            ]);
+        }
 
 
         $grupo->actualizarReporteDesercion('sumar','bajas',1);
