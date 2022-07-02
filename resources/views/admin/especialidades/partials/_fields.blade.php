@@ -19,13 +19,13 @@
         <div class="col-md-6">
             <div class="form-group">
                 {!! Form::label('precio_inscripcion', 'Precio Inscripción:'); !!}
-                {!! Form::number('precio_inscripcion', null, ['class' => 'form-control']) !!}
+                {!! Form::number('precio_inscripcion', null, ['class' => 'form-control', 'readonly'=>true]) !!}
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 {!! Form::label('precio_mensualidad', 'Precio Mensualidad:*'); !!}
-                {!! Form::number('precio_mensualidad', null, ['class' => 'form-control']) !!}
+                {!! Form::number('precio_mensualidad', null, ['class' => 'form-control','readonly'=>true]) !!}
             </div>
         </div>
     </div>
@@ -34,13 +34,13 @@
         <div class="col-md-6">
             <div class="form-group">
                 {!! Form::label('precio_mensualidad_pronto_pago', 'Precio Mensualidad pronto pago'); !!}
-                {!! Form::number('precio_mensualidad_pronto_pago', null, ['class' => 'form-control']) !!}
+                {!! Form::number('precio_mensualidad_pronto_pago', null, ['class' => 'form-control','readonly'=>true]) !!}
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 {!! Form::label('precio_semanal', 'Precio semanal:'); !!}
-                {!! Form::number('precio_semanal', null, ['class' => 'form-control']) !!}
+                {!! Form::number('precio_semanal', null, ['class' => 'form-control','readonly'=>true]) !!}
             </div>
         </div>
     </div>

@@ -62,7 +62,10 @@
                         <h5 class="form-header">
                             Historico de precios
                         </h5>
-        
+                        
+                        @php
+                            $precios = $grupo->precios;
+                        @endphp
                         @include('grupos.partials._historico_precios')
         
                     </div>

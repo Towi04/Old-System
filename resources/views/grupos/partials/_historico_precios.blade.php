@@ -26,7 +26,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($grupo->precios->where('tipo','=','Inscripción')->sortByDesc('fecha_inicio') as $precio)
+                @foreach ($precios->where('tipo','=','Inscripción')->sortByDesc('fecha_inicio') as $precio)
                     <tr>
                         <td>$ {{ number_format($precio->precio_normal,2,'.',',')}}</td>
                         <td>{{optional($precio->fecha_inicio)->format('d-m-Y H:i:s')}}</td>
@@ -48,7 +48,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($grupo->precios->where('tipo','=','Precio Semanal')->sortByDesc('fecha_inicio') as $precio)
+                @foreach ($precios->where('tipo','=','Precio Semanal')->sortByDesc('fecha_inicio') as $precio)
                     <tr>
                         <td>$ {{ number_format($precio->precio_normal,2,'.',',')}}</td>
                         <td>{{optional($precio->fecha_inicio)->format('d-m-Y H:i:s')}}</td>
@@ -71,7 +71,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($grupo->precios->where('tipo','=','Precio Mensual')->sortByDesc('fecha_inicio') as $precio)
+                @foreach ($precios->where('tipo','=','Precio Mensual')->sortByDesc('fecha_inicio') as $precio)
                     <tr>
                         <td>$ {{ number_format($precio->precio_pronto_pago,2,'.',',')}}</td>
                         <td>$ {{ number_format($precio->precio_normal,2,'.',',')}}</td>

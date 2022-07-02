@@ -48,4 +48,14 @@ class Especialidad extends Model
             ->withPivot('id_usuario')
             ->using(EspecialidadUser::class);
     }
+
+    /**
+     * Get all of the precios f
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function precios()
+    {
+        return $this->hasMany(Precio::class, 'id_especialidad', 'id');
+    }
 }

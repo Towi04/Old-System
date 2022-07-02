@@ -1,6 +1,7 @@
 <fieldset class="form-group">
-    <legend><span>Informacion del grupo</span></legend>
-    <input type="hidden" name="id_grupo" value="{{$grupo->id}}">
+    <legend><span>Ingresa la siguiente información</span></legend>
+    <input type="hidden" name="id_grupo" value="{{@$grupo->id}}">
+    <input type="hidden" name="id_especialidad" value="{{@$especialidad->id}}">
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">

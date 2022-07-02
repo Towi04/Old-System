@@ -37,6 +37,37 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-4">
+            <div class="element-box">
+                {!! Form::open(['route' => 'admin.especialidades.guardar_precio', 'method' => 'POST', 'accept-charset' => 'UTF-8', 'enctype' => 'multipart/form-data','onsubmit' => "wait.modal('show')"]) !!}
+                <h5 class="form-header">
+                    Registro de precios
+                </h5>
+
+                @include('grupos.partials._fields_precios')
+
+                <div class="form-buttons-w text-right">
+                    <button class="btn btn-success" type="submit"><i class="fa fa-plus"></i> Guardar cambios</button>
+                </div>
+                {!! Form::close() !!}
+            </div>
+        </div>
+        <div class="col-8">
+            <div class="element-box">
+        
+                <h5 class="form-header">
+                    Historico de precios
+                </h5>
+                @php
+                    $precios = $especialidad->precios;
+                @endphp
+                @include('grupos.partials._historico_precios')
+
+            </div>
+        </div>
+    </div>
+    
 @endsection
 
 

@@ -14,6 +14,7 @@ class Precio extends Model
     protected $fillable = [
         'tipo',
         'id_grupo',
+        'id_especialidad',
         'fecha_inicio',
         'fecha_final',
         'precio_pronto_pago',
