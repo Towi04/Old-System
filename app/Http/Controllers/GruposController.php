@@ -18,6 +18,7 @@ use App\Services\PagoInscripcionService;
 use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 use Symfony\Component\HttpFoundation\Response as HTTPMessages;
+use Illuminate\Support\Facades\Log;
 
 class GruposController extends Controller
 {
@@ -598,6 +599,7 @@ class GruposController extends Controller
         $precio = Precio::where('id_grupo','=',$request->id_grupo)->where('tipo','=',$request->tipo)->whereNull('fecha_final')->update(['fecha_final'=>date('Y-m-d H:i:s')]);
 
         $grupo = Grupo::find($request->id_grupo);
+        $sucursal = Session::get('sucursal');
 
         if($request->tipo == 'Inscripción'){
             $precio = Precio::create([
@@ -609,8 +611,10 @@ class GruposController extends Controller
                 'id_usuario' => Auth::id(),
             ]);
 
+            $precio_anterior =  $grupo ->precio_inscripcion;
             $grupo ->precio_inscripcion = $request->precio_inscripcion;
             
+            Log::alert('Usuario '.Auth::user()->fullname.' actualizo el precio de la inscripcion del grupo '.$grupo->nombre.' de '.$precio_anterior.' a '.$request->precio_inscripcion.'. Sucursal:'. $sucursal->nombre );
            
         }
 
@@ -625,7 +629,10 @@ class GruposController extends Controller
                 'id_usuario' => Auth::id(),
             ]);
 
+            $precio_anterior =  $grupo ->precio_semanal;
             $grupo ->precio_semanal = $request->precio_semanal;
+
+            Log::alert('Usuario '.Auth::user()->fullname.' actualizo el precio de la colegiatura semanal del grupo '.$grupo->nombre.' de '.$precio_anterior.' a '.$request->precio_inscripcion.'. Sucursal:'. $sucursal->nombre );
         }
 
         if($request->tipo == 'Precio Mensual'){
@@ -638,9 +645,13 @@ class GruposController extends Controller
                 'id_usuario' => Auth::id(),
             ]);
 
+            $precio_anterior_pronto_pago = $grupo ->precio_mensualidad_pronto_pago;
+            $precio_anterior = $grupo ->precio_mensualidad;
+
             $grupo ->precio_mensualidad_pronto_pago = $request->precio_mensual_pronto_pago;
             $grupo ->precio_mensualidad = $request->precio_mensual;
             
+            Log::alert('Usuario '.Auth::user()->fullname.' actualizó el precio de colegiatura mensual de la especliadad '.$grupo->nombre.' de '.$precio_anterior.' ('.$precio_anterior_pronto_pago.' pronto pago) a '.$request->precio_mensual.' ('.$request->precio_mensual_pronto_pago.')');
         }
 
         $grupo->save();

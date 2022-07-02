@@ -135,6 +135,32 @@
                                     {{ ($grupo->infantil)?'Infantil':'Adulto' }}
                                 </td>
                             </tr>
+                            @can(['editar_grupo'])
+                            <tr>
+                                <td class="bg-primary text-white"><b>Inscripcion</b></td>
+                                <td>
+                                    {{ number_format($grupo->precio_inscripcion,2,'.',',') }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="bg-primary text-white"><b>Precio Semanal</b></td>
+                                <td>
+                                    {{ number_format($grupo->precio_semanal,2,'.',',') }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="bg-primary text-white"><b>Precio Mensual Pronto Pago</b></td>
+                                <td>
+                                    {{ number_format($grupo->precio_mensualidad,2,'.',',') }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="bg-primary text-white"><b>Precio Mensual Pronto Pago</b></td>
+                                <td>
+                                    {{ number_format($grupo->precio_mensualidad_pronto_pago,2,'.',',') }}
+                                </td>
+                            </tr>
+                            @endcan
                         </table>
                     </div>
                 </div>
