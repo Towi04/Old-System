@@ -233,6 +233,11 @@
                         <a href="{{ route('reportes.pagos_eliminados') }}">Reporte de Pagos Eliminados</a>
                     </li>
                     @endcan
+                    @can('ver_reporte_asesores')
+                    <li>
+                        <a href="{{ route('reportes.inscritos') }}">Reporte de Inscritos</a>
+                    </li>
+                    @endcan
                     
                 </ul>
             </div>

@@ -8,6 +8,9 @@ use App\Models\User;
 use App\Models\Especialidad;
 use App\Models\Pago;
 use App\Models\ApoyoInscripcion;
+use App\Models\Inscripcion;
+
+
 use Illuminate\Http\Request;
 use App\Services\FacturacionService;
 use App\Services\PagoInscripcionService;
@@ -412,6 +415,16 @@ class PreRegistrosController extends Controller
             // CAMPOS: inicios | reingresos | cambios_horarios_plus | bajas | cambios_horarios_minus | fin_curso
             Log::alert('Usuario '.Auth::user()->fullname.' inscribio a el pre registro '.$alumno->numero_control_fullname.' en el grupo '.$grupo_inscripcion->nombre);
             $grupo_inscripcion->actualizarReporteDesercion('sumar','inicios',1);
+
+            #Se registra la inscripcion de este alumno para el reporte de asesores
+            $inscripcion = Inscripcion::create([
+                'id_alumno' => $alumno->id,
+                'id_grupo' => $grupo_inscripcion->id,
+                'id_asesor' => $alumno->id_asesor_educativo,
+                'id_sucursal' => $sucursal->id,
+                'fecha' => date('Y-m-d H:i:s')
+            ]);
+
         }
 
 

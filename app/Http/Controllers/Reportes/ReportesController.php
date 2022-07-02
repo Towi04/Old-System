@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PartidaVenta;
 use App\Models\Venta;
 use App\Models\Asistencia;
+use App\Models\Inscripcion;
 use Yajra\DataTables\Facades\DataTables;
 use PDF;
 
@@ -768,4 +769,111 @@ class ReportesController extends Controller
 
         return redirect()->back();
     }
+
+    public function inscritos_asesores(Request $request){
+
+        Carbon::setWeekStartsAt(Carbon::SUNDAY);
+        Carbon::setWeekEndsAt(Carbon::SATURDAY);
+
+        $tipo = $request->input('tipo') ?? 'dia';
+        $id_asesor = $request->input('id_asesor') ?? null;
+
+        $sucursal = optional(session('sucursal'));
+
+        $mostrar_solo_fiscales = optional(Configuracion::where('nombre', '=', 'mostrar_solo_fiscales')->first())->valor == 'Si';
+
+        if (isset($request->fecha)) {
+            $fecha = Carbon::createFromFormat('d-m-Y', $request->input('fecha'));
+        } else {
+            $fecha = Carbon::today();
+        }
+
+        if ($tipo == 'dia') {
+            $tipo = 'dia';
+
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDay();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDay();
+
+            $inscritos = Inscripcion::with(['alumno','grupo','asesor'])
+                ->where('id_sucursal', '=', $sucursal->id)
+                ->whereBetween('fecha', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
+                ->orderBy('fecha', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'mes') {
+
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subMonth();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addMonth();
+
+            $inscritos = Inscripcion::with(['alumno','grupo','asesor'])
+                ->where('id_sucursal', '=', $sucursal->id)
+                ->whereBetween('fecha', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
+                ->orderBy('fecha', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'semanal') {
+
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDays(7);
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDays(7);
+
+            $inscritos = Inscripcion::with(['alumno','grupo','asesor'])
+                ->where('id_sucursal', '=', $sucursal->id)
+                ->whereBetween('fecha', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
+                ->orderBy('fecha', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'anual') {
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subYear();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addYear();
+
+            $inscritos = Inscripcion::with(['alumno','grupo','asesor'])
+                ->where('id_sucursal', '=', $sucursal->id)
+                ->whereBetween('fecha', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
+                ->orderBy('fecha', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if(isset($request->id_asesor)){
+            if($request->id_asesor == 'CNCM'){
+                $inscritos = $inscritos->whereNull('id_asesor');
+            }else{
+                $inscritos = $inscritos->where('id_asesor', '=',$request->id_asesor);
+            }
+        }
+
+        $inscritos = $inscritos->get();
+
+        $asesores = User::with('roles.permissions')->whereHas('roles.permissions', function($q){
+            return $q->where('name','=','realizar_pre_registro');
+        })->whereHas('sucursales', function($q)use($sucursal){
+            return $q->where('id','=', $sucursal->id);
+        })->orderBy('nombres')->get()->pluck('fullname','id')->prepend('CNCM','CNCM')->prepend('TODOS','');
+
+      
+        return view('reportes.inscritos', compact(
+            'inscritos',
+            'fecha',
+            'fecha_antes',
+            'fecha_despues',
+            'tipo',
+            'asesores',
+        ));
+
+    }
+
 }

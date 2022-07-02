@@ -14,6 +14,7 @@ use App\Models\Pago;
 use App\Models\Nota;
 use App\Models\Alerta;
 use App\Models\ApoyoInscripcion;
+use App\Models\Inscripcion;
 
 #FACADES
 use App\Services\FacturacionService;
@@ -573,7 +574,7 @@ class AlumnosController extends Controller
     public function inscribir_a_otro_grupo(Request $request, $id, PagoInscripcionService $pis)
     {
         $alumno = Alumno::find($id);
-
+        
         if ($request->has('id_grupo')) {
             $alumno->grupos()->attach($request->input('id_grupo'),['fecha_inicio' => $request->input('fecha_inicio')]);
 
@@ -597,6 +598,15 @@ class AlumnosController extends Controller
             // OPERACIONES: sumar | restar
             // CAMPOS: inicios | reingresos | cambios_horarios_plus | bajas | cambios_horarios_minus | fin_curso
             $grupo_inscripcion->actualizarReporteDesercion('sumar','inicios',1);
+            #Se registra la inscripcion de este alumno para el reporte de asesores
+            $sucursal = optional(session('sucursal'));
+            $inscripcion = Inscripcion::create([
+                'id_alumno' => $alumno->id,
+                'id_grupo' => $grupo_inscripcion->id,
+                'id_sucursal' => $sucursal->id,
+                'id_asesor' => $alumno->id_asesor_educativo,
+                'fecha' => date('Y-m-d')
+            ]);
 
         }
 

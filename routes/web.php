@@ -25,9 +25,10 @@ use App\Http\Controllers\PuntoDeVentaController;
 use App\Http\Controllers\ConfiguracionesController;
 use App\Http\Controllers\ComprasController;
 use App\Http\Controllers\Reportes\ReporteVentasController;
+use App\Http\Controllers\Reportes\ReportesController;
 use App\Http\Controllers\PuntoDeVentaProductosController;
 use App\Http\Controllers\AsistenciasController;
-use App\Http\Controllers\ReportesController;
+
 use App\Http\Controllers\Reportes\ReporteDesercionController;
 use App\Http\Controllers\ImportacionesController;
 
@@ -267,6 +268,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
         Route::post('datatables_proyeccion',[ReporteVentasController::class,'datatables_proyeccion'])->name('reporte-ventas.datatables_proyeccion');
         Route::get('asesores',[ReporteVentasController::class,'asesores'])->name('reporte-ventas.asesores');
         Route::post('convertir_ventas_fiscales',[ReporteVentasController::class,'convertir_ventas_fiscales'])->name('reporte-ventas.convertir_ventas_fiscales');
+        Route::get('inscritos',[ReportesController::class,'inscritos_asesores'])->name('inscritos');
 
         Route::post('reporte-ventas-productos/actualizar_ventas_xeditable',[ReporteVentasController::class,'actualizar_ventas_xeditable'])->name('reporte-ventas-producto.actualizar_ventas_xeditable');
         Route::post('reporte-ventas-productos/actualizar_partidas_ventas_xeditable',[ReporteVentasController::class,'actualizar_partidas_ventas_xeditable'])->name('reporte-ventas-producto.actualizar_partidas_ventas_xeditable');
