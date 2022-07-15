@@ -167,12 +167,7 @@ class ProductosController extends Controller
             ->when($request->input('id_sucursal'),function($q,$sucursal){
                 $q->where('id_sucursal',$sucursal);
             })
-            // ->where('status',config('alumnos.status.Alumno'))
-            // ->where(function($q) use($term){
-            //     $q->where('nombres', 'like', "%{$term}%")
-            //     ->orWhere('apellido_paterno', 'like', "%{$term}%")
-            //     ->orWhere('apellido_materno', 'like', "%{$term}%");
-            // })
+            ->where('nombre','like','%'.$term.'%' )
             ->orderBy('nombre', 'asc')
             ->skip($offset)
             ->take($resultCount)
@@ -182,11 +177,7 @@ class ProductosController extends Controller
             ->when($request->input('id_sucursal'),function($q,$id_sucursal){
                 $q->where('id_sucursal',$id_sucursal);
             })
-            // ->where(function($q) use($term){
-            //     $q->where('nombres', 'like', "%{$term}%")
-            //     ->orWhere('apellido_paterno', 'like', "%{$term}%")
-            //     ->orWhere('apellido_materno', 'like', "%{$term}%");
-            // })
+            ->where('nombre','like','%'.$term.'%' )
             ->count();
 
         $endCount = $offset + $resultCount;
