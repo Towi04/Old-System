@@ -208,7 +208,7 @@
 
                                                         {{-- NUMERO DE CONTROL --}}
                                                         <td>
-                                                           {{ $inscrito->asesor->fullname }}
+                                                           {{ optional($inscrito->asesor)->fullname }}
                                                         </td>
 
                                                         {{-- NOMBRE DEL ALUMNO --}}
