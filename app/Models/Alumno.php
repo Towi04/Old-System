@@ -115,7 +115,7 @@ class Alumno extends Model
             'nombres'           => 'CNCM',
             'apellido_paterno'  => '',
             'apellido_materno'  => '',
-        ]);
+        ])->withTrashed();
     }
 
     public function grupos()
