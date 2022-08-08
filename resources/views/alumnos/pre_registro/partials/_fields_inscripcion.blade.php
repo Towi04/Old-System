@@ -231,12 +231,12 @@
                     {!! Form::text('rfc', null, ['class' => 'form-control','placeholder' => 'Escribe el RFC','autocomplete' => 'off','data-fiscal','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']) !!}
                 </div>
             </div>
-            <div class="col-md-6">
+            {{-- <div class="col-md-6">
                 <div class="form-group">
                     {!! Form::label('cfdi', 'CFDI:*'); !!}
                     {!! Form::select('cfdi', $cfdis,null, ['class' => 'form-control','autocomplete' => 'off','data-fiscal']) !!}
                 </div>
-            </div>
+            </div> --}}
 
             <div class="col-md-6">
                 <div class="form-group">

@@ -78,7 +78,7 @@ class PreRegistrosController extends Controller
         return view('alumnos.pre_registro.create',[
             'alumno'            => new Alumno,
             'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
-            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi','')
+            'cfdis'             => []
         ]);
 
     }
@@ -280,7 +280,7 @@ class PreRegistrosController extends Controller
         return view('alumnos.pre_registro.inscribir', [
             'alumno'            => $alumno,
             'especialidades'    => Especialidad::query()->pluck('nombre','id')->sort()->prepend('Selecciona una especialidad',''),
-            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi',''),
+            'cfdis'             => [],
             'asesores'          => User::query()->get()->pluck('fullname','id')->sort()->prepend('CNCM',''),
             'usuarios_autorizados' => $usuarios_autorizados->pluck('fullname','id')->sort()->prepend('Selecciona un usuario',''),
         ]);
@@ -343,90 +343,103 @@ class PreRegistrosController extends Controller
             }
         }
 
-        $alumno = Alumno::find($id);
-        $request->request->add([
-            'id_sucursal'           => $sucursal->id,
-            'solicitud_factura'     => $request->has('solicitud_factura'),
-            'status'                => config('alumnos.status.Alumno'),
-            'nuevo_numero_control'  => generar_folio_alumno($sucursal->id),
-        ]);
-
-        $data = $this->validate($request, $rules);
-        $alumno->fill($data);
-
-        if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-
-            $image = Image::make($file);
-
-            $nombre_foto = $file->getClientOriginalName();
-
-            if (!Storage::exists('alumnos_foto')) {
-                Storage::makeDirectory('usuarios_foto');
-            }
-
-            if (!Storage::exists("alumnos_foto/{$alumno->id}")) {
-                Storage::makeDirectory("alumnos_foto/{$alumno->id}");
-            }
-
-            $path = storage_path() . "/app/alumnos_foto/{$alumno->id}/";
-            $image->save($path . $nombre_foto);
-
-            $alumno->foto = $nombre_foto;
-            $alumno->save();
-        }
-
-        $alumno->save();
-
-        if ($request->has('id_grupo')) {
-
-            $alumno->grupos()->attach($request->input('id_grupo'),['fecha_inicio' => $request->input('fecha_inicio')]);
-
-            $grupo_inscripcion = Grupo::findOrFail($request->input('id_grupo'));
-
-            $pids->setRequest($request);
-            $pids->setAlumno($alumno);
-            $pcds->setAlumno($alumno);
-
-            switch ($request->input('forma_pago')) {
-                case config('alumnos.forma_pago.mensual','mensual'):
-                    $pids->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
-                    $pcds->mensual();
-                break;
-                case config('alumnos.forma_pago.semanal','semanal'):
-                    $pids->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
-                    $pcds->semanal();
-                break;
-            }
-
-            #SE CREA EL APOYO A LA INSCRIPCION DEL ALUMNO
-            if($request->apoyo_especial == "true"){
-                $grupo = Grupo::find($request->input('id_grupo'));
-                $apoyo = ApoyoInscripcion::create([
-                    'id_alumno' => $alumno->id,
-                    'id_grupo'  => $grupo->id,
-                    'apoyo'     => $request->precio_inscripcion,
-                    'id_usuario'=> Auth::id(),
-                    'id_usuario_autoriza'=> $request->id_usuario_autoriza,
-                    'motivo'    =>$request->motivo,
-                ]);
-            }   
-            // OPERACIONES: sumar | restar
-            // CAMPOS: inicios | reingresos | cambios_horarios_plus | bajas | cambios_horarios_minus | fin_curso
-            Log::alert('Usuario '.Auth::user()->fullname.' inscribio a el pre registro '.$alumno->numero_control_fullname.' en el grupo '.$grupo_inscripcion->nombre);
-            $grupo_inscripcion->actualizarReporteDesercion('sumar','inicios',1);
-
-            #Se registra la inscripcion de este alumno para el reporte de asesores
-            $inscripcion = Inscripcion::create([
-                'id_alumno' => $alumno->id,
-                'id_grupo' => $grupo_inscripcion->id,
-                'id_asesor' => $alumno->id_asesor_educativo,
-                'id_sucursal' => $sucursal->id,
-                'fecha' => date('Y-m-d H:i:s')
+        try {
+            $alumno = Alumno::find($id);
+            $request->request->add([
+                'id_sucursal'           => $sucursal->id,
+                'solicitud_factura'     => $request->has('solicitud_factura'),
+                'status'                => config('alumnos.status.Alumno'),
+                'nuevo_numero_control'  => generar_folio_alumno($sucursal->id),
             ]);
 
-        }
+            $data = $this->validate($request, $rules);
+            $alumno->fill($data);
 
+            if ($request->hasFile('foto')) {
+                $file = $request->file('foto');
+
+                $image = Image::make($file);
+
+                $nombre_foto = $file->getClientOriginalName();
+
+                if (!Storage::exists('alumnos_foto')) {
+                    Storage::makeDirectory('usuarios_foto');
+                }
+
+                if (!Storage::exists("alumnos_foto/{$alumno->id}")) {
+                    Storage::makeDirectory("alumnos_foto/{$alumno->id}");
+                }
+
+                $path = storage_path() . "/app/alumnos_foto/{$alumno->id}/";
+                $image->save($path . $nombre_foto);
+
+                $alumno->foto = $nombre_foto;
+                $alumno->save();
+            }
+
+            $alumno->save();
+
+            if ($request->has('id_grupo')) {
+
+                $alumno->grupos()->attach($request->input('id_grupo'),['fecha_inicio' => $request->input('fecha_inicio')]);
+
+                $grupo_inscripcion = Grupo::findOrFail($request->input('id_grupo'));
+
+                $pids->setRequest($request);
+                $pids->setAlumno($alumno);
+                $pcds->setAlumno($alumno);
+
+                switch ($request->input('forma_pago')) {
+                    case config('alumnos.forma_pago.mensual','mensual'):
+                        $pids->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
+                        $pcds->mensual();
+                    break;
+                    case config('alumnos.forma_pago.semanal','semanal'):
+                        $pids->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
+                        $pcds->semanal();
+                    break;
+                }
+
+                #SE CREA EL APOYO A LA INSCRIPCION DEL ALUMNO
+                if($request->apoyo_especial == "true"){
+                    $grupo = Grupo::find($request->input('id_grupo'));
+                    $apoyo = ApoyoInscripcion::create([
+                        'id_alumno' => $alumno->id,
+                        'id_grupo'  => $grupo->id,
+                        'apoyo'     => $request->precio_inscripcion,
+                        'id_usuario'=> Auth::id(),
+                        'id_usuario_autoriza'=> $request->id_usuario_autoriza,
+                        'motivo'    =>$request->motivo,
+                    ]);
+                }   
+                // OPERACIONES: sumar | restar
+                // CAMPOS: inicios | reingresos | cambios_horarios_plus | bajas | cambios_horarios_minus | fin_curso
+                Log::alert('Usuario '.Auth::user()->fullname.' inscribio a el pre registro '.$alumno->numero_control_fullname.' en el grupo '.$grupo_inscripcion->nombre);
+                $grupo_inscripcion->actualizarReporteDesercion('sumar','inicios',1);
+
+                #Se registra la inscripcion de este alumno para el reporte de asesores
+                $inscripcion = Inscripcion::create([
+                    'id_alumno' => $alumno->id,
+                    'id_grupo' => $grupo_inscripcion->id,
+                    'id_asesor' => $alumno->id_asesor_educativo,
+                    'id_sucursal' => $sucursal->id,
+                    'fecha' => date('Y-m-d H:i:s')
+                ]);
+
+            }
+        } catch (\Throwable $th) {
+
+            return response()->json([
+                'success'   => false,
+                'message'   => 'Ocurrio el siguiente error:' .$th->getMessage(),
+                // 'redirect'  => route('alumnos.show',$alumno),
+                // 'pago'      => $request->has('id_grupo') ? Pago::first()->where('id_alumno',$alumno->id)->latest()->first() : ''
+            ]);
+
+            Session::flash('error','Ocurrio el siguiente error: '.$th);
+            return redirect()->back();
+            
+        }
 
 
         if($request->ajax()) {
