@@ -2,7 +2,7 @@
 
 return [
     'sandbox' => [
-        'url'               => 'http://devfactura.in',
+        'url'               => 'https://sandbox.factura.com',
         'api-key'           => env('FACTURACOM_API_KEY', ''),
         'secret-key'        => env('FACTURACOM_SECRET_KEY', ''),
         'serie'             => env('FACTURACOM_SERIE', ''),
@@ -21,7 +21,7 @@ return [
         ]
     ],
     'produccion' => [
-        'url'               => 'http://factura.com',
+        'url'               => 'https://factura.com',
         'api-key'           => env('FACTURACOM_API_KEY', ''),
         'secret-key'        => env('FACTURACOM_SECRET_KEY', ''),
         'serie'             => env('FACTURACOM_SERIE', ''),
