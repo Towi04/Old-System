@@ -15,6 +15,7 @@ class AlumnoEspecialidad extends Pivot
         'no_semanas',
         'forma_pago',
         'monto',
+        'monto_pronto_pago',
         'semanas_cursar',
         'semanas_cursadas',
         'semanas_pagadas',

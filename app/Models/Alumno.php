@@ -132,7 +132,7 @@ class Alumno extends Model
     public function especialidades()
     {
         return $this->belongsToMany(Especialidad::class,'alumnos_especialidades',  'id_alumno','id_especialidad','id','id')
-        ->withPivot('id', 'id_especialidad','fecha_inicio','status','semanas_cursar','semanas_cursadas','monto','forma_pago')->using(AlumnoEspecialidad::class);
+        ->withPivot('id', 'id_especialidad','fecha_inicio','status','semanas_cursar','semanas_cursadas','monto','forma_pago','monto_pronto_pago')->using(AlumnoEspecialidad::class);
     }
 
     # NOTE: MODEL ACCESORS

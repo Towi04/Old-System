@@ -45,24 +45,27 @@ class GenerarPagoMensualSinProntoPago extends Command
         $dia_actual = today();
 
         Alumno::query()->select(['id','numero_control'])->alumno()->mensual()
-            ->whereHas('grupos')
+        ->whereHas('especialidades', function($q){
+            return $q->where('status','=','Activo')->where('alumnos_especialidades.forma_pago','=','mensual');
+        })->with(['especialidades'])
         ->each(function($alumno) use ($dia_actual){
-            $grupos = $alumno->grupos;
+            $especialidades = $alumno->especialidades;
 
-            foreach ($grupos as $grupo) {
+            foreach ($especialidades as $especialidad) {
                 # OBTENGO LA DIFERENCIA ENTRE EL PRECIO DE LA MENSUALIDAD Y EL PRONTO PAGO
-                $precio_mensualidad = $grupo->precio_mensualidad ?? 0;
-                $precio_pronto_pago = $grupo->precio_mensualidad_pronto_pago ?? 0;
+                $precio_mensualidad = $especialidad->pivot->monto ?? 0;
+                $precio_pronto_pago = $especialidad->pivot->monto_pronto_pago ?? 0;
                 $precio_cargo = ($precio_mensualidad == 0) ? 0 : ($precio_mensualidad - $precio_pronto_pago);
 
-                $pagos = $alumno->pagos()
-                    ->where('id_grupo',$grupo->id)
+                $documentos = $alumno->documentos()
+                    ->where('id_especialidad',$especialidad->id)
                     ->where('status','Pendiente')
                     ->where('tipo', config('alumnos.concepto.colegiatura'))
+                    ->where('especial','!=',1)
                     ->whereDate('fecha_limite','<',$dia_actual)
                     ->get();
 
-                foreach ($pagos as $pago) {
+                foreach ($documentos as $pago) {
                     # SUMO ESA DIFERENCIA AL MONTO Y AL SALDO
                     $monto = $pago->monto + $precio_cargo;
                     $pago->monto = $monto;

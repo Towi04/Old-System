@@ -149,7 +149,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="bg-primary text-white"><b>Precio Mensual Pronto Pago</b></td>
+                                <td class="bg-primary text-white"><b>Precio Mensual</b></td>
                                 <td>
                                     {{ number_format($grupo->precio_mensualidad,2,'.',',') }}
                                 </td>

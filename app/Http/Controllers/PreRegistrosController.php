@@ -397,9 +397,10 @@ class PreRegistrosController extends Controller
                     case config('alumnos.forma_pago.mensual','mensual'):
                         $pids->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
                         // GENERA DOCUMENTOS MENSUALES
-                        $pcds->mensual();
+                        $pcds->mensual($especialidad, $grupo_inscripcion);
 
-                        $monto_pactado = $grupo_inscripcion->precio_mensual;
+                        $monto_pactado = $grupo_inscripcion->precio_mensualidad;
+                        $monto_pronto_pago_pactado = $grupo_inscripcion->precio_mensualidad_pronto_pago;
                     break;
                     case config('alumnos.forma_pago.semanal','semanal'):
                         $pids->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
@@ -407,6 +408,7 @@ class PreRegistrosController extends Controller
                         $pcds->semanal($especialidad, $grupo_inscripcion);
 
                         $monto_pactado = $grupo_inscripcion->precio_semanal;
+                        $monto_pronto_pago_pactado = 0;
                     break;
                 }
                 
@@ -420,6 +422,7 @@ class PreRegistrosController extends Controller
                     'forma_pago' => $request->forma_pago,
                     'semanas_cursar' => $especialidad->materias->sum('semanas'),
                     'monto' => $monto_pactado,
+                    'monto_pronto_pago' => $monto_pronto_pago_pactado,
                     'semanas_cursadas' => 0,
                     'semanas_pagadas' => 0,
                     'status' => 'Activo',
