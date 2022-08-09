@@ -145,15 +145,16 @@ class PuntoDeVentaController extends Controller
                     }
 
                     
-                    // dd('Monto:'.$monto);
+                    
                     if($monto>0){
                         $especialidad = $alumno->especialidades->where('id', $request->id_especialidad)->first();
 
                         
+                        
                         while($monto > 0){
                             
                             $monto = $this->crear_documentos_adelantados($especialidad, $alumno, $venta_fiscal, $monto,$pago);
-
+                            // dd('Monto: '.$monto);
                         }
                     }
                 }
@@ -163,7 +164,7 @@ class PuntoDeVentaController extends Controller
                 $alumno->save();
 
                 # 👉 SE GENERA EL CONCEPTO
-                $alumno_pago = AlumnoPago::create([
+                $alumno_pago = Documento::create([
                     'id_alumno'     => $alumno->id,
                     'tipo'          => 'Apartado',
                     'concepto'      => 'Apartado',
@@ -328,8 +329,9 @@ class PuntoDeVentaController extends Controller
 
     public function crear_documentos_adelantados($especialidad, $alumno, $venta_fiscal, $monto, $pago){
 
+        // dd($especialidad->forma_pago);
          # SE VERIFICA SEGUN LA MODALIDAD EN LA QUE SE ENCUENTRE EL ALUMNO
-         if ($especialidad->forma_pago == 'semanal') {
+         if ($especialidad->pivot->forma_pago == 'semanal') {
 
             $ultimo_pago = $alumno->documentos()
                 ->where('id_especialidad', '=', $especialidad->id)
@@ -354,16 +356,18 @@ class PuntoDeVentaController extends Controller
             $abonar = ($monto > $precio_semanal) ? $precio_semanal : $monto; 
 
             if($monto > $precio_semanal){
-                $monto = $monto-$precio_semanal;
+                $monto = $monto - $precio_semanal;
             }else{
                 $monto = 0;
             }
+
+            // dd('Monto den:'.$monto);
 
             $data = [
                 'modalidad'     => 'semanal',
                 'semana'        => $fecha->week,
                 'anio'          => $fecha->year,
-                'concepto'      => config('alumnos.concepto.colegiatura'),
+                'concepto'      => config('alumnos.concepto.colegiatura').' de semana #'.$fecha->weekOfYear.' del '.$fecha->year,
                 'fecha_limite'  => $fecha->clone()->endOfWeek(),
                 'monto'         => $precio_semanal,
                 'saldo'         => $saldo,
