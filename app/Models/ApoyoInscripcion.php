@@ -13,6 +13,7 @@ class ApoyoInscripcion extends Model
 
     protected $fillable = [
         'id_alumno',
+        'id_especialidad',
         'id_grupo',
         'apoyo',
         'id_usuario',
@@ -49,6 +50,16 @@ class ApoyoInscripcion extends Model
     public function usuario()
     {
         return $this->belongsTo(User::class, 'id_usuario', 'id');
+    }
+
+    /**
+     * Get the alumno t
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function especialidad()
+    {
+        return $this->belongsTo(Especialidad::class, 'id_especialidad', 'id');
     }
 
     /**

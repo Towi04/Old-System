@@ -387,9 +387,11 @@ class PreRegistrosController extends Controller
 
                 $alumno->grupos()->attach($request->input('id_grupo'),['fecha_inicio' => $request->input('fecha_inicio')]);
 
+
                 $pids->setRequest($request);
                 $pids->setAlumno($alumno);
-                $pcds->setAlumno($alumno);
+                $pcds->setRequest($request);
+                $pcds->setAlumno($alumno, $grupo_inscripcion);
 
                 switch ($request->input('forma_pago')) {
                     case config('alumnos.forma_pago.mensual','mensual'):
@@ -402,7 +404,7 @@ class PreRegistrosController extends Controller
                     case config('alumnos.forma_pago.semanal','semanal'):
                         $pids->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
                         // GENERA DOCUMENTOS SEMANALES
-                        $pcds->semanal();
+                        $pcds->semanal($especialidad, $grupo_inscripcion);
 
                         $monto_pactado = $grupo_inscripcion->precio_semanal;
                     break;
@@ -429,7 +431,7 @@ class PreRegistrosController extends Controller
                     $grupo = Grupo::find($request->input('id_grupo'));
                     $apoyo = ApoyoInscripcion::create([
                         'id_alumno' => $alumno->id,
-                        'id_grupo'  => $grupo->id,
+                        'id_especialidad'  => $especialidad->id,
                         'apoyo'     => $request->precio_inscripcion,
                         'id_usuario'=> Auth::id(),
                         'id_usuario_autoriza'=> $request->id_usuario_autoriza,

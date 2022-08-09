@@ -9,6 +9,7 @@ use App\Models\Alumno;
 use Jenssegers\Date\Date;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\AlumnoEspecialidad;
 
 class PagoInscripcionDocumentosService
 {

@@ -14,8 +14,8 @@
                     {!! Form::number('apoyo', null, ['class' => 'form-control', 'placeholder' => 'Escribe el monto del apoyo','required' => true,'step' => '0.01','autocomplete' => 'off','style' => "",]); !!}
                 </div>
                 <div class="form-group">
-                    {!! Form::label('id_grupo','Selecciona el grupo:') !!}
-                    {!! Form::select('id_grupo', $alumno->grupos->pluck('nombre_compuesto','id'), optional($alumno->grupos->first())->id, ['id'=>'select_grupo','class'=>'form-control w-100']) !!}
+                    {!! Form::label('id_especialidad','Selecciona el grupo:') !!}
+                    {!! Form::select('id_especialidad', $alumno->grupos->pluck('nombre_compuesto','id'), optional($alumno->grupos->first())->id, ['id'=>'select_grupo','class'=>'form-control w-100']) !!}
                 </div>
                 
             </div>

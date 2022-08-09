@@ -219,7 +219,7 @@
                                                         </td>
                                                         {{-- NOMBRE DEL ALUMNO --}}
                                                         <td>
-                                                            {{ $inscrito->fecha_inicio_grupo->format('d-m-Y') }}
+                                                            {{ optional($inscrito->fecha_inicio_grupo)->format('d-m-Y') }}
                                                              
                                                         </td>
                                                     </tr>

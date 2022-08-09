@@ -682,7 +682,7 @@ class AlumnosController extends Controller
 
         $grupo_origen->actualizarReporteDesercion('sumar','cambios_horarios_bajas',1);
 
-        $alumno->grupos()->attach($id_grupo);
+        $alumno->grupos()->attach($id_grupo, ['fecha_inicio'=>date('Y-m-d')]);
         $grupo = Grupo::find($request->id_grupo);
         $grupo->actualizarReporteDesercion('sumar','cambios_horarios_altas',1);
         Log::alert('Usuario '.Auth::user()->fullname.' cambio de grupo al alumno '.$alumno->fullname.' de '.$grupo_origen->nombre.' a '.$grupo->nombre);
@@ -701,9 +701,12 @@ class AlumnosController extends Controller
 
     public function datatables_apoyos_inscripcion(Request $request)
     {
-        $query = ApoyoInscripcion::with('grupo')
+        $query = ApoyoInscripcion::with('especialidad')
             ->when($request->input('id_grupo'), function ($q, $id_grupo) {
                 $q->where('id_grupo', $id_grupo);
+            })
+            ->when($request->input('id_especialidad'), function ($q, $id_especialidad) {
+                $q->where('id_especialidad', $id_especialidad);
             })
             ->when($request->input('id_alumno'), function ($q, $id_alumno) {
                 $q->where('id_alumno', $id_alumno);
@@ -732,13 +735,13 @@ class AlumnosController extends Controller
 
         $apoyo = ApoyoInscripcion::create([
             'id_alumno' => $request->id_alumno,
-            'id_grupo'  => $request->id_grupo,
+            'id_especialidad'  => $request->id_especialidad,
             'apoyo'     => $request->apoyo,
             'id_usuario'=> Auth::id(),
             'id_usuario_autoriza'=> Auth::id(),
         ]);
 
-        $apoyo = ApoyoInscripcion::with(['alumno','grupo'])->find($apoyo->id);
+        $apoyo = ApoyoInscripcion::with(['alumno','especialidad'])->find($apoyo->id);
 
         Log::alert('Usuario '.Auth::user()->fullname.' creó el apoyo a la inscripción manual del alumno '.$apoyo->alumno->numero_control_fullname.' del grupo'.$apoyo->grupo->nombre);
     }

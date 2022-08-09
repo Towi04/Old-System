@@ -942,7 +942,7 @@
                             type: "POST",
                             data: function (d) {
                                 d.id_alumno = "{{ $alumno->id }}";
-                                d.id_grupo = $('#select_grupo_documentos').val();
+                                d.id_especialidad = $('#select_especialidad_documentos').val();
                                 d._token = $("meta[name='csrf-token']").attr("content");
                             },
                             beforeSend: function(xhr,type) {
@@ -1044,7 +1044,7 @@
 
                         const $form = $(this);
                         const formData = new FormData(this);
-                        formData.append('id_grupo',$('#select_grupo_documentos').val());
+                        formData.append('id_especialidad',$('#select_especialidad_documentos').val());
                         formData.append('id_alumno',"{{ $alumno->id }}");
 
                         $.ajax({
@@ -1063,10 +1063,11 @@
                                 }, false )
                             },
                             error:function(error){
-                                wait.modal('hide');
+                               
                                 const errors = error.responseJSON || {};
 
                                 setTimeout(() => {
+                                    wait.modal('hide');
                                     dom.modal_apoyo_especial.modal('show');
                                     toastr.error('Error',  errors.message || 'Ocurrio un error inesperado');
                                 }, 250);
@@ -1088,7 +1089,7 @@
                             type: "POST",
                             data: function (d) {
                                 d.id_alumno = "{{ $alumno->id }}";
-                                d.id_grupo = $('#select_grupo_documentos').val();
+                                d.id_especialidad = $('#select_especialidad_documentos').val();
                                 d._token = $("meta[name='csrf-token']").attr("content");
                             },
                             beforeSend: function(xhr,type) {
@@ -1099,7 +1100,7 @@
                         },
                         columns: [
                             {data: 'id', name: 'id',visible:false},
-                            {data: 'grupo.clave', name: 'grupo.clave'},
+                            {data: 'especialidad.nombre', name: 'especialidad.nombre'},
                             {data: 'apoyo', name: 'apoyo'},
                             {data: 'buttons', name: 'buttons', orderable: false, searchable: false },
                         ],

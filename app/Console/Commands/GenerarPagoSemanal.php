@@ -50,11 +50,17 @@ class GenerarPagoSemanal extends Command
     {
         # NOTE: LAZYCOLLECTION https://laravel.com/docs/8.x/collections#lazy-collection-methods
 
-        Alumno::query()->alumno()->semanal()->whereHas('grupos')->with('alumno')
+        Alumno::query()->alumno()->semanal()->whereHas('especialidades', function($q){
+            return $q->where('status','=','Activo')->where('alumnos_especialidades.forma_pago','=','semanal');
+        })->with('alumno')
             ->cursor()
             ->each(function($alumno){
-                $this->pcds->setAlumno($alumno);
-                $this->pcds->semanal();
+
+                foreach($alumno->especialidades as $especialidad){
+                    $this->pcds->setAlumno($alumno);
+                    $this->pcds->semanal($especialidad);
+                }
+                
             });
 
 

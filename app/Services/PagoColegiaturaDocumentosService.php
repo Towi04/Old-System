@@ -3,16 +3,21 @@
 namespace App\Services;
 
 use App\Models\Alumno;
+use App\Models\AlumnoEspecialidad;
 use App\Models\ApoyoEspecial;
 use Illuminate\Support\Carbon;
 
 use Jenssegers\Date\Date;
+
+use Illuminate\Http\Request;
 
 class PagoColegiaturaDocumentosService
 {
     protected $alumno;
 
     protected $fecha_actual;
+
+    protected $request;
 
     public function setAlumno(Alumno $alumno)
     {
@@ -26,6 +31,13 @@ class PagoColegiaturaDocumentosService
     public function setFechaActual($fecha_actual)
     {
         $this->fecha_actual = $fecha_actual;
+
+        return $this;
+    }
+
+    public function setRequest(Request $request)
+    {
+        $this->request = $request;
 
         return $this;
     }
@@ -176,7 +188,7 @@ class PagoColegiaturaDocumentosService
         ];
     }
 
-    public function semanal()
+    public function semanal($especialidad, $grupo_inscripcion = null)
     {
         $alumno = $this->alumno;
 
@@ -185,22 +197,32 @@ class PagoColegiaturaDocumentosService
 
         $today = Carbon::today();
 
-        $grupos = $this->alumno->grupos->filter(function($grupo)use($today){
-            if($grupo->fecha_inicio){
-                return $grupo->fecha_inicio->lte($today) && $grupo->pivot->status == 'Inscrito';
-            }
-            
-        });
-
-        foreach ($grupos as $grupo) {
+       
             Carbon::setWeekStartsAt(Carbon::SUNDAY);
             Carbon::setWeekEndsAt(Carbon::SATURDAY);
-    
-            if(optional(optional($grupo->alumnos->where('id',$alumno->id)->first())->pivot)->fecha_inicio){
-                $fecha_inicio = optional(optional($grupo->alumnos->where('id',$alumno->id)->first())->pivot)->fecha_inicio;
+        
+            if($especialidad->pivot){
+                if(optional($especialidad->pivot)->fecha_inicio){
+                    $fecha_inicio = optional($especialidad->pivot)->fecha_inicio;
+                }else{
+                    // SI NO TIENE FECHA DE INICIO DE ESPECIALIDAD, SE TOMA LA DEL PRIMER GRUPO DE LA MISMA
+                    $primer_grupo = $alumno->grupos->where('id_especialidad',$especialidad->id)->first();
+                    $fecha_inicio = $primer_grupo->pivot->fecha_inicio;
+                    if($fecha_inicio){
+                        // SI LA ESPECIALIDAD NO TIENE FECHA DE INICIO SE GUARDA;
+                        $fecha_inicio = new Date($primer_grupo->fecha_inicio);
+                        // $alumno_especialidad = AlumnoEspecialidad::find($especialidad->pivot->id);
+                        // $alumno_especialidad->fecha_inicio = $fecha_inicio;
+                        // $alumno_especialidad->save();
+                    }else{
+                        $fecha_inicio = new Date(date('Y-m-d'));
+                    }
+                    
+                }
             }else{
-                $fecha_inicio = new Date($grupo->fecha_inicio);
+                $fecha_inicio = new Date($this->request->fecha_inicio);
             }
+            
     
     
             if($fecha_inicio->isSunday()){
@@ -215,8 +237,8 @@ class PagoColegiaturaDocumentosService
             #SI NO SE SIGUEN GENERANDO PAGOS SEMANALES
             while(!$today->copy()->addWeek()->isSameWeek($fecha_inicio) && $fecha_inicio->lte($today->copy()->addWeek())){
     
-                 #BUSCA UN APOYO SI EXISTE EN ESA SEMANA 
-                $apoyos = $alumno ->apoyos_especiales->where('id_grupo', $grupo->id)->filter(function($apoyo)use($fecha_inicio){
+                #BUSCA UN APOYO SI EXISTE EN ESA SEMANA 
+                $apoyos = $alumno ->apoyos_especiales->where('id_especialidad', $especialidad->id)->filter(function($apoyo)use($fecha_inicio){
                     if($apoyo->fecha_inicio && $apoyo->fecha_final){
                         return $apoyo->fecha_inicio->lte($fecha_inicio) && $apoyo->fecha_final->gte($fecha_inicio);
                     }else{
@@ -227,13 +249,18 @@ class PagoColegiaturaDocumentosService
                 if($apoyos->first()){
                     $monto =  $apoyos->first()->precio ?? 0;
                 }else{
-                    $monto =  $grupo->precio_semanal ?? 0;
+                    if($especialidad->pivot){
+                        $monto =  $especialidad->pivot->monto ?? 0;
+                    }else{
+                        $monto =  $grupo_inscripcion->precio_semanal ?? 0;
+                    }
+                    
                 }
               
                 
-                $documento = $alumno->documentos()->create([
-                    'id_grupo'                  => $grupo->id,
-                    'id_especialidad'           => $grupo->id_especialidad,
+                $this->crear_documento([
+                    'id_grupo'                  => null,
+                    'id_especialidad'           => $especialidad->id,
                     'concepto'                  => config('alumnos.concepto.colegiatura') .' de semana #'.$fecha_inicio->weekOfYear.' del '.$fecha_inicio->year,
                     'monto'                     => $monto,
                     'saldo'                     => $monto,
@@ -251,7 +278,7 @@ class PagoColegiaturaDocumentosService
                 
     
             }   
-        }
+        
 
     }
 

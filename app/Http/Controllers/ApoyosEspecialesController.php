@@ -18,6 +18,9 @@ class ApoyosEspecialesController extends Controller
             ->when($request->input('id_grupo'), function ($q, $id_grupo) {
                 $q->where('id_grupo', $id_grupo);
             })
+            ->when($request->input('id_especialidad'), function ($q, $id_especialidad) {
+                $q->where('id_especialidad', $id_especialidad);
+            })
             ->when($request->input('id_alumno'), function ($q, $id_alumno) {
                 $q->where('id_alumno', $id_alumno);
             });
@@ -39,7 +42,7 @@ class ApoyosEspecialesController extends Controller
     {
         $rules = [
             'id_sucursal'       => 'required',
-            'id_grupo'          => 'required',
+            'id_especialidad'          => 'required',
             'id_alumno'         => 'required',
             'fecha_final'       => 'required',
             'fecha_inicio'       => 'required',
@@ -56,7 +59,7 @@ class ApoyosEspecialesController extends Controller
 
         $existe_apoyo_especial = ApoyoEspecial::toBase()
             ->where('id_alumno', $request->input('id_alumno'))
-            ->where('id_grupo', $request->input('id_grupo'))
+            ->where('id_especialidad', $request->input('id_especialidad'))
             ->whereRaw('CAST(fecha_final AS date) > cast( NOW() AS date)')
             ->orderBy('fecha_final')
             ->exists();
@@ -73,6 +76,8 @@ class ApoyosEspecialesController extends Controller
                 'message' => 'Apoyo creado correctamente'
             ]);
         }
+
+        // dd($data);
 
         ApoyoEspecial::create($data);
 

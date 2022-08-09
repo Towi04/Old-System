@@ -24,6 +24,7 @@ class ApoyoEspecial extends Model
     protected $fillable = [
         'id_alumno',
         'id_grupo',
+        'id_especialidad',
         'id_sucursal',
         'precio',
         'fecha_final',
@@ -50,5 +51,10 @@ class ApoyoEspecial extends Model
     public function sucursal()
     {
         return $this->belongsTo(Sucursal::class,'id_sucursal')->withDefault();
+    }
+
+    public function especialidad()
+    {
+        return $this->belongsTo(Especialidad::class,'id_especialidad')->withDefault();
     }
 }
