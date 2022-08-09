@@ -121,12 +121,18 @@ class Alumno extends Model
     public function grupos()
     {
         return $this->belongsToMany(Grupo::class, 'alumnos_grupos', 'id_alumno', 'id_grupo')
-            ->withPivot('id', 'id_grupo','fecha_inicio','status')->using(AlumnoGrupo::class);
+            ->withPivot('id', 'id_grupo','fecha_inicio','status','fecha_final')->using(AlumnoGrupo::class);
     }
 
     public function pagos()
     {
         return $this->hasMany(AlumnoPago::class, 'id_alumno', 'id');
+    }
+
+    public function especialidades()
+    {
+        return $this->belongsToMany(Especialidad::class,'alumnos_especialidades',  'id_alumno','id_especialidad','id','id')
+        ->withPivot('id', 'id_especialidad','fecha_inicio','status','semanas_cursar','semanas_cursadas','monto','forma_pago')->using(AlumnoEspecialidad::class);
     }
 
     # NOTE: MODEL ACCESORS

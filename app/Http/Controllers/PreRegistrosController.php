@@ -331,8 +331,9 @@ class PreRegistrosController extends Controller
         ];
 
         $sucursal = optional(session('sucursal'));
-        // dd($request);
+        
         // SI LE PONEN PRECIO DE INSCRIPCIÓN SE TIENE QUE VALIDAR QUE LO AUTORICE ALGUIEN
+
         if($request->apoyo_especial == "true"){
             $usuario = User::find($request->id_usuario_autoriza);
             
@@ -381,9 +382,10 @@ class PreRegistrosController extends Controller
 
             if ($request->has('id_grupo')) {
 
-                $alumno->grupos()->attach($request->input('id_grupo'),['fecha_inicio' => $request->input('fecha_inicio')]);
-
                 $grupo_inscripcion = Grupo::findOrFail($request->input('id_grupo'));
+                $especialidad = Especialidad::with('materias')->findOrFail($request->id_especialidad);
+
+                $alumno->grupos()->attach($request->input('id_grupo'),['fecha_inicio' => $request->input('fecha_inicio')]);
 
                 $pids->setRequest($request);
                 $pids->setAlumno($alumno);
@@ -392,15 +394,37 @@ class PreRegistrosController extends Controller
                 switch ($request->input('forma_pago')) {
                     case config('alumnos.forma_pago.mensual','mensual'):
                         $pids->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
+                        // GENERA DOCUMENTOS MENSUALES
                         $pcds->mensual();
+
+                        $monto_pactado = $grupo_inscripcion->precio_mensual;
                     break;
                     case config('alumnos.forma_pago.semanal','semanal'):
                         $pids->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
+                        // GENERA DOCUMENTOS SEMANALES
                         $pcds->semanal();
+
+                        $monto_pactado = $grupo_inscripcion->precio_semanal;
                     break;
                 }
-
-                #SE CREA EL APOYO A LA INSCRIPCION DEL ALUMNO
+                
+                
+                // throw ValidationException::withMessages(['mensaje' => $monto_pactado]);
+                // SE GENERA EL REGISTRO DE ESTE ALUMNO EN LA ESPECIALIDAD SELECCIONADA. ESTE SERA SU REGISTRO DE ESPECIALIDAD
+                // CENTRAL A PARTIR DE AQUI
+                // SE GUARDA EL MONTO PACTADO EN EL CORE DEL ALUMNO DONDE SE VA A RESPETAR ESTA CANTIDAD 
+                $alumno_especialidad = $alumno->especialidades()->attach($especialidad->id, [
+                    'fecha_inicio' => $request->input('fecha_inicio'),
+                    'forma_pago' => $request->forma_pago,
+                    'semanas_cursar' => $especialidad->materias->sum('semanas'),
+                    'monto' => $monto_pactado,
+                    'semanas_cursadas' => 0,
+                    'semanas_pagadas' => 0,
+                    'status' => 'Activo',
+                ]);
+                
+               
+                #SE CREA EL APOYO A LA INSCRIPCION DEL ALUMNO PARA EL REPORTE
                 if($request->apoyo_especial == "true"){
                     $grupo = Grupo::find($request->input('id_grupo'));
                     $apoyo = ApoyoInscripcion::create([
@@ -412,6 +436,7 @@ class PreRegistrosController extends Controller
                         'motivo'    =>$request->motivo,
                     ]);
                 }   
+
                 // OPERACIONES: sumar | restar
                 // CAMPOS: inicios | reingresos | cambios_horarios_plus | bajas | cambios_horarios_minus | fin_curso
                 Log::alert('Usuario '.Auth::user()->fullname.' inscribio a el pre registro '.$alumno->numero_control_fullname.' en el grupo '.$grupo_inscripcion->nombre);
@@ -423,15 +448,17 @@ class PreRegistrosController extends Controller
                     'id_grupo' => $grupo_inscripcion->id,
                     'id_asesor' => $alumno->id_asesor_educativo,
                     'id_sucursal' => $sucursal->id,
-                    'fecha' => date('Y-m-d H:i:s')
+                    'fecha' => date('Y-m-d H:i:s'),
+                    'fecha_inicio_grupo' => $request->fecha_inicio
                 ]);
 
             }
         } catch (\Throwable $th) {
 
+            // dd($th);
             return response()->json([
                 'success'   => false,
-                'message'   => 'Ocurrio el siguiente error:' .$th->getMessage(),
+                'message'   => 'Ocurrio el siguiente error:' .$th->getMessage().' en la línea '.$th->getLine(),
                 // 'redirect'  => route('alumnos.show',$alumno),
                 // 'pago'      => $request->has('id_grupo') ? Pago::first()->where('id_alumno',$alumno->id)->latest()->first() : ''
             ]);

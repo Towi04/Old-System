@@ -143,8 +143,57 @@
                                     <i class="fas fa-edit"></i> Editar
                                 </a>
                             @endcan
-                            <h3>Grupos</h3>
-                            @foreach ($alumno->grupos as $grupo)
+                            <h3>Especialidades</h3>
+                            @foreach ($alumno->especialidades as $especialidad)
+                            <div class="post-box">
+                                {{-- <div class="post-media" style="background-image: url(img/portfolio1.jpg)"></div> --}}
+                                <div class="post-content">
+                                <h6 class="post-title">
+                                    @if($especialidad->pivot->status == 'Pausa') 
+                                    <span class="float-right badge badge-warning"> {{$especialidad->pivot->status }}</span>
+                                    @else 
+                                    <span class="float-right badge badge-success"> {{$especialidad->pivot->status }}</span>
+                                    @endif
+                                    Especialidad: {{$especialidad->nombre}} 
+                                   
+                                </h6>
+                                <div class="post-text">
+                                    <b>Fecha inicio:</b> {{ $especialidad->pivot->fecha_inicio->format('d-m-Y')}}<br>
+                                    <b>Forma pago:</b> {{ $especialidad->pivot->forma_pago}}<br>
+                                    <b>Monto:</b> $ {{ number_format($especialidad->pivot->monto,2,'.',',')}}<br>
+                                    <b>Total semanas:</b> {{$especialidad->pivot->semanas_cursar }}<br>
+                                    <b>Semanas cursadas:</b>  {{$especialidad->pivot->semanas_cursadas}}<br>
+                                    <b>Fecha Inicio: </b>
+                                    <a class='
+                                    @can('cambiar_fecha_inicio_especialidad') editable_fecha_inicio_grupo @endcan
+                                    ' data-pk='{{$especialidad->pivot->id}}' data-name='fecha_inicio' data-url='{{route("alumnos.actualizar_informacion_alumnos_especialidades")}}' data-type='date' data-value="{{ optional($especialidad->pivot->fecha_inicio)->format('d-m-Y') }}">
+                                    {!!  optional($especialidad->pivot->fecha_inicio)->format('d-m-Y') !!}
+                                    </a>
+                                    <br>
+                                    <b>Status:</b>  {!! (!empty($especialidad->pivot->status)) ? $especialidad->pivot->status: '' !!}<br>
+                                </div>
+                                <div class="post-foot">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            
+                                        </div>
+                                        <div class="col-12">
+                                            
+                                        </div>
+                                    </div>
+
+
+
+                                <br>
+
+
+                                </div>
+                                </div>
+                            </div>
+                            @endforeach
+
+                            <h4>Grupos Actuales</h4>
+                            @foreach ($alumno->grupos->whereIn('pivot.status',['Inscrito','Pausa']) as $grupo)
                             <div class="post-box">
                                 {{-- <div class="post-media" style="background-image: url(img/portfolio1.jpg)"></div> --}}
                                 <div class="post-content">
@@ -248,6 +297,10 @@
                                             <a class="nav-link" data-toggle="tab" href="#tab-notas">Notas</a>
                                         </li>
                                         @endif
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-toggle="tab" href="#tab-historial-grupos">Historial de grupos</a>
+                                        </li>
+
 
                                     </ul>
                                     <ul class="nav nav-pills smaller d-none d-md-flex">
@@ -257,8 +310,8 @@
                                 <div class="tab-content">
                                     <div class="tab-pane" id="tab-documentos">
                                         <div class="form-group">
-                                            {!! Form::label('id_grupo','Selecciona el grupo:') !!}
-                                            {!! Form::select('id_grupo', $alumno->grupos->pluck('nombre_compuesto','id'), optional($alumno->grupos->first())->id, ['id'=>'select_grupo_documentos','class'=>'form-control w-100']) !!}
+                                            {!! Form::label('id_especialidad','Selecciona la especialidad:') !!}
+                                            {!! Form::select('id_especialidad', $alumno->especialidades->pluck('nombre','id'), optional($alumno->especialidades->first())->id, ['id'=>'select_especialidad_documentos','class'=>'form-control w-100']) !!}
                                         </div>
 
                                         <table class="table table-striped table-bordered table-hover" id="tb-documentos" width="100%">
@@ -474,6 +527,36 @@
                                                     </td>
                                                     <td class="text-right">
                                                         {{$nota->usuario->fullname}}
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </table>
+                                    </div>
+
+
+                                    <div class="tab-pane" id="tab-historial-grupos">
+                                        
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Grupo</th>
+                                                    <th>Fecha Inicio</th>
+                                                    <th>Fecha Final</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            @foreach ($alumno->grupos->sortByDesc('fecha_inicio') as $grupo)
+                                                    <td>
+                                                        {{$grupo->nombre_compuesto}}
+                                                    </td>
+                                                    <td class="text-center text-nowrap">
+                                                       {{ optional($grupo->pivot->fecha_inicio)->format('d-m-Y') }}
+                                                    </td>
+                                                    <td class="text-center text-nowrap">
+                                                        {{ optional($grupo->pivot->fecha_final)->format('d-m-Y') }}
+                                                    </td>
+                                                    <td class="text-right">
+                                                        {{ $grupo->pivot->status }}
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -809,7 +892,7 @@
                     type: "POST",
                     data: function (d) {
                         d.id_alumno = "{{ $alumno->id }}";
-                        d.id_grupo = $('#select_grupo_documentos').val();
+                        d.id_especialidad = $('#select_especialidad_documentos').val();
                         d._token = $("meta[name='csrf-token']").attr("content");
                     },
                     beforeSend: function(xhr,type) {

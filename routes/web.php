@@ -171,6 +171,8 @@ Route::middleware(['auth','sucursal'])->group(function () {
 
     Route::post('alumno/subir_foto', [ AlumnosController::class,'subir_foto'])->name('alumnos.subir_foto');
 
+    Route::post('alumno/actualizar_informacion_alumnos_especialidades', [ AlumnosController::class,'actualizar_informacion_alumnos_especialidades'])->name('alumnos.actualizar_informacion_alumnos_especialidades');
+
 
     Route::group(['middleware' => ['permission:listar_alumnos']], function () {
             Route::resource('alumnos', AlumnosController::class)->parameters([

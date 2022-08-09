@@ -210,16 +210,18 @@ class PagoColegiaturaDocumentosService
     
             # SE AGREGA EL PRECIO NORMAL DE LA MENSUALIDAD
     
-           
-    
+
             #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
-            #SI NO SE SIGUEN GENERANDO PAGOS MENSUALE
+            #SI NO SE SIGUEN GENERANDO PAGOS SEMANALES
             while(!$today->copy()->addWeek()->isSameWeek($fecha_inicio) && $fecha_inicio->lte($today->copy()->addWeek())){
     
                  #BUSCA UN APOYO SI EXISTE EN ESA SEMANA 
                 $apoyos = $alumno ->apoyos_especiales->where('id_grupo', $grupo->id)->filter(function($apoyo)use($fecha_inicio){
-
-                    return $apoyo->fecha_inicio->lte($fecha_inicio) && $apoyo->fecha_final->gte($fecha_inicio);
+                    if($apoyo->fecha_inicio && $apoyo->fecha_final){
+                        return $apoyo->fecha_inicio->lte($fecha_inicio) && $apoyo->fecha_final->gte($fecha_inicio);
+                    }else{
+                        return false;
+                    }
                 });
     
                 if($apoyos->first()){
@@ -227,10 +229,11 @@ class PagoColegiaturaDocumentosService
                 }else{
                     $monto =  $grupo->precio_semanal ?? 0;
                 }
-                
+              
                 
                 $documento = $alumno->documentos()->create([
                     'id_grupo'                  => $grupo->id,
+                    'id_especialidad'           => $grupo->id_especialidad,
                     'concepto'                  => config('alumnos.concepto.colegiatura') .' de semana #'.$fecha_inicio->weekOfYear.' del '.$fecha_inicio->year,
                     'monto'                     => $monto,
                     'saldo'                     => $monto,
@@ -238,7 +241,7 @@ class PagoColegiaturaDocumentosService
                     'semana'                    => $fecha_inicio->weekOfYear,
                     'anio'                      => $fecha_inicio->year,
                     'fecha_limite'              => $fecha_inicio->copy()->endOfWeek(),
-                    'modalidad'                 => 'mensual',
+                    'modalidad'                 => 'semanal',
                     'tipo'                      => config('alumnos.concepto.colegiatura'),
                     'status'                    => config('pagos.status.Pendiente'),
                 ]);
@@ -249,6 +252,7 @@ class PagoColegiaturaDocumentosService
     
             }   
         }
+
     }
 
     private function calcular_precio_semanal($grupo, $alumno)

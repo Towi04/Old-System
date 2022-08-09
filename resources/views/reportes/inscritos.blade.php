@@ -192,6 +192,7 @@
                                                     <th>Grupo</th>
                                                     <th>Asesor</th>
                                                     <th>Fecha Inscrito</th>
+                                                    <th>Fecha de Inicio</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -214,6 +215,11 @@
                                                         {{-- NOMBRE DEL ALUMNO --}}
                                                         <td>
                                                             {{ $inscrito->fecha->format('d-m-Y') }}
+                                                             
+                                                        </td>
+                                                        {{-- NOMBRE DEL ALUMNO --}}
+                                                        <td>
+                                                            {{ $inscrito->fecha_inicio_grupo->format('d-m-Y') }}
                                                              
                                                         </td>
                                                     </tr>

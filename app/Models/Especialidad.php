@@ -22,13 +22,16 @@ class Especialidad extends Model
      * @var array
      */
     protected $fillable = [
-        'id_sucursal',
-        'nombre',
-        'descripcion',
-        'precio_inscripcion',
-        'precio_mensualidad',
-        'precio_mensualidad_pronto_pago',
-        'precio_semanal',
+        'id_alumno',
+        'id_especialidad',
+        'fecha_inicio',
+        'no_semanas',
+        'tipo_pago',
+        'monto',
+        'semanas_cursar',
+        'semanas_cursadas',
+        'semanas_pagadas',
+        'status',
     ];
 
     public function grupos()
@@ -57,5 +60,15 @@ class Especialidad extends Model
     public function precios()
     {
         return $this->hasMany(Precio::class, 'id_especialidad', 'id');
+    }
+
+    /**
+     * Get all of the materias for the Especialidad
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function materias()
+    {
+        return $this->hasMany(Materia::class, 'id_especialidad', 'id');
     }
 }

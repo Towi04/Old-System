@@ -15,6 +15,8 @@ use App\Models\Nota;
 use App\Models\Alerta;
 use App\Models\ApoyoInscripcion;
 use App\Models\Inscripcion;
+use App\Models\AlumnoEspecialidad;
+
 
 #FACADES
 use App\Services\FacturacionService;
@@ -481,6 +483,8 @@ class AlumnosController extends Controller
             })
             ->when($request->input('id_grupo'), function ($q, $id_grupo) {
                 $q->where('id_grupo', $id_grupo);
+            })->when($request->input('id_especialidad'), function ($q, $id_especialidad) {
+                $q->where('id_especialidad', $id_especialidad);
             });
 
         return DataTables::eloquent($query)
@@ -671,7 +675,11 @@ class AlumnosController extends Controller
         $id_grupo = $request->id_grupo;
         $alumno = Alumno::find($request->id_alumno);
 
-        $alumno->grupos()->detach($request->id_grupo_origen);
+        $alumno->grupos()->updateExistingPivot($request->id_grupo_origen, [
+            'fecha_final' => date('Y-m-d'),
+            'status' => 'Cambio horario',
+        ]);
+
         $grupo_origen->actualizarReporteDesercion('sumar','cambios_horarios_bajas',1);
 
         $alumno->grupos()->attach($id_grupo);
@@ -835,5 +843,14 @@ class AlumnosController extends Controller
 
 
     }
+
+    public function actualizar_informacion_alumnos_especialidades(Request $request){
+        $ae = AlumnoEspecialidad::find($request->pk);
+        $ae[$request->name] = $request->value;
+        $ae->save();
+
+
+    }
+
 
 }

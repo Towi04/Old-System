@@ -69,8 +69,6 @@ class PagoInscripcionDocumentosService
 
     public function semanalPorGrupo(Grupo $grupo)
     {
-        // $precio_inscripcion = optional($this->request)->input('precio_inscripcion') ?? $grupo->precio_inscripcion ?? 0;
-        // $this->inscripcion($grupo,$precio_inscripcion);
         $precio_semanal = $grupo->precio_semanal ?? 0;
 
         if ($grupo->fecha_inicio->greaterThan($this->fecha_actual)) {
@@ -98,14 +96,14 @@ class PagoInscripcionDocumentosService
 
         $precio_inscripcion = optional($this->request)->has('precio_inscripcion')  ? $this->request->input('precio_inscripcion'):$precio_inscripcion;
         if($this->request){
-            $precio_inscripcion = $precio_inscripcion - $apartado;
+            $precio_inscripcion = $precio_inscripcion;
         }else{
-            $precio_inscripcion = $precio_inscripcion - $apartado - $monto_apoyo_inscripcion;
+            $precio_inscripcion = $precio_inscripcion - $monto_apoyo_inscripcion;
         }
         
-
         $documento = $this->alumno->documentos()->create([
             'id_grupo'                  => $grupo->id,
+            'id_especialidad'           => $grupo->id_especialidad,
             'concepto'                  => config('alumnos.concepto.inscripcion') . ' del grupo ' . $grupo->clave,
             'monto'                     => $precio_inscripcion,
             'saldo'                     => $precio_inscripcion,
@@ -129,7 +127,7 @@ class PagoInscripcionDocumentosService
                 'folio_fiscal'  => ($venta_fiscal) ? $folio_fiscal + 1 : null,
                 'id_sucursal'   => $this->request->input('id_sucursal'),
                 'id_alumno'     => $this->alumno->id,
-                'monto'         => $precio_inscripcion,
+                'monto'         => $precio_inscripcion - $apartado,
                 'forma_pago'    => $this->request->input('tipo_pago'),
                 'fecha'         => now(),
                 'id_recibio'    => auth()->id(),
@@ -139,7 +137,7 @@ class PagoInscripcionDocumentosService
             $pago->abonos_documentos()->create([
                 'id_sucursal'       => $this->request->input('id_sucursal'),
                 'id_documento'    => $documento->id,
-                'monto'             => $precio_inscripcion,
+                'monto'             => $precio_inscripcion - $apartado,
                 'venta_fiscal'      => $venta_fiscal,
             ]);
 

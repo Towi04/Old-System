@@ -24,7 +24,7 @@ class AlumnoGrupo extends Pivot
      *
      * @var array
      */
-    protected $dates = ['fecha_inicio'];
+    protected $dates = ['fecha_inicio','fecha_final'];
 
     public function alumno()
     {

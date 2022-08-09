@@ -17,10 +17,11 @@ class Inscripcion extends Model
         'id_asesor',
         'id_sucursal',
         'fecha',
+        'fecha_inicio_grupo'
     ];
 
     protected $dates = [
-        'fecha'
+        'fecha','fecha_inicio_grupo'
     ];
     /**
      * Get the alumno t
