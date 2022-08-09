@@ -62,8 +62,8 @@
                         <div class="tab-pane active" id="tab-pagos-pendientes">
                             <div class="row">
                                 <div class="col-12">
-                                    {!! Form::label('id_grupo', 'Selecciona el grupo: ', ['class' => 'control-label']) !!}
-                                    {!! Form::select('id_grupo', [], null, ['id'=>'select_grupo','class'=>'custom-select custom-select-sm','style' => 'width:100%;']) !!}
+                                    {!! Form::label('id_especialidad', 'Selecciona la especialidad: ', ['class' => 'control-label']) !!}
+                                    {!! Form::select('id_especialidad', [], null, ['id'=>'select_especialidad','class'=>'custom-select custom-select-sm','style' => 'width:100%;']) !!}
                                 </div>
                                 <div class="col-12">
                                     <span class="float-right"> Total pendiente: $ <span class="total_pendiente"></span></span>
@@ -236,7 +236,7 @@
                         <div class="row">
                             <div class="col-12">
                                 {!! Form::label('id_grupo', 'Seleccionar a un grupo:*', ['class' => 'form-label']) !!}
-                                {!! Form::select('id_grupo', [], null, ['id' => 'select2_id_grupo_pago', 'class' => 'custom-select custom-select-sm','required' => true]) !!}
+                                {!! Form::select('id_grupo', [], null, ['id' => 'select2_id_especialidad_pago', 'class' => 'custom-select custom-select-sm','required' => true]) !!}
                             </div>
                         </div>
                     </div>
@@ -423,7 +423,7 @@
                     data: function (d) {
                         d.id_alumno = dom.select_alumno.val();
                         d.status = 'pendiente';
-                        d.id_grupo = $('#select_grupo').val();
+                        d.id_especialidad = $('#select_id_especialidad').val();
                     },
                     complete: function(data) {
                         let response = data.responseJSON || {};
@@ -473,21 +473,21 @@
 
             dom.select_alumno.on('select2:select', function (e) {
 
-                grupos = e.params.data.grupos;
-                traer_grupos(grupos);
+                especialidades = e.params.data.especialidades;
+                traer_especialidades(especialidades);
             });
 
-            function traer_grupos(grupos){
-                $('#select_grupo').empty();
+            function traer_especialidades(especialidades){
+                $('#select_especialidad').empty();
 
-                const $select2_grupos_pagos = dom.pago_manual.form_pago_manual.find('#select2_id_grupo_pago');
-                $select2_grupos_pagos.empty();
+                const $select2_especialidad_pagos = dom.pago_manual.form_pago_manual.find('#select2_id_especialidad_pago');
+                $select2_especialidad_pagos.empty();
 
-                $.each(grupos, function (index, grupo) {
-                    const opcion = `<option value="${grupo.id}" > ${grupo.nombre_compuesto} </option>`;
+                $.each(especialidades, function (index, especialidad) {
+                    const opcion = `<option value="${especialidad.id}" > ${especialidad.nombre} </option>`;
 
-                    $('#select_grupo').append(opcion);
-                    $select2_grupos_pagos.append(opcion)
+                    $('#select_especialidad').append(opcion);
+                    $select2_especialidad_pagos.append(opcion)
                 });
 
                 dt_pagos.draw();
@@ -524,7 +524,7 @@
 
 
                 let formData = new FormData(this);
-                formData.append('id_grupo',$('#select_grupo').val());
+                formData.append('id_especialidad',$('#select_especialidad').val());
                 if(id_alumno){
                     formData.append('id_alumno',id_alumno);
                 }

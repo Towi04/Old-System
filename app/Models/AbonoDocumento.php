@@ -26,6 +26,7 @@ class AbonoDocumento extends Model
         'id_sucursal',
         'id_pago',
         'id_documento',
+        'id_especialidad',
         'monto',
         'venta_fiscal',
     ];

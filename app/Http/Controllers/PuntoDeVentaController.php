@@ -6,7 +6,9 @@ use App\Models\Abono;
 use App\Models\Pago;
 use App\Models\Alumno;
 use App\Models\AlumnoPago;
+use App\Models\Documento;
 use App\Models\Grupo;
+use App\Models\Especialidad;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -41,8 +43,8 @@ class PuntoDeVentaController extends Controller
         $fecha_abono = now();
 
         if (isset($request->id_alumno)) {
-            $alumno = Alumno::find($request->input('id_alumno'));
-            $pagos_alumno = $alumno->documentos()->pendientes()->where('id_grupo', '=', $request->id_grupo)->orderBy('fecha_limite', 'asc')->get();
+            $alumno = Alumno::with('especialidades')->find($request->input('id_alumno'));
+            $pagos_alumno = $alumno->documentos()->pendientes()->where('id_especialidad', '=', $request->id_especialidad)->orderBy('fecha_limite', 'asc')->get();
             $monto = $request->input('monto');
 
             $folio = Pago::query()->select('folio')->where('id_sucursal', $id_sucursal)->max('folio') ?? 0;
@@ -54,7 +56,7 @@ class PuntoDeVentaController extends Controller
         }
 
         if (isset($request->id_preregistro)) {
-            $alumno = Alumno::find($request->input('id_preregistro'));
+            $alumno = Alumno::with('especialidades')->find($request->input('id_preregistro'));
             $monto = $request->input('monto');
 
             $folio = Pago::query()->select('folio')->where('id_sucursal', $id_sucursal)->max('folio') ?? 0;
@@ -85,111 +87,41 @@ class PuntoDeVentaController extends Controller
                 # SI NO TIENE NINGUN PAGO PENDIENTE, SE ADELANTA SU PROXIMO PAGO
                 if ($pagos_alumno->isEmpty()) {
 
-                    $grupo = Grupo::find($request->id_grupo);
+                    $especialidad = $alumno->especialidades->where('id', $request->id_especialidad)->first();
 
-                    # SE VERIFICA SEGUN LA MODALIDAD EN LA QUE SE ENCUENTRE EL ALUMNO
-                    if ($alumno->forma_pago == 'semanal') {
 
-                        $ultimo_pago = $alumno->pagos()
-                            ->where('id_grupo', '=', $request->id_grupo)
-                            ->where('tipo', config('alumnos.concepto.colegiatura'))
-                            ->where('status',config('pagos.status.Pagado'))
-                            ->where('anio', now()->year)
-                            ->where('modalidad', 'semanal')
-                            ->orderBy('semana', 'desc')
-                            ->first();
-
-                        # SI NO HAY UN PAGO PREVIO, ENTONCES AGREGO EL SIGUIENTE MES
-                        if (empty($ultimo_pago)) {
-                            $fecha = now();
-                        } else {
-                            # SE OBTIENE EL ULTIMO REGISTRO Y SE AGREGA EL SIGUIENTE MES CON RESPECTO AL ULTIMO RECIB
-                            $fecha = now()->week($ultimo_pago->semana)->addWeek();
-                        }
-
-                        $precio_semanal = $grupo->precio_semanal ?? 0;
-                        $saldo = ($monto > $precio_semanal) ? 0:  $precio_semanal - $monto;
-
-                        $data = [
-                            'modalidad'     => 'semanal',
-                            'semana'        => $fecha->week,
-                            'anio'          => $fecha->year,
-                            'concepto'      => config('alumnos.concepto.colegiatura'),
-                            'fecha_limite'  => $fecha->clone()->endOfWeek(),
-                            'monto'         => $monto,
-                            'saldo'         => $saldo,
-                            'status'        => ($saldo == 0) ? config('pagos.status.Pagado') : config('pagos.status.Pendiente'),
-                        ];
-                    } else {
-                        $ultimo_pago = $alumno->pagos()
-                            ->where('status',config('pagos.status.Pagado'))
-                            ->where('id_grupo', '=', $request->id_grupo)
-                            ->where('tipo', config('alumnos.concepto.colegiatura'))
-                            ->where('modalidad', 'mensual')
-                            ->where('anio', now()->year)
-                            ->orderBy('mes', 'desc')
-                            ->first();
-
-                        # SI NO HAY PAGOS REGISTRADOS ,ENTONCES AGREGO EL MES ACTUAL
-                        if (empty($ultimo_pago)) {
-                             $fecha = now();
-                        } else {
-                            # SE OBTIENE EL ULTIMO REGISTRO Y SE AGREGA EL SIGUIENTE MES CON RESPECTO AL ULTIMO RECIBO
-                            $fecha = now()->setMonth($ultimo_pago->mes)->addMonth();
-                        }
-
-                        # VERIFICAR SI SE PAGA COMPLETAMENTE
-                        $mensualidad_pronto_pago = $grupo->precio_mensualidad_pronto_pago ?? 0;
-                        $saldo = ($monto > $mensualidad_pronto_pago) ? 0:  $mensualidad_pronto_pago - $monto;
-
-                        $data = [
-                            'modalidad'     => 'mensual',
-                            'mes'           => $fecha->month,
-                            'anio'          => $fecha->year,
-                            'fecha_limite'  => $fecha->clone()->endOfMonth(),
-                            'concepto'      => config('alumnos.concepto.colegiatura') . ' ' . now()->addMonth()->format('F \d\e\l Y'),
-                            'monto'         => $monto,
-                            'saldo'         => $saldo,
-                            'status'        => ($saldo == 0) ? config('pagos.status.Pagado') : config('pagos.status.Pendiente'),
-                        ];
+                    while($monto > 0){
+                        $monto = $this->crear_documentos_adelantados($especialidad, $alumno, $venta_fiscal, $monto,$pago);
                     }
+                    
 
-                    $fields = [
-                        'id_alumno'     => $alumno->id,
-                        'id_grupo'      => $request->id_grupo,
-                        'tipo'          => config('alumnos.concepto.colegiatura'),
-                    ];
 
-                    # CREAR DOCUMENTO DE PAGO
-                    $alumno_pago = AlumnoPago::create(array_merge($data, $fields));
-
-                    $pago->abonos()->create([
-                        'id_sucursal'       => $id_sucursal,
-                        'id_alumno_pago'    => $alumno_pago->id,
-                        'monto'             => $monto,
-                        'venta_fiscal'      => $venta_fiscal,
-                    ]);
                 } else {
 
                     # SI TIENE PAGOS ACTUALIZAR PAGOS
+                    
                     foreach ($pagos_alumno as $pa) {
+                        
                         if ($monto > 0) {
                             $saldo_alumno = abs(($pa->saldo == 0) ? $pa->monto : $pa->saldo);
 
                             if ($monto > $saldo_alumno) {
                                 $monto = $monto - $saldo_alumno;
-
+                                
                                 $pa->update([
                                     'saldo'     => 0,
                                     'status'    => config('pagos.status.Pagado'),
                                 ]);
-
+                                
                                 $pago->abonos_documentos()->create([
                                     'id_sucursal'       => $id_sucursal,
                                     'id_documento'    => $pa->id,
+                                    'id_especialidad'    => $request->id_especialidad,
                                     'monto'             => $saldo_alumno,
                                     'venta_fiscal'      => $venta_fiscal,
                                 ]);
+                                
+
                             } else {
                                 $nuevo_saldo =  $saldo_alumno - $monto;
 
@@ -201,12 +133,27 @@ class PuntoDeVentaController extends Controller
                                 $pago->abonos_documentos()->create([
                                     'id_sucursal'       => $id_sucursal,
                                     'id_documento'    => $pa->id,
+                                    'id_especialidad'    => $request->id_especialidad,
                                     'monto'             => $monto,
                                     'venta_fiscal'      => $venta_fiscal,
                                 ]);
 
                                 $monto = 0;
                             }
+                        }
+                        
+                    }
+
+                    
+                    // dd('Monto:'.$monto);
+                    if($monto>0){
+                        $especialidad = $alumno->especialidades->where('id', $request->id_especialidad)->first();
+
+                        
+                        while($monto > 0){
+                            
+                            $monto = $this->crear_documentos_adelantados($especialidad, $alumno, $venta_fiscal, $monto,$pago);
+
                         }
                     }
                 }
@@ -226,7 +173,7 @@ class PuntoDeVentaController extends Controller
                 ]);
 
                 # 👉 SE GENERA EL PAGO
-                $pago->abonos()->create([
+                $pago->abonos_documentos()->create([
                     'id_sucursal'       => $id_sucursal,
                     'id_alumno_pago'    => $alumno_pago->id,
                     'monto'             => $monto,
@@ -249,7 +196,7 @@ class PuntoDeVentaController extends Controller
             DB::rollBack();
 
             throw ValidationException::withMessages([
-                "error" => 'Error al guardar en base de datos' . $th->getMessage(),
+                "error" => 'Error al guardar en base de dato s' . $th->getMessage().' L:'. $th->getLine(),
             ]);
         }
 
@@ -377,5 +324,113 @@ class PuntoDeVentaController extends Controller
         $grupos = Alumno::find($request->id)->grupos;
 
         return response()->json($grupos);
+    }
+
+    public function crear_documentos_adelantados($especialidad, $alumno, $venta_fiscal, $monto, $pago){
+
+         # SE VERIFICA SEGUN LA MODALIDAD EN LA QUE SE ENCUENTRE EL ALUMNO
+         if ($especialidad->forma_pago == 'semanal') {
+
+            $ultimo_pago = $alumno->documentos()
+                ->where('id_especialidad', '=', $especialidad->id)
+                ->where('tipo', config('alumnos.concepto.colegiatura'))
+                ->where('status',config('pagos.status.Pagado'))
+                // ->where('anio', now()->year)
+                ->where('modalidad', 'semanal')
+                ->orderBy('anio', 'desc')
+                ->orderBy('semana', 'desc')
+                ->first();
+
+            # SI NO HAY UN PAGO PREVIO, ENTONCES AGREGO EL SIGUIENTE MES
+            if (empty($ultimo_pago)) {
+                $fecha = new Date(now());
+            } else {
+                # SE OBTIENE EL ULTIMO REGISTRO Y SE AGREGA LA SIGUIENTE SEMANA CON RESPECTO AL ULTIMO RECIB
+                $fecha = new Date(now()->week($ultimo_pago->semana)->setYear($ultimo_pago->anio)->addWeek());
+            }
+
+            $precio_semanal = $especialidad->pivot->monto ?? 0;
+            $saldo = ($monto > $precio_semanal) ? 0:  $precio_semanal - $monto;
+            $abonar = ($monto > $precio_semanal) ? $precio_semanal : $monto; 
+
+            if($monto > $precio_semanal){
+                $monto = $monto-$precio_semanal;
+            }else{
+                $monto = 0;
+            }
+
+            $data = [
+                'modalidad'     => 'semanal',
+                'semana'        => $fecha->week,
+                'anio'          => $fecha->year,
+                'concepto'      => config('alumnos.concepto.colegiatura'),
+                'fecha_limite'  => $fecha->clone()->endOfWeek(),
+                'monto'         => $precio_semanal,
+                'saldo'         => $saldo,
+                'status'        => ($saldo == 0) ? config('pagos.status.Pagado') : config('pagos.status.Pendiente'),
+            ];
+
+        } else {
+            $ultimo_pago = $alumno->documentos()
+                ->where('status',config('pagos.status.Pagado'))
+                ->where('id_especialidad', '=', $especialidad->id)
+                ->where('tipo', config('alumnos.concepto.colegiatura'))
+                ->where('modalidad', 'mensual')
+                ->orderBy('anio', 'desc')
+                ->orderBy('mes', 'desc')
+                ->first();
+
+            # SI NO HAY PAGOS REGISTRADOS ,ENTONCES AGREGO EL MES ACTUAL
+            if (empty($ultimo_pago)) {
+                 $fecha = new Date(now());
+            } else {
+                # SE OBTIENE EL ULTIMO REGISTRO Y SE AGREGA EL SIGUIENTE MES CON RESPECTO AL ULTIMO RECIBO
+                $fecha =  new Date(now()->setMonth($ultimo_pago->mes)->setYear($ultimo_pago->anio)->addMonth());
+            }
+
+            # VERIFICAR SI SE PAGA COMPLETAMENTE
+            $mensualidad_pronto_pago = $especialidad->pivot->monto_pronto_pago ?? 0;
+            $saldo = ($monto > $mensualidad_pronto_pago) ? 0:  $mensualidad_pronto_pago - $monto;
+            $abonar = ($monto > $mensualidad_pronto_pago) ? $mensualidad_pronto_pago : $monto; 
+
+            if($monto > $saldo){
+                $monto = $monto-$mensualidad_pronto_pago;
+            }else{
+                $monto = 0;
+            }
+
+
+            $data = [
+                'modalidad'     => 'mensual',
+                'mes'           => $fecha->month,
+                'anio'          => $fecha->year,
+                'fecha_limite'  => $fecha->clone()->endOfMonth(),
+                'concepto'      => config('alumnos.concepto.colegiatura') . ' ' . $fecha->addMonth()->format('F \d\e\l Y'),
+                'monto'         => $mensualidad_pronto_pago,
+                'saldo'         => $saldo,
+                'status'        => ($saldo == 0) ? config('pagos.status.Pagado') : config('pagos.status.Pendiente'),
+            ];
+        }
+
+        $fields = [
+            'id_alumno'     => $alumno->id,
+            'id_especialidad'      => $especialidad->id,
+            'tipo'          => config('alumnos.concepto.colegiatura'),
+        ];
+        # CREAR DOCUMENTO DE PAGO
+        $documento = Documento::create(array_merge($data, $fields));
+        $sucursal = session('sucursal');
+
+        $documento->abonos()->create([
+            'id_sucursal'       => $sucursal->id,
+            'id_pago'       => $pago->id,
+            'id_documento'    => $documento->id,
+            'id_especialidad'    => $especialidad->id,
+            'monto'             => $abonar,
+            'venta_fiscal'      => $venta_fiscal,
+        ]);
+
+        return $monto;
+
     }
 }

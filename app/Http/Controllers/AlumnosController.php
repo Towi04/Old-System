@@ -332,7 +332,7 @@ class AlumnosController extends Controller
         $resultCount = 10;
         $offset = ($page - 1) * $resultCount;
 
-        $results = Alumno::with('grupos.especialidad')->select(['id', 'nombres', 'apellido_paterno', 'apellido_materno', 'nuevo_numero_control'])
+        $results = Alumno::with('especialidades')->with('grupos.especialidad')->select(['id', 'nombres', 'apellido_paterno', 'apellido_materno', 'nuevo_numero_control'])
             ->when($request->input('id_sucursal'), function ($q, $sucursal) {
                 $q->where('id_sucursal', $sucursal);
             })
@@ -426,6 +426,8 @@ class AlumnosController extends Controller
                     $q->where('status', $status);
                 })->when($request->input('id_grupo'), function ($q, $id_grupo) {
                     $q->where('id_grupo', $id_grupo);
+                })->when($request->input('id_especialidad'), function ($q, $id_especialidad) {
+                    $q->where('id_especialidad', $id_especialidad);
                 });
 
             $total_pendiente = AlumnoPago::query()
