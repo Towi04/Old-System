@@ -513,7 +513,7 @@ class GruposController extends Controller
     public function traer_info(Request $request)
     {
         $grupo = Grupo::with('especialidad')->find($request->id_grupo);
-        $alumno = Alumno::find($request->id_alumno);
+        $alumno = Alumno::select(['id','nombres','apellido_paterno','apellido_materno'])->find($request->id_alumno);
 
         return response()->json([
             'grupo' => $grupo,
