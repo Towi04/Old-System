@@ -81,7 +81,7 @@ class Documento extends Model
     }
 
     public function getStatusVencimientoAttribute(){
-        if($this->fecha_limite->lt(\Carbon\Carbon::today()) && $this->status == 'pendiente'){
+        if(optional($this->fecha_limite)->lt(\Carbon\Carbon::today()) && $this->status == 'pendiente'){
             return 'Vencido';
         }else{
             return $this->status;
