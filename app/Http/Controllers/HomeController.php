@@ -618,26 +618,34 @@ class HomeController extends Controller
     public function generar_registro_especalidades(){
 
         foreach (Alumno::with('grupos.especialidad.materias')->lazy() as $alumno) {
-                echo '<br>Se registro especialidad del Alumno '.$alumno->fullname.' a: ';
+                
                 foreach($alumno->grupos as $grupo){
 
                     $especialidad = $grupo->especialidad;
                    
                     if($especialidad->id){
-                        $esp = AlumnoEspecialidad::create([
-                            'id_alumno' => $alumno->id,
-                            'id_especialidad' =>  $grupo->id_especialidad,
-                            'fecha_inicio' => $grupo->fecha_inicio->format('Y-m-d'),
-                            'forma_pago' => ($alumno->forma_pago)?$alumno->forma_pago:'semanal',
-                            'monto' => ($alumno->forma_pago == 'mensual' )?$grupo->precio_mensualidad : $grupo->precio_semanal,
-                            'monto_pronto_pago' => $grupo->precio_mensualidad_pronto_pago,
-                            'semanas_cursar' => $especialidad->materias->sum('semanas'),
-                            'semanas_cursadas' => 0,
-                            'semanas_pagadas' => 0,
-                            'status' => 'Activo',
-                        ]);
-    
-                        echo '<br>Especialidad: '. $especialidad->nombre.' .';
+
+                        $alumno_esp = AlumnoEspecialidad::where('id_alumno','=',$alumno->id)->where('id_especialidad','=',$especialidad->id)->count();
+
+                        if($alumno_esp == 0){
+                            $esp = AlumnoEspecialidad::create([
+                                'id_alumno' => $alumno->id,
+                                'id_especialidad' =>  $grupo->id_especialidad,
+                                'fecha_inicio' => $grupo->fecha_inicio->format('Y-m-d'),
+                                'forma_pago' => ($alumno->forma_pago)?$alumno->forma_pago:'semanal',
+                                'monto' => ($alumno->forma_pago == 'mensual' )?$grupo->precio_mensualidad : $grupo->precio_semanal,
+                                'monto_pronto_pago' => $grupo->precio_mensualidad_pronto_pago,
+                                'semanas_cursar' => $especialidad->materias->sum('semanas'),
+                                'semanas_cursadas' => 0,
+                                'semanas_pagadas' => 0,
+                                'status' => 'Activo',
+                            ]);
+                            
+                            echo '<br>Se registro especialidad del Alumno '.$alumno->id.' NC:'.$alumno->nuevo_numero_control.'  '.$alumno->fullname.' a: ';
+                            echo '<br>Especialidad: '. $especialidad->nombre.' .';
+                        }
+                        
+
                     }
                     
 
