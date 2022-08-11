@@ -359,6 +359,12 @@ Route::prefix('especiales')->name('especiales.')->group(function(){
      #ALUMNOS SIN FECHA DE INICIO
      Route::get('alumnos_sin_fecha_inicio',[HomeController::class,'alumnos_sin_fecha_inicio'])->name('alumnos_sin_fecha_inicio');
 
+     #GENERAR REGISTRO A ESPECIALIDADESA A TODOS LOS ALUMNOS
+     Route::get('generar_registro_especalidades',[HomeController::class,'generar_registro_especalidades'])->name('generar_registro_especalidades');
+     
+
+
+
 });
 
 // RUTAS PUBLICAS 

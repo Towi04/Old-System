@@ -1025,7 +1025,7 @@
                         })
                     })
 
-                    $('#select_grupo_documentos').change(function(){
+                    $('#select_especialidad_documentos').change(function(){
                         dt_documentos.draw();
                         dt_apoyos.draw();
                     });

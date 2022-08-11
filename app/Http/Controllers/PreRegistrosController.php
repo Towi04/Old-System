@@ -426,6 +426,8 @@ class PreRegistrosController extends Controller
                     'semanas_cursadas' => 0,
                     'semanas_pagadas' => 0,
                     'status' => 'Activo',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
                 ]);
                 
                

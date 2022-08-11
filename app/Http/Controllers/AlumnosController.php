@@ -21,6 +21,7 @@ use App\Models\AlumnoEspecialidad;
 #FACADES
 use App\Services\FacturacionService;
 use App\Services\PagoInscripcionService;
+use App\Services\PagoColegiaturaDocumentosService;
 
 
 use Illuminate\Http\Request;
@@ -577,7 +578,7 @@ class AlumnosController extends Controller
         ]);
     }
 
-    public function inscribir_a_otro_grupo(Request $request, $id, PagoInscripcionService $pis)
+    public function inscribir_a_otro_grupo(Request $request, $id, PagoColegiaturaDocumentosService $pcds)
     {
         $alumno = Alumno::find($id);
         
@@ -590,16 +591,46 @@ class AlumnosController extends Controller
             $grupo_inscripcion = Grupo::findOrFail($request->input('id_grupo'));
             Log::alert('Usuario '.Auth::user()->fullname.' inscribio a alumno '.$alumno->numero_control_fullname.' al grupo '.$grupo_inscripcion->nombre);
 
-            $pis->setAlumno($alumno);
+            $pcds->setRequest($request);
+            $pcds->setAlumno($alumno, $grupo_inscripcion);
 
-            switch ($request->input('forma_pago')) {
-                case config('alumnos.forma_pago.mensual', 'mensual'):
-                    $pis->mensualPorGrupo($grupo_inscripcion);
+            // throw ValidationException::withMessages(['mensaje' => $monto_pactado]);
+                // SE GENERA EL REGISTRO DE ESTE ALUMNO EN LA ESPECIALIDAD SELECCIONADA. ESTE SERA SU REGISTRO DE ESPECIALIDAD
+                // CENTRAL A PARTIR DE AQUI
+                // SE GUARDA EL MONTO PACTADO EN EL CORE DEL ALUMNO DONDE SE VA A RESPETAR ESTA CANTIDAD 
+                $especialidad = $grupo_inscripcion->especialidad;
+
+                switch ($request->input('forma_pago')) {
+                    case config('alumnos.forma_pago.mensual','mensual'):
+                        // $pids->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
+                        // GENERA DOCUMENTOS MENSUALES
+                        $pcds->mensual($especialidad, $grupo_inscripcion);
+
+                        $monto_pactado = $grupo_inscripcion->precio_mensualidad;
+                        $monto_pronto_pago_pactado = $grupo_inscripcion->precio_mensualidad_pronto_pago;
                     break;
-                case config('alumnos.forma_pago.semanal', 'semanal'):
-                    $pis->semanalPorGrupo($grupo_inscripcion);
+                    case config('alumnos.forma_pago.semanal','semanal'):
+                        // $pids->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
+                        // GENERA DOCUMENTOS SEMANALES
+                        $pcds->semanal($especialidad, $grupo_inscripcion);
+
+                        $monto_pactado = $grupo_inscripcion->precio_semanal;
+                        $monto_pronto_pago_pactado = 0;
                     break;
-            }
+                }
+
+                $alumno_especialidad = $alumno->especialidades()->attach($especialidad->id, [
+                    'fecha_inicio' => $request->input('fecha_inicio'),
+                    'forma_pago' => $request->forma_pago,
+                    'semanas_cursar' => $especialidad->materias->sum('semanas'),
+                    'monto' => $monto_pactado,
+                    'monto_pronto_pago' => $monto_pronto_pago_pactado,
+                    'semanas_cursadas' => 0,
+                    'semanas_pagadas' => 0,
+                    'status' => 'Activo',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
 
             // OPERACIONES: sumar | restar
             // CAMPOS: inicios | reingresos | cambios_horarios_plus | bajas | cambios_horarios_minus | fin_curso
