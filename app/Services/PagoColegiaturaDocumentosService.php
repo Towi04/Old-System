@@ -128,7 +128,12 @@ class PagoColegiaturaDocumentosService
         $fecha_inicio = $this->fecha_actual;
 
         $apoyo_especial = $alumno ->apoyos_especiales->where('id_especialidad', $especialidad->id)->filter(function($apoyo)use($fecha_inicio){
-            return $apoyo->fecha_inicio->lte($fecha_inicio) && $apoyo->fecha_final->gte($fecha_inicio);
+            if($apoyo->fecha_inicio){
+                return $apoyo->fecha_inicio->lte($fecha_inicio) && $apoyo->fecha_final->gte($fecha_inicio);
+            }else{
+                return false;
+            }
+            
         })->first();
 
 
@@ -150,8 +155,12 @@ class PagoColegiaturaDocumentosService
                 #SE DEBEN CALCULAR DE ACUERDO A LAS SEMANAS RESTANTES DONDE CUMPLA CON TODAS SUS CLASES
                 #PAGA EL NUMERO DE SEMANAS COMPLETAS POR PAGO SEMANAL. 
                     
-                    // $precio_mensualidad = $grupo->precio_mensualidad;
-                    $precio_semana = $grupo->precio_semana;
+                    if(!$grupo){
+                        // SE OBTIENE EL PRIMER GRUPO DE ESE ALUMNO EN ESA ESPECIALIDAD
+                        $grupo = $alumno->grupos->where('id_especialidad','=',$especialidad->id)->first();
+                    }
+                    $precio_mensualidad = $grupo->precio_mensualidad;
+                    // $precio_semana = $grupo->precio_semana;
             
                     $dia_actual = $fecha_inicio;
                     $mes_actual = $dia_actual->month;
