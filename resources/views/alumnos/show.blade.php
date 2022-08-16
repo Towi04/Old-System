@@ -60,7 +60,7 @@
     </style>
 
     <div class="row p-3">
-        <div class="col-5 col-lg-5 col-sm-5 col-md-5 col-xs-12">
+        <div class="col-4 col-lg-4 col-sm-4 col-md-4 col-xs-12">
             <div class="user-profile compact">
                 <div class="up-head-w"
                     style="background-image: linear-gradient( var(--primary), 70%, var(--primary));">
@@ -85,13 +85,6 @@
                         Alumno
                         <br>
                             @role('administrador')
-                                Forma de pago: 
-                                <a class='editable_forma_pago' data-pk='{{$alumno->id}}' data-name='forma_pago' data-url='{{route("alumnos.actualizar_informacion")}}' data-type='select' data-value='{{$alumno->forma_pago}}'>
-                                </a><br>
-
-                                <a class="btn btn-info btn-xs btn-sm  mt-1" href="{{route('especiales.generar_documentos_alumno', $alumno->id)}}">
-                                    Actualizar documentos
-                                </a><br>
                                 <a class="btn btn-info btn-xs btn-sm mt-1" href="{{route('especiales.generar_abonos_alumno', $alumno->id)}}">
                                     Aplicar pagos a documentos
                                 </a>
@@ -159,8 +152,16 @@
                                 </h6>
                                 <div class="post-text">
                                     <b>Fecha inicio:</b> {{ $especialidad->pivot->fecha_inicio->format('d-m-Y')}}<br>
-                                    <b>Forma pago:</b> {{ $especialidad->pivot->forma_pago}}<br>
-                                    <b>Monto:</b> $ {{ number_format($especialidad->pivot->monto,2,'.',',')}}<br>
+                                    <b>Forma pago:</b> 
+                                    <a class='editable_forma_pago' data-pk='{{ $especialidad->pivot->id}}' data-name='forma_pago' data-url='{{route("alumnos.actualizar_informacion_alumnos_especialidades")}}' data-type='select' data-value='{{ $especialidad->pivot->forma_pago}}'>
+                                    </a>
+                                    
+                                    <br>
+                                    <b>Monto:</b> 
+                                    <a class='editable_forma_pago' data-pk='{{ $especialidad->pivot->id}}' data-name='monto' data-url='{{route("alumnos.actualizar_informacion_alumnos_especialidades")}}' data-type='text' data-value='{{ $especialidad->pivot->monto}}'>
+                                        $ {{ number_format($especialidad->pivot->monto,2,'.',',')}}
+                                    </a><br>
+                                    
                                     <b>Total semanas:</b> {{$especialidad->pivot->semanas_cursar }}<br>
                                     <b>Semanas cursadas:</b>  {{$especialidad->pivot->semanas_cursadas}}<br>
                                     <b>Fecha Inicio: </b>
@@ -261,7 +262,7 @@
             </div>
         </div>
 
-        <div class="col-7 col-lg-7 col-sm-7 col-md-7 col-xs-12">
+        <div class="col-8 col-lg-8 col-sm-8 col-md-8 col-xs-12">
 
             <div class="row">
                 <div class="col-sm-12 col-xxxl-9">
@@ -309,19 +310,27 @@
 
                                 <div class="tab-content">
                                     <div class="tab-pane" id="tab-documentos">
-                                        <div class="form-group">
-                                            {!! Form::label('id_especialidad','Selecciona la especialidad:') !!}
-                                            {!! Form::select('id_especialidad', $alumno->especialidades->pluck('nombre','id'), optional($alumno->especialidades->first())->id, ['id'=>'select_especialidad_documentos','class'=>'form-control w-100']) !!}
-                                        </div>
+
+                                        {!! Form::open(['route' => ['especiales.generar_documentos_alumno', $alumno->id], 'method' => 'POST', 'accept-charset' => 'UTF-8', 'enctype' => 'multipart/form-data','onsubmit' => "wait.modal('show')"]) !!}
+                                            <div class="form-group">
+                                                {!! Form::label('id_especialidad','Selecciona la especialidad:') !!}
+                                                {!! Form::select('id_especialidad', $alumno->especialidades->pluck('nombre','id')->prepend('TODAS',''), optional($alumno->especialidades->first())->id, ['id'=>'select_especialidad_documentos','class'=>'form-control w-100']) !!}
+                                            </div>
+                                            <button class="btn btn-info btn-xs btn-sm  mt-1"">
+                                                Actualizar documentos
+                                            </button>
+                                        <br>
+                                        {!! Form::close() !!}
 
                                         <table class="table table-striped table-bordered table-hover" id="tb-documentos" width="100%">
                                             <thead>
                                                 <tr>
-                                                    <th># Docto</th>
+                                                    <th>#</th>
                                                     <th>Concepto</th>
                                                     <th>Monto</th>
                                                     <th>Saldo</th>
                                                     <th>Fecha Limite</th>
+                                                    <th>Pago(s)</th>
                                                     <th>Created at</th>
                                                     <th>Status</th>
                                                 </tr>
@@ -330,6 +339,8 @@
                                             </tbody>
                                         </table>
                                         @can('asignar_apoyos_especiales_en_inscripcion')
+
+                                    
                                         @can('asignar_apoyos_especiales')
                                         <fieldset class="form-group">
                                             <legend>Apoyos en inscripcion</legend>
@@ -882,6 +893,17 @@
                 }
             });
 
+            // GUARDAR LOCAL STORAGE
+            activeSelectEspecialidadShowAlumno = window.localStorage.getItem('selectEspecialidadShowAlumno');
+
+            //INIT
+            if (activeSelectEspecialidadShowAlumno) {
+                $('#select_especialidad_documentos').val(activeSelectEspecialidadShowAlumno);
+            }else{
+                $('#select_especialidad_documentos').val('');
+            }
+
+
             // DATATABLES DE DOCUMENTOS
             var dt_documentos = dom.tb_documentos.DataTable({
                 dom: "<'row'<'col-12'f>><'row'<'col-12'tr>><'row'<'col-5'i><'col-7'p>>",
@@ -889,6 +911,7 @@
                 serverSide: true,
                 responsive: true,
                 pageLength: 10,
+                xScroll: true,
                 ajax: {
                     url: "{{ route('alumnos.datatables_documentos') }}",
                     type: "POST",
@@ -909,10 +932,11 @@
                     {data: 'monto', name: 'monto',className:"text-right"},
                     {data: 'saldo', name: 'saldo', className:"text-right"},
                     {data: 'fecha_limite', name: 'fecha_limite'},
+                    {data: 'abonos.monto', name: 'abonos.monto', orderable:false, className: 'text-nowrap'},
                     {data: 'created_at', name: 'created_at', visible:false},
                     {data: 'status', className:"text-center", name: 'status'},
                 ],
-                order: [[ 5, "asc" ]],
+                order: [[ 4, "asc" ]],
                 language: {
                     "lengthMenu": "Mostrar _MENU_ registros por pagina",
                     "zeroRecords": "No se encontro ningún registro",
@@ -1028,9 +1052,15 @@
                     })
 
                     $('#select_especialidad_documentos').change(function(){
-                        dt_documentos.draw();
-                        dt_apoyos.draw();
+                        dt_documentos.ajax.reload(null, false);
+                        dt_apoyos.ajax.reload(null, false);
+
+                        window.localStorage.setItem('selectEspecialidadShowAlumno',$(this).val());
+
                     });
+
+                    
+
 
                     dom.btn_apoyo_especial.click(function(e){
                         dom.form_apoyo_especial[0].reset();
@@ -1061,7 +1091,7 @@
                                     setTimeout(() => {
                                         wait.modal('hide');
                                         toastr.success('Éxito', response.message || 'Apoyo agregado correctamente');
-                                    })
+                                    },500)
                                 }, false )
                             },
                             error:function(error){
@@ -1159,8 +1189,11 @@
                                 },
                                 success: function (response){
                                     dt_apoyos_inscripcion.ajax.reload( function(e){
-                                        wait.modal('hide');
-                                        toastr.success('Éxito', 'Se borró con éxito el registro');
+
+                                        setTimeout(() => {
+                                            wait.modal('hide');
+                                            toastr.success('Éxito', 'Se borró con éxito el registro');    
+                                        }, 200);
                                     }, false )
                                 },
                                 error:function(error){
@@ -1411,7 +1444,7 @@
                         })
             });
 
-            // 
+            @role('administrador')
             $('.editable_forma_pago').editable({
                 emptytext: 'Vacio',
                 source: [
@@ -1419,6 +1452,7 @@
                     {value: 'mensual', text: 'mensual'},
                 ]
             });
+            @endrole
 
             $('.editable_fecha_inicio_grupo').editable({
                 emptytext: 'Vacio',
@@ -1442,6 +1476,9 @@
                 window.localStorage.setItem('activeTabShowAlumno',id);
 
             }
+
+            
+
         });
     </script>
 @endsection

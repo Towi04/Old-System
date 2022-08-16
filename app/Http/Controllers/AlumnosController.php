@@ -477,7 +477,7 @@ class AlumnosController extends Controller
     public function datatables_documentos(Request $request)
     {
 
-        $query = Documento::query()
+        $query = Documento::with('abonos.pago')
             ->when($request->input('id_alumno'), function ($q, $id_alumno) {
                 $q->where('id_alumno', $id_alumno);
             })
@@ -501,7 +501,14 @@ class AlumnosController extends Controller
             ->editColumn('concepto', function ($model) {
                 return $model->concepto_completo;
             })
-            
+            ->editColumn('abonos.monto', function ($model) {
+                $txt = '';
+                foreach($model->abonos as $abono){
+                    $txt .= $abono->pago->id.'|'.$abono->pago->fecha->format('d-m-Y').' ($'.number_format($abono->monto).')<br>';
+                }
+
+                return $txt;
+            })
             ->editColumn('status', function ($model) {
                 if ($model->fecha_limite->lt(\Carbon\Carbon::today()) && $model->status == 'Pendiente') {
                     return "<span class='badge badge-danger text-white'>Vencido</span>";
@@ -509,7 +516,7 @@ class AlumnosController extends Controller
                     return "<span class='badge badge-success'>{$model->status}</span>";
                 }
             })
-            ->rawColumns(['status'])
+            ->rawColumns(['status','abonos.monto'])
             ->make(true);
     }
 
@@ -901,7 +908,6 @@ class AlumnosController extends Controller
         $ae = AlumnoEspecialidad::find($request->pk);
         $ae[$request->name] = $request->value;
         $ae->save();
-
 
     }
 

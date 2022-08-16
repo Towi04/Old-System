@@ -22,6 +22,7 @@ use App\Models\ApoyoInscripcion;
 use App\Models\Alerta;
 use App\Models\Precio;
 use App\Models\AlumnoEspecialidad;
+use App\Models\Especialidad;
 
 use App\Services\PagoInscripcionDocumentosService;
 use App\Services\PagoColegiaturaDocumentosService;
@@ -201,37 +202,64 @@ class HomeController extends Controller
 
     }
 
-    public function generar_documentos_alumno($id, PagoInscripcionDocumentosService $pids, PagoColegiaturaDocumentosService $pcds){
+    public function generar_documentos_alumno($id, PagoInscripcionDocumentosService $pids, PagoColegiaturaDocumentosService $pcds, Request $request){
         #borramos todos los documentos
         Documento::with('alumno')->whereHas('alumno', function($q)use($id){
             return $q->where('id_alumno',$id);
-        })->delete();
+        })->where('id_especialidad','=',$request->id_especialidad)->delete();
 
-        $alumno = Alumno::find($id);
+        $alumno = Alumno::with(['grupos','especialidades'])->find($id);
+        $sucursal = optional(session('sucursal'));
 
-        $grupos = $alumno->grupos->load('precios');
+        try {
+           
+            // $grupo = $alumno->grupos->whereIn('pivot.status',['Inscrito','Pausa'])->where('id_especialidad',$especialidad->id)->first();
+            $especialidad = $alumno->especialidades->where('id',$request->id_especialidad)->first();
+            // dd($especialidad);
+            // dd($especialidad->pivot);
+            if ($especialidad) {
 
-        foreach($grupos as $grupo){
-            $pids->setAlumno($alumno);
-            $pids->inscripcion($grupo, $grupo->getInscripcionFecha($grupo->pivot->fecha_inicio));
+                $pids->setAlumno($alumno);
+                $pcds->setAlumno($alumno);
+
+                switch ($especialidad->pivot->forma_pago) {
+                    case config('alumnos.forma_pago.mensual','mensual'):
+                        $pids->inscripcion_especial_boton($especialidad);
+                        
+                        // GENERA DOCUMENTOS MENSUALES
+                        $pcds->mensual($especialidad);
+
+                        $monto_pactado = $especialidad->monto;
+                        $monto_pronto_pago_pactado = $especialidad->monto_pronto_pago;
+                    break;
+                    case config('alumnos.forma_pago.semanal','semanal'):
+                        $pids->inscripcion_especial_boton($especialidad);
+                        // GENERA DOCUMENTOS SEMANALES
+                        $pcds->semanal($especialidad);
+                        $monto_pactado = $especialidad->monto;
+                        $monto_pronto_pago_pactado = 0;
+                    break;
+                }
+
+            }
+        } catch (\Throwable $th) {
+
+            // dd($th);
+            return response()->json([
+                'success'   => false,
+                'message'   => 'Ocurrio el siguiente error:' .$th->getMessage().' en la línea '.$th->getLine(),
+                // 'redirect'  => route('alumnos.show',$alumno),
+                // 'pago'      => $request->has('id_grupo') ? Pago::first()->where('id_alumno',$alumno->id)->latest()->first() : ''
+            ]);
+
+            Session::flash('error','Ocurrio el siguiente error: '.$th);
+            return redirect()->back();
+            
         }
 
-            $pcds->setAlumno($alumno);
-            $fecha_inicio = $grupo->fecha_inicio;
-            $forma_pago = ($alumno->forma_pago) ? $alumno->forma_pago :'semanal';
-            
-
-            if($forma_pago == 'mensual'){
-                
-                $pcds->mensual();
-                
-            }
-            if($forma_pago == 'semanal'){
-                $pcds->semanal($grupo, $alumno);
-            }
-        
-        
+        Session::flash('success','Se generarón los documentos con éxito');
         return redirect()->back();
+
 
     }
     
@@ -315,13 +343,24 @@ class HomeController extends Controller
 
     public function generar_abonos_alumno($id_alumno){
    
-        $alumno = Alumno::find($id_alumno);
+        $alumno = Alumno::with('documentos.abonos')->find($id_alumno);
         
                 $pagos = $alumno->pagos_caja;
+
+                // SE BORRAN LOS ABONOS A LOS DOCUMENTOS DEL ALUMNO
+
+                foreach($alumno->documentos as $documento){
+                    // dd($documento);
+                    $documento->abonos()->delete();
+                    $documento->saldo = $documento->monto;
+                    $documento->save();
+                }
+
                 #Para cada pago realizado se van a crear los abnos a los documentos del mas antiguo al mas reciente
                 foreach($pagos->sortBy(function($pago){
                     return $pago->fecha->format('Ymd');
                 }) as $pago){
+
 
                     
                     $monto_pago = $pago->monto;
@@ -338,8 +377,9 @@ class HomeController extends Controller
                                 
                                 // dd($pago->fecha);
                                 if($pago->fecha->gte($fecha_limite_pronto) && $documento->especial == 0 && $documento->saldo == $documento->monto){
-                                    $documento->monto = $documento->grupo->precio_mensualidad;
-                                    $documento->saldo = $documento->grupo->precio_mensualidad;
+                                    
+                                    $documento->monto = $documento->especialidad->precio_mensualidad;
+                                    $documento->saldo = $documento->especialidad->precio_mensualidad;
                                     $documento->save();
                                 }
                             }

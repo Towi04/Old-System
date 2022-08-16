@@ -68,6 +68,11 @@ class Documento extends Model
         return $this->belongsTo(Grupo::class,'id_grupo','id')->withDefault();
     }
 
+    public function especialidad()
+    {
+        return $this->belongsTo(Especialidad::class,'id_especialidad','id')->withDefault();
+    }
+
     public function abonos()
     {
         return $this->hasMany(AbonoDocumento::class,'id_documento','id');

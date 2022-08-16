@@ -71,4 +71,25 @@ class Especialidad extends Model
     {
         return $this->hasMany(Materia::class, 'id_especialidad', 'id');
     }
+
+    public function getInscripcionFecha($fecha){
+        // dd($fecha);
+        // $fecha = \Carbon\Carbon::createFromFormat('Y-m-d', $fecha);
+        $precio = $this->precios->where('tipo','=','Inscripción')->filter(function($precio)use($fecha){
+            if($precio->fecha_final == null && $precio->fecha_inicio->lte($fecha)){
+                return true;
+            }
+            
+            if($precio->fecha_inicio->lte($fecha) && $precio->fecha_final->gt($fecha)){
+                return true;
+            }
+        })->first();
+
+        if($precio){
+            return $precio->precio_normal;
+        }else{
+            return $this->precio_inscripcion;
+        }
+
+    }
 }

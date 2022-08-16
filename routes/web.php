@@ -166,6 +166,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::get('alumnos/cambio_horario/{id_alumno}/{id_grupo_origen}', [ AlumnosController::class,'cambio_horario'])->name('alumnos.cambio_horario');
     Route::post('alumnos/guardar_cambio_horario', [ AlumnosController::class,'guardar_cambio_horario'])->name('alumnos.guardar_cambio_horario');
     Route::post('alumnos/actualizar_informacion', [ AlumnosController::class,'actualizar_informacion'])->name('alumnos.actualizar_informacion');
+    
 
     Route::post('alumnos/guardar_nota', [ AlumnosController::class,'guardar_nota'])->name('alumnos.guardar_nota');
 
@@ -341,7 +342,7 @@ Route::post('pagos/importar', [ ImportacionesController::class,'pagos_importar_s
 Route::prefix('especiales')->name('especiales.')->group(function(){
      Route::get('generar_documentos',[HomeController::class,'generar_documentos'])->name('generar_documentos');
      Route::get('generar_documentos_sucursal/{id_sucursal}',[HomeController::class,'generar_documentos'])->name('generar_documentos');
-     Route::get('generar_documentos_alumno/{id_alumno}',[HomeController::class,'generar_documentos_alumno'])->name('generar_documentos_alumno');
+     Route::post('generar_documentos_alumno/{id_alumno}',[HomeController::class,'generar_documentos_alumno'])->name('generar_documentos_alumno');
      Route::get('generar_abonos/{id_sucursal}',[HomeController::class,'generar_abonos'])->name('generar_abonos');
      Route::get('generar_abonos_alumno/{id_alumno}',[HomeController::class,'generar_abonos_alumno'])->name('generar_abonos_alumno');
      Route::post('actualizar_informacion_grupos_alumnos',[HomeController::class,'actualizar_informacion_grupos_alumnos'])->name('actualizar_informacion_grupos_alumnos');

@@ -6,10 +6,12 @@ use App\Models\Pago;
 use App\Models\Documento;
 use App\Models\Grupo;
 use App\Models\Alumno;
+use App\Models\Especialidad;
 use Jenssegers\Date\Date;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\AlumnoEspecialidad;
+
 
 class PagoInscripcionDocumentosService
 {
@@ -150,6 +152,40 @@ class PagoInscripcionDocumentosService
        
 
 
+
+    }
+
+
+    public function inscripcion_especial_boton(Especialidad $especialidad)
+    {
+        $apartado = $this->alumno->saldo;
+        
+        $monto_apoyo_inscripcion = ($this->alumno->apoyos_inscripcion->where('id_especialidad','=',$especialidad->id)->first())? $this->alumno->apoyos_inscripcion->where('id_especialidad','=',$especialidad->id)->first()->apoyo : 0 ;
+        $precio_inscripcion = ($especialidad->getInscripcionFecha($especialidad->pivot->fecha_inicio))?$especialidad->getInscripcionFecha($especialidad->pivot->fecha_inicio):$especialidad->precio_inscripcion;
+
+        
+
+        if(!$monto_apoyo_inscripcion){
+            $precio_inscripcion = $precio_inscripcion;
+        }else{
+            $precio_inscripcion = $monto_apoyo_inscripcion;
+        }
+
+        // dd($precio_inscripcion);
+        
+        $documento = $this->alumno->documentos()->create([
+            'id_grupo'                  => null,
+            'id_especialidad'           => $especialidad->id,
+            'concepto'                  => config('alumnos.concepto.inscripcion') . ' de la especialidad ' . $especialidad->nombre,
+            'monto'                     => $precio_inscripcion,
+            'saldo'                     => $precio_inscripcion,
+            'monto_apoyo_inscripcion'   => $monto_apoyo_inscripcion,
+            'fecha_limite'              => $especialidad->pivot->fecha_inicio,
+            'tipo'                      => config('alumnos.concepto.inscripcion'),
+            'status'                    => config('pagos.status.Pendiente'),
+        ]);
+
+        return redirect()->back();
 
     }
 
