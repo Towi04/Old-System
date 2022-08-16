@@ -7,7 +7,7 @@
                 data-id="{{ $id }}"
                 data-action="delete"
                 data-placement="top"
-                title="Eliminar">
+                title="Eliminar"> 
             </a>
         {{-- @endcan --}}
 

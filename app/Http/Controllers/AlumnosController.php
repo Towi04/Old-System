@@ -734,7 +734,7 @@ class AlumnosController extends Controller
 
     public function datatables_apoyos_inscripcion(Request $request)
     {
-        $query = ApoyoInscripcion::with('especialidad')
+        $query = ApoyoInscripcion::with(['especialidad','usuario_autorizo'])
             ->when($request->input('id_grupo'), function ($q, $id_grupo) {
                 $q->where('id_grupo', $id_grupo);
             })
@@ -753,10 +753,10 @@ class AlumnosController extends Controller
     }
 
     public function eliminar_apoyo_inscripcion($id){
-        $apoyo = ApoyoInscripcion::with(['grupo','alumno'])->find($id);
+        $apoyo = ApoyoInscripcion::find($id);
         $apoyo->delete();
 
-        Log::alert('Usuario '.Auth::user()->fullname.' elimino el apoyo a la inscripción del alumno '.$apoyo->alumno->numero_control_fullname.' del grupo'.$apoyo->grupo->nombre);
+        Log::alert('Usuario '.Auth::user()->fullname.' elimino el apoyo a la inscripción del alumno '.$apoyo->alumno->numero_control_fullname.' del grupo'.$apoyo->especialidad->nombre);
 
         return response()->json([
             'apoyo' => $apoyo
@@ -765,18 +765,35 @@ class AlumnosController extends Controller
 
     public function store_apoyo_inscripcion(Request $request){
 
+        // BUSCAMOS QUE NO TENGA YA UN APOYO EN ESA ESPECIALIDAD
+        
 
-        $apoyo = ApoyoInscripcion::create([
-            'id_alumno' => $request->id_alumno,
-            'id_especialidad'  => $request->id_especialidad,
-            'apoyo'     => $request->apoyo,
-            'id_usuario'=> Auth::id(),
-            'id_usuario_autoriza'=> Auth::id(),
-        ]);
+        if(ApoyoInscripcion::where('id_alumno','=',$request->id_alumno)->where('id_especialidad','=',$request->id_especialidad)->count() == 0){
+            $apoyo = ApoyoInscripcion::create([
+                'id_alumno' => $request->id_alumno,
+                'id_especialidad'  => $request->id_especialidad,
+                'apoyo'     => $request->apoyo,
+                'id_usuario'=> Auth::id(),
+                'id_usuario_autoriza'=> Auth::id(),
+                'motivo' => $request->motivo,
+            ]);
+    
+            $apoyo = ApoyoInscripcion::with(['alumno','especialidad'])->find($apoyo->id);
+    
+            Log::alert('Usuario '.Auth::user()->fullname.' creó el apoyo a la inscripción manual del alumno '.$apoyo->alumno->numero_control_fullname.' del grupo'.$apoyo->especialidad->nombre);
 
-        $apoyo = ApoyoInscripcion::with(['alumno','especialidad'])->find($apoyo->id);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Se guardo el apoyo con éxito'
+            ]);
+        }else{
+            throw ValidationException::withMessages(['message' => 'Ya existe un apoyo para esta especialidad']);
+        }
 
-        Log::alert('Usuario '.Auth::user()->fullname.' creó el apoyo a la inscripción manual del alumno '.$apoyo->alumno->numero_control_fullname.' del grupo'.$apoyo->grupo->nombre);
+
+        
+
+       
     }
 
     public function pausar_grupo(Request $request){

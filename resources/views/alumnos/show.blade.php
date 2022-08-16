@@ -345,8 +345,10 @@
                                                         <thead>
                                                             <tr>    
                                                                 <th></th>
-                                                                <th>Grupo</th>
+                                                                <th>Especialidad</th>
                                                                 <th>Monto</th>
+                                                                <th>Motivo</th>
+                                                                <th>Autorizo</th>
                                                                 <th>Acciones</th>
                                                             </tr>
                                                         </thead>
@@ -1102,6 +1104,8 @@
                             {data: 'id', name: 'id',visible:false},
                             {data: 'especialidad.nombre', name: 'especialidad.nombre'},
                             {data: 'apoyo', name: 'apoyo'},
+                            {data: 'motivo', name: 'motivo'},
+                            {data: 'usuario_autorizo.nombres', name: 'usuario_autorizo.nombres'},
                             {data: 'buttons', name: 'buttons', orderable: false, searchable: false },
                         ],
                         order: [[ 0, "asc" ]],
