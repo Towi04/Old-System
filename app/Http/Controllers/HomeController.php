@@ -662,7 +662,7 @@ class HomeController extends Controller
                 foreach($alumno->grupos as $grupo){
 
                     $especialidad = $grupo->especialidad;
-                   
+                    
                     if($especialidad->id){
 
                         $alumno_esp = AlumnoEspecialidad::where('id_alumno','=',$alumno->id)->where('id_especialidad','=',$especialidad->id)->count();
@@ -671,7 +671,7 @@ class HomeController extends Controller
                             $esp = AlumnoEspecialidad::create([
                                 'id_alumno' => $alumno->id,
                                 'id_especialidad' =>  $grupo->id_especialidad,
-                                'fecha_inicio' => $grupo->fecha_inicio->format('Y-m-d'),
+                                'fecha_inicio' => $grupo->pivot->fecha_inicio->format('Y-m-d'),
                                 'forma_pago' => ($alumno->forma_pago)?$alumno->forma_pago:'semanal',
                                 'monto' => ($alumno->forma_pago == 'mensual' )?$grupo->precio_mensualidad : $grupo->precio_semanal,
                                 'monto_pronto_pago' => $grupo->precio_mensualidad_pronto_pago,
