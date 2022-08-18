@@ -668,6 +668,8 @@ class HomeController extends Controller
                         $alumno_esp = AlumnoEspecialidad::where('id_alumno','=',$alumno->id)->where('id_especialidad','=',$especialidad->id)->count();
 
                         if($alumno_esp == 0){
+                            echo '<br>Se registro especialidad del Alumno '.$alumno->id.' NC:'.$alumno->nuevo_numero_control.'  '.$alumno->fullname.' a: ';
+                            
                             $esp = AlumnoEspecialidad::create([
                                 'id_alumno' => $alumno->id,
                                 'id_especialidad' =>  $grupo->id_especialidad,
@@ -681,7 +683,7 @@ class HomeController extends Controller
                                 'status' => 'Activo',
                             ]);
                             
-                            echo '<br>Se registro especialidad del Alumno '.$alumno->id.' NC:'.$alumno->nuevo_numero_control.'  '.$alumno->fullname.' a: ';
+                            
                             echo '<br>Especialidad: '. $especialidad->nombre.' .';
                         }
                         
