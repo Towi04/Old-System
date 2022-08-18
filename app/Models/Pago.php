@@ -31,6 +31,7 @@ class Pago extends Model
         'fecha',
         'id_recibio',
         'folio_fiscal',
+        'id_especialidad'
     ];
 
 
@@ -108,5 +109,16 @@ class Pago extends Model
         return $this->belongsTo(User::class, 'id_usuario_elimino', 'id');
     }
 
+    /**
+     * Get the especialidad that owns the Pago
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function especialidad()
+    {
+        return $this->belongsTo(Especialidad::class, 'id_especialidad', 'id')->withDefault([
+            'nombre' => 'Vacio'
+        ]);
+    }
 
 }

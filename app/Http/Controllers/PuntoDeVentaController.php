@@ -76,6 +76,7 @@ class PuntoDeVentaController extends Controller
                 'forma_pago'    => $request->input('forma_pago'),
                 'id_sucursal'   => $id_sucursal,
                 'id_alumno'     => $alumno->id,
+                'id_especialidad'     => $request->id_especialidad,
                 'monto'         => $monto,
                 'fecha'         => $fecha_abono,
                 'id_recibio'    => $id_recibio,

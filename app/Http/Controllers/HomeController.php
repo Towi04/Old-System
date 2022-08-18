@@ -356,15 +356,16 @@ class HomeController extends Controller
                     $documento->save();
                 }
 
+                
                 #Para cada pago realizado se van a crear los abnos a los documentos del mas antiguo al mas reciente
-                foreach($pagos->sortBy(function($pago){
+                foreach($pagos->where('id_especialidad','!=',null)->sortBy(function($pago){
                     return $pago->fecha->format('Ymd');
                 }) as $pago){
 
 
                     
                     $monto_pago = $pago->monto;
-                    $documentos = $alumno->documentos->where('saldo','>',0)->sortBy('fecha_limite')->values();
+                    $documentos = $alumno->load('documentos')->documentos->where('id_especialidad','=',$pago->id_especialidad)->where('saldo','>',0)->sortBy('fecha_limite')->values();
                     
                     foreach($documentos->sortBy('fecha_limite') as $documento){
                         # GENERO EL ABONO
@@ -417,6 +418,22 @@ class HomeController extends Controller
                     }
 
 
+                    if($monto_pago > 0){
+                        // SE ACABARON LOS DOCUMENTOS Y SIGUE MONTO EN POSITIVO PARA ESE PAGO
+                        // SE GENERAN LOS DOCUMENTOS ADELANTADOS
+                        $especialidad = $pago->especialidad;
+
+                        while($monto_pago > 0){
+                            
+                            $especialidad = $alumno->especialidades->where('id',$especialidad->id)->first();
+
+                            $monto_pago = $this->crear_documentos_adelantados($especialidad, $alumno, ($pago->folio)?0:1, $monto_pago,$pago);
+                            // dd('Monto: '.$monto);
+                        }
+
+                    }
+
+
 
                 }
             
@@ -426,6 +443,154 @@ class HomeController extends Controller
         return redirect()->back();
 
     }
+
+    // FUNCION PARA GENERAR DOCUMENTOS ADELANTADOS EN PROCESO ESPECIAL
+    public function crear_documentos_adelantados($especialidad, $alumno, $venta_fiscal, $monto, $pago){
+
+        // dd($especialidad->forma_pago);
+         # SE VERIFICA SEGUN LA MODALIDAD EN LA QUE SE ENCUENTRE EL ALUMNO
+         if ($especialidad->pivot->forma_pago == 'semanal') {
+
+            $ultimo_pago = $alumno->documentos()
+                ->where('id_especialidad', '=', $especialidad->id)
+                ->where('tipo', config('alumnos.concepto.colegiatura'))
+                ->where('status',config('pagos.status.Pagado'))
+                // ->where('anio', now()->year)
+                ->where('modalidad', 'semanal')
+                ->orderBy('anio', 'desc')
+                ->orderBy('semana', 'desc')
+                ->first();
+
+            # SI NO HAY UN PAGO PREVIO, ENTONCES AGREGO EL SIGUIENTE MES
+            if (empty($ultimo_pago)) {
+                $fecha = new Date(now());
+            } else {
+                # SE OBTIENE EL ULTIMO REGISTRO Y SE AGREGA LA SIGUIENTE SEMANA CON RESPECTO AL ULTIMO RECIB
+                $fecha = new Date(now()->week($ultimo_pago->semana)->setYear($ultimo_pago->anio)->addWeek());
+            }
+
+            // REVISAR SI TIENE APOYO 
+            $especial = 1;
+            $apoyo_especial = $alumno ->apoyos_especiales->where('id_especialidad', $especialidad->id)->filter(function($apoyo)use($fecha){
+                if($apoyo->fecha_inicio){
+                    return $apoyo->fecha_inicio->lte($fecha) && $apoyo->fecha_final->gte($fecha);
+                }else{
+                    return false;
+                }
+            })->first();
+
+            // SI TIENE APOYO ESPECIAL SE TOMA EL MONTO DEL PRECIO ESPECIAL SI NO EL DE LA ESPECIALIDAD PACTADO.
+            if($apoyo_especial){
+                $precio_semanal = $apoyo_especial->precio;
+                $especial = 1;
+            }else{
+                $precio_semanal = $especialidad->pivot->monto ?? 0;
+            }
+            
+            $saldo = ($monto > $precio_semanal) ? 0:  $precio_semanal - $monto;
+            $abonar = ($monto > $precio_semanal) ? $precio_semanal : $monto; 
+
+            if($monto > $precio_semanal){
+                $monto = $monto - $precio_semanal;
+            }else{
+                $monto = 0;
+            }
+
+            // dd('Monto den:'.$monto);
+
+            $data = [
+                'modalidad'     => 'semanal',
+                'semana'        => $fecha->week,
+                'anio'          => $fecha->year,
+                'concepto'      => config('alumnos.concepto.colegiatura').' de semana #'.$fecha->weekOfYear.' del '.$fecha->year,
+                'fecha_limite'  => $fecha->clone()->endOfWeek(),
+                'monto'         => $precio_semanal,
+                'saldo'         => $saldo,
+                'status'        => ($saldo == 0) ? config('pagos.status.Pagado') : config('pagos.status.Pendiente'),
+                'especial'      => $especial
+            ];
+
+        } else {
+            $ultimo_pago = $alumno->documentos()
+                ->where('status',config('pagos.status.Pagado'))
+                ->where('id_especialidad', '=', $especialidad->id)
+                ->where('tipo', config('alumnos.concepto.colegiatura'))
+                ->where('modalidad', 'mensual')
+                ->orderBy('anio', 'desc')
+                ->orderBy('mes', 'desc')
+                ->first();
+
+            # SI NO HAY PAGOS REGISTRADOS ,ENTONCES AGREGO EL MES ACTUAL
+            if (empty($ultimo_pago)) {
+                 $fecha = new Date(now());
+            } else {
+                # SE OBTIENE EL ULTIMO REGISTRO Y SE AGREGA EL SIGUIENTE MES CON RESPECTO AL ULTIMO RECIBO
+                $fecha =  new Date(now()->setMonth($ultimo_pago->mes)->setYear($ultimo_pago->anio)->addMonth());
+            }
+
+            $especial = 0;
+            $apoyo_especial = $alumno ->apoyos_especiales->where('id_especialidad', $especialidad->id)->filter(function($apoyo)use($fecha){
+                if($apoyo->fecha_inicio){
+                    return $apoyo->fecha_inicio->lte($fecha) && $apoyo->fecha_final->gte($fecha);
+                }else{
+                    return false;
+                }
+            })->first();
+
+            // SI TIENE APOYO ESPECIAL SE TOMA EL MONTO DEL PRECIO ESPECIAL SI NO EL DE LA ESPECIALIDAD PACTADO.
+            if($apoyo_especial){
+                $mensualidad_pronto_pago = $apoyo_especial->precio;
+                $especial = 1;
+            }else{
+                $mensualidad_pronto_pago = $especialidad->pivot->monto_pronto_pago ?? 0;
+            }
+
+            # VERIFICAR SI SE PAGA COMPLETAMENTE
+            $saldo = ($monto > $mensualidad_pronto_pago) ? 0:  $mensualidad_pronto_pago - $monto;
+            $abonar = ($monto > $mensualidad_pronto_pago) ? $mensualidad_pronto_pago : $monto; 
+
+            if($monto > $saldo){
+                $monto = $monto-$mensualidad_pronto_pago;
+            }else{
+                $monto = 0;
+            }
+
+
+            $data = [
+                'modalidad'     => 'mensual',
+                'mes'           => $fecha->month,
+                'anio'          => $fecha->year,
+                'fecha_limite'  => $fecha->clone()->endOfMonth(),
+                'concepto'      => config('alumnos.concepto.colegiatura') . ' ' . $fecha->addMonth()->format('F \d\e\l Y'),
+                'monto'         => $mensualidad_pronto_pago,
+                'saldo'         => $saldo,
+                'status'        => ($saldo == 0) ? config('pagos.status.Pagado') : config('pagos.status.Pendiente'),
+                'especial'      => $especial
+            ];
+        }
+
+        $fields = [
+            'id_alumno'     => $alumno->id,
+            'id_especialidad'      => $especialidad->id,
+            'tipo'          => config('alumnos.concepto.colegiatura'),
+        ];
+        # CREAR DOCUMENTO DE PAGO
+        $documento = Documento::create(array_merge($data, $fields));
+        $sucursal = session('sucursal');
+
+        $documento->abonos()->create([
+            'id_sucursal'       => $sucursal->id,
+            'id_pago'       => $pago->id,
+            'id_documento'    => $documento->id,
+            'id_especialidad'    => $especialidad->id,
+            'monto'             => $abonar,
+            'venta_fiscal'      => $venta_fiscal,
+        ]);
+
+        return $monto;
+
+    }
+
 
     public function info(){
 

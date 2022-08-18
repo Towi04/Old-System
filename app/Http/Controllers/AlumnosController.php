@@ -540,6 +540,8 @@ class AlumnosController extends Controller
                     $q->where('status', $status);
                 })->when($request->input('id_grupo'), function ($q, $id_grupo) {
                     $q->where('id_grupo', $id_grupo);
+                })->when($request->input('id_especialidad'), function ($q, $id_especialidad) {
+                    $q->where('id_especialidad', $id_especialidad);
                 });
 
             $total_pendiente = Documento::query()
@@ -550,6 +552,8 @@ class AlumnosController extends Controller
                     $q->where('status', $status);
                 })->when($request->input('id_grupo'), function ($q, $id_grupo) {
                     $q->where('id_grupo', $id_grupo);
+                })->when($request->input('id_especialidad'), function ($q, $id_especialidad) {
+                    $q->where('id_especialidad', $id_especialidad);
                 })->sum('saldo');
         } else {
             $query = Documento::where('id_alumno', 'xxxxxxxxx');
@@ -674,6 +678,8 @@ class AlumnosController extends Controller
         $query = Pago::with(['recibio','alumno','abonos.alumno_pago','abonos_documentos.documento'])
             ->when($request->input('id_alumno'), function ($q, $id_alumno) {
                 $q->where('id_alumno', $id_alumno);
+            })->when($request->input('id_especialidad'), function ($q, $id_especialidad) {
+                $q->where('id_especialidad', $id_especialidad);
             });
 
         return DataTables::eloquent($query)
@@ -701,7 +707,23 @@ class AlumnosController extends Controller
 
                 return $txt;
             })
-            ->rawColumns(['abonos_documentos.documento.concepto','folio'])
+            ->editColumn('especialidad.nombre', function($model){
+
+                $txt = "";
+                $txt .= "<a class='editable_especialidad' ";
+                $txt .=     "data-pk='".$model->id."' ";
+                $txt .=     "data-name='id_especialidad' ";
+                $txt .=     "data-url='".route("pagos.actualizar_informacion")."' ";
+                $txt .=     "data-type='select' ";
+                $txt .=     "data-value='". $model->id_especialidad."'>";
+                $txt .=     $model->especialidad->nombre;
+                $txt .= "</a>";
+
+                return $txt;
+
+
+            })
+            ->rawColumns(['abonos_documentos.documento.concepto','folio','especialidad.nombre'])
             ->make(true);
     }
 

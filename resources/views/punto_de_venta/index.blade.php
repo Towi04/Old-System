@@ -423,7 +423,7 @@
                     data: function (d) {
                         d.id_alumno = dom.select_alumno.val();
                         d.status = 'pendiente';
-                        d.id_especialidad = $('#select_id_especialidad').val();
+                        d.id_especialidad = $('#select_especialidad').val();
                     },
                     complete: function(data) {
                         let response = data.responseJSON || {};
@@ -503,8 +503,8 @@
                 dom.select_alumno.val(null).trigger('change');
             });
 
-            $('#select_grupo').change(function(){
-                dt_pagos.draw();
+            $('#select_especialidad').change(function(){
+                dt_pagos.ajax.reload(null, false);
             });
 
 

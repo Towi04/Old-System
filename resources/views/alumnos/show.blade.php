@@ -460,10 +460,16 @@
 
                                     <div class="tab-pane active" id="tab-historial-pagos">
 
+                                        <div class="form-group">
+                                            {!! Form::label('id_especialidad','Selecciona la especialidad:') !!}
+                                            {!! Form::select('id_especialidad', $alumno->especialidades->pluck('nombre','id')->prepend('TODAS',''), optional($alumno->especialidades->first())->id, ['id'=>'select_especialidad_historial_pagos','class'=>'form-control w-100']) !!}
+                                        </div>
+
                                         <table class="table table-striped table-bordered table-hover" id="tb-historial-pagos" width="100%">
                                             <thead>
                                                 <tr>
                                                     <th>Fecha</th>
+                                                    <th>Especialidad</th>
                                                     <th>Folio</th>
                                                     <th>Folio Fiscal</th>
                                                     <th>Pago</th>
@@ -858,6 +864,7 @@
                     type: "POST",
                     data: function (d) {
                         d.id_alumno = "{{ $alumno->id }}";
+                        d.id_especialidad = $('#select_especialidad_historial_pagos').val();
                         d._token = $("meta[name='csrf-token']").attr("content");
                     },
                     beforeSend: function(xhr,type) {
@@ -868,6 +875,7 @@
                 },
                 columns: [
                     {data: 'fecha', name: 'fecha'},
+                    {data: 'especialidad.nombre', name: 'especialidad.nombre'},
                     {data: 'folio', name: 'folio'},
                     {data: 'folio_fiscal', name: 'folio_fiscal',visible:false},
                     {data: 'monto', name: 'monto'},
@@ -894,6 +902,16 @@
                 },
                 drawCallback: function (settings) {
                     $("[data-toggle='tooltip']").tooltip();
+
+                    $('.editable_especialidad').editable({
+                                'emptytext':'Selecciona una esp',
+                                'showbuttons':false,
+                                'source':[
+                                    @foreach($alumno->especialidades->pluck('nombre','id') as $id => $especialidad)
+                                    { value: "{{$id}}",text: "{{$especialidad}}"},
+                                    @endforeach
+                                ]
+                            })
                 },
                 initComplete: function(settings, json) {
 
@@ -901,18 +919,18 @@
             });
 
             // GUARDAR LOCAL STORAGE
-            activeSelectEspecialidadShowAlumno = window.localStorage.getItem('selectEspecialidadShowAlumno');
+            // activeSelectEspecialidadShowAlumno = window.localStorage.getItem('selectEspecialidadShowAlumno');
 
             //INIT
             // console.log(activeSelectEspecialidadShowAlumno)
 
-            if (activeSelectEspecialidadShowAlumno) {
-                $('#select_especialidad_documentos').val(activeSelectEspecialidadShowAlumno);
-            }else{
+            // if (activeSelectEspecialidadShowAlumno) {
+            //     $('#select_especialidad_documentos').val(activeSelectEspecialidadShowAlumno);
+            // }else{
                 
-                $('#select_especialidad_documentos').val('{{optional($alumno->especialidades->first())->id}}');
-                // $('#select_especialidad_documentos').val('');
-            }
+            //     $('#select_especialidad_documentos').val('{{optional($alumno->especialidades->first())->id}}');
+            //     // $('#select_especialidad_documentos').val('');
+            // }
 
 
             // DATATABLES DE DOCUMENTOS
@@ -1078,6 +1096,12 @@
 
                     });
 
+                    $('#select_especialidad_historial_pagos').change(function(){
+                        tb_historial_pagos.ajax.reload(null, false);
+                        // alert('algo');
+                    });
+
+
                     
 
 
@@ -1176,6 +1200,10 @@
                         },
                         drawCallback: function (settings) {
                             $("[data-toggle='tooltip']").tooltip();
+
+                            
+
+
                         },
                     });
 

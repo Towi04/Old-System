@@ -31,6 +31,7 @@ use App\Http\Controllers\AsistenciasController;
 
 use App\Http\Controllers\Reportes\ReporteDesercionController;
 use App\Http\Controllers\ImportacionesController;
+use App\Http\Controllers\PagosController;
 
 #NOTE: CONFIGURACION DE RUTAS
 Auth::routes(['register'=> false]);
@@ -335,7 +336,11 @@ Route::middleware(['auth','sucursal'])->group(function () {
 Route::middleware(['auth','sucursal'])->group(function () {
 Route::get('pagos/importar', [ ImportacionesController::class,'pagos_importar'])->name('pagos.importar.index');
 Route::post('pagos/importar', [ ImportacionesController::class,'pagos_importar_store'])->name('pagos.importar.store');
+
 });
+
+#RUTAS DE PAGOS
+Route::post('pagos/actualizar_informacion', [ PagosController::class,'actualizar_informacion'])->name('pagos.actualizar_informacion');
 
 
 #RUTAS ESPECIALES PARA ACOMODAR COSAS EN LA PLATAFORMA
