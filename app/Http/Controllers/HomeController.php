@@ -669,11 +669,17 @@ class HomeController extends Controller
 
                         if($alumno_esp == 0){
                             echo '<br>Se registro especialidad del Alumno '.$alumno->id.' NC:'.$alumno->nuevo_numero_control.'  '.$alumno->fullname.' a: ';
-                            
+
+                            if($grupo->pivot->fecha_inicio){
+                                $fi = $grupo->pivot->fecha_inicio;
+                            }else{
+                                $fi =  $grupo->fecha_inicio;
+                            }
+
                             $esp = AlumnoEspecialidad::create([
                                 'id_alumno' => $alumno->id,
                                 'id_especialidad' =>  $grupo->id_especialidad,
-                                'fecha_inicio' => $grupo->pivot->fecha_inicio->format('Y-m-d'),
+                                'fecha_inicio' => $fi->format('Y-m-d'),
                                 'forma_pago' => ($alumno->forma_pago)?$alumno->forma_pago:'semanal',
                                 'monto' => ($alumno->forma_pago == 'mensual' )?$grupo->precio_mensualidad : $grupo->precio_semanal,
                                 'monto_pronto_pago' => $grupo->precio_mensualidad_pronto_pago,
