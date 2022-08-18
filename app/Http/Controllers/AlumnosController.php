@@ -504,7 +504,16 @@ class AlumnosController extends Controller
             ->editColumn('abonos.monto', function ($model) {
                 $txt = '';
                 foreach($model->abonos as $abono){
-                    $txt .= $abono->pago->id.'|'.$abono->pago->fecha->format('d-m-Y').' ($'.number_format($abono->monto).')<br>';
+                    if($abono->pago->folio){
+                        $folio = '<span class="text-danger">'.$abono->pago->folio.'</span>';
+                    }
+
+                    if($abono->pago->folio_fiscal){
+                        $folio = '<span class="text-primary">'.$abono->pago->folio_fiscal.'</span>';
+                    }
+
+
+                    $txt .= $folio.' | '.$abono->pago->fecha->format('d-m-Y').' ($'.number_format($abono->monto).')<br>';
                 }
 
                 return $txt;
@@ -672,6 +681,18 @@ class AlumnosController extends Controller
             ->editColumn('fecha', function ($model) {
                 return optional($model->fecha)->format('d/m/Y H:i');
             })
+            ->editColumn('folio', function ($model) {
+                if($model->folio){
+                    return '<span class="text-danger" >'.$model->folio.'</span>';
+                }
+
+                if($model->folio_fiscal){
+                    return '<span class="text-primary" >'.$model->folio_fiscal.'</span>';
+                }
+
+                return '';
+
+            })
             ->editColumn('abonos_documentos.documento.concepto', function ($model) {
                 $txt = '';
                 foreach($model->abonos_documentos as $abono){
@@ -680,7 +701,7 @@ class AlumnosController extends Controller
 
                 return $txt;
             })
-            ->rawColumns(['abonos_documentos.documento.concepto'])
+            ->rawColumns(['abonos_documentos.documento.concepto','folio'])
             ->make(true);
     }
 

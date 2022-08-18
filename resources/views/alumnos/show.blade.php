@@ -461,6 +461,8 @@
                                             <thead>
                                                 <tr>
                                                     <th>Fecha</th>
+                                                    <th>Folio</th>
+                                                    <th>Folio Fiscal</th>
                                                     <th>Pago</th>
                                                     <th>Forma Pago</th>
                                                     <th>Cubrio</th>
@@ -863,6 +865,8 @@
                 },
                 columns: [
                     {data: 'fecha', name: 'fecha'},
+                    {data: 'folio', name: 'folio'},
+                    {data: 'folio_fiscal', name: 'folio_fiscal',visible:false},
                     {data: 'monto', name: 'monto'},
                     {data: 'forma_pago', name: 'forma_pago'},
                     {data: 'abonos_documentos.documento.concepto', name: 'abonos_documentos.documento.concepto'},
