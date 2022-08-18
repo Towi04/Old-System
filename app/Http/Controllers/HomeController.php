@@ -872,7 +872,24 @@ class HomeController extends Controller
 
 
     }
-   
+
+
+    
+    public function generar_especialidad_pagos(){
+
+        foreach (Alumno::with(['especialidades','pagos_caja'])->has('especialidades','=',1)->lazy() as $alumno) {
+
+            $especialidad = $alumno->especialidades->first();
+            // ACTUALIZAMOS TODOS SUS PAGOS 
+            $alumno->pagos_caja()->update([
+                'id_especialidad' => $especialidad->id
+            ]);
+
+
+        }
+
+
+    }
 
 
 }

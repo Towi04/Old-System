@@ -367,6 +367,9 @@ Route::prefix('especiales')->name('especiales.')->group(function(){
 
      #GENERAR REGISTRO A ESPECIALIDADESA A TODOS LOS ALUMNOS
      Route::get('generar_registro_especalidades',[HomeController::class,'generar_registro_especalidades'])->name('generar_registro_especalidades');
+
+     #AGREGAR ESPECIALIDAD A LOS PAGOS DE TODOS LOS ALUMNOS QUE SOLO TIENEN UNA ESPECIALIDAD
+     Route::get('generar_especialidad_pagos',[HomeController::class,'generar_especialidad_pagos'])->name('generar_especialidad_pagos');
      
 
 
