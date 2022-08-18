@@ -370,6 +370,8 @@ class HomeController extends Controller
                         # GENERO EL ABONO
                         #SE VA A VALIDAR SI FUE COLEGIATURA POR PRONTO PAGO
 
+                        $alumno_especialidad = AlumnoEspecialidad::where('id_alumno','=',$alumno->id)->where('id_especialidad','=',$documento->id_especialidad)->first();
+
                         if($documento->tipo == 'Colegiatura'){
                             if($alumno_especialidad->forma_pago == 'mensual'){
                                 // validar fecha limite de pronto pago
