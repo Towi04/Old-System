@@ -352,7 +352,24 @@ class PuntoDeVentaController extends Controller
                 $fecha = new Date(now()->week($ultimo_pago->semana)->setYear($ultimo_pago->anio)->addWeek());
             }
 
-            $precio_semanal = $especialidad->pivot->monto ?? 0;
+             // REVISAR SI TIENE APOYO 
+             $especial = 1;
+             $apoyo_especial = $alumno ->apoyos_especiales->where('id_especialidad', $especialidad->id)->filter(function($apoyo)use($fecha){
+                 if($apoyo->fecha_inicio){
+                     return $apoyo->fecha_inicio->lte($fecha) && $apoyo->fecha_final->gte($fecha);
+                 }else{
+                     return false;
+                 }
+             })->first();
+ 
+             // SI TIENE APOYO ESPECIAL SE TOMA EL MONTO DEL PRECIO ESPECIAL SI NO EL DE LA ESPECIALIDAD PACTADO.
+             if($apoyo_especial){
+                 $precio_semanal = $apoyo_especial->precio;
+                 $especial = 1;
+             }else{
+                 $precio_semanal = $especialidad->pivot->monto ?? 0;
+             }
+
             $saldo = ($monto > $precio_semanal) ? 0:  $precio_semanal - $monto;
             $abonar = ($monto > $precio_semanal) ? $precio_semanal : $monto; 
 
@@ -373,6 +390,7 @@ class PuntoDeVentaController extends Controller
                 'monto'         => $precio_semanal,
                 'saldo'         => $saldo,
                 'status'        => ($saldo == 0) ? config('pagos.status.Pagado') : config('pagos.status.Pendiente'),
+                'especial'      => $especial
             ];
 
         } else {
@@ -394,7 +412,23 @@ class PuntoDeVentaController extends Controller
             }
 
             # VERIFICAR SI SE PAGA COMPLETAMENTE
-            $mensualidad_pronto_pago = $especialidad->pivot->monto_pronto_pago ?? 0;
+            $especial = 0;
+            $apoyo_especial = $alumno ->apoyos_especiales->where('id_especialidad', $especialidad->id)->filter(function($apoyo)use($fecha){
+                if($apoyo->fecha_inicio){
+                    return $apoyo->fecha_inicio->lte($fecha) && $apoyo->fecha_final->gte($fecha);
+                }else{
+                    return false;
+                }
+            })->first();
+
+            // SI TIENE APOYO ESPECIAL SE TOMA EL MONTO DEL PRECIO ESPECIAL SI NO EL DE LA ESPECIALIDAD PACTADO.
+            if($apoyo_especial){
+                $mensualidad_pronto_pago = $apoyo_especial->precio;
+                $especial = 1;
+            }else{
+                $mensualidad_pronto_pago = $especialidad->pivot->monto_pronto_pago ?? 0;
+            }
+
             $saldo = ($monto > $mensualidad_pronto_pago) ? 0:  $mensualidad_pronto_pago - $monto;
             $abonar = ($monto > $mensualidad_pronto_pago) ? $mensualidad_pronto_pago : $monto; 
 
@@ -414,6 +448,7 @@ class PuntoDeVentaController extends Controller
                 'monto'         => $mensualidad_pronto_pago,
                 'saldo'         => $saldo,
                 'status'        => ($saldo == 0) ? config('pagos.status.Pagado') : config('pagos.status.Pendiente'),
+                'especial'      => $especial
             ];
         }
 
