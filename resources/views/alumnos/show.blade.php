@@ -316,9 +316,12 @@
                                                 {!! Form::label('id_especialidad','Selecciona la especialidad:') !!}
                                                 {!! Form::select('id_especialidad', $alumno->especialidades->pluck('nombre','id')->prepend('TODAS',''), optional($alumno->especialidades->first())->id, ['id'=>'select_especialidad_documentos','class'=>'form-control w-100']) !!}
                                             </div>
-                                            <button class="btn btn-info btn-xs btn-sm  mt-1"">
-                                                Actualizar documentos
-                                            </button>
+                                            @role('administrador')
+                                                <button class="btn btn-info btn-xs btn-sm  mt-1" id="btn_actualizar_docuemntos">
+                                                    Actualizar documentos
+                                                </button>
+                                                <span id="msje_actualizar_docmuentos" style="display: none" class="text-danger">Tienes que seleccionar una especialidad para actualizar documentos</span>
+                                            @endrole
                                         <br>
                                         {!! Form::close() !!}
 
@@ -1064,6 +1067,14 @@
                         dt_apoyos.ajax.reload(null, false);
 
                         window.localStorage.setItem('selectEspecialidadShowAlumno',$(this).val());
+
+                        if($(this).val() == ''){
+                            $('#btn_actualizar_docuemntos').hide();
+                            $('#msje_actualizar_docmuentos').show()
+                        }else{
+                            $('#btn_actualizar_docuemntos').show();
+                            $('#msje_actualizar_docmuentos').hide()
+                        }
 
                     });
 
