@@ -901,10 +901,14 @@
             activeSelectEspecialidadShowAlumno = window.localStorage.getItem('selectEspecialidadShowAlumno');
 
             //INIT
+            // console.log(activeSelectEspecialidadShowAlumno)
+
             if (activeSelectEspecialidadShowAlumno) {
                 $('#select_especialidad_documentos').val(activeSelectEspecialidadShowAlumno);
             }else{
-                $('#select_especialidad_documentos').val('');
+                
+                $('#select_especialidad_documentos').val('{{optional($alumno->especialidades->first())->id}}');
+                // $('#select_especialidad_documentos').val('');
             }
 
 
