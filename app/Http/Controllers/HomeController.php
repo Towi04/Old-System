@@ -369,10 +369,11 @@ class HomeController extends Controller
                     foreach($documentos->sortBy('fecha_limite') as $documento){
                         # GENERO EL ABONO
                         #SE VA A VALIDAR SI FUE COLEGIATURA POR PRONTO PAGO
-                        // dd($documento);
+
                         if($documento->tipo == 'Colegiatura'){
-                            if($alumno->forma_pago == 'mensual'){
+                            if($alumno_especialidad->forma_pago == 'mensual'){
                                 // validar fecha limite de pronto pago
+                                echo '<br>Documento:'.$documento->id. ' Año: '.$documento->anio.' Mes:'.$documento->mes;
                                 $fecha_limite_pronto = Carbon::createFromFormat('Y-m-d',$documento->anio.'-'.$documento->mes.'-06');
                                 
                                 // dd($pago->fecha);
