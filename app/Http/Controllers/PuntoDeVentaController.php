@@ -53,6 +53,7 @@ class PuntoDeVentaController extends Controller
             $venta_fiscal = ($request->input('forma_pago', '') != 'Efectivo') ? true : $alumno->solicitud_factura;
 
             Log::alert('Usuario '.Auth::user()->fullname.' recibio abono de '.$alumno->numero_control_fullname.' por '.$monto.' con folio '.(($venta_fiscal)?$folio_fiscal+1:$folio+1).' Sucursal: '.$sucursal->nombre);
+            $id_especialidad = $request->id_especialidad;
         }
 
         if (isset($request->id_preregistro)) {
@@ -65,6 +66,7 @@ class PuntoDeVentaController extends Controller
             $venta_fiscal = ($request->input('forma_pago', '') != 'Efectivo') ? true : $alumno->solicitud_factura;
 
             Log::alert('Usuario '.Auth::user()->fullname.' recibio anticipo de '.$alumno->numero_control_fullname.' por '.$monto.' con folio '.(($venta_fiscal)?$folio_fiscal+1:$folio+1).' Sucursal: '.$sucursal->nombre);
+            $id_especialidad = null;
         }
 
         try {
@@ -76,7 +78,7 @@ class PuntoDeVentaController extends Controller
                 'forma_pago'    => $request->input('forma_pago'),
                 'id_sucursal'   => $id_sucursal,
                 'id_alumno'     => $alumno->id,
-                'id_especialidad'     => $request->id_especialidad,
+                'id_especialidad'     => $id_especialidad,
                 'monto'         => $monto,
                 'fecha'         => $fecha_abono,
                 'id_recibio'    => $id_recibio,
