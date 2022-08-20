@@ -237,6 +237,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
         Route::post('recibir_abonos',[ PuntoDeVentaController::class,'recibir_abonos'])->name('recibir_abonos');
         Route::get('ticket/{id}',[ PuntoDeVentaController::class,'ticket'])->name('ticket');
         Route::post('traer_grupos',[ PuntoDeVentaController::class,'traer_grupos'])->name('traer_grupos');
+        Route::post('traer_especialidades',[ PuntoDeVentaController::class,'traer_especialidades'])->name('traer_especialidades');
     });
 
     Route::middleware(['permission:ingresar_punto_venta'])->resource('punto_de_venta', PuntoDeVentaController::class)->only('index');

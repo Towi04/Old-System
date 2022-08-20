@@ -328,6 +328,14 @@ class PuntoDeVentaController extends Controller
         return response()->json($grupos);
     }
 
+    public function traer_especialidades(Request $request)
+    {
+
+        $especialidades = Alumno::with('especialidades')->find($request->id)->especialidades;
+
+        return response()->json($especialidades);
+    }
+
     public function crear_documentos_adelantados($especialidad, $alumno, $venta_fiscal, $monto, $pago){
 
         // dd($especialidad->forma_pago);

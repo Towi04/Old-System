@@ -355,9 +355,10 @@
                 var newOption = new Option(data.text, data.id, false, false);
                 dom.select_alumno.append(newOption).trigger('change');
 
-                $.post("{{route('punto_de_venta.traer_grupos')}}", {id:{{$alumno_huella->id}} },
-                    function (grupos) {
-                        traer_grupos(grupos);
+                
+                $.post("{{route('punto_de_venta.traer_especialidades')}}", {id:{{$alumno_huella->id}} },
+                    function (especialidades) {
+                        traer_especialidades(especialidades);
                     },
                     "json"
                 );
