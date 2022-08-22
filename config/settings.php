@@ -457,6 +457,11 @@ return [
             'display_name'  => 'Ver alertas',
             'description'   => 'Ver alertas',
         ],
+        [
+            'name'          => 'cambiar_especialidad_pagos_alumno',
+            'display_name'  => 'Cambiar especiliadad en pagos del alumno',
+            'description'   => 'Cambiar especiliadad en pagos del alumno',
+        ],
         
     ],
 

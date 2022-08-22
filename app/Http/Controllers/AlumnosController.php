@@ -710,7 +710,10 @@ class AlumnosController extends Controller
             ->editColumn('especialidad.nombre', function($model){
 
                 $txt = "";
-                $txt .= "<a class='editable_especialidad' ";
+                $txt .= "<a ";
+                if(Auth::user()->can('cambiar_especialidad_pagos_alumno')){
+                    $txt .= " class='editable_especialidad' ";
+                }
                 $txt .=     "data-pk='".$model->id."' ";
                 $txt .=     "data-name='id_especialidad' ";
                 $txt .=     "data-url='".route("pagos.actualizar_informacion")."' ";
