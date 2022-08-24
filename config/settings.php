@@ -459,9 +459,15 @@ return [
         ],
         [
             'name'          => 'cambiar_especialidad_pagos_alumno',
-            'display_name'  => 'Cambiar especiliadad en pagos del alumno',
-            'description'   => 'Cambiar especiliadad en pagos del alumno',
+            'display_name'  => 'Cambiar especialidad en pagos del alumno',
+            'description'   => 'Cambiar especialidad en pagos del alumno',
         ],
+        [
+            'name'          => 'cambiar_fecha_inicio_especialidad',
+            'display_name'  => 'Cambiar fecha inicio de especialidad',
+            'description'   => 'Cambiar fecha inicio de especialidad',
+        ],
+        
         
     ],
 

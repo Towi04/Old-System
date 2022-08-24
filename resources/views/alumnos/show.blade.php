@@ -151,7 +151,13 @@
                                    
                                 </h6>
                                 <div class="post-text">
-                                    <b>Fecha inicio:</b> {{ $especialidad->pivot->fecha_inicio->format('d-m-Y')}}<br>
+                                    <b>Fecha de inicio:</b> 
+                                    <a class='
+                                    @can('cambiar_fecha_inicio_especialidad') editable_fecha_inicio_grupo @endcan
+                                    ' data-pk='{{$especialidad->pivot->id}}' data-name='fecha_inicio' data-url='{{route("alumnos.actualizar_informacion_alumnos_especialidades")}}' data-type='date' data-value="{{ optional($especialidad->pivot->fecha_inicio)->format('d-m-Y') }}">
+                                    {!!  optional($especialidad->pivot->fecha_inicio)->format('d-m-Y') !!}
+                                    </a>
+                                    <br>
                                     <b>Forma pago:</b> 
                                     <a class='editable_forma_pago' data-pk='{{ $especialidad->pivot->id}}' data-name='forma_pago' data-url='{{route("alumnos.actualizar_informacion_alumnos_especialidades")}}' data-type='select' data-value='{{ $especialidad->pivot->forma_pago}}'>
                                     </a>
@@ -165,12 +171,7 @@
                                     <b>Total semanas:</b> {{$especialidad->pivot->semanas_cursar }}<br>
                                     <b>Semanas cursadas:</b>  {{$especialidad->pivot->semanas_cursadas}}<br>
                                     <b>Fecha Inicio: </b>
-                                    <a class='
-                                    @can('cambiar_fecha_inicio_especialidad') editable_fecha_inicio_grupo @endcan
-                                    ' data-pk='{{$especialidad->pivot->id}}' data-name='fecha_inicio' data-url='{{route("alumnos.actualizar_informacion_alumnos_especialidades")}}' data-type='date' data-value="{{ optional($especialidad->pivot->fecha_inicio)->format('d-m-Y') }}">
-                                    {!!  optional($especialidad->pivot->fecha_inicio)->format('d-m-Y') !!}
-                                    </a>
-                                    <br>
+                                    
                                     <b>Status:</b>  {!! (!empty($especialidad->pivot->status)) ? $especialidad->pivot->status: '' !!}<br>
                                 </div>
                                 <div class="post-foot">
