@@ -372,6 +372,8 @@ Route::prefix('especiales')->name('especiales.')->group(function(){
      #AGREGAR ESPECIALIDAD A LOS PAGOS DE TODOS LOS ALUMNOS QUE SOLO TIENEN UNA ESPECIALIDAD
      Route::get('generar_especialidad_pagos',[HomeController::class,'generar_especialidad_pagos'])->name('generar_especialidad_pagos');
      
+      #INVERTIR APOYOS QUE DIO EMMANUEL PARA AJUSTAR CORRECTAMENTE EL MONTO DE APOYO
+      Route::get('invertir_apoyos_emmanuel',[HomeController::class,'invertir_apoyos_emmanuel'])->name('invertir_apoyos_emmanuel');
 
 
 

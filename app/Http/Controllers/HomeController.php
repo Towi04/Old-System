@@ -892,4 +892,30 @@ class HomeController extends Controller
     }
 
 
+    public function invertir_apoyos_emmanuel(){
+
+        try {
+            DB::beginTransaction();
+            foreach(ApoyoInscripcion::with(['alumno','grupo','especialidad'])->where('id_usuario','=',31)->where('created_at','<','2022-08-22')->whereNotNull('id_grupo')->lazy() as $apoyo){
+            
+                $grupo = $apoyo->grupo;
+                $precio_inscripcion_grupo = $grupo->precio_inscripcion;
+                $apoyo_invertido = $precio_inscripcion_grupo - $apoyo->apoyo;
+                echo $apoyo->alumno->id.','.$apoyo->alumno->fullname.','.$apoyo->apoyo.','.$apoyo_invertido.'<br>';
+                $apoyo->apoyo = $apoyo_invertido;
+                $apoyo->save();
+    
+
+            }
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollback();
+            dd($th);
+        }
+       
+
+        
+
+    }
+
 }
