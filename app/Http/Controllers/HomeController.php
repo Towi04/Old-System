@@ -377,7 +377,7 @@ class HomeController extends Controller
                             if($alumno_especialidad->forma_pago == 'mensual'){
                                 // validar fecha limite de pronto pago
                                 echo '<br>Documento:'.$documento->id. ' Año: '.$documento->anio.' Mes:'.$documento->mes;
-                                $fecha_limite_pronto = Carbon::createFromFormat('Y-m-d',$documento->anio.'-'.$documento->mes.'-06');
+                                $fecha_limite_pronto = Carbon::createFromFormat('Y-m-d',$documento->anio.'-'.$documento->mes.'-07');
                                 
                                 // dd($pago->fecha);
                                 if($pago->fecha->gte($fecha_limite_pronto) && $documento->especial == 0 && $documento->saldo == $documento->monto){
@@ -423,10 +423,21 @@ class HomeController extends Controller
                         // SE GENERAN LOS DOCUMENTOS ADELANTADOS
                         $especialidad = $pago->especialidad;
 
-                        while($monto_pago > 0){
+                        $mont_pactado = 1;
+
+                        while($monto_pago > 0 && $mont_pactado > 0 ){
                             
                             $especialidad = $alumno->especialidades->where('id',$especialidad->id)->first();
 
+                            if ($especialidad->pivot->forma_pago == 'semanal') {
+                                $mont_pactado = $especialidad->pivot->monto;
+                            }
+    
+                            if ($especialidad->pivot->forma_pago == 'mensual') {
+                                $mont_pactado = $especialidad->pivot->monto_pronto_pago;
+                            }
+
+                            // dd($mont_pactado);
                             $monto_pago = $this->crear_documentos_adelantados($especialidad, $alumno, ($pago->folio)?0:1, $monto_pago,$pago);
                             // dd('Monto: '.$monto);
                         }

@@ -86,10 +86,10 @@ class PuntoDeVentaController extends Controller
 
             # 👉 SI ES ALUMNO SE COBRAN SUS PAGOS
             if (isset($request->id_alumno)) {
-
+                
                 # SI NO TIENE NINGUN PAGO PENDIENTE, SE ADELANTA SU PROXIMO PAGO
                 if ($pagos_alumno->isEmpty()) {
-
+                    // dd('true'. $pagos_alumno);
                     $especialidad = $alumno->especialidades->where('id', $request->id_especialidad)->first();
 
 
@@ -100,7 +100,7 @@ class PuntoDeVentaController extends Controller
 
 
                 } else {
-
+                   
                     # SI TIENE PAGOS ACTUALIZAR PAGOS
                     
                     foreach ($pagos_alumno as $pa) {
@@ -147,14 +147,22 @@ class PuntoDeVentaController extends Controller
                         
                     }
 
-                    
+                    // dd('fin foreach: '. $monto);
                     
                     if($monto>0){
                         $especialidad = $alumno->especialidades->where('id', $request->id_especialidad)->first();
 
                         
-                        
-                        while($monto > 0){
+                        if ($especialidad->pivot->forma_pago == 'semanal') {
+                            $mont_pactado = $especialidad->pivot->monto;
+                        }
+
+                        if ($especialidad->pivot->forma_pago == 'mensual') {
+                            $mont_pactado = $especialidad->pivot->monto_pronto_pago;
+                        }
+
+                        // dd($mont_pactado);
+                        while($monto > 0 && $mont_pactado > 0 ){
                             
                             $monto = $this->crear_documentos_adelantados($especialidad, $alumno, $venta_fiscal, $monto,$pago);
                             // dd('Monto: '.$monto);
@@ -211,13 +219,13 @@ class PuntoDeVentaController extends Controller
     {
         $request->validate([
             'id_alumno'     => 'required',
-            'id_grupo'      => 'required',
+            'id_especialidad'      => 'required',
             'monto'         => 'required',
-            'concepto'      => 'required',
+            // 'concepto'      => 'required',
             'forma_pago'    => 'required',
             'fecha'         => 'required',
-            'no_pago'       => 'required',
-            'forma'         => 'required',
+            // 'no_pago'       => 'required',
+            // 'forma'         => 'required',
         ]);
 
         $id_sucursal = optional(session('sucursal'))->id;
@@ -253,8 +261,8 @@ class PuntoDeVentaController extends Controller
             }
 
             $fields = array_merge([
-                'id_grupo'      => $request->input('id_grupo'),
-                'concepto'      => $request->input('concepto') . ' ' . $request->input('forma') . ' ' . $request->input('no_pago'),
+                'id_especialidad'      => $request->input('id_especialidad'),
+                'concepto'      => '',
                 'monto'         => $request->input('monto'),
                 'tipo'          => $request->input('concepto'),
                 'status'        => config('pagos.status.Pagado'),
@@ -264,7 +272,7 @@ class PuntoDeVentaController extends Controller
 
 
             # CREO EL ABONO DEL ALUMNO 😊
-            $pago_alumno = $alumno->pagos()->create($fields);
+            // $pago_alumno = $alumno->pagos()->create($fields);
 
             # CREO EL PAGO DEL ALUMNO 😏
             $pago = Pago::create([
@@ -272,6 +280,7 @@ class PuntoDeVentaController extends Controller
                 'folio_fiscal'  => ($venta_fiscal) ? $request->input('folio') : null,
                 'id_sucursal'   => $id_sucursal,
                 'id_alumno'     => $alumno->id,
+                'id_especialidad'     => $request->input('id_especialidad'),
                 'monto'         => $request->input('monto'),
                 'forma_pago'    => $request->input('forma_pago'),
                 'fecha'         => $fecha_pago,
@@ -279,12 +288,12 @@ class PuntoDeVentaController extends Controller
             ]);
 
             # GENERO EL ABONO 🙄
-            $pago->abonos()->create([
-                'id_sucursal'       => $id_sucursal,
-                'id_alumno_pago'    => $pago_alumno->id,
-                'monto'             => $request->input('monto'),
-                'venta_fiscal'      => $venta_fiscal,
-            ]);
+            // $pago->abonos()->create([
+            //     'id_sucursal'       => $id_sucursal,
+            //     'id_alumno_pago'    => $pago_alumno->id,
+            //     'monto'             => $request->input('monto'),
+            //     'venta_fiscal'      => $venta_fiscal,
+            // ]);
 
             # TERMINO TRANSACCION 😥
             DB::commit();

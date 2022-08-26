@@ -179,7 +179,7 @@
                                     {!! Form::text('fecha',null ,['id' => 'fecha','class' => 'form-control form-control-sm','autocomplete' => 'off','required' => true]) !!}
                                 </div>
                             </div>
-
+{{-- 
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     {!! Form::label('concepto', 'Concepto:*', ['class' => 'form-label']) !!}
@@ -200,14 +200,14 @@
                                         'Semana'=>'Semanal',
                                     ],null, [ 'class' => 'form-control form-control-sm','title' => 'Escribe el concepto','autocomplete' => 'off','required' => true]) !!}
                                 </div>
-                            </div>
+                            </div> --}}
 
-                            <div class="col-12 col-sm-6">
+                            {{-- <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     {!! Form::label('no_pago', 'No Mes/Semana:*', ['class' => 'form-label']) !!}
                                     {!! Form::text('no_pago',null, [ 'class' => 'form-control form-control-sm','title' => 'Escribe el número de mes o semana','placeholder' => 'Escribe aqui el no de pago','autocomplete' => 'off','required' => true]) !!}
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
@@ -235,8 +235,8 @@
                         </div>
                         <div class="row">
                             <div class="col-12">
-                                {!! Form::label('id_grupo', 'Seleccionar a un grupo:*', ['class' => 'form-label']) !!}
-                                {!! Form::select('id_grupo', [], null, ['id' => 'select2_id_especialidad_pago', 'class' => 'custom-select custom-select-sm','required' => true]) !!}
+                                {!! Form::label('id_especialidad', 'Seleccionar la especialidad:*', ['class' => 'form-label']) !!}
+                                {!! Form::select('id_especialidad', [], null, ['id' => 'select2_id_especialidad_pago', 'class' => 'custom-select custom-select-sm','required' => true]) !!}
                             </div>
                         </div>
                     </div>
