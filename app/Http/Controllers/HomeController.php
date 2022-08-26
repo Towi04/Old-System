@@ -561,7 +561,7 @@ class HomeController extends Controller
                 'mes'           => $fecha->month,
                 'anio'          => $fecha->year,
                 'fecha_limite'  => $fecha->clone()->endOfMonth(),
-                'concepto'      => config('alumnos.concepto.colegiatura') . ' ' . $fecha->addMonth()->format('F \d\e\l Y'),
+                'concepto'      => config('alumnos.concepto.colegiatura') . ' ' . $fecha->format('F \d\e\l Y'),
                 'monto'         => $mensualidad_pronto_pago,
                 'saldo'         => $saldo,
                 'status'        => ($saldo == 0) ? config('pagos.status.Pagado') : config('pagos.status.Pendiente'),
