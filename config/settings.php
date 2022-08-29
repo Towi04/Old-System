@@ -467,6 +467,11 @@ return [
             'display_name'  => 'Cambiar fecha inicio de especialidad',
             'description'   => 'Cambiar fecha inicio de especialidad',
         ],
+        [
+            'name'          => 'asignar_apoyos_especiales_en_inscripcion_preregistro',
+            'display_name'  => 'Asignar apyoyo a la inscripción en preregistro',
+            'description'   => 'Asignar apyoyo a la inscripción en preregistro',
+        ],
         
         
     ],

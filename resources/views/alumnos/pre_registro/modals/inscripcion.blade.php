@@ -38,7 +38,7 @@
                             </div>
                         </div>
 
-                        @can('asignar_apoyos_especiales_en_inscripcion')
+                        @can('asignar_apoyos_especiales_en_inscripcion_preregistro')
                             <div class="row pt-3">
                                 <div class="col-12">
                                     <label>
