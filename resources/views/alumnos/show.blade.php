@@ -344,37 +344,35 @@
                                         </table>
                                         @can('asignar_apoyos_especiales_en_inscripcion')
 
-                                    
-                                        @can('asignar_apoyos_especiales')
-                                        <fieldset class="form-group">
-                                            <legend>Apoyos en inscripcion</legend>
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <button type="button" id="btn-agregar-apoyo-inscripcion" title="Apoyo inscripcion" class="btn btn-sm btn-primary">Agregar Apoyo a Inscripción</button>
+                                            <fieldset class="form-group">
+                                                <legend>Apoyos en inscripcion</legend>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <button type="button" id="btn-agregar-apoyo-inscripcion" title="Apoyo inscripcion" class="btn btn-sm btn-primary">Agregar Apoyo a Inscripción</button>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <table class="table table-striped table-bordered table-hover" id="tb-apoyos-inscripcion" width="100%">
-                                                        <thead>
-                                                            <tr>    
-                                                                <th></th>
-                                                                <th>Especialidad</th>
-                                                                <th>Monto</th>
-                                                                <th>Motivo</th>
-                                                                <th>Autorizo</th>
-                                                                <th>Acciones</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <table class="table table-striped table-bordered table-hover" id="tb-apoyos-inscripcion" width="100%">
+                                                            <thead>
+                                                                <tr>    
+                                                                    <th></th>
+                                                                    <th>Especialidad</th>
+                                                                    <th>Monto</th>
+                                                                    <th>Motivo</th>
+                                                                    <th>Autorizo</th>
+                                                                    <th>Acciones</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
 
-                                                        </tbody>
-                                                    </table>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </fieldset>
-                                        @endcan
+                                            </fieldset>
+
                                         @endcan
 
                                         @can('asignar_apoyos_especiales')
