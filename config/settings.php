@@ -469,8 +469,8 @@ return [
         ],
         [
             'name'          => 'asignar_apoyos_especiales_en_inscripcion_preregistro',
-            'display_name'  => 'Asignar apyoyo a la inscripción en preregistro',
-            'description'   => 'Asignar apyoyo a la inscripción en preregistro',
+            'display_name'  => 'Asignar apyoyo especial (Pre registro)',
+            'description'   => 'Asignar apyoyo especial (Pre registro)',
         ],
         
         
