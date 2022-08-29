@@ -103,11 +103,13 @@ class PagoInscripcionDocumentosService
         }else{
             $precio_inscripcion = $precio_inscripcion - $monto_apoyo_inscripcion;
         }
+
+        $especialidad = Especialidad::find($grupo->id_especialidad);
         
         $documento = $this->alumno->documentos()->create([
             'id_grupo'                  => $grupo->id,
-            'id_especialidad'           => $grupo->id_especialidad,
-            'concepto'                  => config('alumnos.concepto.inscripcion') . ' del grupo ' . $grupo->clave,
+            'id_especialidad'           => $especialidad->id,
+            'concepto'                  => config('alumnos.concepto.inscripcion') . ' de la especialidad ' . $especialidad->nombre,
             'monto'                     => $precio_inscripcion,
             'saldo'                     => $precio_inscripcion,
             'monto_apoyo_inscripcion'   => $monto_apoyo_inscripcion,
@@ -129,6 +131,7 @@ class PagoInscripcionDocumentosService
                 'folio'         => ($venta_fiscal) ? null:($folio + 1),  # 👉 SI NO ES UNA VENTA FISCAL, PONER EL FOLIO EN NULL,
                 'folio_fiscal'  => ($venta_fiscal) ? $folio_fiscal + 1 : null,
                 'id_sucursal'   => $this->request->input('id_sucursal'),
+                'id_especialidad' => $especialidad->id,
                 'id_alumno'     => $this->alumno->id,
                 'monto'         => $precio_inscripcion - $apartado,
                 'forma_pago'    => $this->request->input('tipo_pago'),
