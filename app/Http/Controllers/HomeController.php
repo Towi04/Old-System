@@ -472,9 +472,9 @@ class HomeController extends Controller
                 ->orderBy('semana', 'desc')
                 ->first();
 
-            # SI NO HAY UN PAGO PREVIO, ENTONCES AGREGO EL SIGUIENTE MES
+            # SI NO HAY UN PAGO PREVIO, ENTONCES AGREGO EL SIGUIENTE MES DE ACUERDO A LA FECHA DE INICIO DEL
             if (empty($ultimo_pago)) {
-                $fecha = new Date(now());
+                $fecha = $especialidad->pivot->fecha_inicio;
             } else {
                 # SE OBTIENE EL ULTIMO REGISTRO Y SE AGREGA LA SIGUIENTE SEMANA CON RESPECTO AL ULTIMO RECIB
                 $fecha = new Date(now()->week($ultimo_pago->semana)->setYear($ultimo_pago->anio)->addWeek());
@@ -533,7 +533,7 @@ class HomeController extends Controller
 
             # SI NO HAY PAGOS REGISTRADOS ,ENTONCES AGREGO EL MES ACTUAL
             if (empty($ultimo_pago)) {
-                 $fecha = new Date(now());
+                $fecha =  new Date($especialidad->pivot->fecha_inicio);
             } else {
                 # SE OBTIENE EL ULTIMO REGISTRO Y SE AGREGA EL SIGUIENTE MES CON RESPECTO AL ULTIMO RECIBO
                 $fecha =  new Date(now()->setMonth($ultimo_pago->mes)->setYear($ultimo_pago->anio)->addMonth());
