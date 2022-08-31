@@ -1045,9 +1045,14 @@ class HomeController extends Controller
 
     }
 
-    public function aplicacion_masiva_documentos(){
+    public function aplicacion_masiva_documentos(Request $request){
 
-        foreach (Alumno::with(['especialidades','pagos_caja','grupos'])->lazy() as $alumno) {
+        
+
+        foreach (Alumno::with(['especialidades','pagos_caja','grupos'])
+        ->when($request->id_alumno, function($q, $id_alumno){
+            return $q->where('id','>=',$id_alumno);
+        })->lazy() as $alumno) {
 
             $especialidades = $alumno->especialidades;
 
