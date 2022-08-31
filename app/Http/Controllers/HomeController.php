@@ -375,16 +375,21 @@ class HomeController extends Controller
                     $monto_pago = $pago->monto;
                     $documentos = $alumno->load('documentos')->documentos->where('id_especialidad','=',$pago->id_especialidad)->where('saldo','>',0)->sortBy('fecha_limite')->values();
                     
+
                     foreach($documentos->sortBy('fecha_limite') as $documento){
+                       
                         # GENERO EL ABONO
                         #SE VA A VALIDAR SI FUE COLEGIATURA POR PRONTO PAGO
-
+                        
                         $alumno_especialidad = AlumnoEspecialidad::where('id_alumno','=',$alumno->id)->where('id_especialidad','=',$documento->id_especialidad)->first();
+                       
 
                         if($documento->tipo == 'Colegiatura'){
                             if($alumno_especialidad->forma_pago == 'mensual'){
+
                                 // validar fecha limite de pronto pago
                                 echo '<br>Documento:'.$documento->id. ' Año: '.$documento->anio.' Mes:'.$documento->mes;
+                               
                                 $fecha_limite_pronto = Carbon::createFromFormat('Y-m-d',$documento->anio.'-'.$documento->mes.'-07');
                                 
                                 // dd($pago->fecha);
@@ -990,7 +995,12 @@ class HomeController extends Controller
 
                                 $alumno = Alumno::with('documentos')->find($alumno->id);
                                 $documento = $alumno->documentos('id_especialidad','=',$especialidad->id)->where('tipo','=','Inscripción')->where('status','=','Pagado')->first();
-                                $fecha_pago = $documento->load('abonos.pago')->abonos->first()->pago->fecha;
+                                if($documento){
+                                    $fecha_pago = $documento->load('abonos.pago')->abonos->first()->pago->fecha;
+                                }else{
+                                    $grupo = $alumno->grupos->where('id_especialidad',$especialidad->id)->first();
+                                    $fecha_pago = ($especialidad->pivot->fecha_inicio)? $especialidad->pivot->fecha_inicio:$grupo->fecha_inicio;
+                                }
                             }
 
                         }else{
@@ -1062,13 +1072,12 @@ class HomeController extends Controller
                 // SE REVISA SI ESTA EN EL REPORTE DE INSCRITOS
                 echo '  Especialidad: '.$especialidad->id.' - '.$especialidad->nombre.' ';
 
-               
                 $this->generar_documentos_alumno($alumno->id, $especialidad->id, new PagoInscripcionDocumentosService(), new PagoColegiaturaDocumentosService, new Request() );
-                $this->generar_abonos_alumno($alumno->id);         
-
                     
-
                 }
+
+                $this->generar_abonos_alumno($alumno->id);   
+                
             }
             
 
