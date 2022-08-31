@@ -600,10 +600,10 @@ class HomeController extends Controller
         ];
         # CREAR DOCUMENTO DE PAGO
         $documento = Documento::create(array_merge($data, $fields));
-        $sucursal = session('sucursal');
+       
 
         $documento->abonos()->create([
-            'id_sucursal'       => $sucursal->id,
+            'id_sucursal'       => $alumno->id_sucursal,
             'id_pago'       => $pago->id,
             'id_documento'    => $documento->id,
             'id_especialidad'    => $especialidad->id,
