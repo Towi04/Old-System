@@ -996,7 +996,7 @@ class HomeController extends Controller
                                 $alumno = Alumno::with('documentos')->find($alumno->id);
                                 $documento = $alumno->documentos('id_especialidad','=',$especialidad->id)->where('tipo','=','Inscripción')->where('status','=','Pagado')->first();
                                 if($documento){
-                                    if($fecha_pago = $documento->load('abonos.pago')->abonos->first()){
+                                    if($fecha_pago = $documento->load('abonos.pago')->abonos->first()->pago){
                                         $fecha_pago = $documento->load('abonos.pago')->abonos->first()->pago->fecha;
                                     }else{
                                         $grupo = $alumno->grupos->where('id_especialidad',$especialidad->id)->first();
@@ -1018,7 +1018,12 @@ class HomeController extends Controller
                             $alumno = Alumno::with('documentos')->find($alumno->id);
                             $documento = Documento::where('id_alumno','=', $alumno->id)->where('id_especialidad','=',$grupo->id_especialidad)->where('tipo','=','Inscripción')->where('status','=','Pagado')->first();
                             if($documento){
-                                $fecha_pago = $documento->load('abonos.pago')->abonos->first()->pago->fecha;
+                                if($fecha_pago = $documento->load('abonos.pago')->abonos->first()->pago){
+                                    $fecha_pago = $documento->load('abonos.pago')->abonos->first()->pago->fecha;
+                                }else{
+                                    $grupo = $alumno->grupos->where('id_especialidad',$especialidad->id)->first();
+                                    $fecha_pago = ($especialidad->pivot->fecha_inicio)? $especialidad->pivot->fecha_inicio:$grupo->fecha_inicio;
+                                }
                             }else{
                                 $grupo = $alumno->grupos->where('id_especialidad',$especialidad->id)->first();
                                 $fecha_pago = ($especialidad->pivot->fecha_inicio)? $especialidad->pivot->fecha_inicio:$grupo->fecha_inicio;
