@@ -472,6 +472,11 @@ return [
             'display_name'  => 'Asignar apyoyo especial (Pre registro)',
             'description'   => 'Asignar apyoyo especial (Pre registro)',
         ],
+        [
+            'name'          => 'actualizar_asesor_alumno',
+            'display_name'  => 'Actualizar asesor del alumno',
+            'description'   => 'Actualizar asesor del alumno',
+        ],
         
         
     ],

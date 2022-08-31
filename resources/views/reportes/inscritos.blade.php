@@ -193,6 +193,7 @@
                                                     <th>Asesor</th>
                                                     <th>Fecha Inscrito</th>
                                                     <th>Fecha de Inicio</th>
+                                                    <th>Teléfono</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -213,7 +214,7 @@
                                                         </td>
 
                                                         {{-- NOMBRE DEL ALUMNO --}}
-                                                        <td>
+                                                        <td data-order="{{$inscrito->fecha->format('Ymd') }}">
                                                             {{ $inscrito->fecha->format('d-m-Y') }}
                                                              
                                                         </td>
@@ -221,6 +222,10 @@
                                                         <td>
                                                             {{ optional($inscrito->fecha_inicio_grupo)->format('d-m-Y') }}
                                                              
+                                                        </td>
+                                                        {{-- CELULAR DEL ALUMNO --}}
+                                                        <td>
+                                                            {{ $inscrito->alumno->celular }}
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -408,7 +413,7 @@
                     }
                     @endcan
                 ],
-                order: [[0,'desc']]
+                order: [[3,'desc']]
             });
 
             $('#datepicker').datepicker({

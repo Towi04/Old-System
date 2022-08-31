@@ -23,6 +23,7 @@ use App\Models\Alerta;
 use App\Models\Precio;
 use App\Models\AlumnoEspecialidad;
 use App\Models\Especialidad;
+use App\Models\Inscripcion;
 
 use App\Services\PagoInscripcionDocumentosService;
 use App\Services\PagoColegiaturaDocumentosService;
@@ -202,11 +203,18 @@ class HomeController extends Controller
 
     }
 
-    public function generar_documentos_alumno($id, PagoInscripcionDocumentosService $pids, PagoColegiaturaDocumentosService $pcds, Request $request){
+    public function generar_documentos_alumno($id, $id_especialidad = null,  PagoInscripcionDocumentosService $pids, PagoColegiaturaDocumentosService $pcds, Request $request){
         #borramos todos los documentos
+        if(!$request->id_especialidad){
+            $id_especialidad = $id_especialidad;
+        }else{
+            $id_especialidad = $request->id_especialidad;
+        }
+
+
         Documento::with('alumno')->whereHas('alumno', function($q)use($id){
             return $q->where('id_alumno',$id);
-        })->where('id_especialidad','=',$request->id_especialidad)->delete();
+        })->where('id_especialidad','=',$id_especialidad)->delete();
 
         $alumno = Alumno::with(['grupos','especialidades'])->find($id);
         $sucursal = optional(session('sucursal'));
@@ -214,7 +222,7 @@ class HomeController extends Controller
         try {
            
             // $grupo = $alumno->grupos->whereIn('pivot.status',['Inscrito','Pausa'])->where('id_especialidad',$especialidad->id)->first();
-            $especialidad = $alumno->especialidades->where('id',$request->id_especialidad)->first();
+            $especialidad = $alumno->especialidades->where('id',$id_especialidad)->first();
             // dd($especialidad);
             // dd($especialidad->pivot);
             if ($especialidad) {
@@ -928,5 +936,140 @@ class HomeController extends Controller
         
 
     }
+
+    public function reporte_inscritos_enero(){
+
+        foreach (Alumno::with(['especialidades','pagos_caja','grupos'])->lazy() as $alumno) {
+
+            $especialidades = $alumno->especialidades;
+
+            echo 'Alumno: '.$alumno->id.' - '.$alumno->fullname;
+
+            foreach($especialidades as $especialidad){
+                // SE REVISA SI ESTA EN EL REPORTE DE INSCRITOS
+                echo '  Especialidad: '.$especialidad->id.' - '.$especialidad->nombre.' <br>';
+
+                $inscrito = Inscripcion::where('id_alumno','=',$alumno->id)->where('id_especialidad','=',$especialidad->id)->first();
+
+               
+                // SI EXISTE SU REGISTRO DE INSCRIPCION EN EL REPORTE. SOLO SE ACTUALIZAN FECHAS Y ASESORES
+                if($inscrito){
+                    // SI NO TIENE FECHA DE INICIO EN EL GRUPO SE AGREGA DE ACUERDO A LA INSCRIPCIÓN
+                    if(!$inscrito->fecha_inicio_grupo){
+
+                        $grupo_pivot = $alumno->grupos->where('id_especialidad',$especialidad->id)->first();
+                        if($grupo_pivot){
+                            $inscrito ->fecha_inicio_grupo = ($grupo_pivot->pivot->fecha_inicio)?$grupo_pivot->pivot->fecha_inicio:$grupo_pivot->fecha_inicio;
+                            $inscrito->save();
+                        }
+
+                    }
+                    
+                   
+                // SI NO TIENE FECHA DE INICIO EN LA ESPECIALIDAD SE AGREGA DE ACUERDO AL ASESOR DEL ALUMNO
+                    if(!$inscrito->id_asesor){
+                        $inscrito->id_asesor = ($alumno->asesor_educativo->id == 'CNCM' || $alumno->id_asesor_educativo == null)?53:$alumno->id_asesor_educativo;
+                        $inscrito->save();
+                    }
+                }else {
+                    // NO EXISTE SU REGISTRO DE INSCRIPCIÓN. SE GENERA EL REGISTRO
+                    // SE ENCUENTRA EL PAGO DE LA INSCRIPCION
+
+                    $documento = $alumno->documentos('id_especialidad','=',$especialidad->id)->where('tipo','=','Inscripción')->where('status','=','Pagado')->first();
+
+                    
+
+                    if($documento){
+                        if($documento->abonos->count() > 0){
+                            // SE VALIDA QUE EL PAGO NO ESTE ELIMINADO. DE SER ASI SE ACTUALIZAN DOCUMENTOS PARA AJUSTAR. 
+                            if($documento->load('abonos.pago')->abonos->first()->pago->id){
+                                $fecha_pago = $documento->load('abonos.pago')->abonos->first()->pago->fecha;
+                            }else{
+                                $this->generar_documentos_alumno($alumno->id, $especialidad->id, new PagoInscripcionDocumentosService(), new PagoColegiaturaDocumentosService, new Request() );
+                                $this->generar_abonos_alumno($alumno->id);
+
+                                $alumno = Alumno::with('documentos')->find($alumno->id);
+                                $documento = $alumno->documentos('id_especialidad','=',$especialidad->id)->where('tipo','=','Inscripción')->where('status','=','Pagado')->first();
+                                $fecha_pago = $documento->load('abonos.pago')->abonos->first()->pago->fecha;
+                            }
+
+                        }else{
+                            $this->generar_documentos_alumno($alumno->id, $especialidad->id, new PagoInscripcionDocumentosService(), new PagoColegiaturaDocumentosService, new Request() );
+                            $this->generar_abonos_alumno($alumno->id);
+                              
+                           
+
+                            $alumno = Alumno::with('documentos')->find($alumno->id);
+                            $documento = Documento::where('id_alumno','=', $alumno->id)->where('id_especialidad','=',$grupo->id_especialidad)->where('tipo','=','Inscripción')->where('status','=','Pagado')->first();
+                            if($documento){
+                                $fecha_pago = $documento->load('abonos.pago')->abonos->first()->pago->fecha;
+                            }else{
+                                $grupo = $alumno->grupos->where('id_especialidad',$especialidad->id)->first();
+                                $fecha_pago = ($especialidad->pivot->fecha_inicio)? $especialidad->pivot->fecha_inicio:$grupo->fecha_inicio;
+                            }
+                            
+
+                        }
+                        
+                        
+
+
+                    }else{
+
+                        $grupo = $alumno->grupos->where('id_especialidad',$especialidad->id)->first();
+                        $fecha_pago = ($especialidad->pivot->fecha_inicio)? $especialidad->pivot->fecha_inicio:$grupo->fecha_inicio;
+                    }
+                    
+                    $grupo = $alumno->grupos->where('id_especialidad',$especialidad->id)->filter(function($grupo){
+                        return $grupo->pivot->status == 'Inscrito' || $grupo->pivot->status == 'Pausa';
+                    })->first();
+
+                    $inscrito = Inscripcion::create([
+                        'id_alumno'=>$alumno->id,
+                        'id_grupo'=>$grupo->id,
+                        'id_especialidad'=>$especialidad->id,
+                        'id_asesor'=>($alumno->asesor_educativo->id == 'CNCM' || $alumno->id_asesor_educativo == null)?53:$alumno->id_asesor_educativo,
+                        'id_sucursal'=>$alumno->id_sucursal,
+                        'fecha'=> $fecha_pago,
+                        'fecha_inicio_grupo'=>$grupo->pivot->fecha_inicio,
+                    ]);
+
+                    
+
+                }
+            }
+            
+
+        }
+
+
+    }
+
+    public function aplicacion_masiva_documentos(){
+
+        foreach (Alumno::with(['especialidades','pagos_caja','grupos'])->lazy() as $alumno) {
+
+            $especialidades = $alumno->especialidades;
+
+            echo '<br> Alumno: '.$alumno->id.' - '.$alumno->fullname;
+
+            foreach($especialidades as $especialidad){
+                // SE REVISA SI ESTA EN EL REPORTE DE INSCRITOS
+                echo '  Especialidad: '.$especialidad->id.' - '.$especialidad->nombre.' ';
+
+               
+                $this->generar_documentos_alumno($alumno->id, $especialidad->id, new PagoInscripcionDocumentosService(), new PagoColegiaturaDocumentosService, new Request() );
+                $this->generar_abonos_alumno($alumno->id);         
+
+                    
+
+                }
+            }
+            
+
+        }
+
+
+    
 
 }

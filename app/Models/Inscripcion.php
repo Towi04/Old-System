@@ -14,6 +14,7 @@ class Inscripcion extends Model
     protected $fillable = [
         'id_alumno',
         'id_grupo',
+        'id_especialidad',
         'id_asesor',
         'id_sucursal',
         'fecha',
@@ -51,6 +52,6 @@ class Inscripcion extends Model
 
     public function asesor()
     {
-        return $this->belongsTo(User::class, 'id_asesor', 'id');
+        return $this->belongsTo(User::class, 'id_asesor', 'id')->withTrashed();
     }
 }

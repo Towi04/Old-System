@@ -74,6 +74,10 @@
 @endsection
 
 @section('scripts')
+<link rel="stylesheet" href="{{ asset('plugins/xeditable/css/bootstrap-editable.css') }}">
+<script src="{{ asset('plugins/xeditable/js/bootstrap-editable.min.js') }}"></script>
+
+
     <script type="text/javascript">
         $(function() {
             const dom = {
@@ -147,6 +151,16 @@
                 order: [[ 0, 'desc' ] ],
                 drawCallback: function(settings) {
                     $("[data-toggle='tooltip']").tooltip();
+
+                    $('.editable_asesor').editable({
+                                'emptytext':'Selecciona una asesor',
+                                'showbuttons':false,
+                                'source':[
+                                    @foreach($asesores as $id => $asesor)
+                                    { value: "{{$id}}",text: "{{$asesor}}"},
+                                    @endforeach
+                                ]
+                            })
                 },
             });
 

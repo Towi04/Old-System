@@ -38,7 +38,12 @@ class AlumnosController extends Controller
 {
     public function index()
     {
-        return view('alumnos.index');
+        $sucursal = optional(session('sucursal'));
+        $asesores = User::whereHas('sucursales', function($q)use($sucursal){
+            return $q->where('id','=',$sucursal->id);
+        })->get()->pluck('fullname', 'id')->sort();
+
+        return view('alumnos.index', compact('asesores'));
     }
 
     public function datatables(Request $request)
@@ -58,6 +63,25 @@ class AlumnosController extends Controller
                 return "<a href=" . route('alumnos.show', $model->id) . ">{$model->nombres} {$model->apellido_paterno} {$model->apellido_materno}</a>";
             })
             ->addColumn('nombre_asesor', function ($model) {
+
+
+                    $txt = "";
+                    $txt .= "<a ";
+                    if(Auth::user()->can('actualizar_asesor_alumno')){
+                        $txt .= " class='editable_asesor' ";
+                    }
+                    $txt .=     "data-pk='".$model->id."' ";
+                    $txt .=     "data-name='id_asesor_educativo' ";
+                    $txt .=     "data-url='".route("alumnos.actualizar_informacion")."' ";
+                    $txt .=     "data-type='select' ";
+                    $txt .=     "data-value='". $model->id_asesor_educativo."'>";
+                    $txt .=     $model->asesor_educativo->fullname;
+                    $txt .= "</a>";
+    
+                    return $txt;
+    
+    
+
                 return $model->asesor_educativo->full_name;
             })
             ->addColumn('no_grupos', function ($model) {
@@ -65,7 +89,7 @@ class AlumnosController extends Controller
             })
             ->addColumn('buttons', 'alumnos.datatables._buttons')
 
-            ->rawColumns(['buttons', 'nombre_alumno'])
+            ->rawColumns(['buttons', 'nombre_alumno','nombre_asesor'])
             ->make(true);
     }
 
@@ -80,7 +104,7 @@ class AlumnosController extends Controller
     {
         return view('alumnos.create', [
             'alumno'            => new Alumno,
-            'asesores'          => User::query()->get()->pluck('fullname', 'id')->sort()->prepend('CNCM', ''),
+            'asesores'          => User::query()->get()->pluck('fullname', 'id')->sort(),
             'especialidades'    => Especialidad::query()->pluck('nombre', 'id')->sort()->prepend('Selecciona una especialidad', ''),
             'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi', '')
         ]);
@@ -504,16 +528,25 @@ class AlumnosController extends Controller
             ->editColumn('abonos.monto', function ($model) {
                 $txt = '';
                 foreach($model->abonos as $abono){
-                    if($abono->pago->folio){
-                        $folio = '<span class="text-danger">'.$abono->pago->folio.'</span>';
+                    if($abono->pago){
+
+                        $folio = '';
+                        $fecha = '';
+                        if($abono->pago->id){
+                            $fecha = $abono->pago->fecha->format('d-m-Y');
+                        }
+
+                        if($abono->pago->folio){
+                            $folio = '<span class="text-danger">'.$abono->pago->folio.'</span>';
+                        }
+    
+                        if($abono->pago->folio_fiscal){
+                            $folio = '<span class="text-primary">'.$abono->pago->folio_fiscal.'</span>';
+                        }
+
+                        $txt .= $folio.' | '.$fecha.' ($'.number_format($abono->monto).')<br>';
                     }
-
-                    if($abono->pago->folio_fiscal){
-                        $folio = '<span class="text-primary">'.$abono->pago->folio_fiscal.'</span>';
-                    }
-
-
-                    $txt .= $folio.' | '.$abono->pago->fecha->format('d-m-Y').' ($'.number_format($abono->monto).')<br>';
+                    
                 }
 
                 return $txt;
@@ -778,9 +811,20 @@ class AlumnosController extends Controller
     }
 
     public function actualizar_informacion(Request $request){
-        $alumnos = Alumno::find($request->pk);
-        $alumnos[$request->name] = $request->value;
-        $alumnos->save();
+
+        $alumno = Alumno::find($request->pk);
+        $alumno[$request->name] = $request->value;
+        $alumno->save();
+
+
+        if($request->name == 'id_asesor_educativo'){
+
+            // SE ACTUALIZAN LOS REPORTES DE INSCRITOS
+            $inscritos = Inscripcion::where('id_alumno','=',$alumno->id)->update([
+                'id_asesor' => $request->value
+            ]);
+
+        }
 
 
     }
