@@ -1018,7 +1018,7 @@ class HomeController extends Controller
                             $alumno = Alumno::with('documentos')->find($alumno->id);
                             $documento = Documento::where('id_alumno','=', $alumno->id)->where('id_especialidad','=',$grupo->id_especialidad)->where('tipo','=','Inscripción')->where('status','=','Pagado')->first();
                             if($documento){
-                                if($fecha_pago = $documento->load('abonos.pago')->abonos->first()->pago){
+                                if($fecha_pago = $documento->load('abonos.pago')->abonos->first()){
                                     $fecha_pago = $documento->load('abonos.pago')->abonos->first()->pago->fecha;
                                 }else{
                                     $grupo = $alumno->grupos->where('id_especialidad',$especialidad->id)->first();
