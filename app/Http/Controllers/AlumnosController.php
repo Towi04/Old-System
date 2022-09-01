@@ -695,7 +695,8 @@ class AlumnosController extends Controller
                 'id_grupo' => $grupo_inscripcion->id,
                 'id_sucursal' => $sucursal->id,
                 'id_asesor' => $alumno->id_asesor_educativo,
-                'fecha' => date('Y-m-d')
+                'fecha' => date('Y-m-d'),
+                'fecha_inicio_grupo' => $request->input('fecha_inicio'),
             ]);
 
         }
