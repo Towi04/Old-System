@@ -163,6 +163,10 @@
                                     </a>
                                     
                                     <br>
+                                    <b>Monto Pronto Pago:</b> 
+                                    <a class='editable_forma_pago' data-pk='{{ $especialidad->pivot->id}}' data-name='monto_pronto_pago' data-url='{{route("alumnos.actualizar_informacion_alumnos_especialidades")}}' data-type='text' data-value='{{ $especialidad->pivot->monto_pronto_pago}}'>
+                                        $ {{ number_format($especialidad->pivot->monto_pronto_pago,2,'.',',')}}
+                                    </a><br>
                                     <b>Monto:</b> 
                                     <a class='editable_forma_pago' data-pk='{{ $especialidad->pivot->id}}' data-name='monto' data-url='{{route("alumnos.actualizar_informacion_alumnos_especialidades")}}' data-type='text' data-value='{{ $especialidad->pivot->monto}}'>
                                         $ {{ number_format($especialidad->pivot->monto,2,'.',',')}}
