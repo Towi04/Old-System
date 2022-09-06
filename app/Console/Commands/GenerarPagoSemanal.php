@@ -52,7 +52,7 @@ class GenerarPagoSemanal extends Command
 
         Alumno::query()->alumno()->semanal()->whereHas('especialidades', function($q){
             return $q->where('status','=','Activo')->where('alumnos_especialidades.forma_pago','=','semanal');
-        })->with('alumno')
+        })->where('id','=',6329)->with('alumno')
             ->cursor()
             ->each(function($alumno){
 

@@ -392,12 +392,14 @@ class HomeController extends Controller
                                
                                 $fecha_limite_pronto = Carbon::createFromFormat('Y-m-d',$documento->anio.'-'.$documento->mes.'-07');
                                 
-                                // dd($pago->fecha);
+
                                 if($pago->fecha->gte($fecha_limite_pronto) && $documento->especial == 0 && $documento->saldo == $documento->monto){
                                     
-                                    $documento->monto = $documento->especialidad->precio_mensualidad;
-                                    $documento->saldo = $documento->especialidad->precio_mensualidad;
+
+                                    $documento->monto = $alumno_especialidad->monto;
+                                    $documento->saldo = $alumno_especialidad->monto;
                                     $documento->save();
+
                                 }
                             }
                         }
