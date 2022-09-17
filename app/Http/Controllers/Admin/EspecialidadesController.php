@@ -223,69 +223,70 @@ class EspecialidadesController extends Controller
             $especialidad ->precio_mensualidad_pronto_pago = $request->precio_mensual_pronto_pago;
             $especialidad ->precio_mensualidad = $request->precio_mensual;
 
-            $sucursal = Session::get('sucursal');
-            // Se actualizan los precios de los grupos ya creados de esta especialidad
-            foreach($especialidad->grupos as $grupo){
-
-                $precio = Precio::where('id_grupo','=',$grupo->id)->where('tipo','=',$request->tipo)->whereNull('fecha_final')->update(['fecha_final'=>date('Y-m-d H:i:s')]);
-
-                if($request->tipo == 'Inscripción'){
-                    $precio = Precio::create([
-                        'tipo' => $request->tipo,
-                        'id_grupo' => $grupo->id,
-                        'fecha_inicio' => date('Y-m-d H:i:s'),
-                        'precio_pronto_pago' => null,
-                        'precio_normal' => $request->precio_inscripcion,
-                        'id_usuario' => Auth::id(),
-                    ]);
-        
-                    $precio_anterior =  $grupo ->precio_inscripcion;
-                    $grupo ->precio_inscripcion = $request->precio_inscripcion;
-                    
-                    Log::alert('Usuario '.Auth::user()->fullname.' actualizo el precio de la inscripcion del grupo '.$grupo->nombre.' de '.$precio_anterior.' a '.$request->precio_inscripcion.'. Sucursal:'. $sucursal->nombre );
-                   
-                }
-        
-                if($request->tipo == 'Precio Semanal'){
-        
-                    $precio = Precio::create([
-                        'tipo' => $request->tipo,
-                        'id_grupo' => $grupo->id,
-                        'fecha_inicio' => date('Y-m-d H:i:s'),
-                        'precio_pronto_pago' => null,
-                        'precio_normal' => $request->precio_semanal,
-                        'id_usuario' => Auth::id(),
-                    ]);
-        
-                    $precio_anterior =  $grupo ->precio_semanal;
-                    $grupo ->precio_semanal = $request->precio_semanal;
-        
-                    Log::alert('Usuario '.Auth::user()->fullname.' actualizo el precio de la colegiatura semanal del grupo '.$grupo->nombre.' de '.$precio_anterior.' a '.$request->precio_inscripcion.'. Sucursal:'. $sucursal->nombre );
-                }
-        
-                if($request->tipo == 'Precio Mensual'){
-                    $precio = Precio::create([
-                        'tipo' => $request->tipo,
-                        'id_grupo' => $grupo->id,
-                        'fecha_inicio' => date('Y-m-d H:i:s'),
-                        'precio_pronto_pago' => $request->precio_mensual_pronto_pago,
-                        'precio_normal' => $request->precio_mensual,
-                        'id_usuario' => Auth::id(),
-                    ]);
-        
-                    $precio_anterior_pronto_pago = $grupo ->precio_mensualidad_pronto_pago;
-                    $precio_anterior = $grupo ->precio_mensualidad;
-        
-                    $grupo ->precio_mensualidad_pronto_pago = $request->precio_mensual_pronto_pago;
-                    $grupo ->precio_mensualidad = $request->precio_mensual;
-                    
-                    Log::alert('Usuario '.Auth::user()->fullname.' actualizó el precio de colegiatura mensual de la especliadad '.$grupo->nombre.' de '.$precio_anterior.' ('.$precio_anterior_pronto_pago.' pronto pago) a '.$request->precio_mensual.' ('.$request->precio_mensual_pronto_pago.')');
-                }
-
-                $grupo->save();
-            }
-            
+            $sucursal = Session::get('sucursal');            
             Log::alert('Usuario '.Auth::user()->fullname.' actualizó el precio de colegiatura mensual de la especliadad '.$especialidad->nombre.' de '.$precio_anterior.' ('.$precio_anterior_pronto_pago.' pronto pago) a '.$request->precio_mensual.' ('.$request->precio_mensual_pronto_pago.')');
+        }
+
+        $sucursal = Session::get('sucursal');    
+        // SE ACTUALIZAN LOS PRECIOS DE LOS GRUPOS
+        foreach($especialidad->grupos as $grupo){
+
+            $precio = Precio::where('id_grupo','=',$grupo->id)->where('tipo','=',$request->tipo)->whereNull('fecha_final')->update(['fecha_final'=>date('Y-m-d H:i:s')]);
+
+            if($request->tipo == 'Inscripción'){
+                $precio = Precio::create([
+                    'tipo' => $request->tipo,
+                    'id_grupo' => $grupo->id,
+                    'fecha_inicio' => date('Y-m-d H:i:s'),
+                    'precio_pronto_pago' => null,
+                    'precio_normal' => $request->precio_inscripcion,
+                    'id_usuario' => Auth::id(),
+                ]);
+    
+                $precio_anterior =  $grupo ->precio_inscripcion;
+                $grupo ->precio_inscripcion = $request->precio_inscripcion;
+                
+                Log::alert('Usuario '.Auth::user()->fullname.' actualizo el precio de la inscripcion del grupo '.$grupo->nombre.' de '.$precio_anterior.' a '.$request->precio_inscripcion.'. Sucursal:'. $sucursal->nombre );
+               
+            }
+    
+            if($request->tipo == 'Precio Semanal'){
+    
+                $precio = Precio::create([
+                    'tipo' => $request->tipo,
+                    'id_grupo' => $grupo->id,
+                    'fecha_inicio' => date('Y-m-d H:i:s'),
+                    'precio_pronto_pago' => null,
+                    'precio_normal' => $request->precio_semanal,
+                    'id_usuario' => Auth::id(),
+                ]);
+    
+                $precio_anterior =  $grupo ->precio_semanal;
+                $grupo ->precio_semanal = $request->precio_semanal;
+    
+                Log::alert('Usuario '.Auth::user()->fullname.' actualizo el precio de la colegiatura semanal del grupo '.$grupo->nombre.' de '.$precio_anterior.' a '.$request->precio_inscripcion.'. Sucursal:'. $sucursal->nombre );
+            }
+    
+            if($request->tipo == 'Precio Mensual'){
+                $precio = Precio::create([
+                    'tipo' => $request->tipo,
+                    'id_grupo' => $grupo->id,
+                    'fecha_inicio' => date('Y-m-d H:i:s'),
+                    'precio_pronto_pago' => $request->precio_mensual_pronto_pago,
+                    'precio_normal' => $request->precio_mensual,
+                    'id_usuario' => Auth::id(),
+                ]);
+    
+                $precio_anterior_pronto_pago = $grupo ->precio_mensualidad_pronto_pago;
+                $precio_anterior = $grupo ->precio_mensualidad;
+    
+                $grupo ->precio_mensualidad_pronto_pago = $request->precio_mensual_pronto_pago;
+                $grupo ->precio_mensualidad = $request->precio_mensual;
+                
+                Log::alert('Usuario '.Auth::user()->fullname.' actualizó el precio de colegiatura mensual de la especliadad '.$grupo->nombre.' de '.$precio_anterior.' ('.$precio_anterior_pronto_pago.' pronto pago) a '.$request->precio_mensual.' ('.$request->precio_mensual_pronto_pago.')');
+            }
+
+            $grupo->save();
         }
 
         $especialidad->save();
