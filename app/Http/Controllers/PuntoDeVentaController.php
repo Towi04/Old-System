@@ -147,7 +147,7 @@ class PuntoDeVentaController extends Controller
                         
                     }
 
-                    // dd('fin foreach: '. $monto);
+                    //ADELANTAR PAGOS
                     
                     if($monto>0){
                         $especialidad = $alumno->especialidades->where('id', $request->id_especialidad)->first();
@@ -161,11 +161,9 @@ class PuntoDeVentaController extends Controller
                             $mont_pactado = $especialidad->pivot->monto_pronto_pago;
                         }
 
-                        // dd($mont_pactado);
+                       
                         while($monto > 0 && $mont_pactado > 0 ){
-                            
                             $monto = $this->crear_documentos_adelantados($especialidad, $alumno, $venta_fiscal, $monto,$pago);
-                            // dd('Monto: '.$monto);
                         }
                     }
                 }
@@ -422,7 +420,7 @@ class PuntoDeVentaController extends Controller
                 ->orderBy('mes', 'desc')
                 ->first();
 
-            # SI NO HAY PAGOS REGISTRADOS ,ENTONCES AGREGO EL MES ACTUAL
+            # SI NO HAY PAGOS REGISTRADOS, ENTONCES AGREGO EL MES ACTUAL
             if (empty($ultimo_pago)) {
                  $fecha = new Date(now());
             } else {
@@ -463,7 +461,7 @@ class PuntoDeVentaController extends Controller
                 'mes'           => $fecha->month,
                 'anio'          => $fecha->year,
                 'fecha_limite'  => $fecha->clone()->endOfMonth(),
-                'concepto'      => config('alumnos.concepto.colegiatura') . ' ' . $fecha->addMonth()->format('F \d\e\l Y'),
+                'concepto'      => config('alumnos.concepto.colegiatura') . ' ' . $fecha->format('F \d\e\l Y'),
                 'monto'         => $mensualidad_pronto_pago,
                 'saldo'         => $saldo,
                 'status'        => ($saldo == 0) ? config('pagos.status.Pagado') : config('pagos.status.Pendiente'),
