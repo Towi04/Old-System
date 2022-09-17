@@ -851,13 +851,14 @@ class AlumnosController extends Controller
     }
 
     public function eliminar_apoyo_inscripcion($id){
-        $apoyo = ApoyoInscripcion::find($id);
-        $apoyo->delete();
+        $apoyo = ApoyoInscripcion::with(['especialidad','alumno'])->find($id);
 
+        $apoyo->delete();
+       
         Log::alert('Usuario '.Auth::user()->fullname.' elimino el apoyo a la inscripción del alumno '.$apoyo->alumno->numero_control_fullname.' del grupo'.$apoyo->especialidad->nombre);
 
         return response()->json([
-            'apoyo' => $apoyo
+            'apoyo' => null
         ]);
     }
 
