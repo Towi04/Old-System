@@ -52,11 +52,14 @@
             grupo: $('#id_grupo'),
             form_inscribir: $('#form-inscribir'),
 
+            select_alumno: $("#id_alumno_recomendo"),
+
             modal_inscripcion: $("#modal-inscripcion"),
             form_inscripcion: $("#form-inscripcion"),
             btn_inscribir: $("#inscribir"),
 
             ckb_apoyo_especial: $('#ckb-apoyo-especial'),
+            ckb_apoyo_recomendacion: $('#ckb-apoyo-recomendacion'),
 
             tikets:{
                 contenido_ticket:$("#contenido-ticket"),
@@ -201,7 +204,9 @@
             // 👉 EVITAR ENVIAR EL CAMPO EN CASO DE QUE NO TENGA PERMISO PARA EMITIR PRECIO INSCRIPCION
             if ($("#precio_inscripcion").val()) {
                 formData.append('apoyo_especial',$("#ckb-apoyo-especial").is(':checked'));
+                formData.append('apoyo_por_recomendacion',$("#ckb-apoyo-recomendacion").is(':checked'));
                 formData.append('precio_inscripcion',$("#precio_inscripcion").val());
+                formData.append('id_alumno_recomendo',$("#id_alumno_recomendo").val());
                 formData.append('id_usuario_autoriza',$("#id_usuario_autoriza").val());
                 formData.append('password',$("#password").val());
                 formData.append('motivo',$("#motivo").val());
@@ -264,6 +269,8 @@
 
         dom.ckb_apoyo_especial.change(function(e){
             $("#apoyo-especial").toggle(e.target.checked);
+            $("#apoyo-autorizacion").toggle(e.target.checked);
+            $("#apoyo-motivo").toggle(e.target.checked);
             $("[data-apoyo]").attr('required',e.target.checked)
             $("[data-password]").attr('required',e.target.checked)
             $("[data-usuario]").attr('required',e.target.checked)
@@ -272,8 +279,67 @@
             if(!e.target.checked){
 
             }
-            
         })
+
+        dom.ckb_apoyo_recomendacion.change(function(e){
+            $("#apoyo-recomendacion").toggle(e.target.checked);
+            $("#apoyo-autorizacion").toggle(e.target.checked);
+
+            $("[data-alumno]").attr('required',e.target.checked)
+            $("[data-usuario]").attr('required',e.target.checked)
+            $("[data-password]").attr('required',e.target.checked)
+
+            if(!e.target.checked){
+
+            }
+        })
+
+
+        dom.select_alumno.select2({
+                dropdownParent: $('#modal-inscripcion'),
+                language: "es",
+                placeholder:'Selecciona un alumnno',
+                ajax: {
+                    method: 'POST',
+                    data:function (params) {
+                        return {
+                            _token: '{{ csrf_token() }}',
+                            term: params.term,
+                            page: params.page || 1,
+                            id_sucursal: "{{ optional(session('sucursal'))->id }}",
+                            status:'Alumno'
+                        }
+                    },
+                    url: '{{ route("alumnos.traer_alumnos_select2") }}',
+                    dataType: 'json',
+                    cache: false,
+                    delay:250,
+                    beforeSend:function(xhr,type){
+                        xhr.setRequestHeader('X-CSRF-Token',$('meta[name="csrf-token"]').attr('content'))
+                    }
+                },
+                escapeMarkup: function (markup) { return markup; },
+                minimumInputLength: 2,
+                templateResult: function(option){
+                    if (option.loading) {
+                        return option.text;
+                    }
+
+                    if(!option.nuevo_numero_control || !option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                        return option.text
+                    }
+
+                    return `No. Control: ${option.nuevo_numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                },
+                templateSelection:function(option){
+                    if(!option.nuevo_numero_control ||  !option.nombres || !option.apellido_paterno || !option.apellido_materno){
+                        return option.text
+                    }
+
+                    return `No. Control: ${option.nuevo_numero_control} | Nombre: ${option.nombres} ${option.apellido_paterno} ${option.apellido_materno}`;
+                }
+            });
+
     });
 
 </script>

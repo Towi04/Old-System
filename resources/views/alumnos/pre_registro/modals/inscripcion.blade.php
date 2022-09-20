@@ -46,26 +46,49 @@
                                         ¿Tiene apoyo especial?
                                     </label>
                                 </div>
+                                <div class="col-12">
+                                    <label>
+                                        <input id="ckb-apoyo-recomendacion" type="checkbox" name="apoyo_por_recomendacion" value="1" class="i-checks">
+                                        ¿Tiene apoyo por recomendación?
+                                    </label>
+                                </div>
                             </div>
 
                             <div class="row pt-3" id="apoyo-especial" style="display: none;">
-                                <div class="col-12">
-                                    {!! Form::label('id_usuario_autoriza','Selecciona el usuario que autoriza el apoyo:*') !!}
-                                    {!! Form::select('id_usuario_autoriza',$usuarios_autorizados,null, ['class' => 'form-control form-control-sm','form-selector'=> '','data-usuario']) !!}
-                                </div>
-                                <div class="col-12">
-                                    {!! Form::label('password','Ingresa el password:*') !!}
-                                    {!! Form::password('password', ['class' => 'form-control form-control-sm','form-selector'=> '','data-password']) !!}
-                                </div>
+                                
                                 <div class="col-12">
                                     {!! Form::label('precio_inscripcion','Precio Original de Inscripción:*') !!}
                                     {!! Form::number('precio_inscripcion',null, ['class' => 'form-control form-control-sm','form-selector'=> '','placeholder' =>'Escribe el monto de la inscripcion','step' => '0.01','data-apoyo']) !!}
                                 </div>
+                            </div>
+
+                            <div class="row pt-3" id="apoyo-recomendacion" style="display: none;">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        {!! Form::label('id_alumno_recomendo', 'Selecciona al alumno que recomendo:*'); !!}
+                                        {!! Form::select('id_alumno_recomendo',[], null, ['class' => 'form-control','required' => true,'style' => 'width:100%','data-alumno']) !!}
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="row" id="apoyo-autorizacion"  style="display: none;">
+                                <div class="col-12">
+                                    {!! Form::label('id_usuario_autoriza','Selecciona el usuario que autoriza el apoyo:*') !!}
+                                    {!! Form::select('id_usuario_autoriza',$usuarios_autorizados,null, ['class' => 'form-control form-control-sm','form-selector'=> '','data-usuario']) !!}
+                                </div>
+                                <div class="col-12" >
+                                    {!! Form::label('password','Ingresa el password:*') !!}
+                                    {!! Form::password('password', ['class' => 'form-control form-control-sm','form-selector'=> '','data-password']) !!}
+                                </div>
+                            </div>
+                               
+                            <div class="row" id="apoyo-motivo"  style="display: none;">
                                 <div class="col-12">
                                     {!! Form::label('motivo','Escribe el motivo del apoyo:*') !!}
                                     {!! Form::textarea('motivo',null, ['class' => 'form-control form-control-sm','placeholder' =>'Escribe el motivo del apoyo','data-motivo','rows'=>'3']) !!}
                                 </div>
                             </div>
+
                         @endcan
                     </fieldset>
                 </div>

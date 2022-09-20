@@ -9,6 +9,7 @@ use App\Models\Especialidad;
 use App\Models\Pago;
 use App\Models\ApoyoInscripcion;
 use App\Models\Inscripcion;
+use App\Models\InscripcionRecomendacion;
 
 
 use Illuminate\Http\Request;
@@ -344,6 +345,16 @@ class PreRegistrosController extends Controller
             }
         }
 
+        if($request->apoyo_por_recomendacion == "true"){
+            $usuario = User::find($request->id_usuario_autoriza);
+            
+            $password = $request->password;
+            if(!Hash::check($password,$usuario->password))
+            {
+                throw ValidationException::withMessages(['mensaje' => 'Credenciales de autorización incorrectas']);
+            }
+        }
+
         try {
             $alumno = Alumno::find($id);
             $request->request->add([
@@ -412,7 +423,6 @@ class PreRegistrosController extends Controller
                     break;
                 }
                 
-                
                 // throw ValidationException::withMessages(['mensaje' => $monto_pactado]);
                 // SE GENERA EL REGISTRO DE ESTE ALUMNO EN LA ESPECIALIDAD SELECCIONADA. ESTE SERA SU REGISTRO DE ESPECIALIDAD
                 // CENTRAL A PARTIR DE AQUI
@@ -431,9 +441,11 @@ class PreRegistrosController extends Controller
                 ]);
                 
                
+               
                 #SE CREA EL APOYO A LA INSCRIPCION DEL ALUMNO PARA EL REPORTE
                 if($request->apoyo_especial == "true"){
                     $grupo = Grupo::find($request->input('id_grupo'));
+
                     $apoyo = ApoyoInscripcion::create([
                         'id_alumno' => $alumno->id,
                         'id_especialidad'  => $especialidad->id,
@@ -442,7 +454,31 @@ class PreRegistrosController extends Controller
                         'id_usuario_autoriza'=> $request->id_usuario_autoriza,
                         'motivo'    =>$request->motivo,
                     ]);
-                }   
+                }
+                
+                 #SE CREA EL APOYO A LA INSCRIPCION DEL ALUMNO PARA EL REPORTE
+                 if($request->apoyo_por_recomendacion == "true"){
+                    $grupo = Grupo::find($request->input('id_grupo'));
+                    $inscripcion_recomendacion = InscripcionRecomendacion::create([
+                        'id_alumno_recomendado' => $alumno->id,
+                        'id_alumno_recomendo' => $request->id_alumno_recomendo,
+                        'id_especialidad'  => $especialidad->id,
+                        'id_documento_aplicado' => null,
+                        'id_autorizo'=> $request->id_usuario_autoriza,
+                        'fecha'=> date('Y-m-d'),
+                        'id_sucursal'    =>$sucursal->id,
+                        'monto' => null,
+                    ]);
+
+                    $alumno_recomendo = Alumno::find($request->id_alumno_recomendo);
+                    $documentos = $alumno_recomendo->documentos()->pendientes()->where('id_especialidad', '=', $request->id_especialidad)->orderBy('fecha_limite', 'asc')->get();
+
+                    $monto_semanal = $especialidad->precio_semanal;
+                    $inscripcion_recomendacion->monto = $monto_semanal;
+                    $inscripcion_recomendacion->save();
+
+                } 
+                
 
                 // OPERACIONES: sumar | restar
                 // CAMPOS: inicios | reingresos | cambios_horarios_plus | bajas | cambios_horarios_minus | fin_curso
