@@ -27,8 +27,12 @@
 
        Folio: {{ $venta->folio }}<br>
        Recibio: {{ optional($venta->recibio)->fullname }}<br><br>
+       @if($venta->id_alumno)
        Alumno: {{ optional($venta->alumno)->fullname }}<br>
        No Control: {{ $venta->alumno->nuevo_numero_control }}<br>
+       @else 
+       Nombre: {{$venta->nombre}} (Externo)
+       @endif
 
    </p>
    <hr>

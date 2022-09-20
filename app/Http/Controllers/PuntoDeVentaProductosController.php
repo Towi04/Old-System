@@ -43,7 +43,12 @@ class PuntoDeVentaProductosController extends Controller
         $id_recibio = auth()->id();
         $fecha_abono = now();
 
-        $alumno = Alumno::find($request->input('id_alumno'));
+        if($request->id_alumno){
+            $nombre = Alumno::find($request->input('id_alumno'))->fullname;
+        }else{
+            $nombre = $request->nombre;
+        }
+        
        
         $venta = Venta::find($request->id_venta);
         $venta->status = 'Cerrada';
@@ -51,6 +56,7 @@ class PuntoDeVentaProductosController extends Controller
         $venta->id_recibio = $id_recibio;
         $venta->forma_pago = $request->forma_pago;
         $venta->id_alumno = $request->id_alumno;
+        $venta->nombre = $nombre;
         $venta->save();
 
         return response()->json([

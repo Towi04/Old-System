@@ -19,10 +19,16 @@
 @section('contenido')
 
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <div class="form-group">
                 {!! Form::label('id_alumno', 'Selecciona al alumno que va a comprar:*'); !!}
-                {!! Form::select('id_alumno',[], null, ['class' => 'form-control','required' => true,'style' => 'width:100%']) !!}
+                {!! Form::select('id_alumno',[], null, ['class' => 'form-control','style' => 'width:100%']) !!}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('nombre', 'ó ingresa el nombre de la persona:*'); !!}
+                {!! Form::text('nombre', null, ['id'=>'nombre_persona','class' => 'form-control','style' => 'width:100%']) !!}
             </div>
         </div>
         <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-12">
@@ -132,6 +138,7 @@
                 tb_partidas: $("#tb-partidas"),
                 form_abonos: $("#form-recibir-abono"),
                 select_productos: $("#select_productos"),
+                nombre_persona: $('#nombre_persona'),
 
                 tikets:{
                     contenido_ticket:$("#contenido-ticket"),
@@ -278,6 +285,18 @@
                 }
             });
 
+            dom.select_alumno.on('select2:select', function (e) {
+                dom.nombre_persona.val('');
+            });
+
+            dom.nombre_persona.keyup(function (e) { 
+                e.preventDefault()
+                if($(this).val() !=''){
+                    dom.select_alumno.val(null).trigger('change');
+                }
+                
+            });
+
             // SELECCIONAR LOS PRODUCTOS
             dom.select_productos.select2({
                 language: "es",
@@ -359,15 +378,23 @@
 
                 const id_alumno = dom.select_alumno.val()
 
-                if(!id_alumno){
-                    toastr.error('Error', 'Debes seleccionar primero un alumno');
+                if(!id_alumno && dom.nombre_persona.val() == ''){
+                    setTimeout(function(){
+                                wait.modal('hide');
+                            }, 400);
+                    toastr.error('Error', 'Debes seleccionar primero un alumno o escribir el nombre de la persona');
+                    return false;
                 }
 
 
 
                 let formData = new FormData(this);
-                formData.append('id_alumno',id_alumno);
-
+                if(id_alumno != null){
+                    formData.append('id_alumno',id_alumno);
+                }
+                if(dom.nombre_persona.val() != ''){
+                    formData.append('nombre',dom.nombre_persona.val());
+                }
 
                 $.ajax({
                     url: $(this).attr('action'),

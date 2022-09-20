@@ -180,6 +180,7 @@
                                     <th>Folio</th>
                                     <th>Fecha Venta</th>
                                     <th>Alumno</th>
+                                    <th>Nombre</th>
                                     <th>Concepto</th>
                                     <th>Cantidad</th>
                                     <th>Precio</th>
@@ -253,7 +254,17 @@
                                                     data-name='id_alumno'
                                                 @endif
                                                 >
+                                                {{ optional($partida->venta->alumno)->nuevo_numero_control }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a>
+                                                @if($partida->venta->id_alumno)
                                                 {{ optional($partida->venta->alumno)->fullname }}
+                                                @else 
+                                                {{ $partida->venta->nombre }}
+                                                @endif
+                                                
                                             </a>
                                         </td>
                                         <td>
