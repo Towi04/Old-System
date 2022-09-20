@@ -186,13 +186,9 @@
             <div class="form-group">
                 {!! Form::label('forma_pago', 'Forma de pago:*'); !!}
                 <br>
-                @foreach (config('alumnos.forma_pago') as $key => $value)
-                    <label>
-                        <input type="radio" name="forma_pago" value="{{ $value }}" class="i-checks" data-grados {{ ($value == old('forma_pago',$alumno->forma_pago))?'checked':'' }}>
-                        {{ $value }}
-                    </label>
-                    &nbsp;
-                @endforeach
+                <div class="formas_pago">
+                    
+                </div>
             </div>
         </div>
 

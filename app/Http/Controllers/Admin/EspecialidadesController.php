@@ -69,6 +69,7 @@ class EspecialidadesController extends Controller
             'precio_mensualidad_pronto_pago'    => 'nullable',
             'precio_semanal'                    => 'nullable',
             'id_sucursal'                       => 'required',
+            'formas_pago'                       => 'required'
         ];
 
         $request->request->add([
@@ -77,13 +78,19 @@ class EspecialidadesController extends Controller
 
         $data = $request->validate($rules);
         $especialidad = Especialidad::create($data);
+        if($request->formas_pago){
+            $especialidad->formas_pago = json_encode($request->formas_pago);
+        }else{
+            $especialidad->formas_pago = '[]';
+        }
+        $especialidad->save();
 
         # 👉 AGREGAR CORDINADORES
         if($request->has('id_usuario')){
             $especialidad->cordinadores()->attach($request->input('id_usuario'));
         }
 
-        return redirect()->route('admin.especialidades.index')->with([
+        return redirect()->back()->with([
             'message' => 'Se agregó la especialidad con éxito',
         ]);
     }
@@ -115,6 +122,12 @@ class EspecialidadesController extends Controller
 
         $data = $this->validate($request, $rules);
         $especialidad->fill($data);
+        if($request->formas_pago){
+            $especialidad->formas_pago = json_encode($request->formas_pago);
+        }else{
+            $especialidad->formas_pago = '[]';
+        }
+        
         $especialidad->save();
 
         # 👉 ACTUALIZAR COORDINADORES

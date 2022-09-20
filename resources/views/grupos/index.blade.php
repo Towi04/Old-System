@@ -141,7 +141,7 @@
                 { data: 'horario', name: 'horario',class: 'text-nowrap'},
                 { data: 'days', name: 'days',class: 'text-nowrap'},
                 { data: 'infantil', name: 'infantil',class: 'text-nowrap'},
-                { data: 'no_alumnos', name: 'infantil',class: 'text-nowrap',orderable: false, searchable: false},
+                { data: 'no_alumnos', name: 'infantil',class: 'text-nowrap text-center',orderable: false, searchable: false},
                 { data: 'no_semanas', name: 'no_semanas',class: 'text-nowrap',orderable: false, searchable: false},
                 { data: 'fecha_inicio', name: 'fecha_inicio',class: 'text-nowrap'},
                 { data: 'status', name: 'status',class: 'text-nowrap'},

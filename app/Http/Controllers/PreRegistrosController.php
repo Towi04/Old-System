@@ -355,6 +355,16 @@ class PreRegistrosController extends Controller
             }
         }
 
+        if($request->cupo <= 0){
+            $usuario = User::find($request->id_usuario_autoriza);
+            
+            $password = $request->password;
+            if(!Hash::check($password,$usuario->password))
+            {
+                throw ValidationException::withMessages(['mensaje' => 'Credenciales de autorización incorrectas']);
+            }
+        }
+
         try {
             $alumno = Alumno::find($id);
             $request->request->add([
@@ -470,6 +480,7 @@ class PreRegistrosController extends Controller
                         'monto' => null,
                     ]);
 
+                    
                     $alumno_recomendo = Alumno::find($request->id_alumno_recomendo);
                     $documentos = $alumno_recomendo->documentos()->pendientes()->where('id_especialidad', '=', $request->id_especialidad)->orderBy('fecha_limite', 'asc')->get();
 

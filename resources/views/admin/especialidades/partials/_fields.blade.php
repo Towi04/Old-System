@@ -13,6 +13,23 @@
                 {!! Form::text('descripcion', null, ['class' => 'form-control']) !!}
             </div>
         </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('formas_pago', 'Formas pago disponibles:*'); !!}
+                <div class="form-check">
+                  <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" name="formas_pago[]" id="" value="mensual" @if(@especialidad) @if(in_array('mensual', json_decode($especialidad->formas_pago))) checked @endif @endif>
+                    Mensual
+                  </label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input" name="formas_pago[]" id="" value="semanal" @if(@especialidad) @if(in_array('semanal', json_decode($especialidad->formas_pago))) checked @endif @endif>
+                      Semanal
+                    </label>
+                  </div>
+            </div>
+        </div>
     </div>
 
     <div class="row">

@@ -66,14 +66,15 @@
                                 <div class="col-12">
                                     <div class="form-group">
                                         {!! Form::label('id_alumno_recomendo', 'Selecciona al alumno que recomendo:*'); !!}
-                                        {!! Form::select('id_alumno_recomendo',[], null, ['class' => 'form-control','required' => true,'style' => 'width:100%','data-alumno']) !!}
+                                        {!! Form::select('id_alumno_recomendo',[], null, ['class' => 'form-control','style' => 'width:100%','data-alumno']) !!}
                                     </div>
 
                                 </div>
                             </div>
-                            <div class="row" id="apoyo-autorizacion"  style="display: none;">
+                            <div class="msje_cupo text-danger"></div>
+                            <div class="row mt-2" id="apoyo-autorizacion"  style="display: none;">
                                 <div class="col-12">
-                                    {!! Form::label('id_usuario_autoriza','Selecciona el usuario que autoriza el apoyo:*') !!}
+                                    {!! Form::label('id_usuario_autoriza','Selecciona el usuario que autoriza:*') !!}
                                     {!! Form::select('id_usuario_autoriza',$usuarios_autorizados,null, ['class' => 'form-control form-control-sm','form-selector'=> '','data-usuario']) !!}
                                 </div>
                                 <div class="col-12" >
@@ -94,6 +95,7 @@
                 </div>
 
                 <div class="modal-footer">
+                    <input type="hidden" name="cupo" id="cupo" value="">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary">Inscribir</button>
                 </div>

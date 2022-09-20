@@ -78,7 +78,7 @@
                     },
                     success: function (response){
                         const grupos = response.results || [];
-
+                       
                         dom.grupo.empty().append('<option value="">Selecciona un grupo</option>');
 
                         $.each(grupos, function (index, option) {

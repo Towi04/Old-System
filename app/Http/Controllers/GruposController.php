@@ -57,7 +57,15 @@ class GruposController extends Controller
                 return $model->days->pluck('display_name')->implode('<br>');
             })
             ->addColumn('no_alumnos', function ($model) {
-                return $model->alumnos->count();
+                $line = '';
+                $line .= $model->alumnos->count();
+                if($model->max_alumnos){
+                    $line .= '/'.$model->max_alumnos;
+                }else{
+                    $line .= '/∞';
+                }
+                
+                return $line;
             })
             ->addColumn('no_semanas', function ($model) {
                 return $model->materias->sum('semanas');
@@ -138,6 +146,13 @@ class GruposController extends Controller
         $data = $request->validate($rules);
 
         $grupo = Grupo::create($data);
+
+        if(isset($request->max_alumnos)){
+            $grupo->max_alumnos = $request->max_alumnos;
+        }else{
+            $grupo->max_alumnos = null;
+        }
+        $grupo->save();
 
         # 👉 ASOCIAR LAS MATERIAS AL GRUPO ESPECIFICANDO UN ORDEN
         foreach ($materias as $materia) {
@@ -241,6 +256,13 @@ class GruposController extends Controller
             $grupo_dia->save();
         }
 
+        if(isset($request->max_alumnos)){
+            $grupo->max_alumnos = $request->max_alumnos;
+        }else{
+            $grupo->max_alumnos = null;
+        }
+        $grupo->save();
+
 
         return redirect()->route('grupos.index')->with([
             'message' => 'Se actualizó el grupo con éxito'
@@ -275,10 +297,12 @@ class GruposController extends Controller
             ->orderBy('fecha_inicio', 'asc')
             ->get();
 
+            $especialidad = Especialidad::find($request->id_especialidad);
 
         if ($request->ajax()) {
             return response()->json([
                 'results'       => $results,
+                'formas_pago' => json_decode($especialidad->formas_pago), 
             ]);
         }
 
@@ -514,10 +538,18 @@ class GruposController extends Controller
     {
         $grupo = Grupo::with('especialidad')->find($request->id_grupo);
         $alumno = Alumno::select(['id','nombres','apellido_paterno','apellido_materno'])->find($request->id_alumno);
+        $grupo_alu = Grupo::with(['alumnos'])->find($request->id_grupo);
 
+        if($grupo->max_alumnos){
+            $cupo = $grupo->max_alumnos - $grupo_alu->alumnos->count() ;
+        }else{
+            $cupo = 1;
+        }
+        
         return response()->json([
             'grupo' => $grupo,
-            'alumno' => $alumno
+            'alumno' => $alumno,
+            'cupo' => $cupo,
         ]);
     }
 

@@ -77,6 +77,19 @@
             </div>
         </div>
 
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('max_alumnos', 'Máximo de alumnos:*'); !!}
+                {!! Form::number('max_alumnos', null, ['class' => 'form-control', 'placeholder' => 'Escribe la fecha de inicio','required' => true,'step'=>'1' ]); !!}
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                        
+                        <input class="form-check-input" type="checkbox" name="checkbox_maximo" id="sin_limite_alumnos" value="" @if($grupo) @if(!$grupo->max_alumnos) checked @endif @endif > Sin limite
+                    </label>
+                </div>
+            </div>
+        </div>
+
 
         @if($grupo->exists)
             <legend class="mt-4"><span>Informacion de precios</span></legend>
@@ -146,6 +159,23 @@ document.addEventListener("DOMContentLoaded", function() {
                     $('.horas_'+dia).hide();
                 }
         });
+    }
+
+    checkar_maximo_alumnos();
+
+    $('#sin_limite_alumnos').change(function(){
+        checkar_maximo_alumnos();
+    })
+
+    function checkar_maximo_alumnos(){
+
+        if($('#sin_limite_alumnos').is(':checked')){
+            $('#max_alumnos').val(null);
+            $('#max_alumnos').attr('readonly',true);
+        }else{
+            $('#max_alumnos').attr('readonly',false);
+        }
+
     }
 });
 

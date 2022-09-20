@@ -67,6 +67,8 @@
             },
         }
 
+        dom.especialidad.select2();
+
         var CONFIG_DATEPICKER = {
             days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
             daysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
@@ -117,6 +119,21 @@
                 success: function (response){
                     const grupos = response.results || [];
 
+                    const formas_pago = response.formas_pago;
+
+                        $('.formas_pago').empty();
+                        console.log(formas_pago);
+                        $.each(formas_pago, function (index, forma_pago) { 
+                            line = '';
+                            line += `<label>`
+                            line += `    <input type="radio" name="forma_pago" value="${forma_pago}" class="i-checks" >`
+                            line += `    ${forma_pago}`
+                            line += `</label>`
+                            line += `&nbsp;`
+                                console.log(line);
+                             $('.formas_pago').append(line);
+                        });
+
                     dom.grupo.empty().append('<option value="">Selecciona un grupo</option>');
 
                     $.each(grupos, function (index, option) {
@@ -162,11 +179,26 @@
                         alumno = result.alumno;
                         saldo = alumno.saldo;
                         diferencia = inscripcion - saldo;
+                        cupo = result.cupo;
 
                         if(saldo > 0){
                             txt = "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". El alumno ya tiene un apartado por "+saldo+" por lo que solo tienes que solicitar la diferencia  de $ "+diferencia+" que quedará registrada como pagada en la ficha del alumno. Precio original de la inscripción: $ "+inscripcion;
                         }else{
                             txt = "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". Tienes que solicitar la inscripción de $ "+inscripcion+" que quedará registrada como pagada en la ficha del alumno."
+                        }
+
+                        if(cupo <= 0){
+                            $("#apoyo-autorizacion").show();
+                            $("#cupo").val(0);
+                            $('.msje_cupo').html(`El grupo ya esta lleno ( ${grupo.max_alumnos - cupo} de ${grupo.max_alumnos}). Para inscribir al alumno se requiere autorización.`);
+                            $("[data-usuario]").attr('required',true)
+                            $("[data-password]").attr('required',true)
+                        }else{
+                            $("#apoyo-autorizacion").hide();
+                            $("#cupo").val(cupo);
+                            $('.msje_cupo').html(``);
+                            $("[data-usuario]").attr('required',false)
+                            $("[data-password]").attr('required',false)
                         }
 
                         dom.modal_inscripcion.find('#inscripcion-detalle').text(txt);
@@ -210,6 +242,14 @@
                 formData.append('id_usuario_autoriza',$("#id_usuario_autoriza").val());
                 formData.append('password',$("#password").val());
                 formData.append('motivo',$("#motivo").val());
+            }
+
+            formData.append('cupo',$('#cupo').val());
+
+            if($('#cupo').val() <= 0){
+                formData.append('id_usuario_autoriza',$("#id_usuario_autoriza").val());
+                formData.append('password',$("#password").val());
+                
             }
 
             $.ajax({
@@ -269,11 +309,14 @@
 
         dom.ckb_apoyo_especial.change(function(e){
             $("#apoyo-especial").toggle(e.target.checked);
-            $("#apoyo-autorizacion").toggle(e.target.checked);
+            if(e.target.checked && $('#cupo').val() > 0){
+                $("#apoyo-autorizacion").toggle(e.target.checked);
+                $("[data-password]").attr('required',e.target.checked)
+                $("[data-usuario]").attr('required',e.target.checked)
+            }
             $("#apoyo-motivo").toggle(e.target.checked);
             $("[data-apoyo]").attr('required',e.target.checked)
-            $("[data-password]").attr('required',e.target.checked)
-            $("[data-usuario]").attr('required',e.target.checked)
+           
             $("[data-motivo]").attr('required',e.target.checked)
 
             if(!e.target.checked){
@@ -283,11 +326,15 @@
 
         dom.ckb_apoyo_recomendacion.change(function(e){
             $("#apoyo-recomendacion").toggle(e.target.checked);
-            $("#apoyo-autorizacion").toggle(e.target.checked);
+            
+            if(e.target.checked && $('#cupo').val() > 0){
+                $("#apoyo-autorizacion").toggle(e.target.checked);
+                $("[data-usuario]").attr('required',e.target.checked)
+                $("[data-password]").attr('required',e.target.checked)
+            }
 
             $("[data-alumno]").attr('required',e.target.checked)
-            $("[data-usuario]").attr('required',e.target.checked)
-            $("[data-password]").attr('required',e.target.checked)
+           
 
             if(!e.target.checked){
 
