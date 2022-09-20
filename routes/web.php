@@ -222,7 +222,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::post('grupos/{grupo}/guardar-materias', [ GruposController::class,'guardar_materias'])->name('grupos.guardar-materias');
     Route::get('grupos/{grupo}/asignar-alumnos', [ GruposController::class,'asignar_alumnos'])->name('grupos.asignar-alumnos');
     Route::post('grupos/{grupo}/guardar-alumnos', [ GruposController::class,'guardar_alumnos'])->name('grupos.guardar-alumnos');
-    Route::get('grupos/{grupo}/lista-asistencia', [ GruposController::class,'lista_asistencia'])->name('grupos.lista-asistencia');
+    Route::get('grupos/{grupo}/{materia}/lista-asistencia', [ GruposController::class,'lista_asistencia'])->name('grupos.lista-asistencia');
     Route::post('grupos/traer_info', [ GruposController::class,'traer_info'])->name('grupos.traer_info');
     Route::get('grupos/cronograma/{grupo}', [ GruposController::class,'cronograma'])->name('grupos.cronograma');
     Route::resource('grupos', GruposController::class)->parameters([

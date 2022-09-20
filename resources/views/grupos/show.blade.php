@@ -194,12 +194,14 @@
                         <table class="table table-striped table-bordered table-hover" id="tb-materias" width="100%">
                             <thead>
                                 <tr>
+                                    <th>Orden</th>
                                     <th>Materia</th>
                                     <th>Profesor</th>
                                     <th></th>
                                     <th></th>
                                     <th></th>
                                     <th>Horas</th>
+                                    <th>Lista</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -276,6 +278,34 @@
     </div>
 
 </div>
+
+<div class="onboarding-modal modal fade" id="modal-opciones-lista" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+
+                <h5 class="modal-title">¿Como quieres imprimir la lista?</h5>
+            </div>
+
+            {!! Form::open(['id' => 'form-opciones-lista']) !!}
+                <div class="modal-body">
+                    <div class="form-group">
+                        {!! Form::label('opciones', 'Selecciona la opcion', []) !!}
+                        {!! Form::select('opciones', ['si'=> 'Con Telefono','no' => 'Sin Telefono'], null, ['class' => 'form-control form-control-sm w-100' , 'title' => 'Opciones','required' => true ]) !!}
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Imprimir</button>
+                </div>
+            {!! Form::close() !!}
+        </div>
+    </div>
+</div>
+
 @endsection
 
 
@@ -287,6 +317,10 @@
             const dom = {
                 tb_alumnos: $("#tb-alumnos"),
                 tb_materias: $("#tb-materias"),
+                opciones_lista:{
+                    modal: $("#modal-opciones-lista"),
+                    form: $("#form-opciones-lista"),
+                }
             }
 
             var dt_alumnos = dom.tb_alumnos.DataTable({
@@ -357,12 +391,15 @@
                     },
                 },
                 columns: [
+                    {data: 'orden', name: 'orden'},
                     {data: 'nombre_materia', name: 'materia.nombre'},
                     {data: 'nombre_profesor',name:'nombre_profesor'},
                     {data: 'profesor.nombres', name: 'profesor.nombres',visible:false},
                     {data: 'profesor.apellido_paterno', name: 'profesor.apellido_paterno',visible:false},
                     {data: 'profesor.apellido_materno', name: 'profesor.apellido_materno',visible:false},
                     {data: 'horas_semana',name:'horas_semana'},
+                    {data: 'buttons_lista',name:'buttons_lista'},
+
                 ],
                 order: [[ 0, "desc" ]],
                 language: {
@@ -384,6 +421,30 @@
 
                 drawCallback: function (settings) {
                     $("[data-toggle='tooltip']").tooltip();
+
+                    dom.tb_materias.on('click',"a[data-action='opciones-lista']",function(event){
+                        event.preventDefault();
+                        dom.opciones_lista.modal.data('url',$(this).attr('href'));
+                        dom.opciones_lista.modal.modal('show');
+                    })
+
+                    dom.opciones_lista.form.submit(function(event){
+                        event.preventDefault();
+
+                        const data = {
+                            url: dom.opciones_lista.modal.data('url'),
+                            mostrar_telefono: dom.opciones_lista.form[0].opciones.value,
+                            generar_url: function(){
+                                return this.url+"?mostrar-telefono=" + this.mostrar_telefono
+                            }
+                        }
+
+                        dom.opciones_lista.modal.modal('hide');
+                        dom.opciones_lista.form[0].reset();
+
+                        window.open(data.generar_url(), "_blank");
+                    })
+                    
                 },
             });
 

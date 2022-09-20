@@ -30,7 +30,13 @@ class GrupoMateria extends Pivot
             'nombres'           => '',
             'apellido_paterno'  => '',
             'apellido_materno'  => '',
-        ]);
+        ])->select(['id','nombres',
+        'foto',
+        'telefono',
+        'celular',
+        'apellido_paterno',
+        'apellido_materno',
+        'email',]);
     }
 
     public function grupo()

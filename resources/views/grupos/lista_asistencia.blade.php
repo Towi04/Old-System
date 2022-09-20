@@ -169,8 +169,24 @@
                     <td class="text-right"> <span class="font-weight-bold">Especialidad:</span> {{ $grupo->especialidad->nombre }}</td>
                 </tr>
                 <tr class="text-dark">
-                    <td> <span class="font-weight-bold">Grupo:</span> </td>
-                    <td class="text-right"> <span class="font-weight-bold">Profesor:</span><span>________________________</span> </td>
+                    <td> <span class="font-weight-bold">Grupo:</span> {{ $grupo->clave }} </td>
+                    <td class="text-right"> <span class="font-weight-bold">Profesor:</span>
+                        @if(isset($profesor->id))
+                            <span>{{$profesor->fullname}}</span>
+                        @else 
+                            <span>________________________</span>
+                        @endif
+                    </td>
+                </tr>
+                <tr class="text-dark">
+                    <td> <span class="font-weight-bold">Materia:</span>
+                        @if(isset($materia->nombre))
+                         {{ $materia->nombre }} 
+                        @else 
+                        <span>________________________</span>
+                        @endif
+                        </td>
+                    <td class="text-right"> <span class="font-weight-bold"></td>
                 </tr>
             </table>
 
@@ -179,13 +195,13 @@
                     <tr>
                         <th colspan="4" class="text-right text-dark">Fase</th>
                         @foreach ($semanas as $semana)
-                            <th colspan="{{ count($dias_semana) }}"></th>
+                            <th colspan="{{ count($dias) }}"></th>
                         @endforeach
                     </tr>
                     <tr>
                         <th colspan="4" class="text-right text-dark">Semana</th>
                         @foreach ($semanas as $semana)
-                            <th class="text-center text-dark" colspan="{{ count($dias_semana) }}" >{{ $semana }}</th>
+                            <th class="text-center text-dark" colspan="{{ count($dias) }}" >{{ $semana }}</th>
                         @endforeach
                     </tr>
                     <tr class="bg-primary text-white">
@@ -196,8 +212,8 @@
                             <th>Tel</th>
                         @endif
                         @foreach ($semanas as $semana)
-                            @foreach ($dias_semana as $dia)
-                                <th>{{ $dia }}</th>
+                            @foreach ($dias as $dia)
+                                <th>{{ $array_dias[$dia] }}</th>
                             @endforeach
                         @endforeach
                     </tr>
@@ -212,12 +228,29 @@
                                 <td class="text-nowrap">{{ $alumno->telefono }}</td>
                             @endif
                             @foreach ($semanas as $semana)
-                                @foreach ($dias_semana as $item)
+                                @foreach ($dias as $item)
                                     <td></td>
                                 @endforeach
                             @endforeach
                         </tr>
                     @endforeach
+                    @for ($i = $grupo->alumnos->count()+1; $i < $grupo->alumnos->count()+6; $i++)
+                    <tr>
+                        <td>{{ $i }}</td>
+                        <td class="text-nowrap"></td>
+                        <td class="text-nowrap"></td>
+                        @if($mostrar_telefono)
+                            <td class="text-nowrap"></td>
+                        @endif
+                        @foreach ($semanas as $semana)
+                            @foreach ($dias as $item)
+                                <td></td>
+                            @endforeach
+                        @endforeach
+                    </tr>
+                    @endfor
+                    
+                    
                 </tbody>
             </table>
 

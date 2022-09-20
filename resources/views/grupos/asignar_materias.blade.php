@@ -71,6 +71,10 @@
                     <tr>
                         <td class="bg-primary text-white"><b>Accion</b></td>
                         <td>
+                            <a href="{{route('grupos.show', $grupo->id)}}"  class="btn btn-info btn-sm text-white" type="button">
+                                <i class="fa fa-search fa-xs" aria-hidden="true"></i> Panel
+                            </a>
+
                             <button id="btn-asignar-materia" class="btn btn-success btn-sm" type="button">
                                 <i class="fa fa-plus-circle fa-xs" aria-hidden="true"></i> Asignar materia
                             </button>
@@ -81,16 +85,6 @@
                                     data-placement="top"
                                     title="Cronograma">
                                     <i class="fas fa-clock"></i> Cronograma
-                                </a>
-
-                                <a  href="{{ route("grupos.lista-asistencia",$grupo->id) }}"
-                                    class="btn btn-dark btn-sm text-white "
-                                    target="_blank"
-                                    rel="noopener"
-                                    data-toggle="tooltip"
-                                    data-placement="top"
-                                    title="Lista">
-                                    <i class="fas fa-file-pdf"></i> Lista Asistencia
                                 </a>
                             @endcan
                         </td>

@@ -372,7 +372,7 @@ class GruposController extends Controller
 
     public function datatables_materias(Request $request)
     {
-        $query = GrupoMateria::query()
+        $query = GrupoMateria::select('grupos_materias.*')
             ->when($request->input('id_grupo'), function ($q, $grupo) {
                 $q->where('id_grupo', $grupo);
             })->with(['materia', 'profesor']);
@@ -429,7 +429,8 @@ class GruposController extends Controller
                     data-placeholder='Horas por semana'> {$model->materia->semanas} </a>";
             })
             ->addColumn('buttons', 'grupos.datatables._buttons_materias')
-            ->rawColumns(['orden','nombre_materia', 'nombre_profesor', 'semanas', 'buttons'])
+            ->addColumn('buttons_lista', 'grupos.datatables._buttons_materias_lista')
+            ->rawColumns(['orden','nombre_materia', 'nombre_profesor', 'semanas', 'buttons','buttons_lista'])
             ->make(true);
     }
 
@@ -594,9 +595,21 @@ class GruposController extends Controller
     }
 
 
-    public function lista_asistencia(Grupo $grupo,Request $request)
-    {
-        $grupo->load(['alumnos', 'especialidad']);
+    public function lista_asistencia($id_grupo, $id_materia,Request $request)
+    {   
+        
+        $grupo = Grupo::find($id_grupo);
+        $grupo->load(['alumnos', 'especialidad','materias']);
+        
+        if($id_materia != 'no'){
+            $materia = $grupo->materias->where('id',$id_materia)->first();
+            $profesor = $materia->pivot->load('profesor')->profesor;
+        }else{
+            $materia = collect();
+            $profesor = collect();
+        }
+        
+
         $sucursal = optional(session('sucursal'));
 
         # GENERACION DE SEMANAS
@@ -605,6 +618,28 @@ class GruposController extends Controller
         foreach (range(0, 11) as $semana) {
             $semanas[] = $now->copy()->addWeek($semana)->week;
         }
+
+        $dias = $grupo->days->unique('dia')->pluck('dia');
+
+        $array_dias = [
+            'lunes' => 'L',
+            'martes' => 'M',
+            'miercoles' => 'Mi',
+            'jueves' => 'J',
+            'viernes' => 'V',
+            'sabado' => 'S',
+            'domingo' => 'D',
+        ];
+
+        $array_carbon = [
+            'lunes' => 'MONDAY',
+            'martes' => 'TUESDAY',
+            'miercoles' => 'WEDNESDAY',
+            'jueves' => 'THURSDAY',
+            'viernes' => 'FRIDAY',
+            'sabado' => 'SATURDAY',
+            'domingo' => 'SUNDAY',
+        ];
 
         $dias_semana = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 
@@ -620,7 +655,13 @@ class GruposController extends Controller
             'sucursal'          => $sucursal,
             'semanas'           => $semanas,
             'dias_semana'       => $dias_semana,
-            'mostrar_telefono'  => $mostrar_telefono
+            'mostrar_telefono'  => $mostrar_telefono,
+            'dias' => $dias,
+            'array_carbon' => $array_carbon,
+            'array_dias' => $array_dias,
+            'profesor' => $profesor,
+            'materia' => $materia,
+
         ]);
 
         return $pdf->stream('lista_asistencia.pdf');

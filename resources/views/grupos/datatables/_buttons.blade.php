@@ -57,7 +57,7 @@
             title="Cronograma">
         </a>
 
-        <a  href="{{ route("grupos.lista-asistencia",$id) }}"
+        <a  href="{{ route("grupos.lista-asistencia",[$id, 'no']) }}"
             class="btn btn-dark btn-sm text-white fas fa-file-pdf"
             target="_blank"
             rel="noopener"
