@@ -482,6 +482,11 @@ return [
             'display_name'  => 'Ver reporte de recomendados',
             'description'   => 'Permite ver el reporte de recomendados',
         ],
+        [
+            'name'          => 'ver_reporte_programados',
+            'display_name'  => 'Ver reporte de alumnos programados',
+            'description'   => 'Permite ver el reporte de alumnos programados a iniciar',
+        ],
         
     ],
 

@@ -80,7 +80,7 @@ class InscripcionRecomendacion extends Model
     }
 
     /**
-     * Get the usuario_autorizo t
+     * Get the usuario_autorizo
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

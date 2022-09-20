@@ -16,6 +16,7 @@ use App\Models\Venta;
 use App\Models\Asistencia;
 use App\Models\Inscripcion;
 use App\Models\InscripcionRecomendacion;
+use App\Models\AlumnoEspecialidad;
 use Yajra\DataTables\Facades\DataTables;
 use PDF;
 
@@ -962,6 +963,105 @@ class ReportesController extends Controller
       
         return view('reportes.recomendados', compact(
             'recomendados',
+            'fecha',
+            'fecha_antes',
+            'fecha_despues',
+            'tipo',
+        ));
+
+    }
+
+    public function programados(Request $request){
+
+        Carbon::setWeekStartsAt(Carbon::SUNDAY);
+        Carbon::setWeekEndsAt(Carbon::SATURDAY);
+
+        $tipo = $request->input('tipo') ?? 'semanal';
+        $id_asesor = $request->input('id_asesor') ?? null;
+
+        $sucursal = optional(session('sucursal'));
+
+        $mostrar_solo_fiscales = optional(Configuracion::where('nombre', '=', 'mostrar_solo_fiscales')->first())->valor == 'Si';
+
+        if (isset($request->fecha)) {
+            $fecha = Carbon::createFromFormat('d-m-Y', $request->input('fecha'));
+        } else {
+            $fecha = Carbon::today();
+        }
+
+        if ($tipo == 'dia') {
+            $tipo = 'dia';
+
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDay();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDay();
+
+            $recomendados = AlumnoEspecialidad::with(['alumno.inscripciones'])
+                ->whereHas('alumno',function($q)use($sucursal){
+                    return $q->where('id_sucursal', '=', $sucursal->id);
+                })
+                ->whereBetween('fecha_inicio', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
+                ->orderBy('fecha_inicio', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'mes') {
+
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subMonth();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addMonth();
+
+            $recomendados = AlumnoEspecialidad::with(['alumno.inscripciones'])
+            ->whereHas('alumno',function($q)use($sucursal){
+                    return $q->where('id_sucursal', '=', $sucursal->id);
+                })
+                ->whereBetween('fecha_inicio', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
+                ->orderBy('fecha_inicio', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'semanal') {
+
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDays(7);
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDays(7);
+
+            $recomendados = AlumnoEspecialidad::with(['alumno.inscripciones'])
+            ->whereHas('alumno',function($q)use($sucursal){
+                return $q->where('id_sucursal', '=', $sucursal->id);
+            })
+                ->whereBetween('fecha_inicio', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
+                ->orderBy('fecha_inicio', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        if ($tipo == 'anual') {
+            $fecha =  new Date($fecha);
+            $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subYear();
+            $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addYear();
+
+            $recomendados = AlumnoEspecialidad::with(['alumno.inscripciones'])
+            ->whereHas('alumno',function($q)use($sucursal){
+                return $q->where('id_sucursal', '=', $sucursal->id);
+            })
+                ->whereBetween('fecha_inicio', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
+                ->orderBy('fecha_inicio', 'desc');
+
+            $fecha_antes = new Date($fecha_antes);
+            $fecha_despues = new Date($fecha_despues);
+        }
+
+        $programados = $recomendados->get();
+
+      
+        return view('reportes.programados', compact(
+            'programados',
             'fecha',
             'fecha_antes',
             'fecha_despues',

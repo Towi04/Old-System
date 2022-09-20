@@ -247,6 +247,11 @@
                         <a href="{{ route('reportes.recomendados') }}">Reporte de Recomendados</a>
                     </li>
                     @endcan
+                    @can('ver_reporte_programados')
+                    <li>
+                        <a href="{{ route('reportes.programados') }}">Reporte de Programados</a>
+                    </li>
+                    @endcan
                     @can('ver_reporte_pagos_eliminados')
                     <li>
                         <a href="{{ route('reportes.pagos_eliminados') }}">Reporte de Pagos Eliminados</a>
