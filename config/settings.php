@@ -477,7 +477,11 @@ return [
             'display_name'  => 'Actualizar asesor del alumno',
             'description'   => 'Actualizar asesor del alumno',
         ],
-        
+        [
+            'name'          => 'ver_reporte_recomendados',
+            'display_name'  => 'Ver reporte de recomendados',
+            'description'   => 'Permite ver el reporte de recomendados',
+        ],
         
     ],
 

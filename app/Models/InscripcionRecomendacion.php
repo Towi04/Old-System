@@ -21,13 +21,18 @@ class InscripcionRecomendacion extends Model
         'id_sucursal',
     ];
 
+    protected $dates = [
+        'fecha',
+    ];
+
+
     /**
      * Get the alumno_recomendado that owns the InscripcionRecomendacion
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
 
-    public function alumno_recomendado(): BelongsTo
+    public function alumno_recomendado()
     {
         return $this->belongsTo(Alumno::class, 'id_alumno_recomendado', 'id');
     }
@@ -38,7 +43,7 @@ class InscripcionRecomendacion extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function alumno_recomendo(): BelongsTo
+    public function alumno_recomendo()
     {
         return $this->belongsTo(Alumno::class, 'id_alumno_recomendo', 'id');
     }
@@ -49,7 +54,7 @@ class InscripcionRecomendacion extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function especialidad(): BelongsTo
+    public function especialidad()
     {
         return $this->belongsTo(Especialidad::class, 'id_especialidad', 'id');
     }
@@ -59,7 +64,7 @@ class InscripcionRecomendacion extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function documento_aplicado(): BelongsTo
+    public function documento_aplicado()
     {
         return $this->belongsTo(Especialidad::class, 'id_documento_aplicado', 'id');
     }
@@ -71,7 +76,7 @@ class InscripcionRecomendacion extends Model
      */
     public function usuario_autorizo()
     {
-        return $this->belongsTo(User::class, 'id_usuario_autorizo', 'id');
+        return $this->belongsTo(User::class, 'id_autorizo', 'id');
     }
 
     /**

@@ -127,14 +127,26 @@
                     Especialidades
                 </div>
                 <div class="sub-menu-i">
-                    <ul class="sub-menu">
                         @php
                             $especialidades = \App\Models\Especialidad::get();
+                            $i=0;
                         @endphp
                         @foreach($especialidades as $especialidad)
-                            <li>
-                                <a href="{{ route('materias.index', $especialidad->id) }}">{{$especialidad->nombre}}</a>
-                            </li>
+                            @if($i==0)
+                            <ul class="sub-menu">
+                            @endif
+                                <li>
+                                    <a href="{{ route('materias.index', $especialidad->id) }}">{{$especialidad->nombre}}</a>
+                                </li>
+                            @if($i==7)
+                            </ul>
+                            @php
+                                $i=-1;
+                            @endphp
+                            @endif
+                                @php
+                                    $i=$i+1;
+                                @endphp
                         @endforeach
 
                     </ul>
@@ -206,8 +218,6 @@
                         <a href="{{ route('reportes.reporte-ventas.proyeccion') }}">Reporte de Proyección</a>
                     </li>
                     @endcan
-                </ul>
-                <ul class="sub-menu">
                     @can('ver_reporte_asesores')
                     <li>
                         <a href="{{ route('reportes.reporte-ventas.asesores') }}">Reporte de Asesores</a>
@@ -218,6 +228,10 @@
                         <a href="{{ route('reportes.asistencias_personal') }}">Reporte de Asistencias Personal</a>
                     </li>
                     @endcan
+                </ul>
+                <ul class="sub-menu">
+                    
+                    
                     @can('ver_reporte_desercion')
                     <li>
                         <a href="{{ route('reportes.desercion') }}">Reporte de Retención</a>
@@ -226,6 +240,11 @@
                     @can('ver_reporte_apoyos_inscripcion')
                     <li>
                         <a href="{{ route('reportes.apoyos_inscripcion') }}">Reporte de Apoyos a la inscripción</a>
+                    </li>
+                    @endcan
+                    @can('ver_reporte_recomendados')
+                    <li>
+                        <a href="{{ route('reportes.recomendados') }}">Reporte de Recomendados</a>
                     </li>
                     @endcan
                     @can('ver_reporte_pagos_eliminados')
