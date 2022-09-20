@@ -13,8 +13,8 @@
                 @if($alumno->status == 'Alumno')
                     <div class="col-12">
                         <div class="form-group">
-                            {!! Form::label('numero_control', 'Numero Control:', []) !!}
-                            {!! Form::number('numero_control', null, ['class' => 'form-control', 'placeholder' => 'Escribe el numero de control','required'=> true,'autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']); !!}
+                            {!! Form::label('numero_control', 'Numero Control (Sistema anterior):', []) !!}
+                            {!! Form::number('numero_control', null, ['class' => 'form-control', 'placeholder' => 'Escribe el numero de control','autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']); !!}
                             <div class="help-block form-text text-muted form-control-feedback">Referencia del n° control del alumno</div>
                         </div>
                     </div>
@@ -59,7 +59,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
-                    {!! Form::textarea('como_supiste_nosotros', null, ['class' => 'form-control','rows'=> 3,'placeholder' => 'Escribe las observaciones','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();',]) !!}
+                    {!! Form::select('como_supiste_nosotros', config('alumnos.como_conocio'),null, ['class' => 'form-control','placeholder' => 'Selecciona una opción','style' => "text-transform:uppercase",]) !!}
                 </div>
             </div>
         </div>

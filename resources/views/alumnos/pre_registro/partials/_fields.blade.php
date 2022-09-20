@@ -46,7 +46,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">
-                {!! Form::textarea('como_supiste_nosotros', null, ['class' => 'form-control','rows'=> 3,'placeholder' => 'Escribe como te enteraste de nosotros','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();','readonly' =>  ($alumno->exists)? ((empty($alumno->como_supiste_nosotros))?false:true) : false]) !!}
+                {!! Form::select('como_supiste_nosotros', config('alumnos.como_conocio'),null, ['class' => 'form-control','placeholder' => 'Selecciona una opción','style' => "text-transform:uppercase",]) !!}
             </div>
         </div>
     </div>

@@ -289,9 +289,9 @@ class AlumnosController extends Controller
             'solicitud_factura'   => $request->has('solicitud_factura'),
         ]);
 
-
+        // dd($request);
         $data = $this->validate($request, $rules);
-        $alumno->fill($data);
+        $alumno->fill($request->all());
         
         Log::alert('Usuario '.Auth::user()->fullname.' actualizo usuario '.$alumno->numero_control_fullname);
 
@@ -323,6 +323,7 @@ class AlumnosController extends Controller
         }
 
         $alumno->save();
+        // dd($alumno);
 
         return redirect()->route('alumnos.index')->with([
             'message' => 'Se actualizó el alumno con éxito'
