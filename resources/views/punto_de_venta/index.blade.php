@@ -279,7 +279,8 @@
 
             $.fn.datepicker.dates['es'] = CONFIG_DATEPICKER  //👉 DATEPICKE
 
-          
+            const dom = {
+                select_alumno: $("#id_alumno"),
                 select_preregistro: $("#id_preregistro"),
                 tb_pagos: $("#tb-pagos"),
                 form_abonos: $("#form-recibir-abono"),
