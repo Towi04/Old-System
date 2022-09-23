@@ -164,6 +164,7 @@ class PagoInscripcionDocumentosService
         $apartado = $this->alumno->saldo;
         
         $monto_apoyo_inscripcion = ($this->alumno->apoyos_inscripcion->where('id_especialidad','=',$especialidad->id)->first())? $this->alumno->apoyos_inscripcion->where('id_especialidad','=',$especialidad->id)->first()->apoyo : 0 ;
+        
         $precio_inscripcion = ($especialidad->getInscripcionFecha($especialidad->pivot->fecha_inicio))?$especialidad->getInscripcionFecha($especialidad->pivot->fecha_inicio):$especialidad->precio_inscripcion;
 
         

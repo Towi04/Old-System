@@ -41,11 +41,12 @@
         <div class="col-4">
             <div class="element-box">
                 {!! Form::open(['route' => 'admin.especialidades.guardar_precio', 'method' => 'POST', 'accept-charset' => 'UTF-8', 'enctype' => 'multipart/form-data','onsubmit' => "wait.modal('show')"]) !!}
+                
                 <h5 class="form-header">
                     Registro de precios
                 </h5>
 
-                @include('grupos.partials._fields_precios')
+                @include('admin.especialidades.partials._fields_precios')
 
                 <div class="form-buttons-w text-right">
                     <button class="btn btn-success" type="submit"><i class="fa fa-plus"></i> Guardar cambios</button>
@@ -62,7 +63,8 @@
                 @php
                     $precios = $especialidad->precios;
                 @endphp
-                @include('grupos.partials._historico_precios')
+
+                @include('admin.especialidades.partials._historico_precios')
 
             </div>
         </div>
@@ -72,6 +74,10 @@
 
 
 @section('scripts')
+
+<link rel="stylesheet" href="{{ asset('plugins/xeditable/css/bootstrap-editable.css') }}">
+<script src="{{ asset('plugins/xeditable/js/bootstrap-editable.min.js') }}"></script>
+
     <script src="{{ asset('template-clean-admin/bower_components/select2/dist/js/i18n/es.js') }}"></script>
     <script type="text/javascript">
         $(function(){
@@ -133,6 +139,24 @@
 
                 dom.select2_cordinador.trigger('change')
             @endif
+
+            $('.datepicker').datepicker({
+                language: 'es',
+                format: 'dd-mm-yyyy',
+                ignoreReadonly: false,
+                todayHighlight: true,
+                todayBtn: true,
+                minDate: new Date(),
+            });
+
+            options = {
+                'emptytext':'Vacio',
+                'onblur':'ignore',
+                'showbuttons':false,
+            }
+
+            $('.editable_fecha').editable(options)
+
         })
     </script>
 @endsection

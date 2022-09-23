@@ -82,6 +82,16 @@ class PagoColegiaturaDocumentosService
         $dia = $today->day;
         #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
         #SI NO SE SIGUEN GENERANDO PAGOS MENSUALE
+        $pivot = $especialidad->pivot;
+        $precios = $especialidad->getPrecioColegiaturaMensualFecha($fecha_inicio);
+       
+        $pivot->monto = $precios['precio_normal'];
+        // dd($pivot);
+        $pivot->monto_pronto_pago = $precios['precio_pronto_pago'];
+        $pivot->save();
+        // dd($pivot);
+
+
         while(!$today->copy()->addMonth()->isSameMonth($fecha_inicio) && $fecha_inicio->lte($today->copy()->addMonth())){
 
             
@@ -95,6 +105,10 @@ class PagoColegiaturaDocumentosService
             ->exists();
 
             if(!$existe_documento){
+               
+
+                
+
                 $result =  $this->calcular_precio_mensual($grupo_inscripcion, $alumno, $especialidad );
                 
                 $documento = $this->crear_documento([
@@ -281,7 +295,8 @@ class PagoColegiaturaDocumentosService
                     $monto =  $apoyos->first()->precio ?? 0;
                 }else{
                     if($especialidad->pivot){
-                        $monto =  $especialidad->pivot->monto ?? 0;
+                        $monto = $especialidad->getPrecioColegiaturaSemanalFecha($fecha_inicio);
+                        // $monto =  $especialidad->pivot->monto ?? 0;
                     }else{
                         $monto =  $grupo_inscripcion->precio_semanal ?? 0;
                     }
