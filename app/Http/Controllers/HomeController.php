@@ -216,14 +216,16 @@ class HomeController extends Controller
             return $q->where('id_alumno',$id);
         })->where('id_especialidad','=',$id_especialidad)->delete();
 
-        $alumno = Alumno::with(['grupos','especialidades'])->find($id);
+        $alumno = Alumno::with(['grupos','especialidades.precios'])->find($id);
         $sucursal = optional(session('sucursal'));
 
         try {
            
             // $grupo = $alumno->grupos->whereIn('pivot.status',['Inscrito','Pausa'])->where('id_especialidad',$especialidad->id)->first();
             $especialidad = $alumno->especialidades->where('id',$id_especialidad)->first();
-            // dd($especialidad);
+            
+
+
             // dd($especialidad->pivot);
             if ($especialidad) {
 
@@ -252,10 +254,11 @@ class HomeController extends Controller
             }
         } catch (\Throwable $th) {
 
-            // dd($th);
+            // dd($th->getTrace());
+
             return response()->json([
                 'success'   => false,
-                'message'   => 'Ocurrio el siguiente error:' .$th->getMessage().' en la línea '.$th->getLine(),
+                'message'   => 'Ocurrio el siguiente error:' .$th->getMessage().' en la línea '.$th->getLine().' en el archivo: ',
                 // 'redirect'  => route('alumnos.show',$alumno),
                 // 'pago'      => $request->has('id_grupo') ? Pago::first()->where('id_alumno',$alumno->id)->latest()->first() : ''
             ]);
@@ -392,12 +395,12 @@ class HomeController extends Controller
                                
                                 $fecha_limite_pronto = Carbon::createFromFormat('Y-m-d',$documento->anio.'-'.$documento->mes.'-07');
                                 
-
-                                if($pago->fecha->gte($fecha_limite_pronto) && $documento->especial == 0 && $documento->saldo == $documento->monto){
-                                    
-
-                                    $documento->monto = $alumno_especialidad->monto;
-                                    $documento->saldo = $alumno_especialidad->monto;
+                                // SE CONVIERTE PRONTO PAGO EN PAGO SIN PRONTO PAGO
+                                if($pago->fecha->gte($fecha_limite_pronto) && $documento->especial == 0 && ($documento->saldo - $monto_pago <= 0 )){
+                                    $dif = $alumno_especialidad->monto - $alumno_especialidad -> monto_pronto_pago;
+                                    $documento->monto = $documento->monto + $dif;
+                                    $documento->saldo = $documento->saldo + $dif;
+                                    $documento->especial = 1;
                                     $documento->save();
 
                                 }
@@ -603,7 +606,7 @@ class HomeController extends Controller
         # CREAR DOCUMENTO DE PAGO
         $documento = Documento::create(array_merge($data, $fields));
        
-
+        
         $documento->abonos()->create([
             'id_sucursal'       => $alumno->id_sucursal,
             'id_pago'       => $pago->id,

@@ -98,6 +98,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
         Route::get('especialidades/cronograma/{id}', [ EspecialidadesController::class,'cronograma'])->name('especialidades.cronograma');
         Route::post('especialidades/datatables', [ EspecialidadesController::class,'datatables'])->name('especialidades.datatables');
         Route::post('especialidades/guardar_precio', [ EspecialidadesController::class,'guardar_precio'])->name('especialidades.guardar_precio');
+        Route::post('especialidades/actualizar_informacion_precio', [ EspecialidadesController::class,'actualizar_informacion_precio'])->name('especialidades.actualizar_informacion_precio');
         Route::resource('especialidades', EspecialidadesController::class)->parameters([
             'especialidades' => 'especialidad'
         ]);
