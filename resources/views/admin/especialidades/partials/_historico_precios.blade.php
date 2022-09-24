@@ -59,8 +59,16 @@
                 @foreach ($precios->where('tipo','=','Precio Semanal')->sortByDesc('fecha_inicio') as $precio)
                     <tr>
                         <td>$ {{ number_format($precio->precio_normal,2,'.',',')}}</td>
-                        <td>{{optional($precio->fecha_inicio)->format('d-m-Y H:i:s')}}</td>
-                        <td>{{optional($precio->fecha_final)->format('d-m-Y H:i:s')}}</td>
+                        <td>
+                            <a class='editable_fecha' data-pk='{{ $precio->id}}' data-name='fecha_inicio' data-url='{{route("admin.especialidades.actualizar_informacion_precio")}}' data-type='date' data-value='{{ $especialidad->fecha_inicio}}'>
+                                {{optional($precio->fecha_inicio)->format('d-m-Y')}}
+                            </a>
+                        </td>
+                        <td>
+                            <a class='editable_fecha' data-pk='{{ $precio->id}}' data-name='fecha_final' data-url='{{route("admin.especialidades.actualizar_informacion_precio")}}' data-type='date' data-value='{{ $especialidad->fecha_final}}'>
+                                {{optional($precio->fecha_final)->format('d-m-Y')}}
+                            </a>
+                        </td>
                         <td>{{optional($precio->usuario)->fullname}}</td>
                     </tr>
                 @endforeach
@@ -83,8 +91,16 @@
                     <tr>
                         <td>$ {{ number_format($precio->precio_pronto_pago,2,'.',',')}}</td>
                         <td>$ {{ number_format($precio->precio_normal,2,'.',',')}}</td>
-                        <td>{{optional($precio->fecha_inicio)->format('d-m-Y H:i:s')}}</td>
-                        <td>{{optional($precio->fecha_final)->format('d-m-Y H:i:s')}}</td>
+                        <td>
+                            <a class='editable_fecha' data-pk='{{ $precio->id}}' data-name='fecha_inicio' data-url='{{route("admin.especialidades.actualizar_informacion_precio")}}' data-type='date' data-value='{{ $especialidad->fecha_inicio}}'>
+                                {{optional($precio->fecha_inicio)->format('d-m-Y')}}
+                            </a>
+                        </td>
+                        <td>
+                            <a class='editable_fecha' data-pk='{{ $precio->id}}' data-name='fecha_final' data-url='{{route("admin.especialidades.actualizar_informacion_precio")}}' data-type='date' data-value='{{ $especialidad->fecha_final}}'>
+                                {{optional($precio->fecha_final)->format('d-m-Y')}}
+                            </a>
+                        </td>
                         <td>{{optional($precio->usuario)->fullname}}</td>
                     </tr>
                 @endforeach

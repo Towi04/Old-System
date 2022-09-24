@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function() {
             $('.input_precio_pronto_pago').val('');
             $('.input_precio_pronto_pago').attr('required',false);
             $('.input_precio_semanal').val('');
-            $('.input_precio_pronto_pago').attr('required',true);
+            $('.input_precio_semanal').attr('required',true);
             $('.input_precio_inscripcion').val('');
             $('.input_precio_inscripcion').attr('required',false);
         }
