@@ -797,7 +797,7 @@ class ReportesController extends Controller
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDay();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDay();
 
-            $inscritos = Inscripcion::with(['alumno','grupo','asesor'])
+            $inscritos = Inscripcion::has('alumno')->with(['alumno','grupo','asesor'])
                 ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('fecha', [$fecha->startOfDay()->format('Y-m-d H:i:s'), $fecha->endOfDay()->format('Y-m-d H:i:s')])
                 ->orderBy('fecha', 'desc');
@@ -812,7 +812,7 @@ class ReportesController extends Controller
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subMonth();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addMonth();
 
-            $inscritos = Inscripcion::with(['alumno','grupo','asesor'])
+            $inscritos = Inscripcion::has('alumno')->with(['alumno','grupo','asesor'])
                 ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('fecha', [$fecha->startOfMonth()->format('Y-m-d H:i:s'), $fecha->endOfMonth()->format('Y-m-d H:i:s')])
                 ->orderBy('fecha', 'desc');
@@ -827,7 +827,7 @@ class ReportesController extends Controller
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subDays(7);
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addDays(7);
 
-            $inscritos = Inscripcion::with(['alumno','grupo','asesor'])
+            $inscritos = Inscripcion::has('alumno')->with(['alumno','grupo','asesor'])
                 ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('fecha', [$fecha->startOfWeek()->format('Y-m-d H:i:s'), $fecha->endOfWeek()->format('Y-m-d H:i:s')])
                 ->orderBy('fecha', 'desc');
@@ -841,7 +841,7 @@ class ReportesController extends Controller
             $fecha_antes = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->subYear();
             $fecha_despues = Carbon::createFromFormat('Y-m-d', $fecha->format('Y-m-d'))->addYear();
 
-            $inscritos = Inscripcion::with(['alumno','grupo','asesor'])
+            $inscritos = Inscripcion::has('alumno')->with(['alumno','grupo','asesor'])
                 ->where('id_sucursal', '=', $sucursal->id)
                 ->whereBetween('fecha', [$fecha->startOfYear()->format('Y-m-d H:i:s'), $fecha->endOfYear()->format('Y-m-d H:i:s')])
                 ->orderBy('fecha', 'desc');
