@@ -80,16 +80,21 @@ class PagoColegiaturaDocumentosService
 
         #VALIDAMOS SI SE VAN A GENERAR PRONTO PAGO O NORMAL
         $dia = $today->day;
+
         #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
         #SI NO SE SIGUEN GENERANDO PAGOS MENSUALE
+
+        // SI TRAE PIVOT SE ACTUALIZA EL MONTO PACATADO (SOLO ENTRA CUANDO ES CON EL BOTON AZUL)
         $pivot = $especialidad->pivot;
-        $precios = $especialidad->getPrecioColegiaturaMensualFecha($fecha_inicio);
-       
-        $pivot->monto = $precios['precio_normal'];
-        // dd($pivot);
-        $pivot->monto_pronto_pago = $precios['precio_pronto_pago'];
-        $pivot->save();
-        // dd($pivot);
+        if($pivot){
+            $precios = $especialidad->getPrecioColegiaturaMensualFecha($fecha_inicio);
+            $pivot->monto = $precios['precio_normal'];
+            // dd($pivot);
+            $pivot->monto_pronto_pago = $precios['precio_pronto_pago'];
+            $pivot->save();
+            // dd($pivot);
+        }
+        
 
 
         while(!$today->copy()->addMonth()->isSameMonth($fecha_inicio) && $fecha_inicio->lte($today->copy()->addMonth())){
