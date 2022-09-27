@@ -89,7 +89,7 @@
                                     <i class="fas fa-clock"></i> Cronograma
                                 </a>
 
-                                <a  href="{{ route("grupos.lista-asistencia",$grupo->id) }}"
+                                <a  href="{{ route("grupos.lista-asistencia",[$grupo->id,0]) }}"
                                     class="btn btn-dark btn-sm text-white "
                                     target="_blank"
                                     rel="noopener"

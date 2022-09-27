@@ -288,7 +288,7 @@ class PagoColegiaturaDocumentosService
             while(!$today->copy()->addWeek()->isSameWeek($fecha_inicio) && $fecha_inicio->lte($today->copy()->addWeek())){
     
                 #BUSCA UN APOYO SI EXISTE EN ESA SEMANA 
-                $apoyos = $alumno ->apoyos_especiales->where('id_especialidad', $especialidad->id)->filter(function($apoyo)use($fecha_inicio){
+                $apoyos = $alumno->load('apoyos_especiales')->apoyos_especiales->where('id_especialidad', $especialidad->id)->filter(function($apoyo)use($fecha_inicio){
                     if($apoyo->fecha_inicio && $apoyo->fecha_final){
                         return $apoyo->fecha_inicio->lte($fecha_inicio) && $apoyo->fecha_final->gte($fecha_inicio);
                     }else{

@@ -14,7 +14,9 @@ use App\Models\Precio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use App\Services\PagoInscripcionService;
+use App\Services\PagoInscripcionDocumentosService;
+use App\Services\PagoColegiaturaDocumentosService;
+
 use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 use Symfony\Component\HttpFoundation\Response as HTTPMessages;
@@ -445,7 +447,7 @@ class GruposController extends Controller
         return view('grupos.asignar_alumnos', compact('grupo'));
     }
 
-    public function guardar_alumnos(Grupo $grupo, Request $request, PagoInscripcionService $pis)
+    public function guardar_alumnos(Grupo $grupo, Request $request, PagoInscripcionDocumentosService $pids,PagoColegiaturaDocumentosService $pcds)
     {
         $rules = [
             'id_alumno' =>  'required',
@@ -455,19 +457,52 @@ class GruposController extends Controller
 
         $grupo->alumnos()->attach($request->input('id_alumno'));
 
-        $alumno = Alumno::findOrFail($request->input('id_alumno'));
+        $alumno = Alumno::with(['especialidades','apoyos_especiales'])->findOrFail($request->input('id_alumno'));
 
         $alumno->load(['grupos']);
 
-        $pis->setAlumno($alumno);
+        $pids->setAlumno($alumno);
+        $pcds->setAlumno($alumno);
 
-        switch ($alumno->forma_pago) {
+        $forma_pago = 'semanal';
+        $especialidad = $grupo->especialidad;
+
+        if($alumno->especialidades->where('id_especialidad',$grupo->id_especialidad)->count() == 0){
+            // throw ValidationException::withMessages(['mensaje' => $monto_pactado]);
+                // SE GENERA EL REGISTRO DE ESTE ALUMNO EN LA ESPECIALIDAD SELECCIONADA. ESTE SERA SU REGISTRO DE ESPECIALIDAD
+                // CENTRAL A PARTIR DE AQUI
+                // SE GUARDA EL MONTO PACTADO EN EL CORE DEL ALUMNO DONDE SE VA A RESPETAR ESTA CANTIDAD 
+                
+                $monto_pactado = $grupo->precio_semanal;
+                $monto_pronto_pago_pactado = 0;
+
+                $alumno_especialidad = $alumno->especialidades()->attach($especialidad->id, [
+                    'fecha_inicio' => date('Y-m-d'),
+                    'forma_pago' => 'semanal',
+                    'semanas_cursar' => $especialidad->materias->sum('semanas'),
+                    'monto' => $monto_pactado,
+                    'monto_pronto_pago' => $monto_pronto_pago_pactado,
+                    'semanas_cursadas' => 0,
+                    'semanas_pagadas' => 0,
+                    'status' => 'Activo',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+        }
+
+        $alumno = Alumno::with(['especialidades','apoyos_especiales'])->findOrFail($request->input('id_alumno'));
+        $especialidad = $alumno->load('especialidades')->especialidades->where('id',$grupo->id_especialidad)->first();
+
+
+
+        switch ($forma_pago) {
             case config('alumnos.forma_pago.mensual', 'mensual'):
-                $pis->mensualPorGrupo($grupo);
+                
                 break;
 
             case config('alumnos.forma_pago.semanal', 'semanal'):
-                $pis->semanalPorGrupo($grupo);
+                $pids->inscripcion($grupo, $grupo->precio_inscripcion);
+                $pcds->semanal($especialidad, $grupo);
                 break;
         }
 
