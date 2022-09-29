@@ -113,7 +113,7 @@ class Especialidad extends Model
         if($precio){
             return $precio->precio_normal;
         }else{
-            return $this->precio_inscripcion;
+            return $this->precio_semanal;
         }
 
     }

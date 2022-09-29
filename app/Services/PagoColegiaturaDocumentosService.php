@@ -53,6 +53,11 @@ class PagoColegiaturaDocumentosService
         if($especialidad->pivot){
             if(optional($especialidad->pivot)->fecha_inicio){
                 $fecha_inicio = optional($especialidad->pivot)->fecha_inicio;
+                $montos = $especialidad->getPrecioColegiaturaMensualFecha($fecha_inicio);
+                $especialidad->pivot->update([
+                    'monto'=> $montos['precio_normal'],
+                    'monto_pronto_pago' => $montos['precio_pronto_pago'],
+                ]);
             }else{
                 // SI NO TIENE FECHA DE INICIO DE ESPECIALIDAD, SE TOMA LA DEL PRIMER GRUPO DE LA MISMA
                 $primer_grupo = $alumno->grupos->where('id_especialidad',$especialidad->id)->first();
@@ -254,6 +259,12 @@ class PagoColegiaturaDocumentosService
             if($especialidad->pivot){
                 if(optional($especialidad->pivot)->fecha_inicio){
                     $fecha_inicio = optional($especialidad->pivot)->fecha_inicio;
+                    $monto = $especialidad->getPrecioColegiaturaSemanalFecha($fecha_inicio);
+                    $especialidad->pivot->update([
+                        'monto'=> $monto,
+                        'monto_pronto_pago' => 0,
+                    ]);
+
                 }else{
                     // SI NO TIENE FECHA DE INICIO DE ESPECIALIDAD, SE TOMA LA DEL PRIMER GRUPO DE LA MISMA
                     $primer_grupo = $alumno->grupos->where('id_especialidad',$especialidad->id)->first();
@@ -300,7 +311,7 @@ class PagoColegiaturaDocumentosService
                     $monto =  $apoyos->first()->precio ?? 0;
                 }else{
                     if($especialidad->pivot){
-                        $monto = $especialidad->getPrecioColegiaturaSemanalFecha($fecha_inicio);
+                        $monto = $especialidad->pivot->monto;
                         // $monto =  $especialidad->pivot->monto ?? 0;
                     }else{
                         $monto =  $grupo_inscripcion->precio_semanal ?? 0;
