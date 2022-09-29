@@ -51,7 +51,7 @@ class GenerarPagoMensual extends Command
     {
         # NOTE: LAZYCOLLECTION https://laravel.com/docs/8.x/collections#lazy-collection-methods
 
-        Alumno::query()->alumno()->mensual()->whereHas('especialidades', function($q){
+        Alumno::query()->alumno()->whereHas('especialidades', function($q){
             return $q->where('status','=','Activo')->where('alumnos_especialidades.forma_pago','=','mensual');
         })->with('alumno')
             ->cursor()
