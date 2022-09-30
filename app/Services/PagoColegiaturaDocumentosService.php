@@ -236,8 +236,9 @@ class PagoColegiaturaDocumentosService
                     
                     $semanas = round($dias_pendientes / $days->count());
                     
-                    $precio = ($total_dias == 0) ? 0 : $dias_pendientes * $grupo->precio_mensualidad / $total_dias;
-                    $precio = $semanas * $grupo->precio_semanal;
+                    // $precio = ($total_dias == 0) ? 0 : $dias_pendientes * $grupo->precio_mensualidad / $total_dias;
+
+                    $precio = $semanas * $especialidad->getPrecioColegiaturaSemanalFecha($fecha_inicio);
                     
                     return [
                         'monto'=>$precio ?? 0,
