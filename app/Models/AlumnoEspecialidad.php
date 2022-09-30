@@ -20,6 +20,8 @@ class AlumnoEspecialidad extends Pivot
         'semanas_cursadas',
         'semanas_pagadas',
         'status',
+        'created_at',
+        'updated_at',
     ];
 
     protected $table = 'alumnos_especialidades';

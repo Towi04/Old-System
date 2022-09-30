@@ -103,7 +103,7 @@ class Especialidad extends Model
                 return true;
             }
             
-            if($precio->fecha_inicio->lte($fecha) && $precio->fecha_final->gt($fecha)){
+            if($precio->fecha_inicio->lte($fecha) && $precio->fecha_final->endOfDay()->gt($fecha)){
                 return true;
             }
         })->first();

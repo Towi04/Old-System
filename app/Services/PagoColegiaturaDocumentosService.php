@@ -52,8 +52,26 @@ class PagoColegiaturaDocumentosService
 
         if($especialidad->pivot){
             if(optional($especialidad->pivot)->fecha_inicio){
+                
+                // SE OBTIENE LA FECHA EN QUE SE INSCRIBIO PARA OBTENER EL MONTO DE LACOLEGIATURA 
+                $fecha_inicio_pago = optional($especialidad->pivot)->created_at;
+                   
+                // SI NO HAY FECHA DE INICIO EN LA ESPECIALIDAD SE BUSCA EN SU DOCUMENTO DE INSCRIPCION
+                if(!$fecha_inicio_pago){
+                    $primer_pago = $alumno->load('pagos_caja')->pagos_caja->where('id_especialidad',$especialidad->id)->first();
+                    # SI NO HAY UN PAGO PREVIO, ENTONCES AGREGO EL SIGUIENTE MES DE ACUERDO A LA FECHA DE INICIO DEL
+                    if ($primer_pago) {
+                        $fecha_inicio_pago = $primer_pago->fecha;
+                        // dd($fecha_inicio);
+                    } else {
+                        # SE OBTIENE EL ULTIMO REGISTRO Y SE AGREGA LA SIGUIENTE SEMANA CON RESPECTO AL ULTIMO RECIB
+                        $fecha_inicio_pago = $especialidad->pivot->fecha_inicio;
+                    }
+                }
+
+                $montos = $especialidad->getPrecioColegiaturaMensualFecha($fecha_inicio_pago);
+
                 $fecha_inicio = optional($especialidad->pivot)->fecha_inicio;
-                $montos = $especialidad->getPrecioColegiaturaMensualFecha($fecha_inicio);
                 $especialidad->pivot->update([
                     'monto'=> $montos['precio_normal'],
                     'monto_pronto_pago' => $montos['precio_pronto_pago'],
@@ -258,8 +276,26 @@ class PagoColegiaturaDocumentosService
         
             if($especialidad->pivot){
                 if(optional($especialidad->pivot)->fecha_inicio){
+
+                    // SE OBTIENE LA FECHA EN QUE SE INSCRIBIO PARA OBTENER EL MONTO DE LACOLEGIATURA 
+                    $fecha_inicio_pago = optional($especialidad->pivot)->created_at;
+                   
+                    // SI NO HAY FECHA DE INICIO EN LA ESPECIALIDAD SE BUSCA EN SU DOCUMENTO DE INSCRIPCION
+                    if(!$fecha_inicio_pago){
+                        $primer_pago = $alumno->load('pagos_caja')->pagos_caja->where('id_especialidad',$especialidad->id)->first();
+                        # SI NO HAY UN PAGO PREVIO, ENTONCES AGREGO EL SIGUIENTE MES DE ACUERDO A LA FECHA DE INICIO DEL
+                        if ($primer_pago) {
+                            $fecha_inicio_pago = $primer_pago->fecha;
+                            // dd($fecha_inicio);
+                        } else {
+                            # SE OBTIENE EL ULTIMO REGISTRO Y SE AGREGA LA SIGUIENTE SEMANA CON RESPECTO AL ULTIMO RECIB
+                            $fecha_inicio_pago = $especialidad->pivot->fecha_inicio;
+                        }
+                    }
+                    $monto = $especialidad->getPrecioColegiaturaSemanalFecha($fecha_inicio_pago);
+                    // dd($monto);
+
                     $fecha_inicio = optional($especialidad->pivot)->fecha_inicio;
-                    $monto = $especialidad->getPrecioColegiaturaSemanalFecha($fecha_inicio);
                     $especialidad->pivot->update([
                         'monto'=> $monto,
                         'monto_pronto_pago' => 0,
