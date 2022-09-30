@@ -98,21 +98,7 @@ class PagoInscripcionDocumentosService
         $monto_apoyo_inscripcion = ($this->alumno->apoyos_inscripcion->where('id_grupo','=',$grupo->id)->first())? $this->alumno->apoyos_inscripcion->where('id_grupo','=',$grupo->id)->first()->apoyo : 0 ;
         $precio_inscripcion = optional($this->request)->has('precio_inscripcion')  ? $this->request->input('precio_inscripcion'):$precio_inscripcion;
 
-         // SE VA A OBTENER LA FECHA DE INSCRIPCION DEL ALUMNO. 
-         $fecha_inicio = optional($especialidad->pivot)->created_at;     
-         // SI NO HAY FECHA DE INICIO EN LA ESPECIALIDAD SE BUSCA EN SU DOCUMENTO DE INSCRIPCION
-         if(!$fecha_inicio){
-             $primer_pago = $alumno->load('pagos_caja')->pagos_caja->where('id_especialidad',$especialidad->id)->first();
-             # SI NO HAY UN PAGO PREVIO, ENTONCES AGREGO EL SIGUIENTE MES DE ACUERDO A LA FECHA DE INICIO DEL
-             if ($primer_pago) {
-                 $fecha_inicio = $primer_pago->fecha;
-                 // dd($fecha_inicio);
-             } else {
-                 # SE OBTIENE EL ULTIMO REGISTRO Y SE AGREGA LA SIGUIENTE SEMANA CON RESPECTO AL ULTIMO RECIB
-                 $fecha_inicio = $especialidad->pivot->fecha_inicio;
-             }
-         }
-
+        
 
         if($this->request){
             $precio_inscripcion = $precio_inscripcion;
