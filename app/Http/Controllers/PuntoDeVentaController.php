@@ -363,7 +363,8 @@ class PuntoDeVentaController extends Controller
 
             # SI NO HAY UN PAGO PREVIO, ENTONCES AGREGO EL SIGUIENTE MES
             if (empty($ultimo_pago)) {
-                $fecha = new Date(now());
+                #SE VALIDA SI ES SU PRIMER PAGO PARA OBTENER LA FECHA DE INICIO DEL GRUPO
+                $fecha = new Date($especialidad->pivot->fecha_inicio);
             } else {
                 # SE OBTIENE EL ULTIMO REGISTRO Y SE AGREGA LA SIGUIENTE SEMANA CON RESPECTO AL ULTIMO RECIB
                 $fecha = new Date(now()->week($ultimo_pago->semana)->setYear($ultimo_pago->anio)->addWeek());
@@ -422,10 +423,10 @@ class PuntoDeVentaController extends Controller
 
             # SI NO HAY PAGOS REGISTRADOS, ENTONCES AGREGO EL MES ACTUAL
             if (empty($ultimo_pago)) {
-                 $fecha = new Date(now());
+                $fecha = new Date($especialidad->pivot->fecha_inicio);
             } else {
                 # SE OBTIENE EL ULTIMO REGISTRO Y SE AGREGA EL SIGUIENTE MES CON RESPECTO AL ULTIMO RECIBO
-                $fecha =  new Date(now()->setMonth($ultimo_pago->mes)->setYear($ultimo_pago->anio)->addMonth());
+                $fecha =  new Date(now()->setMonth($ultimo_pago->mes)->setYear($ultimo_pago->anio)->addMonth()->startOfMonth());
             }
 
             # VERIFICAR SI SE PAGA COMPLETAMENTE
@@ -443,7 +444,12 @@ class PuntoDeVentaController extends Controller
                 $mensualidad_pronto_pago = $apoyo_especial->precio;
                 $especial = 1;
             }else{
-                $mensualidad_pronto_pago = $especialidad->pivot->monto_pronto_pago ?? 0;
+                $grupo = $alumno->grupos()->whereHas('especialidad', function($q)use($especialidad){
+                    return $q->where('id_especialidad','=',$especialidad->id);
+                })->where('alumnos_grupos.status','Inscrito')->first();
+
+                $mensualidad_pronto_pago = $this->calcular_precio_mensual($grupo, $alumno, $especialidad, $fecha)['monto'];
+                // dd($mensualidad_pronto_pago);
             }
 
             $saldo = ($monto > $mensualidad_pronto_pago) ? 0:  $mensualidad_pronto_pago - $monto;
@@ -490,4 +496,97 @@ class PuntoDeVentaController extends Controller
         return $monto;
 
     }
+
+    private function calcular_precio_mensual($grupo, $alumno, $especialidad, $fecha_inicio)
+    {
+        $apoyo_especial = $alumno ->apoyos_especiales->where('id_especialidad', $especialidad->id)->filter(function($apoyo)use($fecha_inicio){
+            if($apoyo->fecha_inicio){
+                return $apoyo->fecha_inicio->lte($fecha_inicio) && $apoyo->fecha_final->gte($fecha_inicio);
+            }else{
+                return false;
+            }
+            
+        })->first();
+
+        if (empty($apoyo_especial)) {
+
+            $dia = $fecha_inicio->day;
+
+            # SI EL DIA ACTUAL ES ENTRE 1-6, ENTONCES SE ASIGNA EL PRECIO DE PRONTO PAGO
+            if (in_array($dia, range(1, 6))) {
+                
+                return [
+                    'monto'=> (!$especialidad->pivot)?$especialidad->precio_mensualidad_pronto_pago:$especialidad->pivot->monto_pronto_pago,
+                    'especial'=>0,
+                ];
+            }else{
+                #SE CALCULA DE ACUERDO A LAS CLASES RESTANTES QUE TENGA EN EL MES
+                #SE DEBEN CALCULAR DE ACUERDO A LAS SEMANAS RESTANTES DONDE CUMPLA CON TODAS SUS CLASES
+                #PAGA EL NUMERO DE SEMANAS COMPLETAS POR PAGO SEMANAL. 
+                    
+                    if(!$grupo){
+                        // SE OBTIENE EL PRIMER GRUPO DE ESE ALUMNO EN ESA ESPECIALIDAD
+                        $grupo = $alumno->grupos->where('id_especialidad','=',$especialidad->id)->first();
+                    }
+                    $precio_mensualidad = $grupo->precio_mensualidad;
+                    // $precio_semana = $grupo->precio_semana;
+            
+                    $dia_actual = $fecha_inicio;
+                    $mes_actual = $dia_actual->month;
+                    
+                    
+
+                    $lista_numero_dias = [
+                        'lunes'     => 1,
+                        'martes'    => 2,
+                        'miercoles' => 3,
+                        'jueves'    => 4,
+                        'viernes'   => 5,
+                        'sabado'    => 6,
+                        'domingo'   => 7,
+                    ];
+            
+                    $total_dias = 0;
+                    $dias_pendientes = 0;
+            
+                    $days = $grupo->days;
+                    $total_days = $days->count() * 4;
+                    
+                    foreach ($days as $grupodia) {
+                        $numero_dia =  $lista_numero_dias[$grupodia->dia] ?? 0;
+
+                        
+                        $total_dias += countDaysInMonth($mes_actual,$numero_dia);
+                        $dias_pendientes += countDaysInMonth($dia_actual,$numero_dia);
+
+                    }
+                    
+                    $semanas = round($dias_pendientes / $days->count());
+                    
+                    // $precio = ($total_dias == 0) ? 0 : $dias_pendientes * $grupo->precio_mensualidad / $total_dias;
+
+                    $precio = $semanas * $especialidad->getPrecioColegiaturaSemanalFecha($fecha_inicio);
+                    
+                    return [
+                        'monto'=>$precio ?? 0,
+                        'especial'=>1,
+                    ];
+
+            }
+            # SE AGREGA EL PRECIO NORMAL DE LA MENSUALIDAD
+
+            return [
+                'monto'=> $grupo->precio_mensualidad ?? 0,
+                'especial'=>0,
+            ];
+        }
+
+
+
+        return [
+            'monto'=>$apoyo_especial->precio ?? 0,
+            'especial'=>1,
+        ];
+    }
+
 }
