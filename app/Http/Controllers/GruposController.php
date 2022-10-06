@@ -165,11 +165,21 @@ class GruposController extends Controller
             ]);
         }
 
+        $dias_number = [
+            'lunes'     => '2',
+            'martes'    => '3',
+            'miercoles' => '4',
+            'jueves'    => '5',
+            'viernes'   => '6',
+            'sabado'    => '7',
+            'domingo'   => '1',
+        ];
         // CREACION DE HORAS Y DIAS
         foreach ($request->dia as $dia) {
             $grupo_dia = new GrupoDia();
             $grupo_dia->id_grupo = $grupo->id;
             $grupo_dia->dia = $dia;
+            $grupo_dia->dayofweek = $dias_number[$dia];
             $grupo_dia->hora_inicio = $request['inicio_' . $dia];
             $grupo_dia->hora_final = $request['fin_' . $dia];
             $grupo_dia->save();
@@ -194,6 +204,7 @@ class GruposController extends Controller
             'domingo'   => 'Domingo',
         ];
 
+        
         return view('grupos.edit', [
             'grupo'             => $grupo,
             'especialidades'    => Especialidad::query()->pluck('nombre', 'id')->sort()->prepend('Selecciona una especialidad', ''),
@@ -249,10 +260,22 @@ class GruposController extends Controller
         // CREACION DE HORAS Y DIAS
         $grupo->days()->delete();
 
+        $dias_number = [
+            'lunes'     => '2',
+            'martes'    => '3',
+            'miercoles' => '4',
+            'jueves'    => '5',
+            'viernes'   => '6',
+            'sabado'    => '7',
+            'domingo'   => '1',
+        ];
+
+
         foreach ($request->dia as $dia) {
             $grupo_dia = new GrupoDia();
             $grupo_dia->id_grupo = $grupo->id;
             $grupo_dia->dia = $dia;
+            $grupo_dia->dayofweek = $dias_number[$dia];
             $grupo_dia->hora_inicio = $request['inicio_' . $dia];
             $grupo_dia->hora_final = $request['fin_' . $dia];
             $grupo_dia->save();
@@ -309,6 +332,8 @@ class GruposController extends Controller
         }
 
         return redirect()->back();
+
+        
     }
 
     # NOTE: ASIGNACION DE MATERIAS
