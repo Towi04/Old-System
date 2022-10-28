@@ -206,7 +206,7 @@
                     </tr>
                     <tr class="bg-primary text-white">
                         <th>N°</th>
-                        <th>Nombre</th>
+                        <th>Nombre </th>
                         <th class="text-nowrap">N° Ctrl</th>
                         @if($mostrar_telefono)
                             <th>Tel</th>
@@ -219,10 +219,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($grupo->alumnos as $alumno)
+                    @foreach ($grupo->alumnos->where('pivot.status','Inscrito') as $alumno)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td class="text-nowrap">{{ $alumno->fullname }}</td>
+                            <td class="text-nowrap">{{ $alumno->fullname }} </td>
                             <td class="text-nowrap">{{ $alumno->nuevo_numero_control }}</td>
                             @if($mostrar_telefono)
                                 <td class="text-nowrap">{{ $alumno->telefono }}</td>

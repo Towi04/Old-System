@@ -578,7 +578,7 @@ class GruposController extends Controller
         $query = AlumnoGrupo::query()->select('alumnos_grupos.*')
             ->when($request->input('id_grupo'), function ($q, $grupo) {
                 $q->where('id_grupo', $grupo);
-            })->with(['alumno']);
+            })->where('alumnos_grupos.status','=','Inscrito')->with(['alumno']);
 
         return DataTables::eloquent($query)
             ->addColumn('nombre_alumno', function ($model) {
@@ -588,6 +588,9 @@ class GruposController extends Controller
                 <a target='_blank'  href='{$route}' >
                     {$model->alumno->full_name} 
                 </a>";
+            })
+            ->editColumn('fecha_inicio', function($model){
+                return $model->fecha_inicio->format('d-m-Y');
             })
             ->addColumn('buttons', 'grupos.datatables._buttons_alumnos')
             ->rawColumns(['nombre_alumno', 'buttons'])

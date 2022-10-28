@@ -344,7 +344,7 @@
                 columns: [
                     {data: 'alumno.nuevo_numero_control', name: 'alumno.nuevo_numero_control'},
                     {data: 'nombre_alumno', name: 'nombre_alumno', className:'text-nowrap'},
-                    {data: 'fecha_inicio', name: 'fecha_inicio'},
+                    {data: 'fecha_inicio', name: 'fecha_inicio',className:'text-nowrap'},
                     {data: 'alumno.nombres', name: 'alumno.nombres',visible:false},
                     {data: 'alumno.apellido_paterno', name: 'alumno.apellido_paterno',visible:false},
                     {data: 'alumno.apellido_materno', name: 'alumno.apellido_materno',visible:false},
