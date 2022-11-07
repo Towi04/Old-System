@@ -219,7 +219,7 @@
                                                         </td>
 
                                                         <td>
-                                                             {{ $apoyo->grupo->nombre }} 
+                                                             {{ optional($apoyo->grupo)->nombre }} 
                                                         </td>
                                                         <td class="text-nowrap">
                                                             $ {{ number_format($apoyo->apoyo,2,'.',',') }}
