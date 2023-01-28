@@ -5,6 +5,10 @@ namespace App\Console\Commands;
 use App\Models\Alumno;
 use App\Services\PagoColegiaturaDocumentosService;
 use Illuminate\Console\Command;
+use App\Models\User;
+use App\Notifications\ErrorProcesoAutomatico;
+use App\Notifications\ConfirmacionProcesoAutomatico;
+
 
 class GenerarPagoSemanal extends Command
 {
@@ -50,21 +54,42 @@ class GenerarPagoSemanal extends Command
     {
         # NOTE: LAZYCOLLECTION https://laravel.com/docs/8.x/collections#lazy-collection-methods
 
-        Alumno::query()->alumno()->semanal()->whereHas('especialidades', function($q){
-            return $q->where('status','=','Activo')->where('alumnos_especialidades.forma_pago','=','semanal');
-        })->with('alumno')
-            ->cursor()
-            ->each(function($alumno){
 
-                foreach($alumno->especialidades as $especialidad){
-                    $this->pcds->setAlumno($alumno);
-                    $this->pcds->semanal($especialidad);
-                }
-                
+        try{
+
+       
+            Alumno::query()->alumno()->semanal()->whereHas('especialidades', function($q){
+                return $q->where('status','=','Activo')->where('alumnos_especialidades.forma_pago','=','semanal');
+            })->with('alumno')
+                ->cursor()
+                ->each(function($alumno){
+                    
+                    foreach($alumno->especialidades as $especialidad){
+                        $this->pcds->setAlumno($alumno);
+                        $this->pcds->semanal($especialidad);
+                    }
+                    
             });
+            $this->line('Pago Semanal generado correctamente');
+            $users = User::where('email','=','aldo@adndigital.mx')->get();
+
+            foreach($users as $user){
+                $user->notify(new ConfirmacionProcesoAutomatico('Creación de pagos semanales'));
+            }
+
+        }catch(\Throwable $th){
 
 
-        $this->line('Pago Semanal generado correctamente');
+            $users = User::where('email','=','aldo@adndigital.mx')->get();
+
+            foreach($users as $user){
+                $user->notify(new ErrorProcesoAutomatico('Cargo semanal de documentos', $th));
+            }
+            $this->line('Ocurrio un error. Se envío email con la info.');
+        }
+
+
+        
 
         return 0;
     }

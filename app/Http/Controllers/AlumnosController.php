@@ -589,6 +589,8 @@ class AlumnosController extends Controller
                 })->when($request->input('id_especialidad'), function ($q, $id_especialidad) {
                     $q->where('id_especialidad', $id_especialidad);
                 })->sum('saldo');
+
+                
         } else {
             $query = Documento::where('id_alumno', 'xxxxxxxxx');
             $total_pendiente = 0;

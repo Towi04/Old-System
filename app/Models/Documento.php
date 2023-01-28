@@ -40,6 +40,9 @@ class Documento extends Model
         'anio',
         'modalidad',
         'especial',
+        'pronto_pago',
+        'normal_pago',
+        'fecha_limite_pronto_pago'
     ];
 
     protected $attributes = [

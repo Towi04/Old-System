@@ -119,7 +119,7 @@ class HomeController extends Controller
 
     public function generar_documentos(PagoInscripcionDocumentosService $pids){
         
-
+        
         #borramos todos los documentos
         Documento::query()->delete();
 
@@ -211,6 +211,8 @@ class HomeController extends Controller
             $id_especialidad = $request->id_especialidad;
         }
 
+        
+
 
         Documento::with('alumno')->whereHas('alumno', function($q)use($id){
             return $q->where('id_alumno',$id);
@@ -224,20 +226,25 @@ class HomeController extends Controller
             // $grupo = $alumno->grupos->whereIn('pivot.status',['Inscrito','Pausa'])->where('id_especialidad',$especialidad->id)->first();
             $especialidad = $alumno->especialidades->where('id',$id_especialidad)->first();
             
+            
 
+            
 
-            // dd($especialidad->pivot);
             if ($especialidad) {
 
                 $pids->setAlumno($alumno);
                 $pcds->setAlumno($alumno);
 
+                
                 switch ($especialidad->pivot->forma_pago) {
                     case config('alumnos.forma_pago.mensual','mensual'):
+                        
                         $pids->inscripcion_especial_boton($especialidad);
                         
                         // GENERA DOCUMENTOS MENSUALES
                         $pcds->mensual($especialidad);
+
+                        
 
                         $monto_pactado = $especialidad->monto;
                         $monto_pronto_pago_pactado = $especialidad->monto_pronto_pago;
@@ -384,12 +391,13 @@ class HomeController extends Controller
                         # GENERO EL ABONO
                         #SE VA A VALIDAR SI FUE COLEGIATURA POR PRONTO PAGO
                         
-                        $alumno_especialidad = AlumnoEspecialidad::where('id_alumno','=',$alumno->id)->where('id_especialidad','=',$documento->id_especialidad)->first();
-                       
+                        $alumno_especialidad = AlumnoEspecialidad::with('especialidad')->where('id_alumno','=',$alumno->id)->where('id_especialidad','=',$documento->id_especialidad)->first();
+                        
 
                         if($documento->tipo == 'Colegiatura'){
+                            
                             if($alumno_especialidad->forma_pago == 'mensual'){
-
+                                
                                 // validar fecha limite de pronto pago
                                 echo '<br>Documento:'.$documento->id. ' Año: '.$documento->anio.' Mes:'.$documento->mes;
                                
@@ -1071,10 +1079,9 @@ class HomeController extends Controller
 
     }
 
-    public function aplicacion_masiva_documentos(Request $request){
-
+    public function aplicacion_masiva_documentos(Request $request)
+    {
         
-
         foreach (Alumno::with(['especialidades','pagos_caja','grupos'])
         ->when($request->id_alumno, function($q, $id_alumno){
             return $q->where('id','>=',$id_alumno);
@@ -1097,7 +1104,7 @@ class HomeController extends Controller
             }
             
 
-        }
+    }
 
 
     

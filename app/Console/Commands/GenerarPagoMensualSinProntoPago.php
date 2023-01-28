@@ -4,10 +4,16 @@ namespace App\Console\Commands;
 
 use App\Models\Alumno;
 use App\Models\Grupo;
+use App\Models\Documento;
+use App\Models\User;
+use App\Notifications\ConfirmacionProcesoAutomatico;
+use App\Notifications\ErrorProcesoAutomatico;
 use App\Services\PagoColegiaturaService;
 use App\Services\PagoInscripcionService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+
 
 class GenerarPagoMensualSinProntoPago extends Command
 {
@@ -42,39 +48,27 @@ class GenerarPagoMensualSinProntoPago extends Command
      */
     public function handle()
     {
-        $dia_actual = today();
+        $dia_actual = date('Y-m-d');
 
-        Alumno::query()->select(['id','numero_control'])->alumno()->mensual()
-        ->whereHas('especialidades', function($q){
-            return $q->where('status','=','Activo')->where('alumnos_especialidades.forma_pago','=','mensual');
-        })->with(['especialidades'])
-        ->each(function($alumno) use ($dia_actual){
-            $especialidades = $alumno->especialidades;
+        try
+        {
+            DB::select(DB::raw('update documentos set monto = normal_pago, saldo = saldo + (normal_pago - pronto_pago) where fecha_limite_pronto_pago < "'.$dia_actual.'" and saldo > 0'));
 
-            foreach ($especialidades as $especialidad) {
-                # OBTENGO LA DIFERENCIA ENTRE EL PRECIO DE LA MENSUALIDAD Y EL PRONTO PAGO
-                $precio_mensualidad = $especialidad->pivot->monto ?? 0;
-                $precio_pronto_pago = $especialidad->pivot->monto_pronto_pago ?? 0;
-                $precio_cargo = ($precio_mensualidad == 0) ? 0 : ($precio_mensualidad - $precio_pronto_pago);
+            $users = User::where('email','=','aldo@adndigital.mx')->get();
 
-                $documentos = $alumno->documentos()
-                    ->where('id_especialidad',$especialidad->id)
-                    ->where('status','Pendiente')
-                    ->where('tipo', config('alumnos.concepto.colegiatura'))
-                    ->where('especial','!=',1)
-                    ->whereDate('fecha_limite','<',$dia_actual)
-                    ->get();
-
-                foreach ($documentos as $pago) {
-                    # SUMO ESA DIFERENCIA AL MONTO Y AL SALDO
-                    $monto = $pago->monto + $precio_cargo;
-                    $pago->monto = $monto;
-                    $pago->saldo = $monto;
-                    $pago->save();
-                }
+            foreach($users as $user){
+                $user->notify(new ConfirmacionProcesoAutomatico('Actualización de prontos pagos'));
             }
-        });
 
-        $this->line('Mensualidad actualizada correctamente');
+            $this->line('Documentos actualizados correctamente al pronto pago');
+        }catch(\Throwable $th){
+            $users = User::where('email','=','aldo@adndigital.mx')->get();
+            foreach($users as $user){
+                $user->notify(new ErrorProcesoAutomatico('Cargo semanal de documentos', $th));
+            }
+            $this->line('Ocurrio un error. Se envío email con la info.');
+
+        }
+
     }
 }

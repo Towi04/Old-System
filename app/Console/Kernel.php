@@ -44,7 +44,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('revisar-status:grupos')->dailyAt('00:15');
         $schedule->command('alumnos:enviar_cumple')->dailyAt('8:05');
         $schedule->command('personal:enviar_cumple')->dailyAt('8:00');
-        $schedule->command('generar-pago:mensual-sin-pronto-pago')->monthlyOn(7,'00:15');
+        $schedule->command('generar-pago:mensual-sin-pronto-pago')->dailyAt('5:00');
         $schedule->command('generar-deserciones:grupos')->weeklyOn(7, '00:10');
         
     }

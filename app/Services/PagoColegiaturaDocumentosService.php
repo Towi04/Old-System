@@ -48,13 +48,18 @@ class PagoColegiaturaDocumentosService
         $grupos = $this->alumno->grupos;
         $alumno = $this->alumno;
 
+        
+
         $today = Carbon::today();
 
         if($especialidad->pivot){
+            
             if(optional($especialidad->pivot)->fecha_inicio){
                 
                 // SE OBTIENE LA FECHA EN QUE SE INSCRIBIO PARA OBTENER EL MONTO DE LACOLEGIATURA 
+                
                 $fecha_inicio_pago = optional($especialidad->pivot)->created_at;
+                
                    
                 // SI NO HAY FECHA DE INICIO EN LA ESPECIALIDAD SE BUSCA EN SU DOCUMENTO DE INSCRIPCION
                 if(!$fecha_inicio_pago){
@@ -70,6 +75,8 @@ class PagoColegiaturaDocumentosService
                 }
 
                 $montos = $especialidad->getPrecioColegiaturaMensualFecha($fecha_inicio_pago);
+                
+                
 
                 $fecha_inicio = optional($especialidad->pivot)->fecha_inicio;
                 $especialidad->pivot->update([
@@ -118,7 +125,7 @@ class PagoColegiaturaDocumentosService
             // dd($pivot);
         }
         
-
+        
 
         while(!$today->copy()->addMonth()->isSameMonth($fecha_inicio) && $fecha_inicio->lte($today->copy()->addMonth())){
 
@@ -129,8 +136,9 @@ class PagoColegiaturaDocumentosService
             ->where('modalidad', 'mensual')
             ->where('anio', $fecha_inicio->year,)
             ->where('mes', $fecha_inicio->month, )
-            ->whereYear('created_at', $this->fecha_actual->year)
             ->exists();
+
+            
 
             if(!$existe_documento){
                
@@ -138,11 +146,18 @@ class PagoColegiaturaDocumentosService
                 
 
                 $result =  $this->calcular_precio_mensual($grupo_inscripcion, $alumno, $especialidad );
+
+                $montos = $especialidad->getPrecioColegiaturaMensualFecha($fecha_inicio_pago);
+                
+                
                 
                 $documento = $this->crear_documento([
                     'id_especialidad'                  => $especialidad->id,
                     'concepto'                  => config('alumnos.concepto.colegiatura') .' de '.$fecha_inicio->format('F').' del '.$fecha_inicio->year,
                     'monto'                     => $result['monto'],
+                    'pronto_pago'               => $montos['precio_pronto_pago'],
+                    'normal_pago'               => $montos['precio_normal'],
+                    'fecha_limite_pronto_pago'  => $fecha_inicio->year.'-'.$fecha_inicio->month.'-06',
                     'saldo'                     => $result['monto'],
                     'monto_apoyo_inscripcion'   => 0,
                     'mes'                       => $fecha_inicio->month,
@@ -152,7 +167,10 @@ class PagoColegiaturaDocumentosService
                     'tipo'                      => config('alumnos.concepto.colegiatura'),
                     'status'                    => config('pagos.status.Pendiente'),
                     'especial'                  => $result['especial'],
+
                 ]);
+
+                
 
             }
             // echo "Fecha {$fecha_inicio->format('d-m-Y')} | {$alumno->fullname}<br>";
@@ -201,7 +219,10 @@ class PagoColegiaturaDocumentosService
                         // SE OBTIENE EL PRIMER GRUPO DE ESE ALUMNO EN ESA ESPECIALIDAD
                         $grupo = $alumno->grupos->where('id_especialidad','=',$especialidad->id)->first();
                     }
-                    $precio_mensualidad = $grupo->precio_mensualidad;
+                    if($grupo){
+                        $precio_mensualidad = $grupo->precio_mensualidad;
+                    
+                    
                     // $precio_semana = $grupo->precio_semana;
             
                     $dia_actual = $fecha_inicio;
@@ -244,6 +265,13 @@ class PagoColegiaturaDocumentosService
                         'monto'=>$precio ?? 0,
                         'especial'=>1,
                     ];
+                }else{
+                    return [
+                        'monto'=>0,
+                        'especial'=>1,
+                    ];
+                }
+
 
             }
             # SE AGREGA EL PRECIO NORMAL DE LA MENSUALIDAD
@@ -362,6 +390,9 @@ class PagoColegiaturaDocumentosService
                     'id_especialidad'           => $especialidad->id,
                     'concepto'                  => config('alumnos.concepto.colegiatura') .' de semana #'.$fecha_inicio->weekOfYear.' del '.$fecha_inicio->year,
                     'monto'                     => $monto,
+                    'pronto_pago'               => $monto,
+                    'normal_pago'               => $monto,
+                    'fecha_limite_pronto_pago'  => $fecha_inicio->copy()->endOfWeek(),
                     'saldo'                     => $monto,
                     'monto_apoyo_inscripcion'   => 0,
                     'semana'                    => $fecha_inicio->weekOfYear,
@@ -417,6 +448,8 @@ class PagoColegiaturaDocumentosService
 
         $field = $fields[$atributos['modalidad']];
 
+        
+
         # SE DEBE VERIFICAR SI EXISTEN DOCUMENTOS QUE FUERON CREADOS POR ADELANTADO
         $existe_documento = $this->alumno->documentos()
             ->where('id_especialidad', $atributos['id_especialidad'])
@@ -426,12 +459,13 @@ class PagoColegiaturaDocumentosService
             ->whereYear('created_at', $this->fecha_actual->year)
             ->exists();
 
-        // dd( $atributos[$field]);
+           
         
 
         # SI NO EXISTE DOCUMENTO , SE DEBE GENERAR
         if (!$existe_documento) {
             $this->alumno->documentos()->create($atributos);
         }
+        
     }
 }
