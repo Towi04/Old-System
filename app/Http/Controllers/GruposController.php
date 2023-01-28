@@ -60,7 +60,7 @@ class GruposController extends Controller
             })
             ->addColumn('no_alumnos', function ($model) {
                 $line = '';
-                $line .= $model->alumnos->count();
+                $line .= $model->alumnos->where('pivot.status','Inscrito')->count();
                 if($model->max_alumnos){
                     $line .= '/'.$model->max_alumnos;
                 }else{

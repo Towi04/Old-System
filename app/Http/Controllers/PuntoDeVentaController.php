@@ -92,8 +92,9 @@ class PuntoDeVentaController extends Controller
                     // dd('true'. $pagos_alumno);
                     $especialidad = $alumno->especialidades->where('id', $request->id_especialidad)->first();
 
-
+                    
                     while($monto > 0){
+                        
                         $monto = $this->crear_documentos_adelantados($especialidad, $alumno, $venta_fiscal, $monto,$pago);
                     }
                     
@@ -349,16 +350,16 @@ class PuntoDeVentaController extends Controller
 
         // dd($especialidad->forma_pago);
          # SE VERIFICA SEGUN LA MODALIDAD EN LA QUE SE ENCUENTRE EL ALUMNO
+         
          if ($especialidad->pivot->forma_pago == 'semanal') {
+
+           
 
             $ultimo_pago = $alumno->documentos()
                 ->where('id_especialidad', '=', $especialidad->id)
                 ->where('tipo', config('alumnos.concepto.colegiatura'))
                 ->where('status',config('pagos.status.Pagado'))
-                // ->where('anio', now()->year)
-                ->where('modalidad', 'semanal')
-                ->orderBy('anio', 'desc')
-                ->orderBy('semana', 'desc')
+                ->orderBy('fecha_limite', 'desc')
                 ->first();
 
             # SI NO HAY UN PAGO PREVIO, ENTONCES AGREGO EL SIGUIENTE MES

@@ -968,7 +968,7 @@
                     {data: 'created_at', name: 'created_at', visible:false},
                     {data: 'status', className:"text-center", name: 'status'},
                 ],
-                order: [[ 4, "asc" ]],
+                order: [[ 4, "desc" ]],
                 language: {
                     "lengthMenu": "Mostrar _MENU_ registros por pagina",
                     "zeroRecords": "No se encontro ningún registro",
