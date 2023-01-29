@@ -350,15 +350,19 @@ class PagoColegiaturaDocumentosService
             }
             
     
-    
+            
             if($fecha_inicio->isSunday()){
                 $fecha_inicio->addDay();
             }
+            
             $today = Carbon::today();
-    
+            if($today->isSunday()){
+                $today->addDay();
+            }
+            
             # SE AGREGA EL PRECIO NORMAL DE LA MENSUALIDAD
-    
-
+            
+            
             #SE PREGUNTA SI EL MES ACTUAL MAS 1 ES IGUAL A LA FECHA DE INICIO PARA SALIR DEL CICLO
             #SI NO SE SIGUEN GENERANDO PAGOS SEMANALES
             while(!$today->copy()->addWeek()->isSameWeek($fecha_inicio) && $fecha_inicio->lte($today->copy()->addWeek())){
