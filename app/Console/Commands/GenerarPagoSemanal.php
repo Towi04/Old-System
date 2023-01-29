@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 use App\Models\User;
 use App\Notifications\ErrorProcesoAutomatico;
 use App\Notifications\ConfirmacionProcesoAutomatico;
-
+use Carbon\Carbon;
 
 class GenerarPagoSemanal extends Command
 {
@@ -53,7 +53,8 @@ class GenerarPagoSemanal extends Command
     public function handle()
     {
         # NOTE: LAZYCOLLECTION https://laravel.com/docs/8.x/collections#lazy-collection-methods
-
+        Carbon::setWeekStartsAt(Carbon::SUNDAY);
+        Carbon::setWeekEndsAt(Carbon::SATURDAY);
 
         try{
 
@@ -71,7 +72,7 @@ class GenerarPagoSemanal extends Command
                     
             });
             $this->line('Pago Semanal generado correctamente');
-            $users = User::where('email','=','aldo@adndigital.mx')->get();
+            $users = User::whereIn('email',['aldo@adndigital.mx','zemarcial@cncm.edu.mx'])->get();
 
             foreach($users as $user){
                 $user->notify(new ConfirmacionProcesoAutomatico('Creación de pagos semanales'));
@@ -80,7 +81,7 @@ class GenerarPagoSemanal extends Command
         }catch(\Throwable $th){
 
 
-            $users = User::where('email','=','aldo@adndigital.mx')->get();
+            $users = User::whereIn('email',['aldo@adndigital.mx','zemarcial@cncm.edu.mx'])->get();
 
             foreach($users as $user){
                 $user->notify(new ErrorProcesoAutomatico('Cargo semanal de documentos', $th));

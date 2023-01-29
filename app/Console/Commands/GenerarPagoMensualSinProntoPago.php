@@ -54,7 +54,7 @@ class GenerarPagoMensualSinProntoPago extends Command
         {
             DB::select(DB::raw('update documentos set monto = normal_pago, saldo = saldo + (normal_pago - pronto_pago) where fecha_limite_pronto_pago < "'.$dia_actual.'" and saldo > 0'));
 
-            $users = User::where('email','=','aldo@adndigital.mx')->get();
+            $users = User::whereIn('email',['aldo@adndigital.mx','zemarcial@cncm.edu.mx'])->get();
 
             foreach($users as $user){
                 $user->notify(new ConfirmacionProcesoAutomatico('Actualización de prontos pagos'));

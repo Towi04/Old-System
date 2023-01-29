@@ -74,7 +74,7 @@ class GenerarPagoMensual extends Command
 
 
         $this->line('Pago Mensual generado correctamente');
-        $users = User::where('email','=','aldo@adndigital.mx')->get();
+        $users = User::whereIn('email',['aldo@adndigital.mx','zemarcial@cncm.edu.mx'])->get();
 
         foreach($users as $user){
             $user->notify(new ConfirmacionProcesoAutomatico('Creación de pagos mensuales'));
@@ -84,7 +84,7 @@ class GenerarPagoMensual extends Command
         }catch(\Throwable $th){
 
 
-            $users = User::where('email','=','aldo@adndigital.mx')->get();
+            $users = User::whereIn('email',['aldo@adndigital.mx','zemarcial@cncm.edu.mx'])->get();
 
             foreach($users as $user){
                 $user->notify(new ErrorProcesoAutomatico('Cargo mensual de documentos', $th));
