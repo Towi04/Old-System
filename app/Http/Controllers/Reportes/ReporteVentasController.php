@@ -98,11 +98,11 @@ class ReporteVentasController extends Controller
             $fecha_despues = new Date($fecha_despues);
         }
 
+        
         if ($mostrar_solo_fiscales) {
-            $pagos =  $pagos->whereHas('abonos', function ($q) {
-                return $q->where('venta_fiscal', '=', 1);
-            });
+            $pagos =  $pagos->whereNotNull('folio_fiscal');
         }
+        
 
         $pagos =  $pagos->with(['alumno', 'abonos.alumno_pago', 'recibio'])->get();
 

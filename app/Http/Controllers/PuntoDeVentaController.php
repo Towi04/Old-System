@@ -427,7 +427,7 @@ class PuntoDeVentaController extends Controller
                 $fecha = new Date($especialidad->pivot->fecha_inicio);
             } else {
                 # SE OBTIENE EL ULTIMO REGISTRO Y SE AGREGA EL SIGUIENTE MES CON RESPECTO AL ULTIMO RECIBO
-                $fecha =  new Date(now()->setMonth($ultimo_pago->mes)->setYear($ultimo_pago->anio)->addMonth()->startOfMonth());
+                $fecha =  new Date(now()->setMonth($ultimo_pago->mes)->setYear($ultimo_pago->anio)->startOfMonth()->addMonth());
             }
 
             # VERIFICAR SI SE PAGA COMPLETAMENTE
