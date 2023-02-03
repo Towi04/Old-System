@@ -56,7 +56,7 @@ class PagoColegiaturaDocumentosService
             
             if(optional($especialidad->pivot)->fecha_inicio){
                 
-                // SE OBTIENE LA FECHA EN QUE SE INSCRIBIO PARA OBTENER EL MONTO DE LACOLEGIATURA 
+                // SE OBTIENE LA FECHA EN QUE SE INSCRIBIO PARA OBTENER EL MONTO DE LA COLEGIATURA 
                 
                 $fecha_inicio_pago = optional($especialidad->pivot)->created_at;
                 
@@ -100,6 +100,8 @@ class PagoColegiaturaDocumentosService
             }
         }else{
             $fecha_inicio = new Date($this->request->fecha_inicio);
+            $fecha_inicio_pago = \Carbon\Carbon::today();
+
         }
         
 
@@ -141,15 +143,10 @@ class PagoColegiaturaDocumentosService
             
 
             if(!$existe_documento){
-               
-
-                
-
+                               
                 $result =  $this->calcular_precio_mensual($grupo_inscripcion, $alumno, $especialidad );
 
                 $montos = $especialidad->getPrecioColegiaturaMensualFecha($fecha_inicio_pago);
-                
-                
                 
                 $documento = $this->crear_documento([
                     'id_especialidad'                  => $especialidad->id,
