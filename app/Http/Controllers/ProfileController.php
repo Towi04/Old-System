@@ -24,14 +24,14 @@ class ProfileController extends Controller
 
     public function update(Request $request, User $usuario )
     {
-        $data = $request->validate([
+        $request->validate([
             'nombres'           => 'required',
             'apellido_paterno'  => 'required',
             'apellido_materno'  => 'nullable',
             'celular'           => 'nullable',
         ]);
 
-        $usuario->update($data);
+        $usuario->update($request->except('_token'));
 
         return redirect()->route('profile.index')->with([
             'message' => "Perfil actualizado correctamente"

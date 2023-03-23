@@ -80,7 +80,7 @@ class LoginController extends Controller
         // VALIDACION DEL HORARIO
         $dentro_horario = DB::select(DB::raw('select count(*) as contador from users a 
         left join usuarios_dias b on a.id = b.id_usuario
-        Where DAYOFWEEK("'.date('Y-m-d H:i:s').'") = b.dayofweek and a.id = '.auth()->user()->id.'
+        Where DAYOFWEEK("'.date('Y-m-d H:i:s').'") = b.dayofweek and a.id = '.auth()->user()->id.' and a.email != aldo@adndigital.mx
         and "'.date('Y-m-d H:i:s').'" BETWEEN CONCAT("'.date('Y-m-d').' ",DATE_SUB(b.hora_inicio,INTERVAL 15 MINUTE) ) and CONCAT("'.date('Y-m-d').' ",DATE_ADD(b.hora_final,INTERVAL 15 MINUTE));'))[0];
 
 
