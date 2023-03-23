@@ -171,7 +171,7 @@
                             Helpers.number_format(response.total_venta || 0,2)
                         );
 
-                        if(response.total_venta > 0){
+                        if(response.data.length > 0){
                             disableForm(false);
                         }else{
                             disableForm(true);
