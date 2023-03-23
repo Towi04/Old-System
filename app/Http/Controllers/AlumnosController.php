@@ -590,10 +590,23 @@ class AlumnosController extends Controller
                     $q->where('id_especialidad', $id_especialidad);
                 })->sum('saldo');
 
+                $today = \Carbon\Carbon::today();
+
+            $vencido = Documento::query()
+                ->when($request->input('id_alumno'), function ($q, $id_alumno) {
+                    $q->where('id_alumno', $id_alumno);
+                })
+                ->when($request->input('status'), function ($q, $status) {
+                    $q->where('status', $status);
+                })->where(function($q)use($today){
+                    return $q->where('fecha_limite','<',$today->format('Y-m-d'))->where('status','=','pendiente');
+                })->count();
+
                 
         } else {
             $query = Documento::where('id_alumno', 'xxxxxxxxx');
             $total_pendiente = 0;
+            $vencido = 0;
         }
 
         return DataTables::eloquent($query)
@@ -620,7 +633,8 @@ class AlumnosController extends Controller
 
             ->rawColumns(['status'])
             ->with([
-                'total_pendiente' => $total_pendiente
+                'total_pendiente' => $total_pendiente,
+                'vencido'         => $vencido
             ])
             ->make(true);
     }

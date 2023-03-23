@@ -28,6 +28,9 @@
                             {!! Form::label('id_alumno', 'Selecciona al alumno que va a pagar:*'); !!}
                             {!! Form::select('id_alumno',[], null, ['class' => 'form-control','required' => true,'style' => 'width:100%']) !!}
                         </div>
+                        <div id="alerta_alumno_vencido" class="alert alert-success" role="alert" style="display:none">
+                          <p>El alumno tiene documentos vencidos</p>
+                        </div>
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                         <div class="form-group">
@@ -109,12 +112,18 @@
                     <div class="row justify-content-end">
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                             <div class="form-group">
+                                <label for="semanas_meses" id="semanas_meses_label">Semanas/Meses a pagar:</label>
+                                {!! Form::select('semanas_meses',[1=>1,2=>2,3=>3,4=>4,5=>5,6=>6,7=>7,8=>8,9=>9,10=>10,11=>11,12=>12,13=>13,14=>14,15=>15,16=>16,17=>17,18=>18,19=>19,20=>20],1,['id'=>'semanas_meses','class' => 'form-control form-control-sm','required' => true,'autocomplete' => 'off','form-selector' => '','disabled' => true]) !!}
+                            </div>
+                        </div>
+
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
                                 {!! Form::label('monto','Monto:') !!}
-                                {!! Form::number('monto', null, ['class' => 'form-control form-control-sm','placeholder' => 'Ingresa el monto','required' => true,'autocomplete' => 'off','form-selector' => '','step' => '0.01','disabled' => true,'min' => 0.01]) !!}
+                                {!! Form::number('monto', null, ['class' => 'form-control form-control-sm','placeholder' => 'Ingresa el monto','required' => true,'autocomplete' => 'off','step' => '0.01','readonly' => true,'min' => 0.01]) !!}
                             </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-
                             <div class="form-group">
                                 {!! Form::label('forma_pago','Forma Pago:') !!}
                                 {!! Form::select('forma_pago', [
@@ -122,11 +131,24 @@
                                         'Tarjate de debito'     => 'Tarjate de debito',
                                         'Tarjate de crédito'    => 'Tarjate de crédito',
                                         'Transferencia'         => 'Transferencia'
-                                    ],null, ['class' => 'form-control form-control-sm','form-selector'=> '','disabled' => true]) !!}
+                                    ],null, ['id' =>'forma_pago', 'class' => 'form-control form-control-sm','form-selector'=> '','disabled' => true]) !!}
                             </div>
-
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 paga_con">
+                            <div class="form-group">
+                                {!! Form::label('paga_con','Paga con:') !!}
+                                {!! Form::number('paga_con',null, ['id' =>'paga_con', 'class' => 'form-control form-control-sm','form-selector'=> '','disabled' => true,'placeholder'=>'Ingresa con que paga el alumno']) !!}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 paga_con">
+                            <div class="form-group">
+                                {!! Form::label('cambio','Cambio:') !!}<br>
+                                <span class="cambio" style="font-weight:bold">
+
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 align-self-center">
                             <button class="btn btn-success float-right" type="submit" disabled form-selector >Recibir abono</button>
                         </div>
                     </div>
@@ -230,7 +252,7 @@
                                         'Tarjate de debito'     => 'Tarjate de debito',
                                         'Tarjate de crédito'    => 'Tarjate de crédito',
                                         'Transferencia'         => 'Transferencia'
-                                    ],null, ['forma_pago_manual','class' => 'form-control form-control-sm','form-selector'=> '','required' => true]) !!}
+                                    ],null, ['id'=>'forma_pago_manual','class' => 'form-control form-control-sm','form-selector'=> '','required' => true]) !!}
                             </div>
                         </div>
                         <div class="row">
@@ -296,6 +318,11 @@
                     fecha: $("#fecha"),
                 }
             };
+
+            let grupo_seleccionado;
+            let grupos;
+            let especialidades;
+            let especialidad_seleccionada;
 
             const disableForm = (disable = false) => {
                 const $elements = dom.form_abonos[0].querySelectorAll('[form-selector]');
@@ -434,7 +461,18 @@
                             Helpers.number_format(response.total_pendiente || 0,2)
                         );
 
-                        $('#monto').val(response.total_pendiente);
+                        // $('#monto').val(response.total_pendiente);
+
+                        // SE VA A MOSTRAR MENSAJE DE QUE TIENE PAGOS VENCIDOS
+                        $('#alerta_alumno_vencido').show();
+
+                        if(response.vencido > 0){
+                            $('#alerta_alumno_vencido').removeClass('alert-success');
+                            $('#alerta_alumno_vencido').addClass('alert-danger');
+                            $('#alerta_alumno_vencido').show();
+                        }else{
+                            $('#alerta_alumno_vencido').hide();
+                        }
                         
                     },
                     beforeSend: function(xhr,type) {
@@ -476,9 +514,15 @@
             dom.select_alumno.on('select2:select', function (e) {
 
                 especialidades = e.params.data.especialidades;
-                grupos = e.params.data.grupos_activos;                
+                grupos = e.params.data.grupos_activos;   
+                
+                especialidad_seleccionada = Lazy(especialidades).first();
 
+                poner_monto()
+                
                 traer_especialidades(especialidades, grupos);
+
+                calculo_cambio();
             });
 
             function traer_especialidades(especialidades, grupos){
@@ -486,15 +530,19 @@
 
                 const $select2_especialidad_pagos = dom.pago_manual.form_pago_manual.find('#select2_id_especialidad_pago');
                 $select2_especialidad_pagos.empty();
+                
 
                 $.each(especialidades, function (index, especialidad) {
+                    
                     grupo = Lazy(grupos).where({id_especialidad: especialidad.id}).first();
+                    
                     
                     const opcion = `<option value="${especialidad.id}" > ${especialidad.nombre} - ${grupo.clave} </option>`;
 
                     $('#select_especialidad').append(opcion);
                     $select2_especialidad_pagos.append(opcion)
                 });
+
 
                 dt_pagos.draw();
                 disableForm( !dom.select_alumno.val());
@@ -511,7 +559,59 @@
 
             $('#select_especialidad').change(function(){
                 dt_pagos.ajax.reload(null, false);
+
+                let id = parseInt($(this).val())
+
+                especialidad_seleccionada = Lazy(especialidades).where({ id: id }).first();
+                
+                poner_monto()
+                calculo_cambio();
+
             });
+
+            $('#semanas_meses').change(function(){
+                
+                poner_monto()
+                calculo_cambio();
+            });
+
+            $('#forma_pago').change(function(){
+                calculo_cambio();
+            });
+
+            $('#paga_con').keyup(function(){
+                calculo_cambio();
+            });
+
+            // CALCULA EL CAMBIO A ENTREGAR SI LA FORMA DE PAGO ES EFECTIVO
+            function calculo_cambio(){
+
+                if($('#forma_pago').val() == 'Efectivo'){
+                    $('.paga_con').show()
+                    $('#paga_con').focus();
+                }else{
+                    $('.paga_con').hide()
+                }
+
+                
+                
+                paga_con = parseFloat($('#paga_con').val());
+                monto = parseFloat($('#monto').val());
+
+                cambio = paga_con - monto;
+
+                $('.cambio').html('$ '+Helpers.number_format(cambio,2))
+
+            }
+
+            function poner_monto(){
+
+                semanas_meses = parseFloat($('#semanas_meses').val());
+                monto = semanas_meses * especialidad_seleccionada.pivot.monto;
+
+                $('#monto').val(monto)
+                $('#semanas_meses_label').html((especialidad_seleccionada.pivot.forma_pago == 'semanal')?'Semanas a pagar':'Meses a pagar');
+            }
 
 
             dom.form_abonos.submit(function(e)
@@ -561,6 +661,8 @@
                             dom.tikets.modal.modal('show');
                             dom.tikets.contenido_ticket.html();
                             dom.tikets.contenido_ticket.html(`<iframe scrolling='auto' type='text/html' scroll='auto' src='${route}' width='100%' height='450px' align='center'></iframe>`);
+
+                            calculo_cambio();
                         },false);
                     }else {
                         setTimeout(() => {
