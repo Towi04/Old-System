@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
-class Alumno extends Model
+class AlumnoSimple extends Model
 {
     use HasFactory, FormAccessible, SoftDeletes, Notifiable;
 
@@ -90,14 +90,6 @@ class Alumno extends Model
         'status',
     ];
 
-    protected $appends = [
-        'documentos_vencidos', 
-        'pagos_vencidos', 
-        'monto_vencido', 
-        'url_foto',
-        'fullname',
-        'numero_control_fullname'
-    ];
 
     # NOTE: MODEL RELATIONSHIPS
     public function especialidad()

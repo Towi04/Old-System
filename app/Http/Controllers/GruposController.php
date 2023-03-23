@@ -45,7 +45,7 @@ class GruposController extends Controller
             ->when(!$puede_ver_todos_grupos,function($q)use($especialidades){
                 $q->whereIn('id_especialidad',$especialidades);
             })
-            ->with('especialidad','days','alumnos','materias');
+            ->with(['especialidad','days','alumnos_simples','materias']);
 
         return DataTables::eloquent($query)
             ->editColumn('fecha_inicio', function ($model) {

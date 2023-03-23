@@ -32,6 +32,7 @@ class Grupo extends Model
      *
      * @var array
      */
+
     protected $dates = ['created_at', 'updated_at', 'fecha_inicio'];
 
     /**
@@ -39,13 +40,13 @@ class Grupo extends Model
      *
      * @var array
      */
+
     protected $appends = [
         'tipo_grupo',
         'fecha_inicio_format',
         'dias_corto',
         'horario_corto',
         'nombre_compuesto',
-
     ];
 
     /**
@@ -53,6 +54,7 @@ class Grupo extends Model
      *
      * @var array
      */
+
     protected $fillable = [
         'id_sucursal',
         'id_especialidad',
@@ -90,6 +92,12 @@ class Grupo extends Model
     public function alumnos()
     {
         return $this->belongsToMany(Alumno::class, 'alumnos_grupos', 'id_grupo', 'id_alumno')
+            ->withPivot('id', 'id_alumno','fecha_inicio','status')->using(AlumnoGrupo::class);
+    }
+
+    public function alumnos_simples()
+    {
+        return $this->belongsToMany(AlumnoSimple::class, 'alumnos_grupos', 'id_grupo', 'id_alumno')
             ->withPivot('id', 'id_alumno','fecha_inicio','status')->using(AlumnoGrupo::class);
     }
 
@@ -210,8 +218,8 @@ class Grupo extends Model
     }
 
     public function getInscripcionFecha($fecha){
-        // dd($fecha);
-        // $fecha = \Carbon\Carbon::createFromFormat('Y-m-d', $fecha);
+        
+
         $precio = $this->precios->where('tipo','=','Inscripción')->filter(function($precio)use($fecha){
             if($precio->fecha_final == null && $precio->fecha_inicio->lte($fecha)){
                 return true;
@@ -221,16 +229,6 @@ class Grupo extends Model
                 return true;
             }
         })->first();
-
-        // dd($this->precios->where('tipo','=','Inscripción')->filter(function($precio)use($fecha){
-        //     if($precio->fecha_final == null && $precio->fecha_inicio->lte($fecha)){
-        //         dd()
-        //         return true;
-        //     }
-        //     if($precio->fecha_inicio->lte($fecha) && $precio->fecha_final->gt($fecha)){
-        //         return true;
-        //     }
-        // }));
 
         if($precio){
             return $precio->precio_normal;
