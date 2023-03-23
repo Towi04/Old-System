@@ -358,7 +358,7 @@ class AlumnosController extends Controller
         $resultCount = 10;
         $offset = ($page - 1) * $resultCount;
 
-        $results = Alumno::with('especialidades')->with('grupos.especialidad')->select(['id', 'nombres', 'apellido_paterno', 'apellido_materno', 'nuevo_numero_control'])
+        $results = Alumno::with('especialidades')->with('grupos_activos.especialidad')->with('grupos.especialidad')->select(['id', 'nombres', 'apellido_paterno', 'apellido_materno', 'nuevo_numero_control'])
             ->when($request->input('id_sucursal'), function ($q, $sucursal) {
                 $q->where('id_sucursal', $sucursal);
             })

@@ -254,6 +254,7 @@
 
 @section('scripts')
     <script src="{{ asset('template-clean-admin/bower_components/select2/dist/js/i18n/es.js') }}"></script>
+    <script src="{{ asset('js/lazy/lazy.min.js') }}"></script>
 
     <script type="text/javascript">
         $(function() {
@@ -475,17 +476,21 @@
             dom.select_alumno.on('select2:select', function (e) {
 
                 especialidades = e.params.data.especialidades;
-                traer_especialidades(especialidades);
+                grupos = e.params.data.grupos_activos;                
+
+                traer_especialidades(especialidades, grupos);
             });
 
-            function traer_especialidades(especialidades){
+            function traer_especialidades(especialidades, grupos){
                 $('#select_especialidad').empty();
 
                 const $select2_especialidad_pagos = dom.pago_manual.form_pago_manual.find('#select2_id_especialidad_pago');
                 $select2_especialidad_pagos.empty();
 
                 $.each(especialidades, function (index, especialidad) {
-                    const opcion = `<option value="${especialidad.id}" > ${especialidad.nombre} </option>`;
+                    grupo = Lazy(grupos).where({id_especialidad: especialidad.id}).first();
+                    
+                    const opcion = `<option value="${especialidad.id}" > ${especialidad.nombre} - ${grupo.clave} </option>`;
 
                     $('#select_especialidad').append(opcion);
                     $select2_especialidad_pagos.append(opcion)
