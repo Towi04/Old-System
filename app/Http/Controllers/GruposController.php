@@ -176,13 +176,13 @@ class GruposController extends Controller
         ];
         // CREACION DE HORAS Y DIAS
         foreach ($request->dia as $dia) {
-            $grupo_dia = new GrupoDia();
-            $grupo_dia->id_grupo = $grupo->id;
-            $grupo_dia->dia = $dia;
-            $grupo_dia->dayofweek = $dias_number[$dia];
-            $grupo_dia->hora_inicio = $request['inicio_' . $dia];
-            $grupo_dia->hora_final = $request['fin_' . $dia];
-            $grupo_dia->save();
+            $usuario_dia = new UsuarioDia();
+            $usuario_dia->id_grupo = $grupo->id;
+            $usuario_dia->dia = $dia;
+            $usuario_dia->dayofweek = $dias_number[$dia];
+            $usuario_dia->hora_inicio = $request['inicio_' . $dia];
+            $usuario_dia->hora_final = $request['fin_' . $dia];
+            $usuario_dia->save();
         }
 
         return redirect()->route('grupos.index')->with([

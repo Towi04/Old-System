@@ -6,7 +6,11 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+
+use App\Notifications\UsuarioFueraHorario;
+use App\Models\User;
 
 class LoginController extends Controller
 {
@@ -59,6 +63,9 @@ class LoginController extends Controller
         # NOTE: ASIGNO LAS SUCURSALES DEL USUARIO AUTENTICADO
         Session::put('sucursales',$sucursales_usuario);
 
+
+
+
         if(!$user->id_ultima_sucursal){
             Session::put('sucursal',$sucursales_usuario->first());
         }else{
@@ -69,6 +76,22 @@ class LoginController extends Controller
                 Session::put('sucursal',$sucursales_usuario->first());
             }
         }
+
+        // VALIDACION DEL HORARIO
+        $dentro_horario = DB::select(DB::raw('select count(*) as contador from users a 
+        left join usuarios_dias b on a.id = b.id_usuario
+        Where DAYOFWEEK("'.date('Y-m-d H:i:s').'") = b.dayofweek and a.id = '.auth()->user()->id.'
+        and "'.date('Y-m-d H:i:s').'" BETWEEN CONCAT("'.date('Y-m-d').' ",DATE_SUB(b.hora_inicio,INTERVAL 15 MINUTE) ) and CONCAT("'.date('Y-m-d').' ",DATE_ADD(b.hora_final,INTERVAL 15 MINUTE));'))[0];
+
+
+        if(!$dentro_horario->contador){
+            $users = User::permission('notificacion_usuario_fuera_horario')->get();
+
+            foreach($users as $user){
+                $user->notify(new UsuarioFueraHorario(auth()->user()));
+            }
+        }
+
         
     }
 }

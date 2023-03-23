@@ -43,7 +43,17 @@ class AlumnosController extends Controller
             return $q->where('id','=',$sucursal->id);
         })->get()->pluck('fullname', 'id')->sort();
 
-        return view('alumnos.index', compact('asesores'));
+        $dias_semana = [
+            'lunes'     => 'Lunes',
+            'martes'    => 'Martes',
+            'miercoles' => 'Miércoles',
+            'jueves'    => 'Jueves',
+            'viernes'   => 'Viernes',
+            'sabado'    => 'Sábado',
+            'domingo'   => 'Domingo',
+        ];
+
+        return view('alumnos.index', compact('asesores','dias_semana'));
     }
 
     public function datatables(Request $request)
@@ -219,11 +229,12 @@ class AlumnosController extends Controller
     {
         abort_unless(Auth::user()->canany(['editar_alumno', 'editar_datos_fiscales']), HTTPMessages::HTTP_FORBIDDEN, __('Forbidden'));
 
+       
         return view('alumnos.edit', [
             'alumno'            => $alumno,
             'especialidades'    => Especialidad::query()->pluck('nombre', 'id')->sort()->prepend('Selecciona una especialidad', ''),
             'asesores'          => User::query()->get()->pluck('fullname', 'id')->sort()->prepend('CNCM', ''),
-            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi', '')
+            'cfdis'             => $facturacionService->usosCfdi()->prepend('Selecciona un cfdi', ''),
         ]);
     }
 

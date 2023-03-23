@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Sucursal;
+use App\Models\UsuarioDia;
 use Illuminate\Http\Request;
 use App\Notifications\DatosAcceso;
 use Illuminate\Support\Facades\Log;
@@ -53,7 +54,17 @@ class UsersController extends Controller
 
         $user = new User;
 
-        return view('admin.users.create', compact('user', 'roles', 'sucursales'));
+        $dias_semana = [
+            'lunes'     => 'Lunes',
+            'martes'    => 'Martes',
+            'miercoles' => 'Miércoles',
+            'jueves'    => 'Jueves',
+            'viernes'   => 'Viernes',
+            'sabado'    => 'Sábado',
+            'domingo'   => 'Domingo',
+        ];
+
+        return view('admin.users.create', compact('user', 'roles', 'sucursales','dias_semana'));
     }
 
     /**
@@ -127,6 +138,26 @@ class UsersController extends Controller
             }
         }
 
+        $dias_number = [
+            'lunes'     => '2',
+            'martes'    => '3',
+            'miercoles' => '4',
+            'jueves'    => '5',
+            'viernes'   => '6',
+            'sabado'    => '7',
+            'domingo'   => '1',
+        ];
+        // CREACION DE HORAS Y DIAS
+        foreach ($request->dia as $dia) {
+            $usuario_dia = new UsuarioDia();
+            $usuario_dia->id_usuario = $usuario->id;
+            $usuario_dia->dia = $dia;
+            $usuario_dia->dayofweek = $dias_number[$dia];
+            $usuario_dia->hora_inicio = $request['inicio_' . $dia];
+            $usuario_dia->hora_final = $request['fin_' . $dia];
+            $usuario_dia->save();
+        }
+
         return redirect()->route('admin.usuarios.index')->with([
             'message' => "El usuario {$user->nombres} {$user->apellido_paterno} se guardó con éxito"
         ]);
@@ -172,10 +203,21 @@ class UsersController extends Controller
             $sucursales = Sucursal::query()->get();
         }
 
+        $dias_semana = [
+            'lunes'     => 'Lunes',
+            'martes'    => 'Martes',
+            'miercoles' => 'Miércoles',
+            'jueves'    => 'Jueves',
+            'viernes'   => 'Viernes',
+            'sabado'    => 'Sábado',
+            'domingo'   => 'Domingo',
+        ];
+
         return view('admin.users.edit', [
             'roles'         => Role::query()->get(),
             'user'          => $usuario->load(['roles']),
-            'sucursales'    => $sucursales
+            'sucursales'    => $sucursales,
+            'dias_semana'   => $dias_semana,
         ]);
     }
 
@@ -249,6 +291,30 @@ class UsersController extends Controller
 
             $usuario->foto = $nombre_foto;
             $usuario->save();
+        }
+
+        // CREACION DE HORAS Y DIAS
+        $usuario->days()->delete();
+
+        $dias_number = [
+            'lunes'     => '2',
+            'martes'    => '3',
+            'miercoles' => '4',
+            'jueves'    => '5',
+            'viernes'   => '6',
+            'sabado'    => '7',
+            'domingo'   => '1',
+        ];
+
+
+        foreach ($request->dia as $dia) {
+            $usuario_dia = new UsuarioDia();
+            $usuario_dia->id_usuario = $usuario->id;
+            $usuario_dia->dia = $dia;
+            $usuario_dia->dayofweek = $dias_number[$dia];
+            $usuario_dia->hora_inicio = $request['inicio_' . $dia];
+            $usuario_dia->hora_final = $request['fin_' . $dia];
+            $usuario_dia->save();
         }
 
         return redirect()->back()->with([

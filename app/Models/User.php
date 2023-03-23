@@ -138,4 +138,29 @@ class User extends Authenticatable
         }
         
     }
+
+    public function days()
+    {
+        return $this->hasMany(UsuarioDia::class, 'id_usuario', 'id');
+    }
+
+    public function getDiasCortoAttribute()
+    {
+        $horario = '';
+        foreach ($this->days as $day) {
+            $horario .= ucfirst(substr($day->dia, 0, 2)) . ' H ' . $day->hora_inicio . ' - ' . $day->hora_final . ' | ';
+        }
+
+        return $horario;
+    }
+
+    public function getHorarioCortoAttribute()
+    {
+        $horario = '';
+        foreach ($this->days as $day) {
+            $horario .= ucfirst(substr($day->dia, 0, 2)) . ' ' . $day->hora_inicio . ' - ' . $day->hora_final . ' <br> ';
+        }
+    }
+
+       
 }

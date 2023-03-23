@@ -487,6 +487,16 @@ return [
             'display_name'  => 'Ver reporte de alumnos programados',
             'description'   => 'Permite ver el reporte de alumnos programados a iniciar',
         ],
+        [
+            'name'          => 'ver_reporte_programados',
+            'display_name'  => 'Ver reporte de alumnos programados',
+            'description'   => 'Permite ver el reporte de alumnos programados a iniciar',
+        ],
+        [
+            'name'          => 'notificacion_usuario_fuera_horario',
+            'display_name'  => 'Notificacion de usuario fuera de horario',
+            'description'   => 'Permite recibir notificación de usuario fuera de horario',
+        ],
         
     ],
 
