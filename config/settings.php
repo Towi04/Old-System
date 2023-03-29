@@ -497,6 +497,11 @@ return [
             'display_name'  => 'Notificacion de usuario fuera de horario',
             'description'   => 'Permite recibir notificación de usuario fuera de horario',
         ],
+        [
+            'name'          => 'poner_monto_manual',
+            'display_name'  => 'Poner monto manual',
+            'description'   => 'Permite poder poner el monto manual en los pagos',
+        ],
         
     ],
 

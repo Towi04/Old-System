@@ -105,10 +105,21 @@
         <div class="col-12 col-sm-6">
             <div class="element-box">
                 <h5 class="element-header">
-                    Recibir abono
-                </h5>
-
+                    Recibir abono <small>
+                    @can('poner_monto_manual') 
+                    <div class="form-check float-right">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" name="" id="monto_manual" value="" >
+                        Monto manual
+                    </label></
+                    </div>    
+                @endcan
+                </small> </h5>
+               
                 {!! Form::open(['id' => 'form-recibir-abono','route' => 'punto_de_venta.recibir_abonos']) !!}
+
+                   
+
                     <div class="row justify-content-end">
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                             <div class="form-group">
@@ -118,10 +129,14 @@
                         </div>
 
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            
+
                             <div class="form-group">
                                 {!! Form::label('monto','Monto:') !!}
                                 {!! Form::number('monto', null, ['class' => 'form-control form-control-sm','placeholder' => 'Ingresa el monto','required' => true,'autocomplete' => 'off','step' => '0.01','readonly' => true,'min' => 0.01]) !!}
+                               
                             </div>
+                         
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                             <div class="form-group">
@@ -613,6 +628,21 @@
                 $('#semanas_meses_label').html((especialidad_seleccionada.pivot.forma_pago == 'semanal')?'Semanas a pagar':'Meses a pagar');
             }
 
+            $('#monto_manual').click(function(){
+                bloquear_casilla_monto()
+            })
+
+            function bloquear_casilla_monto(){
+                
+                if($('#monto_manual').is(':checked')){
+                    $('#monto').attr('readonly',false)
+                }else{
+                    $('#monto').attr('readonly',true)
+                }
+
+
+            }
+
 
             dom.form_abonos.submit(function(e)
             {
@@ -662,6 +692,9 @@
                             dom.tikets.contenido_ticket.html();
                             dom.tikets.contenido_ticket.html(`<iframe scrolling='auto' type='text/html' scroll='auto' src='${route}' width='100%' height='450px' align='center'></iframe>`);
 
+                            $('#monto_manual').attr('checked', false);
+                            bloquear_casilla_monto()
+                            poner_monto()
                             calculo_cambio();
                         },false);
                     }else {
