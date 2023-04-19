@@ -62,6 +62,9 @@ class AlumnosController extends Controller
             ->where('status', config('alumnos.status.Alumno'))
             ->when($request->input('id_sucursal'), function ($q, $id_sucursal) {
                 $q->where('id_sucursal', $id_sucursal);
+            })
+            ->when($request->input('forma_pago'), function ($q, $forma_pago) {
+                $q->where('forma_pago', $forma_pago);
             })->when($request->input('alumnos_no_grupos'), function ($q, $alumnos_no_grupos) {
                 if ($alumnos_no_grupos == 'true') {
                     $q->whereRaw(DB::raw('id not in (Select id_alumno from alumnos_grupos)'));
