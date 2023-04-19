@@ -42,6 +42,14 @@
         </section>
 
         <section class="row">
+            <div class="col-12 form-inline">
+                <div class="form-group">
+                  <label for="">Filtra por forma de pago:</label>
+                  {!! Form::select('forma_pago', [''=>'Todos','semanal'=>'Semanal','mensual'=>'Mensual'], null, ['class'=>'form-control','id'=>'filtro_forma_pago']) !!}
+                </div>
+            </div>
+        </section>
+        <section class="row">
             <div class="col-12">
                 <table id="tb-alumnos" class="table table-bordered w-100">
                     <thead>
@@ -94,6 +102,7 @@
                     data: function (d) {
                         d.id_sucursal = "{{ optional(session('sucursal'))->id }}"
                         d.alumnos_no_grupos = $('#alumnos_no_grupos').is(':checked')
+                        d.forma_pago = $('#filtro_forma_pago').val()
                     },
                     beforeSend: function(xhr,type) {
                         if (!type.crossDomain) {
@@ -231,6 +240,10 @@
             $('#alumnos_no_grupos').click(function(){
                 dt.ajax.reload(null, false);
             });
+
+            $('#filtro_forma_pago').change(function(){
+                dt.ajax.reload(null, false);
+            })
         })
     </script>
 @endsection

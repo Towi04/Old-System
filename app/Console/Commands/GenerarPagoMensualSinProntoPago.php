@@ -52,7 +52,7 @@ class GenerarPagoMensualSinProntoPago extends Command
 
         try
         {
-            DB::select(DB::raw('update documentos set monto = normal_pago, saldo = saldo + (normal_pago - pronto_pago) where fecha_limite_pronto_pago < "'.$dia_actual.'" and saldo > 0'));
+            DB::select(DB::raw('update documentos set monto = normal_pago, saldo = normal_pago - IFNULL((select sum(monto) from abonos_documentos where id_documento = documentos.id),0) where fecha_limite_pronto_pago < "'.$dia_actual.'" and saldo > 0'));
 
             $users = User::whereIn('email',['aldo@adndigital.mx','zemarcial@cncm.edu.mx'])->get();
 
