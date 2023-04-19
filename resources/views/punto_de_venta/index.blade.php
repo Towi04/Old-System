@@ -29,7 +29,7 @@
                             {!! Form::select('id_alumno',[], null, ['class' => 'form-control','required' => true,'style' => 'width:100%']) !!}
                         </div>
                         <div id="alerta_alumno_vencido" class="alert alert-success" role="alert" style="display:none">
-                          <p>El alumno tiene documentos vencidos</p>
+                          <p>El alumno tiene pagos vencidos</p>
                         </div>
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
@@ -338,6 +338,7 @@
             let grupos;
             let especialidades;
             let especialidad_seleccionada;
+            let documentos_pendientes;
 
             const disableForm = (disable = false) => {
                 const $elements = dom.form_abonos[0].querySelectorAll('[form-selector]');
@@ -489,6 +490,12 @@
                             $('#alerta_alumno_vencido').hide();
                         }
                         
+                        
+                        // SE ASIGNAN A LA VARIABLE LOS DOCTOS PENDIENTES TRAIDOS AL SELECCIONAR AL ALUMNO. 
+                        // CON ESTOS VAMOS A OBTENER EL MONTO A PAGAR DEL ALUMNO
+                        documentos_pendientes = response.data;
+                        poner_monto()
+                        
                     },
                     beforeSend: function(xhr,type) {
                     if (!type.crossDomain) {
@@ -533,7 +540,7 @@
                 
                 especialidad_seleccionada = Lazy(especialidades).first();
 
-                poner_monto()
+                
                 
                 traer_especialidades(especialidades, grupos);
 
@@ -622,9 +629,27 @@
             function poner_monto(){
 
                 semanas_meses = parseFloat($('#semanas_meses').val());
-                monto = semanas_meses * especialidad_seleccionada.pivot.monto;
 
-                $('#monto').val(monto)
+             
+
+                no_doctos = Lazy(documentos_pendientes).size()
+                
+                if(no_doctos >= semanas_meses){
+                    saldo = Lazy(documentos_pendientes).first(semanas_meses).sum(function(doc){
+                        return parseFloat(doc.saldo_sin_formato)
+                    })
+                    
+                }else{
+                    saldo = Lazy(documentos_pendientes).sum(function(doc){
+                        return parseFloat(doc.saldo_sin_formato)
+                    });
+                    dif = semanas_meses - no_doctos;
+                    
+                    monto_doctos_extras = (especialidad_seleccionada.pivot.forma_pago == 'semanal')? especialidad_seleccionada.pivot.monto * dif:especialidad_seleccionada.pivot.monto_pronto_pago * dif;
+                    saldo = parseFloat(saldo) + parseFloat(monto_doctos_extras);
+                }
+
+                $('#monto').val(saldo)
                 $('#semanas_meses_label').html((especialidad_seleccionada.pivot.forma_pago == 'semanal')?'Semanas a pagar':'Meses a pagar');
             }
 

@@ -643,8 +643,9 @@ class AlumnosController extends Controller
                     return "<span class='badge badge-success'>{$model->status}</span>";
                 }
             })
-
-
+            ->addColumn('saldo_sin_formato', function ($model) {
+                return $model->saldo;
+            })
             ->rawColumns(['status'])
             ->with([
                 'total_pendiente' => $total_pendiente,
