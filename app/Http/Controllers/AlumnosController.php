@@ -700,7 +700,7 @@ class AlumnosController extends Controller
                         $pcds->semanal($especialidad, $grupo_inscripcion);
 
                         $monto_pactado = $grupo_inscripcion->precio_semanal;
-                        $monto_pronto_pago_pactado = 0;
+                        $monto_pronto_pago_pactado = $grupo_inscripcion->precio_semanal;
                     break;
                 }
 

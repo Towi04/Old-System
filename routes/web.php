@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\CuentasBancariasController;
 use App\Http\Controllers\Admin\EspecialidadesController;
 use App\Http\Controllers\Admin\MostrarHorariosProfesoresController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SoporteController;
@@ -32,6 +33,8 @@ use App\Http\Controllers\AsistenciasController;
 use App\Http\Controllers\Reportes\ReporteDesercionController;
 use App\Http\Controllers\ImportacionesController;
 use App\Http\Controllers\PagosController;
+use App\Http\Controllers\DescuentosController;
+
 
 #NOTE: CONFIGURACION DE RUTAS
 Auth::routes(['register'=> false]);
@@ -397,3 +400,10 @@ Route::get('test-log', function () {
 Route::get('/debug-sentry', function () {
     throw new Exception('My first Sentry error!');
 });
+
+
+ # NOTE: DESCUENTOS
+ Route::post('descuentos/datatables', [ DescuentosController::class,'datatables'])->name('descuentos.datatables');
+ Route::resource('descuentos', DescuentosController::class)->parameters([
+     'descuentos' => 'descuento'
+ ]);

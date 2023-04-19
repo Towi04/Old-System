@@ -77,6 +77,11 @@
                             <a href="{{ route('admin.horarios-profesores.index') }}">Horarios Profesores</a>
                         </li>
                         @endcan
+                        @can(['gestionar_descuentos'])
+                        <li>
+                            <a href="{{ route('descuentos.index') }}">Descuentos</a>
+                        </li>
+                        @endcan
 
                     </ul>
                 </div>

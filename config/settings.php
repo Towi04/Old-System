@@ -502,6 +502,11 @@ return [
             'display_name'  => 'Poner monto manual',
             'description'   => 'Permite poder poner el monto manual en los pagos',
         ],
+        [
+            'name'          => 'gestionar_descuentos',
+            'display_name'  => 'Gestionar descuentos',
+            'description'   => 'Gestionar descuentos',
+        ],
         
     ],
 
