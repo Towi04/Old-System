@@ -1107,6 +1107,40 @@ class HomeController extends Controller
     }
 
 
+    /* 
+    * PROCESO ESPECIAL QUE SE UTIILZOAO 25 DE ABRIL 2023 PARA CORREGIR LOS ALUMNOS QUE 
+    * TENIAN SALDO NEGATIVO DEBIDO A QUE SE ESTABA GENERANDO EL PRONTO PAGO TODOS LOS DÍAS
+    * Y AUMENTANDO DEMASIADO EL SALDO. 
+    */
+    public function generar_abonos_alumnos_negativos(){
+
+        $doctos_negativos = Documento::where('saldo','<',0)->get();
+        
+        foreach ( Alumno::with(['especialidades','pagos_caja','grupos'])
+        ->whereIn('id',$doctos_negativos->pluck('id_alumno'))->lazy() as $alumno) {
+
+            $especialidades = $alumno->especialidades;
+
+            echo '<br> Alumno: '.$alumno->id.' - '.$alumno->fullname;
+
+            foreach($especialidades as $especialidad){
+                // SE REVISA SI ESTA EN EL REPORTE DE INSCRITOS
+                echo '  Especialidad: '.$especialidad->id.' - '.$especialidad->nombre.' ';
+
+                $this->generar_documentos_alumno($alumno->id, $especialidad->id, new PagoInscripcionDocumentosService(), new PagoColegiaturaDocumentosService, new Request() );
+                    
+                }
+
+                $this->generar_abonos_alumno($alumno->id);   
+                
+            }
+
+
+
+
+    }
+
+
     
 
 }

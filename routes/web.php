@@ -5,7 +5,7 @@ use App\Http\Controllers\Admin\CuentasBancariasController;
 use App\Http\Controllers\Admin\EspecialidadesController;
 use App\Http\Controllers\Admin\MostrarHorariosProfesoresController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
+
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SoporteController;
@@ -386,6 +386,10 @@ Route::prefix('especiales')->name('especiales.')->group(function(){
 
     #APLICACION MASIVA DOCUMENTOS
     Route::get('aplicacion_masiva_documentos',[HomeController::class,'aplicacion_masiva_documentos'])->name('aplicacion_masiva_documentos');
+
+    #CORREGIR DOCUMENTOS NEGATIVOS
+    Route::get('generar_abonos_alumnos_negativos',[HomeController::class,'generar_abonos_alumnos_negativos'])->name('generar_abonos_alumnos_negativos');
+    
     
 });
 
