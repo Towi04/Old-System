@@ -401,8 +401,15 @@
 
                 
                 $.post("{{route('punto_de_venta.traer_especialidades')}}", {id:{{$alumno_huella->id}} },
-                    function (especialidades) {
-                        traer_especialidades(especialidades);
+                    function (result) {
+                        especialidades = result.especialidades;
+                        grupos = result.grupos_activos;   
+                
+                        especialidad_seleccionada = Lazy(especialidades).first();
+                
+                        traer_especialidades(especialidades, grupos);
+
+                        calculo_cambio();
                     },
                     "json"
                 );

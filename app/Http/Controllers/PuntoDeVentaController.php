@@ -24,7 +24,7 @@ class PuntoDeVentaController extends Controller
         $alumno_huella = null;
 
         if (isset($request->id)) {
-            $alumno_huella = Alumno::find($request->id);
+            $alumno_huella = Alumno::with(['especialidades'])->find($request->id);
         }
 
         return view('punto_de_venta.index', compact('alumno_huella'));
@@ -341,9 +341,14 @@ class PuntoDeVentaController extends Controller
     public function traer_especialidades(Request $request)
     {
 
-        $especialidades = Alumno::with('especialidades')->find($request->id)->especialidades;
+        $alumno = Alumno::with(['especialidades','grupos_activos.especialidad'])->find($request->id);
+        $especialidades = $alumno->especialidades;
+        $grupos_activos = $alumno->grupos_activos;
 
-        return response()->json($especialidades);
+        return response()->json([
+            'especialidades' => $especialidades,
+            'grupos_activos' => $grupos_activos,
+        ]);
     }
 
     public function crear_documentos_adelantados($especialidad, $alumno, $venta_fiscal, $monto, $pago){
