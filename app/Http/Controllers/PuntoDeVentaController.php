@@ -69,6 +69,10 @@ class PuntoDeVentaController extends Controller
             $id_especialidad = null;
         }
 
+        if($fecha_abono->isSunday() && $venta_fiscal){
+            $fecha_abono = $fecha_abono->addDay();
+        }
+
         try {
             DB::beginTransaction();
 
