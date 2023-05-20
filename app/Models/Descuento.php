@@ -14,8 +14,11 @@ class Descuento extends Model
 
     protected $fillable = [
         'id_especialidad_1',
+        'forma_pago_1',
         'id_especialidad_2',
-        'porcentaje_descuento',
+        'forma_pago_2',
+        'monto_1',
+        'monto_2',
         'id_usuario'
     ];
 

@@ -25,9 +25,25 @@ class DescuentosController extends Controller
         return DataTables::eloquent($query)
             ->editColumn('precio_semanal',function($model){
                 return '$ '.number_format($model->precio_semanal,2,'.',',');
+            }) 
+            ->editColumn('especialidad_1.nombre',function($model){
+                $line = '';
+                $line .= $model->especialidad_1->nombre;
+                $line .= '<br>'.$model->forma_pago_1;
+                $line .= '<br>$ '.number_format($model->monto_1,2,'.',',');
+                $line .= '</div>';
+                return $line;
+            })
+            ->editColumn('especialidad_2.nombre',function($model){
+                $line = '';
+                $line .= $model->especialidad_2->nombre;
+                $line .= '<br>'.$model->forma_pago_2;
+                $line .= '<br>$ '.number_format($model->monto_2,2,'.',',');
+                $line .= '</div>';
+                return $line;
             })
             ->addColumn('buttons', 'descuentos.datatables._buttons')
-            ->rawColumns(['buttons'])
+            ->rawColumns(['buttons','especialidad_1.nombre','especialidad_2.nombre'])
             ->make(true);
     }
 
@@ -54,7 +70,10 @@ class DescuentosController extends Controller
         $rules = [
             'id_especialidad_1'                    => 'required',
             'id_especialidad_2'                    => 'required',
-            'porcentaje_descuento'              => 'required',
+            'monto_1'              => 'required',
+            'monto_2'              => 'required',
+            'forma_pago_1'              => 'required',
+            'forma_pago_2'              => 'required',
             'id_usuario'                =>'nullable',
         ];
 
@@ -85,9 +104,13 @@ class DescuentosController extends Controller
     public function update(Request $request, Descuento $descuento)
     {
         $rules = [
-            'id_especialidad_1'                    => 'required',
-            'id_especialidad_2'                    => 'required',
-            'porcentaje_descuento'              => 'required',
+            'id_especialidad_1'     => 'required',
+            'id_especialidad_2'     => 'required',
+            'monto_1'               => 'required',
+            'monto_2'               => 'required',
+            'forma_pago_1'          => 'required',
+            'forma_pago_2'          => 'required',
+            'id_usuario'            => 'nullable',
         ];
         
         $data = $this->validate($request, $rules);

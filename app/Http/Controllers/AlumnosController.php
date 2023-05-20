@@ -16,7 +16,10 @@ use App\Models\Alerta;
 use App\Models\ApoyoInscripcion;
 use App\Models\Inscripcion;
 use App\Models\AlumnoEspecialidad;
+use App\Models\Descuento;
 use App\Models\ApoyoEspecial;
+
+
 #FACADES
 use App\Services\FacturacionService;
 use App\Services\PagoInscripcionService;
@@ -681,14 +684,12 @@ class AlumnosController extends Controller
 
     public function inscribir_a_otro_grupo(Request $request, $id, PagoColegiaturaDocumentosService $pcds)
     {
-        $alumno = Alumno::find($id);
+        $alumno = Alumno::with(['especialidades'])->find($id);
         
         if ($request->has('id_grupo')) {
             $alumno->grupos()->attach($request->input('id_grupo'),['fecha_inicio' => $request->input('fecha_inicio')]);
 
-            
-
-
+        
             $grupo_inscripcion = Grupo::findOrFail($request->input('id_grupo'));
             Log::alert('Usuario '.Auth::user()->fullname.' inscribio a alumno '.$alumno->numero_control_fullname.' al grupo '.$grupo_inscripcion->nombre);
 
@@ -701,9 +702,54 @@ class AlumnosController extends Controller
                 // SE GUARDA EL MONTO PACTADO EN EL CORE DEL ALUMNO DONDE SE VA A RESPETAR ESTA CANTIDAD 
                 $especialidad = $grupo_inscripcion->especialidad;
 
+                
                 switch ($request->input('forma_pago')) {
                     case config('alumnos.forma_pago.mensual','mensual'):
                         // $pids->inscripcion($grupo_inscripcion, $grupo_inscripcion->precio_inscripcion);
+                        // SE VERIFICA SI ES VIABLE A DESCUENTO Y SI ES ASI SE GENERA UN APOYO A LA COLEGIATURA CORRESPONDIENTE
+                        
+                        $especialidad_alumno = $alumno->especialidades->first();
+
+                        $descuentos = Descuento::where(function($q)use($especialidad_alumno) {
+                            return $q->where(function($q2) use($especialidad_alumno){
+                                return $q2->where('id_especialidad_1','=',$especialidad_alumno->id)->where('forma_pago_1','=',$especialidad_alumno->pivot->forma_pago);
+                            })->orWhere(function($q2) use($especialidad_alumno){
+                                return $q2->where('id_especialidad_2','=',$especialidad_alumno->id)->where('forma_pago_2','=',$especialidad_alumno->pivot->forma_pago);
+                            });
+                        })->where(function($q)use($especialidad, $request) {
+                            return $q->where(function($q2) use($especialidad, $request){
+                                return $q2->where('id_especialidad_1','=',$especialidad->id)->where('forma_pago_1','=',$request->forma_pago);
+                            })->orWhere(function($q2) use($especialidad, $request){
+                                return $q2->where('id_especialidad_2','=',$especialidad->id)->where('forma_pago_2','=',$request->forma_pago);
+                            });
+                        })->get();
+
+                        // SI APLICA A UN DESCUENTO, SE GENERAN LOS APOYOS DE ESPECIALIDAD
+                        if($descuentos->count()>0){
+                            $descuento = $descuentos->first();
+
+                            $today = \Carbon\Carbon::today();
+                            $apoyo_1 = ApoyoEspecial::create([
+                                'id_sucursal' => $alumno->id_sucursal,
+                                'id_especialidad'  => $descuento->id_especialidad_1,
+                                'id_alumno'     => $alumno->id,
+                                'fecha_inicio'=> $today->format('Y-m-d'),
+                                'fecha_final'=> $today->addWeeks($especialidad_alumno->pivot->semanas_cursar)->format('Y-m-d'),
+                                'precio' => $descuento->monto_1,
+                            ]);
+
+                            $today = \Carbon\Carbon::today();
+                            $apoyo_2 = ApoyoEspecial::create([
+                                'id_sucursal' => $alumno->id_sucursal,
+                                'id_especialidad'  => $descuento->id_especialidad_2,
+                                'id_alumno'     => $alumno->id,
+                                'fecha_inicio'=> $today->format('Y-m-d'),
+                                'fecha_final'=> $today->addWeeks($especialidad->materias->sum('semanas'))->format('Y-m-d'),
+                                'precio' => $descuento->monto_2,
+                            ]);
+
+                        }
+
                         // GENERA DOCUMENTOS MENSUALES
                         $pcds->mensual($especialidad, $grupo_inscripcion);
 

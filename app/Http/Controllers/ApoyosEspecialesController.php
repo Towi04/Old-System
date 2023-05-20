@@ -73,7 +73,7 @@ class ApoyosEspecialesController extends Controller
             }
 
             return redirect()->back()->with([
-                'message' => 'Apoyo creado correctamente'
+                'message' => 'Existe un apoyo vigente'
             ]);
         }
 

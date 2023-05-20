@@ -54,7 +54,8 @@
                                 <a href="{{ route('admin.sucursales.index') }}">Sucursal</a>
                             </li>
                         @endcan
-
+                    </ul>
+                    <ul class="sub-menu">
                         @can(['listar_especialidades'])
                             <li>
                                 <a href="{{ route('admin.especialidades.index') }}">Especialidades</a>

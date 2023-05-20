@@ -36,7 +36,7 @@
               <thead class="bg-primary text-white">
                   <tr>
                       <th>ID</th>
-                      <th>Especialidad 1 (Con descuento)</th>
+                      <th>Especialidad 1</th>
                       <th>Especialidad 2</th>
                       <th>Porcentaje descuento</th>
                       <th class="text-center">Acciones</th>
@@ -91,7 +91,6 @@
                 { data: 'id', name: 'id',class: 'text-nowrap'},
                 { data: 'especialidad_1.nombre', name: 'especialidad_1.nombre',class: 'text-nowrap text-right'},
                 { data: 'especialidad_2.nombre', name: 'especialidad_2.nombre',class: 'text-nowrap text-right'},
-                { data: 'porcentaje_descuento', name: 'porcentaje_descuento',class: 'text-nowrap text-right'},
                 { data: 'buttons', name: 'buttons', orderable: false, searchable: false }
             ],
             language: {
