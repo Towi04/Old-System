@@ -142,11 +142,12 @@
                             <div class="form-group">
                                 {!! Form::label('forma_pago','Forma Pago:') !!}
                                 {!! Form::select('forma_pago', [
+                                        ''                      => 'Selecciona una opción',
                                         'Efectivo'              => 'Efectivo',
                                         'Tarjate de debito'     => 'Tarjate de debito',
                                         'Tarjate de crédito'    => 'Tarjate de crédito',
                                         'Transferencia'         => 'Transferencia'
-                                    ],null, ['id' =>'forma_pago', 'class' => 'form-control form-control-sm','form-selector'=> '','disabled' => true]) !!}
+                                    ],null, ['id' =>'forma_pago', 'class' => 'form-control form-control-sm','form-selector'=> '','disabled' => true,'required']) !!}
                             </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 paga_con">
