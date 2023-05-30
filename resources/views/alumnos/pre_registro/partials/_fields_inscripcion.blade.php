@@ -201,8 +201,8 @@
 
         <div class="col-md-12">
             <div class="form-group">
-                {!! Form::label('enfermedad_cronica', 'Enfermidad Cronica:'); !!}
-                {!! Form::text('enfermedad_cronica', null, ['class' => 'form-control','placeholder' => 'Escribe la enfermedad cronica','autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']) !!}
+                {!! Form::label('enfermedad_cronica', 'Enfermedad Cronica:*'); !!}
+                {!! Form::text('enfermedad_cronica', null, ['class' => 'form-control','required'=> true,'placeholder' => 'Escribe la enfermedad cronica','autocomplete' => 'off','style' => "text-transform:uppercase",'onkeyup' => 'javascript:this.value=this.value.toUpperCase();']) !!}
             </div>
         </div>
 @endcan

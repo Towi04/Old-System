@@ -509,12 +509,11 @@ class PreRegistrosController extends Controller
             }
         } catch (\Throwable $th) {
 
-            // dd($th);
+            Log::error('Ocurrio el siguiente error:' .$th->getMessage().' en la línea '.$th->getLine().' en la clase '.$th->getFile());
+
             return response()->json([
                 'success'   => false,
-                'message'   => 'Ocurrio el siguiente error:' .$th->getMessage().' en la línea '.$th->getLine().' en el archivo '.$th->getFile(),
-                // 'redirect'  => route('alumnos.show',$alumno),
-                // 'pago'      => $request->has('id_grupo') ? Pago::first()->where('id_alumno',$alumno->id)->latest()->first() : ''
+                'message'   => 'Ocurrio el siguiente error:' .$th->getMessage().' en la línea '.$th->getLine().' en la clase '.$th->getFile(),
             ]);
 
             Session::flash('error','Ocurrio el siguiente error: '.$th);
