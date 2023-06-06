@@ -240,6 +240,10 @@
                                                     <button data-id="{{$grupo->id}}" class="btn btn-sm btn-success reaundar_grupo"><i class="fas fa-play    "></i> Reanudar</button>
                                                 @endif
                                             @endcan
+
+                                            @can('dar_fin_de_cursos')
+                                                <button data-id="{{$grupo->id}}" class="btn btn-sm btn-info btn-block fin_de_curso"><i class="fas fa-play    "></i> Fin de cutso</button>
+                                            @endcan
                                         </div>
                                         <div class="col-12">
                                             <div class="post-tags mt-2">
@@ -1503,6 +1507,50 @@
                 ]
             });
             @endrole
+
+
+            @can('dar_fin_de_curso')
+            $('.dar_fin_de_curso').click(function(){
+                id = $(this).data('id');
+                swal({
+                            title: "¿Estas seguro de dar fin de curso al alumno de este grupo?",
+                            text: "Ya no se generarán mas colegiaturas para este alumno en este grupo.",
+                            type: "success",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3bd52c",
+                            cancelButtonColor: "#CDCDCD",
+                            confirmButtonText: "Si, fin de curso",
+                            cancelButtonText: "Cancelar",
+                            showLoaderOnConfirm: false,
+                        }).then(function(result) {
+                            if (!result.value) {
+                                return;
+                            }
+
+                            wait.modal('show');
+
+                            $.ajax({
+                                url: "{{route('alumnos.fin_de_curso')}}",
+                                type: 'POST',
+                                cache: false,
+                                data: {
+                                    _token: $("meta[name='csrf-token']").attr("content"),
+                                    id_alumno: {{$alumno->id}},
+                                    id_grupo: id,
+                                },
+                                success: function (response){
+                                    location.reload();
+                                },
+                                error:function(error){
+                                    setTimeout(() => {
+                                        wait.modal('hide');
+                                        toastr.error('Error', 'Ocurrio un error inesperado');
+                                    }, 250);
+                                }
+                            });
+                        })
+            });
+            @endcan
 
             $('.editable_fecha_inicio_grupo').editable({
                 emptytext: 'Vacio',

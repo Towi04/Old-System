@@ -167,6 +167,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
     Route::post('alumnos/baja_grupo', [ AlumnosController::class,'baja_grupo'])->name('alumnos.baja_grupo');
     Route::post('alumnos/pausar_grupo', [ AlumnosController::class,'pausar_grupo'])->name('alumnos.pausar_grupo');
     Route::post('alumnos/reanudar_grupo', [ AlumnosController::class,'reanudar_grupo'])->name('alumnos.reanudar_grupo');
+    Route::post('alumnos/fin_de_curso', [ AlumnosController::class,'fin_de_curso'])->name('alumnos.fin_de_curso');
 
     Route::get('alumnos/cambio_horario/{id_alumno}/{id_grupo_origen}', [ AlumnosController::class,'cambio_horario'])->name('alumnos.cambio_horario');
     Route::post('alumnos/guardar_cambio_horario', [ AlumnosController::class,'guardar_cambio_horario'])->name('alumnos.guardar_cambio_horario');

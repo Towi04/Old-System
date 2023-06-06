@@ -983,6 +983,18 @@ class AlumnosController extends Controller
 
     }
 
+    public function fin_de_curso(Request $request){
+
+        $alumno = Alumno::find($request->id_alumno);
+
+        AlumnoGrupo::where('id_alumno','=',$request->id_alumno)->where('id_grupo','=',$request->id_grupo)->update([
+            'status' => 'Fin de Curso'
+        ]);
+        
+        $grupo = Grupo::find($request->id_grupo);
+        Log::alert('Usuario '.Auth::user()->fullname.' dio fin de curso al alumno '.$alumno->numero_control_fullname.' del grupo '.$grupo->nombre);
+
+    }
 
     public function subir_foto(Request $request)
     {

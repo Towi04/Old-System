@@ -507,6 +507,11 @@ return [
             'display_name'  => 'Gestionar descuentos',
             'description'   => 'Gestionar descuentos',
         ],
+        [
+            'name'          => 'dar_fin_de_cursos',
+            'display_name'  => 'Dar fin de cursos',
+            'description'   => 'Dar fin de cursos',
+        ],
         
     ],
 
