@@ -16,8 +16,7 @@ use App\Models\Alerta;
 use App\Models\ApoyoInscripcion;
 use App\Models\Inscripcion;
 use App\Models\AlumnoEspecialidad;
-
-
+use App\Models\ApoyoEspecial;
 #FACADES
 use App\Services\FacturacionService;
 use App\Services\PagoInscripcionService;
@@ -613,14 +612,29 @@ class AlumnosController extends Controller
                 ->when($request->input('status'), function ($q, $status) {
                     $q->where('status', $status);
                 })->where(function($q)use($today){
-                    return $q->where('fecha_limite','<',$today->format('Y-m-d'))->where('status','=','pendiente');
+                    return $q->where('fecha_limite','<',$today->format('Y-m-d'))->where('status','=','Pendiente');
                 })->count();
+
+            $apoyo = ApoyoEspecial::where('id_alumno','=', $request->id_alumno)
+                        ->where('id_especialidad','=', $request->id_especialidad)
+                        ->where('fecha_final','>=', date('Y-m-d'))->orderBy('fecha_final')->get()->first();                     
+            
+            //  SE UTILIZA PARA SABER LA DIFERENCIA ENTRE LA CANTIDAD DE MESES QUE LE TOCA DE APOYO Y EL ULTIMO PAGO QUE HIZO
+            $ultimo_docto_pagado = Documento::query()
+            ->when($request->input('id_alumno'), function ($q, $id_alumno) {
+                $q->where('id_alumno', $id_alumno);
+            })->when($request->input('id_especialidad'), function ($q, $id_especialidad) {
+                $q->where('id_especialidad', $id_especialidad);
+            })->orderBy('fecha_limite','desc')->get()->first();
+
 
                 
         } else {
             $query = Documento::where('id_alumno', 'xxxxxxxxx');
             $total_pendiente = 0;
             $vencido = 0;
+            $apoyo = ApoyoEspecial::where('id_alumno','=', 'xxxxxxxxx');
+            $ultimo_docto_pagado = Documento::where('id_alumno', 'xxxxxxxxx')->first();
         }
 
         return DataTables::eloquent($query)
@@ -649,7 +663,9 @@ class AlumnosController extends Controller
             ->rawColumns(['status'])
             ->with([
                 'total_pendiente' => $total_pendiente,
-                'vencido'         => $vencido
+                'vencido'         => $vencido,
+                'apoyo'          => $apoyo,
+                'ultimo_docto_pagado' => $ultimo_docto_pagado
             ])
             ->make(true);
     }

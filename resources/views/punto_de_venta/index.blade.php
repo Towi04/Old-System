@@ -340,6 +340,8 @@
             let especialidades;
             let especialidad_seleccionada;
             let documentos_pendientes;
+            let apoyo;
+            let ultimo_docto_pagado;
 
             const disableForm = (disable = false) => {
                 const $elements = dom.form_abonos[0].querySelectorAll('[form-selector]');
@@ -502,6 +504,8 @@
                         // SE ASIGNAN A LA VARIABLE LOS DOCTOS PENDIENTES TRAIDOS AL SELECCIONAR AL ALUMNO. 
                         // CON ESTOS VAMOS A OBTENER EL MONTO A PAGAR DEL ALUMNO
                         documentos_pendientes = response.data;
+                        apoyo = response.apoyo
+                        ultimo_docto_pagado = response.ultimo_docto_pagado
                         poner_monto()
                         
                     },
@@ -651,10 +655,43 @@
                     saldo = Lazy(documentos_pendientes).sum(function(doc){
                         return parseFloat(doc.saldo_sin_formato)
                     });
-                    dif = semanas_meses - no_doctos;
                     
-                    monto_doctos_extras = (especialidad_seleccionada.pivot.forma_pago == 'semanal')? especialidad_seleccionada.pivot.monto * dif:especialidad_seleccionada.pivot.monto_pronto_pago * dif;
-                    saldo = parseFloat(saldo) + parseFloat(monto_doctos_extras);
+                    
+                    // DE ESTAS SEMANAS SE OBTIENEN LOS APOYOS ESPECIALES QUE TIENE EL ALUMNO EN LA ESPECIALIDAD SELECCIONADA, CALCULANDO LA DIFERENCIA DE MESES O SEMANAS CON 
+                    // LA FECHA FINAL DEL APOYO
+                    fecha_final_apoyo = moment(apoyo.fecha_final)
+                    
+                    if(especialidad_seleccionada.pivot.forma_pago == 'semanal'){
+                        dif_apoyo = fecha_final_apoyo.diff(moment(ultimo_docto_pagado.fecha_limite),'weeks');
+                    }else{
+                        if(especialidad_seleccionada.pivot.forma_pago == 'mensual'){
+                            dif_apoyo = fecha_final_apoyo.diff(moment(ultimo_docto_pagado.fecha_limite),'months');
+                            
+                        }else{
+                            dif_apoyo = 0;
+                        }
+                    }
+                    
+                    sobrantes = semanas_meses - no_doctos;
+                    
+                    dif_apoyo = (dif_apoyo<0)?0:dif_apoyo;
+                    
+                    if(dif_apoyo>= sobrantes){
+                        monto_apoyo = sobrantes * apoyo.precio;
+                        console.log(monto_apoyo)
+                        monto_doctos_extras = 0;
+                    }else{
+                        sobrantes_apoyo = sobrantes - dif_apoyo;
+                        console.log(dif_apoyo)
+                        monto_apoyo = dif_apoyo * apoyo.precio;
+                        monto_doctos_extras = (especialidad_seleccionada.pivot.forma_pago == 'semanal')? especialidad_seleccionada.pivot.monto * sobrantes_apoyo:especialidad_seleccionada.pivot.monto_pronto_pago * sobrantes_apoyo;
+                    }
+                    
+
+                    //SE OBTIENEN LAS SEMANAS SOBRATES
+                    // dif = semanas_meses - dif_apoyo - no_doctos;
+                    // monto_doctos_extras = (especialidad_seleccionada.pivot.forma_pago == 'semanal')? especialidad_seleccionada.pivot.monto * dif:especialidad_seleccionada.pivot.monto_pronto_pago * dif;
+                    saldo = parseFloat(saldo) + parseFloat(monto_apoyo) + parseFloat(monto_doctos_extras);
                 }
 
                 $('#monto').val(saldo)

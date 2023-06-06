@@ -20,7 +20,7 @@
         <div class="col-md-12" id="seccion_grupo" >
             <div class="form-group">
                 {!! Form::label('id_grupo', 'Grupo'); !!}
-                {!! Form::select('id_grupo',[],null, ['class' => 'form-control','style' => 'width:100%','requred'=>'required']) !!}
+                {!! Form::select('id_grupo',[],null, ['class' => 'form-control','style' => 'width:100%','required'=>'required']) !!}
             </div>
         </div>
 
