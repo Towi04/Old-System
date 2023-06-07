@@ -659,9 +659,8 @@
                     
                     // DE ESTAS SEMANAS SE OBTIENEN LOS APOYOS ESPECIALES QUE TIENE EL ALUMNO EN LA ESPECIALIDAD SELECCIONADA, CALCULANDO LA DIFERENCIA DE MESES O SEMANAS CON 
                     // LA FECHA FINAL DEL APOYO
-                    fecha_final_apoyo = moment(apoyo.fecha_final)
-                    
                     if(apoyo){
+                        fecha_final_apoyo = moment(apoyo.fecha_final)
                         if(especialidad_seleccionada.pivot.forma_pago == 'semanal'){
                             dif_apoyo = fecha_final_apoyo.diff(moment(ultimo_docto_pagado.fecha_limite),'weeks');
                         }else{
@@ -672,26 +671,28 @@
                                 dif_apoyo = 0;
                             }
                         }
+
+                        sobrantes = semanas_meses - no_doctos;
+                    
+                        dif_apoyo = (dif_apoyo<0)?0:dif_apoyo;
+                        
+                        if(dif_apoyo>= sobrantes){
+                            monto_apoyo = sobrantes * apoyo.precio;
+                            console.log(monto_apoyo)
+                            monto_doctos_extras = 0;
+                        }else{
+                            sobrantes_apoyo = sobrantes - dif_apoyo;
+                            console.log(dif_apoyo)
+                            monto_apoyo = dif_apoyo * apoyo.precio;
+                            monto_doctos_extras = (especialidad_seleccionada.pivot.forma_pago == 'semanal')? especialidad_seleccionada.pivot.monto * sobrantes_apoyo:especialidad_seleccionada.pivot.monto_pronto_pago * sobrantes_apoyo;
+                        }
+                        
                     }else{
+                        sobrantes = semanas_meses - no_doctos;
                         dif_apoyo = 0;
+                        monto_apoyo = 0;
+                        monto_doctos_extras = (especialidad_seleccionada.pivot.forma_pago == 'semanal')? especialidad_seleccionada.pivot.monto * sobrantes:especialidad_seleccionada.pivot.monto_pronto_pago * sobrantes;
                     }
-                    
-                    
-                    sobrantes = semanas_meses - no_doctos;
-                    
-                    dif_apoyo = (dif_apoyo<0)?0:dif_apoyo;
-                    
-                    if(dif_apoyo>= sobrantes){
-                        monto_apoyo = sobrantes * apoyo.precio;
-                        console.log(monto_apoyo)
-                        monto_doctos_extras = 0;
-                    }else{
-                        sobrantes_apoyo = sobrantes - dif_apoyo;
-                        console.log(dif_apoyo)
-                        monto_apoyo = dif_apoyo * apoyo.precio;
-                        monto_doctos_extras = (especialidad_seleccionada.pivot.forma_pago == 'semanal')? especialidad_seleccionada.pivot.monto * sobrantes_apoyo:especialidad_seleccionada.pivot.monto_pronto_pago * sobrantes_apoyo;
-                    }
-                    
 
                     //SE OBTIENEN LAS SEMANAS SOBRATES
                     // dif = semanas_meses - dif_apoyo - no_doctos;
