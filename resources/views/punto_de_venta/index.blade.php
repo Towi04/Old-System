@@ -661,16 +661,21 @@
                     // LA FECHA FINAL DEL APOYO
                     fecha_final_apoyo = moment(apoyo.fecha_final)
                     
-                    if(especialidad_seleccionada.pivot.forma_pago == 'semanal'){
-                        dif_apoyo = fecha_final_apoyo.diff(moment(ultimo_docto_pagado.fecha_limite),'weeks');
-                    }else{
-                        if(especialidad_seleccionada.pivot.forma_pago == 'mensual'){
-                            dif_apoyo = fecha_final_apoyo.diff(moment(ultimo_docto_pagado.fecha_limite),'months');
-                            
+                    if(apoyo){
+                        if(especialidad_seleccionada.pivot.forma_pago == 'semanal'){
+                            dif_apoyo = fecha_final_apoyo.diff(moment(ultimo_docto_pagado.fecha_limite),'weeks');
                         }else{
-                            dif_apoyo = 0;
+                            if(especialidad_seleccionada.pivot.forma_pago == 'mensual'){
+                                dif_apoyo = fecha_final_apoyo.diff(moment(ultimo_docto_pagado.fecha_limite),'months');
+                                
+                            }else{
+                                dif_apoyo = 0;
+                            }
                         }
+                    }else{
+                        dif_apoyo = 0;
                     }
+                    
                     
                     sobrantes = semanas_meses - no_doctos;
                     
