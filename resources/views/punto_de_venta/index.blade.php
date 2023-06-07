@@ -659,6 +659,8 @@
                     
                     // DE ESTAS SEMANAS SE OBTIENEN LOS APOYOS ESPECIALES QUE TIENE EL ALUMNO EN LA ESPECIALIDAD SELECCIONADA, CALCULANDO LA DIFERENCIA DE MESES O SEMANAS CON 
                     // LA FECHA FINAL DEL APOYO
+                    // SI TIENE APOYO SE CALCULA CUANTAS SEMANAS CON RESPECTO A SU ULTIMO DOCUMENTO PAGADO LE QUEDA DE APOYO
+                    // SI NO TIENE APOYO SE CALCULA EL MONTO DE ACUERDO A LO ACORDADO EN SU COLEGIATURA
                     if(apoyo){
                         fecha_final_apoyo = moment(apoyo.fecha_final)
                         if(especialidad_seleccionada.pivot.forma_pago == 'semanal'){
@@ -688,15 +690,12 @@
                         }
                         
                     }else{
+                        // ESTO ES SI NO TIENE APOYOS ESPECIALES. CALCULA EL MONTO DE LOS PAGOS ADELANTADOS CON PRONTO PAGO PARA MENSUALES O NORMAL PARA SEMNAL
                         sobrantes = semanas_meses - no_doctos;
                         dif_apoyo = 0;
                         monto_apoyo = 0;
                         monto_doctos_extras = (especialidad_seleccionada.pivot.forma_pago == 'semanal')? especialidad_seleccionada.pivot.monto * sobrantes:especialidad_seleccionada.pivot.monto_pronto_pago * sobrantes;
                     }
-
-                    //SE OBTIENEN LAS SEMANAS SOBRATES
-                    // dif = semanas_meses - dif_apoyo - no_doctos;
-                    // monto_doctos_extras = (especialidad_seleccionada.pivot.forma_pago == 'semanal')? especialidad_seleccionada.pivot.monto * dif:especialidad_seleccionada.pivot.monto_pronto_pago * dif;
                     saldo = parseFloat(saldo) + parseFloat(monto_apoyo) + parseFloat(monto_doctos_extras);
                 }
 
