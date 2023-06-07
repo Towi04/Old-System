@@ -230,25 +230,25 @@
                                     <div class="row">
                                         <div class="col-12">
                                             @can('cambio_horario_grupo')
-                                            <a href="{{route('alumnos.cambio_horario', [$alumno->id,$grupo->id])}}" class="btn btn-sm btn-dark">Cambio Horario</a>
+                                                <a href="{{route('alumnos.cambio_horario', [$alumno->id,$grupo->id])}}" class="btn btn-sm btn-dark">Cambio Horario</a>
                                             @endcan
                                             
                                             @can('baja_grupo')
                                                 @if($grupo->pivot->status == 'Inscrito')
-                                                    <button data-id="{{$grupo->id}}" class="btn btn-sm btn-warning pausar_grupo text-dark"><i class="fas fa-pause    "></i> Pausa</button>
+                                                    <button data-id="{{$grupo->id}}" class="btn btn-sm ml-0 btn-warning pausar_grupo text-dark"><i class="fas fa-pause    "></i> Pausa</button>
                                                 @else 
-                                                    <button data-id="{{$grupo->id}}" class="btn btn-sm btn-success reaundar_grupo"><i class="fas fa-play    "></i> Reanudar</button>
+                                                    <button data-id="{{$grupo->id}}" class="btn btn-sm ml-0 btn-success reaundar_grupo"><i class="fas fa-play    "></i> Reanudar</button>
                                                 @endif
                                             @endcan
 
-                                            @can('dar_fin_de_cursos')
-                                                <button data-id="{{$grupo->id}}" class="btn btn-sm btn-info btn-block fin_de_curso"><i class="fas fa-play    "></i> Fin de cutso</button>
+                                            @can('dar_fin_de_curso')
+                                                <button data-id="{{$grupo->id}}" class="btn btn-sm ml-0 mt-1 btn-info dar_fin_de_curso text-white"> Fin de curso</button>
                                             @endcan
                                         </div>
                                         <div class="col-12">
                                             <div class="post-tags mt-2">
                                                 <div class="badge badge-primary">
-                                                    Alumnos {{$grupo->alumnos->count()}}
+                                                    {{-- Alumnos {{$grupo->alumnos->count()}} --}}
                                                 </div>
 
                                                 <a class="post-link float-right" href="{{route('grupos.show', $grupo)}}"><span>Ir a grupo</span><i class="os-icon os-icon-arrow-right7"></i></a>

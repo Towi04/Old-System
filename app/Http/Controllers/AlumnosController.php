@@ -988,7 +988,8 @@ class AlumnosController extends Controller
         $alumno = Alumno::find($request->id_alumno);
 
         AlumnoGrupo::where('id_alumno','=',$request->id_alumno)->where('id_grupo','=',$request->id_grupo)->update([
-            'status' => 'Fin de Curso'
+            'status' => 'Fin de Curso',
+            'fecha_final' => date('Y-m-d'),
         ]);
         
         $grupo = Grupo::find($request->id_grupo);

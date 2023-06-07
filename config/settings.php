@@ -508,9 +508,9 @@ return [
             'description'   => 'Gestionar descuentos',
         ],
         [
-            'name'          => 'dar_fin_de_cursos',
-            'display_name'  => 'Dar fin de cursos',
-            'description'   => 'Dar fin de cursos',
+            'name'          => 'dar_fin_de_curso',
+            'display_name'  => 'Dar fin de curso',
+            'description'   => 'Dar fin de curso',
         ],
         
     ],
