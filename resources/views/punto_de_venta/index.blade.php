@@ -144,8 +144,8 @@
                                 {!! Form::select('forma_pago', [
                                         ''                      => 'Selecciona una opción',
                                         'Efectivo'              => 'Efectivo',
-                                        'Tarjate de debito'     => 'Tarjate de debito',
-                                        'Tarjate de crédito'    => 'Tarjate de crédito',
+                                        'Tarjeta de debito'     => 'Tarjeta de debito',
+                                        'Tarjeta de crédito'    => 'Tarjeta de crédito',
                                         'Transferencia'         => 'Transferencia'
                                     ],null, ['id' =>'forma_pago', 'class' => 'form-control form-control-sm','form-selector'=> '','disabled' => true,'required']) !!}
                             </div>
@@ -265,8 +265,8 @@
                                 {!! Form::label('forma_pago','Forma Pago:') !!}
                                 {!! Form::select('forma_pago', [
                                         'Efectivo'              => 'Efectivo',
-                                        'Tarjate de debito'     => 'Tarjate de debito',
-                                        'Tarjate de crédito'    => 'Tarjate de crédito',
+                                        'Tarjeta de debito'     => 'Tarjeta de debito',
+                                        'Tarjeta de crédito'    => 'Tarjeta de crédito',
                                         'Transferencia'         => 'Transferencia'
                                     ],null, ['id'=>'forma_pago_manual','class' => 'form-control form-control-sm','form-selector'=> '','required' => true]) !!}
                             </div>

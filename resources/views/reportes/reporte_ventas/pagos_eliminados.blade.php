@@ -690,8 +690,8 @@
                     onblur: 'ignore',
                     source: [
                         {value: 'Efectivo', text: 'Efectivo'},
-                        {value: 'Tarjate de debito', text: 'Tarjeta de debito'},
-                        {value:  'Tarjate de crédito', text: 'Tarjeta de crédito'},
+                        {value: 'Tarjeta de debito', text: 'Tarjeta de debito'},
+                        {value:  'Tarjeta de crédito', text: 'Tarjeta de crédito'},
                         {value:  'Transferencia', text: 'Transferencia'},
                     ]
                 });

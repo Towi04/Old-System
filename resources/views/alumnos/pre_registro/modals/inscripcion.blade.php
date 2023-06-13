@@ -24,8 +24,8 @@
                                 {!! Form::label('tipo_pago','Tipo pago:*') !!}
                                 {!! Form::select('tipo_pago', [
                                     'Efectivo'              => 'Efectivo',
-                                    'Tarjate de debito'     => 'Tarjate de debito',
-                                    'Tarjate de crédito'    => 'Tarjate de crédito',
+                                    'Tarjeta de debito'     => 'Tarjeta de debito',
+                                    'Tarjeta de crédito'    => 'Tarjeta de crédito',
                                     'Transferencia'         => 'Transferencia'
                                 ],null, ['class' => 'form-control form-control-sm','form-selector'=> '','placeholder' =>'Selecciona una forma de pago' ,'required' => true]) !!}
                             </div>
