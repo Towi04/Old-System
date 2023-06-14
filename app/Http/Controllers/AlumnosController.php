@@ -736,6 +736,8 @@ class AlumnosController extends Controller
                                 'fecha_inicio'=> $today->format('Y-m-d'),
                                 'fecha_final'=> $today->addWeeks($especialidad_alumno->pivot->semanas_cursar)->format('Y-m-d'),
                                 'precio' => $descuento->monto_1,
+                                'tipo'  => 'Doble Especialidad',
+                                'id_descuento' => $descuento->id,
                             ]);
 
                             $today = \Carbon\Carbon::today();
@@ -746,6 +748,8 @@ class AlumnosController extends Controller
                                 'fecha_inicio'=> $today->format('Y-m-d'),
                                 'fecha_final'=> $today->addWeeks($especialidad->materias->sum('semanas'))->format('Y-m-d'),
                                 'precio' => $descuento->monto_2,
+                                'tipo'  => 'Doble Especialidad',
+                                'id_descuento' => $descuento->id,
                             ]);
 
                         }
@@ -1008,20 +1012,50 @@ class AlumnosController extends Controller
             ]);
         }
 
+        // SE DETECTAN LOS DESCUENTOS POR DOBLE ESPECIALIDAD PARA PODER QUITARLOS
+        $especialidad = $grupo->especialidad;
+        $apoyo = $alumno->apoyos_especiales()->where('id_especialidad','=',$especialidad->id)->whereNotNull('id_descuento')->first();
+        if($apoyo){
+            $alumno->apoyos_especiales()->where('id_descuento','=',$apoyo->id_descuento)->update([
+                'fecha_final' => date('Y-m-d')
+            ]); 
+        }
+        
 
         $grupo->actualizarReporteDesercion('sumar','bajas',1);
+
+        return redirect()->back()->with([
+            'message' => 'Se pausó al alumno de este grupo con éxito'
+        ]);
 
     }
 
     public function reanudar_grupo(Request $request){
 
-        $alumno = Alumno::find($request->id_alumno);
+        $alumno = Alumno::with(['especialidades'])->find($request->id_alumno);
 
         AlumnoGrupo::where('id_alumno','=',$request->id_alumno)->where('id_grupo','=',$request->id_grupo)->update([
             'status' => 'Inscrito'
         ]);
         
         $grupo = Grupo::find($request->id_grupo);
+       
+        
+        // SE DETECTAN LOS DESCUENTOS POR DOBLE ESPECIALIDAD PARA PODER QUITARLOS
+        $especialidad = $grupo->especialidad;
+        $apoyo = $alumno->apoyos_especiales()->where('id_especialidad','=',$especialidad->id)->whereNotNull('id_descuento')->first();
+        if($apoyo){
+            $apoyos = $alumno->apoyos_especiales->where('id_descuento','=',$apoyo->id_descuento);
+            
+            foreach($apoyos as $apo){
+                $new_apoyo = $apo->replicate();
+                $new_apoyo->fecha_inicio = \Carbon\Carbon::today()->format('Y-m-d');
+                $new_apoyo->fecha_final = \Carbon\Carbon::today()->addWeeks($alumno->especialidades->where('id',$apoyo->id_especialidad)->first()->pivot->semanas_cursar)->format('Y-m-d');
+                $new_apoyo->save();
+
+            }
+        }
+        
         Log::alert('Usuario '.Auth::user()->fullname.' reanudó al alumno '.$alumno->numero_control_fullname.' al grupo '.$grupo->nombre);
 
         $grupo->actualizarReporteDesercion('sumar','altas',1);

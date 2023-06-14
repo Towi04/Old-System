@@ -401,6 +401,7 @@
                                                                     <th>Fecha Inicio</th>
                                                                     <th>Fecha Final</th>
                                                                     <th>Monto</th>
+                                                                    <th>Tipo</th>
                                                                     <th>Acciones</th>
                                                                 </tr>
                                                             </thead>
@@ -607,6 +608,7 @@
     @include('alumnos.modals.apoyos_especiales')
     @include('alumnos.modals.apoyos_inscripciones')
     @include('alumnos.modals.notas')
+    @include('alumnos.modals.modalPausarGrupo')
 @endsection
 
 
@@ -1018,6 +1020,7 @@
                             {data: 'fecha_inicio', name: 'fecha_inicio'},
                             {data: 'fecha_final', name: 'fecha_final'},
                             {data: 'precio', name: 'precio'},
+                            {data: 'tipo', name: 'tipo'},
                             { data: 'buttons', name: 'buttons', orderable: false, searchable: false },
                         ],
                         order: [[ 0, "asc" ]],
@@ -1363,60 +1366,11 @@
 
             $('.pausar_grupo').click(function(){
                 id = $(this).data('id');
-                swal({
-                            title: "¿Estas seguro de dar pausa al alumno de este grupo?",
-                            text: "Selecciona la fecha en la que re contactar al alumno.",
-                            type: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#ff3333",
-                            cancelButtonColor: "#CDCDCD",
-                            confirmButtonText: "Si, pausar",
-                            cancelButtonText: "Cancelar",
-                            showLoaderOnConfirm: false,
-                            html: 'Selecciona la fecha en la que re contactar al alumno. <br> <input id="datepicker_alerta">',
-                            customClass: 'swal2-overflow',
-                            onOpen: function() {
-                                // alert('abrio');
-                                $('#datepicker_alerta').datepicker({ 
-                                        language: 'es',
-                                        format: 'yyyy-mm-dd',
-                                        ignoreReadonly: false,
-                                        todayHighlight: true,
-                                        todayBtn: true,
-                                        autoclose: true,
-                                    });
+                $('#input_id_grupo_recontactar').val(id);
+                $('#modalPausarGrupo').modal('show');
 
-                                $('#datepicker_alerta').trigger('click');
-                            },
-                        }).then(function(result) {
-                            if (!result.value) {
-                                return;
-                            }
-
-                            wait.modal('show');
-
-                            $.ajax({
-                                url: "{{route('alumnos.pausar_grupo')}}",
-                                type: 'POST',
-                                cache: false,
-                                data: {
-                                    _token: $("meta[name='csrf-token']").attr("content"),
-                                    id_alumno: {{$alumno->id}},
-                                    id_grupo: id,
-                                    fecha_recontactar: $('#datepicker_alerta').val()
-                                },
-                                success: function (response){
-                                    location.reload();
-                                },
-                                error:function(error){
-                                    setTimeout(() => {
-                                        wait.modal('hide');
-                                        toastr.error('Error', 'Ocurrio un error inesperado');
-                                    }, 250);
-                                }
-                            });
-                        })
             });
+
 
             $('.reaundar_grupo').click(function(){
                 id = $(this).data('id');
@@ -1574,6 +1528,15 @@
                 window.localStorage.setItem('activeTabShowAlumno',id);
 
             }
+
+            $('#datepicker_recontacto').datepicker({ 
+                                        language: 'es',
+                                        format: 'yyyy-mm-dd',
+                                        ignoreReadonly: false,
+                                        todayHighlight: true,
+                                        todayBtn: true,
+                                        autoclose: true,
+                                    });
 
             
 

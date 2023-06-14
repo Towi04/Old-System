@@ -29,6 +29,8 @@ class ApoyoEspecial extends Model
         'precio',
         'fecha_final',
         'fecha_inicio',
+        'tipo',
+        'id_descuento',
     ];
 
     /**
