@@ -17,6 +17,7 @@ use App\Models\Asistencia;
 use App\Models\Inscripcion;
 use App\Models\InscripcionRecomendacion;
 use App\Models\AlumnoEspecialidad;
+use App\Models\Alerta;
 use Yajra\DataTables\Facades\DataTables;
 use PDF;
 
@@ -1068,6 +1069,78 @@ class ReportesController extends Controller
             'tipo',
         ));
 
+    }
+
+    public function alertas(Request $request)
+    {
+        Carbon::setWeekStartsAt(Carbon::SUNDAY);
+        Carbon::setWeekEndsAt(Carbon::SATURDAY);
+
+        # 👉 SECCION DE VARIABLES
+        $tipo = $request->input('tipo') ?? 'dia';
+
+        $sucursal = optional(session('sucursal'));
+
+        if (isset($request->fecha)) {
+            $fecha = Carbon::createFromFormat('d-m-Y', $request->input('fecha'));
+        } else {
+            $fecha = Carbon::today();
+        }
+
+        $inicio  = null;
+        $final = null;
+
+        if ($tipo == 'dia') {
+            $fecha =  new Date($fecha);
+
+            $inicio = $fecha->startOfDay()->format('Y-m-d H:i:s');
+            $final = $fecha->endOfDay()->format('Y-m-d H:i:s');
+
+            $fecha_antes = new Date($fecha->clone()->subDay()->format('Y-m-d'));
+            $fecha_despues = new Date($fecha->clone()->addDay()->format('Y-m-d'));
+        }
+
+        if ($tipo == 'mes') {
+            $fecha =  new Date($fecha);
+            $fecha_antes = new Date($fecha->clone()->subMonth()->format('Y-m-d'));
+            $fecha_despues = new Date($fecha->clone()->addMonth()->format('Y-m-d'));
+
+            $inicio = $fecha->startOfMonth()->format('Y-m-d H:i:s');
+            $final = $fecha->endOfMonth()->format('Y-m-d H:i:s');
+        }
+
+        if ($tipo == 'semanal') {
+            $fecha =  new Date($fecha);
+            $fecha_antes = new Date($fecha->clone()->subDays(7)->format('Y-m-d'));
+            $fecha_despues = new Date($fecha->clone()->addDays(7)->format('Y-m-d'));
+
+            $inicio = $fecha->startOfWeek()->format('Y-m-d H:i:s');
+            $final = $fecha->endOfWeek()->format('Y-m-d H:i:s');
+        }
+
+        if ($tipo == 'anual') {
+            $fecha =  new Date($fecha);
+            $fecha_antes = new Date($fecha->clone()->subYear()->format('Y-m-d'));
+            $fecha_despues = new Date($fecha->clone()->addYear()->format('Y-m-d'));
+
+            $inicio = $fecha->startOfYear()->format('Y-m-d H:i:s');
+            $final = $fecha->endOfYear()->format('Y-m-d H:i:s');
+        }
+
+        # 👉 OBTENER ALERTAS
+        $alertas = Alerta::query()
+        ->whereBetween('fecha', [$inicio, $final])
+        ->where('id_sucursal','=',$sucursal->id)
+        ->get();
+
+
+        return view('reportes.alertas', compact(
+            'alertas',
+            'fecha',
+            'fecha_antes',
+            'fecha_despues',
+            'tipo',
+        ));
     }
 
 }

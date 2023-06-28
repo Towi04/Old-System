@@ -281,6 +281,7 @@ Route::middleware(['auth','sucursal'])->group(function () {
         Route::get('inscritos',[ReportesController::class,'inscritos_asesores'])->name('inscritos');
         Route::get('reporte/recomendados',[ReportesController::class,'recomendados'])->name('recomendados');
         Route::get('reporte/programados',[ReportesController::class,'programados'])->name('programados');
+        Route::get('reporte/alertas',[ReportesController::class,'alertas'])->name('alertas');
 
         Route::post('reporte-ventas-productos/actualizar_ventas_xeditable',[ReporteVentasController::class,'actualizar_ventas_xeditable'])->name('reporte-ventas-producto.actualizar_ventas_xeditable');
         Route::post('reporte-ventas-productos/actualizar_partidas_ventas_xeditable',[ReporteVentasController::class,'actualizar_partidas_ventas_xeditable'])->name('reporte-ventas-producto.actualizar_partidas_ventas_xeditable');

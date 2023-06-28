@@ -1008,7 +1008,10 @@ class AlumnosController extends Controller
             $alerta = Alerta::create([
                 'titulo' => 'Contactar alumno para reaundar grupo',
                 'descripcion' => 'Recontactar al alumno <a target="_blank" href="'.route('alumnos.show', $alumno->id).'"  >'.$alumno->numero_control_fullname.'</a> para reaundar grupo '.$grupo->nombre,
-                'fecha' => $request->fecha_recontactar
+                'fecha' => $request->fecha_recontactar,
+                'id_sucursal' => $alumno->id_sucursal,
+                'nota' =>$request->nota,
+                'id_usuario_asignado' => Auth::id()
             ]);
         }
 

@@ -48,7 +48,7 @@ class HomeController extends Controller
         
         $alumnos_cumples = Alumno::whereRaw("DATE_FORMAT(fecha_nacimiento,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d')")->where('id_sucursal','=',$sucursal->id)->get();
 
-        $alertas = Alerta::where('fecha','=',date('Y-m-d'))->get();
+        $alertas = Alerta::where('fecha','=',date('Y-m-d'))->where('id_sucursal','=',$sucursal->id)->get();
 
         return view('home', compact('usuarios_cumples','alumnos_cumples','alertas'));
     }

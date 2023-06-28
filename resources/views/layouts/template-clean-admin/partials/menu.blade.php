@@ -234,6 +234,11 @@
                         <a href="{{ route('reportes.asistencias_personal') }}">Reporte de Asistencias Personal</a>
                     </li>
                     @endcan
+                    @can('ver_alertas')
+                    <li>
+                        <a href="{{ route('reportes.alertas') }}">Reporte de Alertas</a>
+                    </li>
+                    @endcan
                 </ul>
                 <ul class="sub-menu">
                     

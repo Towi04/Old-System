@@ -7,7 +7,7 @@
                 <h5 class="modal-title">Selecciona una fecha y escribe una nota para recontactar al alumno </h5>
             </div>
 
-            {!! Form::open(['route' => 'alumnos.pausar_grupo','id' => 'formPausarGrupo','onsbumit'=>'wait.modal("show")']) !!}
+            {!! Form::open(['route' => 'alumnos.pausar_grupo','id' => 'formPausarGrupo','onsubmit'=>'wait.modal("show")']) !!}
             <div class="modal-body">
                 <div class="form-group">
                     {!! Form::label('fecha_recontactar', 'Fecha de recontacto:*'); !!}

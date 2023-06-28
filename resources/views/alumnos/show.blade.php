@@ -499,13 +499,28 @@
 
                                     <div class="tab-pane" id="tab-info-asistencias">
                                         <table class="table">
-                                            @foreach ($alumno->asistencias as $asistencia)
+                                            <thead>
+                                                <tr>
+                                                    <th>A</th>
+                                                    <th>Fecha</th>
+                                                    <th>Grupo / Especialidad</th>
+                                                    
+                                                </tr>
+                                            </thead>
+                                            @foreach ($alumno->asistencias->sortByDesc('fecha') as $asistencia)
                                                 <tr>
                                                     <td>
                                                         <i class="fas fa-check text-success   "></i>
                                                     </td>
                                                     <td>
                                                         {{$asistencia->fecha->format('l d \d\e F \d\e\l Y \a \l\a\s H:i')}}
+                                                    </td>
+                                                    <td>
+                                                        @if($asistencia->grupo)
+                                                            {{optional($asistencia->grupo)->nombre_compuesto}}
+                                                        @else 
+                                                            <span class="text-info">Paso huella fuera de horario de grupo</span>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @endforeach

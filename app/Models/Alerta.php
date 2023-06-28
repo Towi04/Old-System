@@ -13,6 +13,13 @@ class Alerta extends Model
         'titulo',
         'descripcion',
         'fecha',
-        'id_usuario_asignado'
+        'id_usuario_asignado',
+        'id_sucursal',
+        'nota'
     ];
+
+    protected $dates = [
+        'fecha'
+    ];
+    
 }

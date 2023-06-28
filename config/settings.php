@@ -512,6 +512,11 @@ return [
             'display_name'  => 'Dar fin de curso',
             'description'   => 'Dar fin de curso',
         ],
+        [
+            'name'          => 'cambio_forma_pago',
+            'display_name'  => 'Realizar cambio forma pago',
+            'description'   => 'Realizar cambio de forma de pago',
+        ],
         
     ],
 

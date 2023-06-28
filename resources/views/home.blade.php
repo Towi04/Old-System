@@ -75,6 +75,9 @@
             <div class="element-box">
                 <h4 class="element-header">
                     Alertas de hoy
+                    <span class="text-right">
+                        <a href="{{route('reportes.alertas')}}">Ver reporte</a>
+                    </span>
                 </h4>
                 <table class="table table-padded">
                     <tbody>
