@@ -18,13 +18,13 @@
                 {!! Form::label('formas_pago', 'Formas pago disponibles:*'); !!}
                 <div class="form-check">
                   <label class="form-check-label">
-                    <input type="checkbox" class="form-check-input" name="formas_pago[]" id="" value="mensual" @if(@especialidad) @if(in_array('mensual', json_decode($especialidad->formas_pago))) checked @endif @endif>
+                    <input type="checkbox" class="form-check-input" name="formas_pago[]" id="" value="mensual" @if(isset($especialidad->id)) @if(in_array('mensual', json_decode($especialidad->formas_pago))) checked @endif @endif>
                     Mensual
                   </label>
                 </div>
                 <div class="form-check">
                     <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input" name="formas_pago[]" id="" value="semanal" @if(@especialidad) @if(in_array('semanal', json_decode($especialidad->formas_pago))) checked @endif @endif>
+                      <input type="checkbox" class="form-check-input" name="formas_pago[]" id="" value="semanal" @if(isset($especialidad->id)) @if(in_array('semanal', json_decode($especialidad->formas_pago))) checked @endif @endif>
                       Semanal
                     </label>
                   </div>

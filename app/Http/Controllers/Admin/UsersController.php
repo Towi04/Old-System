@@ -150,7 +150,7 @@ class UsersController extends Controller
         // CREACION DE HORAS Y DIAS
         foreach ($request->dia as $dia) {
             $usuario_dia = new UsuarioDia();
-            $usuario_dia->id_usuario = $usuario->id;
+            $usuario_dia->id_usuario = $user->id;
             $usuario_dia->dia = $dia;
             $usuario_dia->dayofweek = $dias_number[$dia];
             $usuario_dia->hora_inicio = $request['inicio_' . $dia];

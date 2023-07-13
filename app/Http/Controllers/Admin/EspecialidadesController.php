@@ -77,7 +77,9 @@ class EspecialidadesController extends Controller
         ]);
 
         $data = $request->validate($rules);
+        
         $especialidad = Especialidad::create($data);
+      
         if($request->formas_pago){
             $especialidad->formas_pago = json_encode($request->formas_pago);
         }else{
@@ -90,7 +92,7 @@ class EspecialidadesController extends Controller
             $especialidad->cordinadores()->attach($request->input('id_usuario'));
         }
 
-        return redirect()->back()->with([
+        return redirect()->route('admin.especialidades.edit', $especialidad->id)->with([
             'message' => 'Se agregó la especialidad con éxito',
         ]);
     }

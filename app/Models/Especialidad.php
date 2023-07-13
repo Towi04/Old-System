@@ -32,6 +32,9 @@ class Especialidad extends Model
         'semanas_cursadas',
         'semanas_pagadas',
         'status',
+        'nombre',
+        'descripcion',
+        // 'formas_pago',
     ];
 
     public function grupos()
