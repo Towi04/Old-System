@@ -60,9 +60,18 @@ class ApoyosEspecialesController extends Controller
         $existe_apoyo_especial = ApoyoEspecial::toBase()
             ->where('id_alumno', $request->input('id_alumno'))
             ->where('id_especialidad', $request->input('id_especialidad'))
-            ->whereRaw('CAST(fecha_final AS date) > cast( NOW() AS date)')
+            ->where(function($q)use($request){
+                return $q->where(function($q2)use($request){
+                            return $q2->where('fecha_inicio', '<', $request->input('fecha_inicio'))->where('fecha_final', '>', $request->input('fecha_inicio'));
+                            })
+                        ->orWhere(function($q2)use($request){
+                                return $q2->where('fecha_inicio', '<', $request->input('fecha_final'))->where('fecha_final', '>', $request->input('fecha_final'));
+                        });
+            })
             ->orderBy('fecha_final')
             ->exists();
+
+        // dd($existe_apoyo_especial);
 
         if($existe_apoyo_especial) {
             if ($request->ajax()) {

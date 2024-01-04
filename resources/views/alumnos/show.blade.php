@@ -1170,7 +1170,7 @@
                                     wait.modal('hide');
                                     dom.modal_apoyo_especial.modal('show');
                                     toastr.error('Error',  errors.message || 'Ocurrio un error inesperado');
-                                }, 250);
+                                }, 400);
                             }
                         });
 
