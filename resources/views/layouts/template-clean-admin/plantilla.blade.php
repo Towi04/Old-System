@@ -22,7 +22,10 @@
     <link href="{{ asset('template-clean-admin/css/main.css?version=4.3.0') }}" rel="stylesheet">
     <link href="{{ asset('js/plugins/dropify/dist/css/dropify.min.css') }}" rel="stylesheet" >
     <link href="{{ asset('css/plugins/datapicker/datepicker3.css') }}" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/1f556c46ab.js" crossorigin="anonymous"></script>
+    
+    <link href="{{ asset('js/fontawesome/js/all.min.js') }}" rel="stylesheet">
+    <script src="{{ asset('js/fontawesome/js/all.min.js') }}" crossorigin="anonymous"></script>
+    
     <link href="{{ asset('css/plugins/toastr/toastr.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/plugins/colorpicker/bootstrap-colorpicker.min.css') }}" rel="stylesheet">
 

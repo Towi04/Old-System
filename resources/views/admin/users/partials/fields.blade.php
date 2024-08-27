@@ -187,6 +187,8 @@
             }
         });
 
+        
+
         $('#input_password').keyup(function(){
             if($(this).val()!='')
             $('#div_enviar_datos').show();
