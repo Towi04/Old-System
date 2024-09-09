@@ -1065,6 +1065,8 @@
                     dom.tb_apoyos.on('click',"a[data-action='delete']",function(event){
                         event.preventDefault();
 
+                        href = $(this).attr('href')
+
                         swal({
                             title: "¿Estas seguro de eliminar el registro?",
                             type: "warning",
@@ -1082,7 +1084,7 @@
                             wait.modal('show');
 
                             $.ajax({
-                                url: event.target.href,
+                                url: href,
                                 type: 'POST',
                                 cache: false,
                                 data: {
@@ -1090,10 +1092,13 @@
                                     _method: 'DELETE',
                                 },
                                 success: function (response){
-                                    dt_apoyos.ajax.reload( function(e){
-                                        wait.modal('hide');
-                                        toastr.success('Éxito', 'Se borró con éxito el registro');
-                                    }, false )
+                                    setTimeout(() => {
+                                        dt_apoyos.ajax.reload( function(e){
+                                            wait.modal('hide');
+                                            toastr.success('Éxito', 'Se borró con éxito el registro');
+                                        }, false )    
+                                    }, 400);
+                                    
                                 },
                                 error:function(error){
                                     setTimeout(() => {
@@ -1235,8 +1240,10 @@
                     dom.tb_apoyos_inscripcion.on('click',"a[data-action='delete']",function(event){
                         event.preventDefault();
 
+                        href = $(this).attr('href');
+
                         swal({
-                            title: "¿Estas seguro de eliminar el registro?",
+                            title: "¿Estas seguro de eliminar el registro de apoyo a la inscripción?",
                             type: "warning",
                             showCancelButton: true,
                             confirmButtonColor: "#ff3333",
@@ -1252,7 +1259,7 @@
                             wait.modal('show');
 
                             $.ajax({
-                                url: event.target.href,
+                                url: href,
                                 type: 'POST',
                                 cache: false,
                                 data: {
