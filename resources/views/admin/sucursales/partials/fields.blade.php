@@ -6,8 +6,8 @@
         </div>
 
         <div class="form-group">
-            {!! Form::label('direccion', 'Dirección'); !!}
-            {!! Form::text('direccion', null, ['class' => 'form-control', 'placeholder' => 'Escribe aqui la direccón de la sucursal']); !!}
+            {!! Form::label('direccion', 'Dirección*'); !!}
+            {!! Form::text('direccion', null, ['class' => 'form-control', 'placeholder' => 'Escribe aqui la direccón de la sucursal','required'=>true ]); !!}
         </div>
 
         <div class="form-group">
