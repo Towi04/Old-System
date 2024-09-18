@@ -225,10 +225,6 @@ class HomeController extends Controller
            
             // $grupo = $alumno->grupos->whereIn('pivot.status',['Inscrito','Pausa'])->where('id_especialidad',$especialidad->id)->first();
             $especialidad = $alumno->especialidades->where('id',$id_especialidad)->first();
-            
-            
-
-            
 
             if ($especialidad) {
 
@@ -240,12 +236,9 @@ class HomeController extends Controller
                     case config('alumnos.forma_pago.mensual','mensual'):
                         
                         $pids->inscripcion_especial_boton($especialidad);
-                        
                         // GENERA DOCUMENTOS MENSUALES
                         $pcds->mensual($especialidad);
-
                         
-
                         $monto_pactado = $especialidad->monto;
                         $monto_pronto_pago_pactado = $especialidad->monto_pronto_pago;
                     break;

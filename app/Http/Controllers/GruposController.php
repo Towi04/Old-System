@@ -319,7 +319,7 @@ class GruposController extends Controller
             ->when($request->input('id_especialidad'), function ($q, $especialidad) {
                 $q->where('id_especialidad', $especialidad);
             })
-            ->orderBy('fecha_inicio', 'asc')
+            ->orderBy('fecha_inicio', 'desc')
             ->get();
 
             $especialidad = Especialidad::find($request->id_especialidad);

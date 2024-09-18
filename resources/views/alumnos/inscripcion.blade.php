@@ -105,7 +105,7 @@
                         inscripcion = result.grupo.precio_inscripcion;
                         grupo = result.grupo;
                         swal({
-                                title: "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". Tienes que solicitar la inscripción de $ "+inscripcion+" que quedará registrada como pagada en la ficha del alumno.",
+                                title: "Se va a inscribir al alumno al grupo de "+grupo.especialidad.nombre+ " que comienza el día "+moment(grupo.fecha_inicio).format('DD-MM-YYYY')+". Se debe solicitar la primera semana para inscribir.",
                                 text: '',
                                 type: "success",
                                 showCancelButton: true,

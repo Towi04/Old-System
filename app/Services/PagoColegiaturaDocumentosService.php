@@ -57,9 +57,7 @@ class PagoColegiaturaDocumentosService
             if(optional($especialidad->pivot)->fecha_inicio){
                 
                 // SE OBTIENE LA FECHA EN QUE SE INSCRIBIO PARA OBTENER EL MONTO DE LA COLEGIATURA 
-                
                 $fecha_inicio_pago = optional($especialidad->pivot)->created_at;
-                
                    
                 // SI NO HAY FECHA DE INICIO EN LA ESPECIALIDAD SE BUSCA EN SU DOCUMENTO DE INSCRIPCION
                 if(!$fecha_inicio_pago){
@@ -121,13 +119,14 @@ class PagoColegiaturaDocumentosService
         if($pivot){
             $precios = $especialidad->getPrecioColegiaturaMensualFecha($fecha_inicio);
             $pivot->monto = $precios['precio_normal'];
-            // dd($pivot);
+
+            
             $pivot->monto_pronto_pago = $precios['precio_pronto_pago'];
             $pivot->save();
             // dd($pivot);
         }
         
-        
+        $i=0;
 
         while(!$today->copy()->addMonth()->isSameMonth($fecha_inicio) && $fecha_inicio->lte($today->copy()->addMonth())){
 
@@ -143,8 +142,11 @@ class PagoColegiaturaDocumentosService
             
 
             if(!$existe_documento){
-                               
-                $result =  $this->calcular_precio_mensual($grupo_inscripcion, $alumno, $especialidad );
+                            
+
+                $result =  $this->calcular_precio_mensual($grupo_inscripcion, $alumno, $especialidad,$i );
+
+                
 
                 $montos = $especialidad->getPrecioColegiaturaMensualFecha($fecha_inicio_pago);
                 
@@ -174,13 +176,15 @@ class PagoColegiaturaDocumentosService
             // dd($fecha_inicio->addMonthNoOverflow());
             $fecha_inicio->addMonthNoOverflow()->startOfMonth();
             $this->fecha_actual = $fecha_inicio;
+
+            $i++;
         }   
         
             
         
     }
 
-    private function calcular_precio_mensual($grupo, $alumno, $especialidad)
+    private function calcular_precio_mensual($grupo, $alumno, $especialidad, $i)
     {
         $fecha_inicio = $this->fecha_actual;
 
@@ -194,19 +198,22 @@ class PagoColegiaturaDocumentosService
         })->first();
 
 
-        
-
         if (empty($apoyo_especial)) {
 
             $dia = $this->fecha_actual->day;
 
             # SI EL DIA ACTUAL ES ENTRE 1-6, ENTONCES SE ASIGNA EL PRECIO DE PRONTO PAGO
             if (in_array($dia, range(1, 6))) {
-                
-                return [
+
+
+                $montos = [
                     'monto'=> (!$especialidad->pivot)?$grupo->precio_mensualidad_pronto_pago:$especialidad->pivot->monto_pronto_pago,
                     'especial'=>0,
                 ];
+
+                
+
+                return $montos;
             }else{
                 #SE CALCULA DE ACUERDO A LAS CLASES RESTANTES QUE TENGA EN EL MES
                 #SE DEBEN CALCULAR DE ACUERDO A LAS SEMANAS RESTANTES DONDE CUMPLA CON TODAS SUS CLASES
@@ -215,16 +222,15 @@ class PagoColegiaturaDocumentosService
                     if(!$grupo){
                         // SE OBTIENE EL PRIMER GRUPO DE ESE ALUMNO EN ESA ESPECIALIDAD
                         $grupo = $alumno->grupos->where('id_especialidad','=',$especialidad->id)->first();
+                        // dd($grupo);
                     }
                     if($grupo){
                         $precio_mensualidad = $grupo->precio_mensualidad;
-                    
+                        
                     
                     // $precio_semana = $grupo->precio_semana;
-            
                     $dia_actual = $fecha_inicio;
                     $mes_actual = $dia_actual->month;
-                    
                     
 
                     $lista_numero_dias = [
@@ -242,7 +248,7 @@ class PagoColegiaturaDocumentosService
             
                     $days = $grupo->days;
                     $total_days = $days->count() * 4;
-                    
+
                     foreach ($days as $grupodia) {
                         $numero_dia =  $lista_numero_dias[$grupodia->dia] ?? 0;
 
@@ -253,14 +259,23 @@ class PagoColegiaturaDocumentosService
                     }
                     
                     $semanas = round($dias_pendientes / $days->count());
-                    
+
+                   
                     // $precio = ($total_dias == 0) ? 0 : $dias_pendientes * $grupo->precio_mensualidad / $total_dias;
 
-                    $precio = $semanas * $especialidad->getPrecioColegiaturaSemanalFecha($fecha_inicio);
+                    if($semanas <4){
+                        $precio = $semanas * $especialidad->getPrecioColegiaturaSemanalFecha($fecha_inicio);
+                        $especial = 1;
+                    }else{
+                        $precio = $especialidad->getPrecioColegiaturaMensualFecha($fecha_inicio)['precio_pronto_pago'];
+                        $especial = 0;
+                    }
+                    
+                    
                     
                     return [
                         'monto'=>$precio ?? 0,
-                        'especial'=>1,
+                        'especial'=>$especial,
                     ];
                 }else{
                     return [
@@ -278,8 +293,6 @@ class PagoColegiaturaDocumentosService
                 'especial'=>0,
             ];
         }
-
-
 
         return [
             'monto'=>$apoyo_especial->precio ?? 0,

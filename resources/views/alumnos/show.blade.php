@@ -285,11 +285,6 @@
                                             <a class="nav-link" data-toggle="tab" href="#tab-documentos">Documentos.</a>
                                         </li>
 
-{{-- 
-                                        <li class="nav-item">
-                                            <a class="nav-link" data-toggle="tab" href="#tab-pagos-pendientes">Documentos (old)</a>
-                                        </li> --}}
-
                                         <li class="nav-item">
                                             <a class="nav-link active" data-toggle="tab" href="#tab-historial-pagos">Historial de pagos</a>
                                         </li>
@@ -331,25 +326,29 @@
                                                 </button>
                                                 <span id="msje_actualizar_docmuentos" style="display: none" class="text-danger">Tienes que seleccionar una especialidad para actualizar documentos</span>
                                             @endrole
-                                        <br>
+                                            <br>
                                         {!! Form::close() !!}
 
-                                        <table class="table table-striped table-bordered table-hover" id="tb-documentos" width="100%">
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Concepto</th>
-                                                    <th>Monto</th>
-                                                    <th>Saldo</th>
-                                                    <th>Fecha Limite</th>
-                                                    <th>Pago(s)</th>
-                                                    <th>Created at</th>
-                                                    <th>Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                            </tbody>
-                                        </table>
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-bordered table-hover" id="tb-documentos" width="100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Concepto</th>
+                                                        <th>Monto</th>
+                                                        <th>Saldo</th>
+                                                        <th>Fecha Limite</th>
+                                                        <th>Pago(s)</th>
+                                                        <th>Created at</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                       
+
                                         @can('asignar_apoyos_especiales_en_inscripcion')
 
                                             <fieldset class="form-group">

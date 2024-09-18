@@ -124,6 +124,7 @@ class Especialidad extends Model
     public function getPrecioColegiaturaMensualFecha($fecha){
         // dd($fecha);
         // $fecha = \Carbon\Carbon::createFromFormat('Y-m-d', $fecha);
+
         $precio = $this->precios->where('tipo','=','Precio Mensual')->filter(function($precio)use($fecha){
             if($precio->fecha_final == null && $precio->fecha_inicio->lte($fecha)){
                 return true;
@@ -134,7 +135,7 @@ class Especialidad extends Model
             }
         })->first();
 
-        // dd($precio);
+        
 
         if($precio){
             return [

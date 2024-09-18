@@ -570,11 +570,12 @@
                     
                     grupo = Lazy(grupos).where({id_especialidad: especialidad.id}).first();
                     
+                    if(grupo){
+                        const opcion = `<option value="${especialidad.id}" > ${especialidad.nombre} - ${grupo.clave} </option>`;
+                        $('#select_especialidad').append(opcion);
+                        $select2_especialidad_pagos.append(opcion)
+                    }
                     
-                    const opcion = `<option value="${especialidad.id}" > ${especialidad.nombre} - ${grupo.clave} </option>`;
-
-                    $('#select_especialidad').append(opcion);
-                    $select2_especialidad_pagos.append(opcion)
                 });
 
 
