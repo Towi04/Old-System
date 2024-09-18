@@ -7,7 +7,7 @@ use App\Models\Venta;
 use App\Models\PartidaVenta;
 use App\Models\Alumno;
 use App\Models\Producto;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Jenssegers\Date\Date;
@@ -18,13 +18,15 @@ class PuntoDeVentaProductosController extends Controller
     public function index()
     {
         $id_sucursal = optional(session('sucursal'))->id;
+        $id_usuario = Auth::id();
 
-        $venta = Venta::where('id_sucursal','=', $id_sucursal)->where('status','=','En caja')->get()->first();
+        $venta = Venta::where('id_sucursal','=', $id_sucursal)->where('id_recibio','=',$id_usuario)->where('status','=','En caja')->get()->first();
         if(!$venta){
             $venta = new Venta();
             $venta->folio = Venta::where('id_sucursal','=', $id_sucursal)->max('folio') + 1;
             $venta->status = 'En caja';
             $venta->id_sucursal = $id_sucursal;
+            $venta->id_recibio = Auth::id();
             $venta->save();
         }
 
