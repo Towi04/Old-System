@@ -139,23 +139,21 @@
                         @endphp
                         @foreach($especialidades as $especialidad)
                             @if($i==0)
-                            <ul class="sub-menu">
+                                <ul class="sub-menu">
                             @endif
                                 <li>
                                     <a href="{{ route('materias.index', $especialidad->id) }}">{{$especialidad->nombre}}</a>
                                 </li>
-                            @if($i==7)
-                            </ul>
-                            @php
-                                $i=-1;
-                            @endphp
-                            @endif
+                                @if($i==7)
+                                    </ul>
                                 @php
-                                    $i=$i+1;
+                                    $i=-1;
                                 @endphp
+                                @endif
+                                    @php
+                                        $i=$i+1;
+                                    @endphp
                         @endforeach
-
-                    </ul>
                 </div>
             </div>
         </li>
