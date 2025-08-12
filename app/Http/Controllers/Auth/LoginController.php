@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 use App\Notifications\UsuarioFueraHorario;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -92,7 +93,7 @@ class LoginController extends Controller
                     $user->notify(new UsuarioFueraHorario(auth()->user()));
                 } catch (\Exception $e) {
                     // Manejo de excepciones si la notificación falla
-                    \Log::error('Error al enviar notificación: ' . $e->getMessage());
+                    Log::error('Error al enviar notificación: ' . $e->getMessage());
                 }
             }
         }
