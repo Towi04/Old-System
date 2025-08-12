@@ -88,7 +88,12 @@ class LoginController extends Controller
             $users = User::permission('notificacion_usuario_fuera_horario')->get();
 
             foreach($users as $user){
-                $user->notify(new UsuarioFueraHorario(auth()->user()));
+                try {
+                    $user->notify(new UsuarioFueraHorario(auth()->user()));
+                } catch (\Exception $e) {
+                    // Manejo de excepciones si la notificación falla
+                    \Log::error('Error al enviar notificación: ' . $e->getMessage());
+                }
             }
         }
 
