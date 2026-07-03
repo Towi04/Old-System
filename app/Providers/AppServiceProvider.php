@@ -31,6 +31,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        if ($rootUrl = config('app.url')) {
+            \Illuminate\Support\Facades\URL::forceRootUrl($rootUrl);
+        }
     }
 }
