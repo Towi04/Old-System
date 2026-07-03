@@ -5,6 +5,21 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
+$dbConfig = require __DIR__.'/../config.php';
+
+foreach ([
+    'DB_CONNECTION' => $dbConfig['connection'],
+    'DB_HOST' => $dbConfig['host'],
+    'DB_PORT' => (string) $dbConfig['port'],
+    'DB_DATABASE' => $dbConfig['database'],
+    'DB_USERNAME' => $dbConfig['username'],
+    'DB_PASSWORD' => $dbConfig['password'],
+] as $key => $value) {
+    putenv("$key=$value");
+    $_ENV[$key] = $value;
+    $_SERVER[$key] = $value;
+}
+
 /*
 |--------------------------------------------------------------------------
 | Check If The Application Is Under Maintenance
